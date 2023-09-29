@@ -1,0 +1,18 @@
+* {
+  box-sizing: border-box;
+  font-family: 'IBM Plex Sans', sans-serif !important;
+}
+
+html,
+body {
+  margin: 0 auto;
+  padding: 0;
+}
+
+body {
+  overscroll-behavior: none;
+}
+
+#root {
+  overflow-x: hidden;
+}

@@ -1,0 +1,1600 @@
+[
+  {
+    "isActive": true,
+    "id": "air-quality",
+    "title": "Air Quality",
+    "sheetId": "157f6vu47RBEvnBnW24jGI7cz-ov1aSBUFPdkb5sDKDc",
+    "description": "CITIESair is a network of air quality sensors that monitors the concentration of particulate matter PM2.5 at NYUAD and several schools in Abu Dhabi. The air quality network at NYUAD consists of three stations: an outdoor station between the A1 and A2 buildings, two indoor stations in the Campus Center (C2), and East Dining Hall (D2), respectively. <br><br> Real-time air quality data is displayed on banners on NYUAD's Student Portal and Intranet, <a href='https://citiesair.com/'>CITIESair website</a>, <a href='https://www.iqair.com/united-arab-emirates/abu-dhabi/cities@nyuad'>IQAir website</a> (only outdoor station), as well as dedicated physical air quality screens in C2 and D2. <br><br> <small><b>Note: </b>CITIESair was originally a part of a student <a href='http://dlib.nyu.edu/findingaids/html/nyuad/ad_mc_004/dscaspace_76b01eb87c7a80289e06bbdd3f316aa9.html'>Capstone project (NYUADAir)</a> in Spring 2021. It publicized, for the first time, air quality data around the NYUAD campus to the community. Recognizing the potential of this project, and to further raise awareness and encourage sustainable behaviors within and beyond the university community, CITIES decided to scale it up by equipping the network with higher-grade sensors and transferring technology to other schools in Abu Dhabi.</small>",
+    "owners": [
+      "CITIESair"
+    ],
+    "contact": "cities.nyuad@nyu.edu",
+    "rawDataTables": [
+      {
+        "gid": 584789045,
+        "query": "SELECT A, B, C, D, G, H , I, L, M, N"
+      },
+      {
+        "gid": 19993990,
+        "query": "SELECT A, B, C, D, G, H , I, L, M, N"
+      }
+    ],
+    "homepageChartIndex": 1,
+    "charts": [
+      {
+        "title": "An Introduction of the US Air Quality Index (AQI)",
+        "subtitle": "CITIESair uses the <a href='https://www.airnow.gov/aqi/aqi-basics/'>Air Quality Index (AQI)</a> developed by the United States Environmental Protection Agency (EPA) to effectively communicate different levels of PM2.5 air pollution. To calculate the AQI from the raw measurement of PM2.5 concentration (µg/m³), different breakpoints and piecewise linear function are utilized (read more <a href='https://en.wikipedia.org/wiki/Air_quality_index#United_States'>here</a>). Higher AQI values correspond to poorer air quality and greater heath risks to humans.<br><br>The US EPA sets thresholds for PM2.5 concentration: <sup>[1]</sup><ul><li><b>Annual average</b>: 12.0 µg/m³, corresponding to US AQI <b>50</b></li><li><b>24-hour average</b>: 35.0 µg/m³, corresponding to US AQI <b>100</b></li></ul>In 2021, the World's Heath Organization (WHO) proposed a new guideline for PM2.5<sup>[2]</sup> with stricter thresholds than those of the US EPA:<ul><li><b>Annual average</b>: 5.0 µg/m³, corresponding to US AQI <b>21</b></li><li><b>24-hour average</b>: 15.0 µg/m³, corresponding to US AQI <b>56</b></li></ul>",
+        "reference": "[1] \"National Ambient Air Quality Standards (NAAQS) for PM.\" EPA, Environmental Protection Agency, https://www.epa.gov/pm-pollution/national-ambient-air-quality-standards-naaqs-pm.<br>[2] World Health Organization. \"WHO global air quality guidelines: particulate matter (PM2. 5 and PM10), ozone, nitrogen dioxide, sulfur dioxide and carbon monoxide: executive summary.\" (2021).",
+        "subchartTitle": "Explanation Table",
+        "chartSubstituteComponentName": "AirQualityIndexTable"
+      },
+      {
+        "title": "Historical Snapshots of AQI",
+        "customClassName": "historical-snapshot-aqi",
+        "subcharts": [
+          {
+            "gid": 184715989,
+            "subchartTitle": "Hourly (Last 30 Days)",
+            "query": "SELECT A, E, F, G, H, I, J, B, C, D",
+            "subchartSubtitle": "<b>Adjust the slider to zoom in.</b><br><br>Explore the <b>latest</b> hourly average AQI over the past month to see the differences in the air quality between different locations on the NYUAD campus.",
+            "options": {
+              "hAxis": {
+                "title": "Date Time",
+                "gridlines": {
+                  "color": "transparent"
+                }
+              }
+            },
+            "control": {
+              "controlType": "ChartRangeFilter",
+              "options": {
+                "filterColumnIndex": 0,
+                "ui": {
+                  "minRangeSize": 172800000
+                }
+              }
+            }
+          },
+          {
+            "gid": 2066975752,
+            "subchartTitle": "Monthly (All Time)",
+            "query": "SELECT A, U, V, W, X, Y, Z, L, O, R",
+            "subchartSubtitle": "Looking at the monthly average of the AQIs, it is clear that in terms of how bad PM2.5 air pollution is: outdoors > the Dining Hall D2 > the Campus Center. Indoor air quality in the Dining Hall D2 and Campus Center also exhibits similar increasing/decreasing trends with the outside air. More comments on seasonal and spatial trends can be found on the next charts.",
+            "options": {
+              "pointSize": 3,
+              "hAxis": {
+                "title": "Month"
+              }
+            }
+          }
+        ],
+        "headers": 1,
+        "chartType": "ComboChart",
+        "options": {
+          "seriesSelector": {
+            "allowMultiple": true,
+            "method": "toggleVisibility"
+          },
+          "colors": "reverseAqi",
+          "chartArea": {
+            "backgroundColor": "#fff"
+          },
+          "seriesType": "area",
+          "lineWidth": 0,
+          "areaOpacity": 1,
+          "series": {
+            "0": {
+              "pointSize": 0,
+              "visibleInLegend": false,
+              "enableInteractivity": false
+            },
+            "1": {
+              "pointSize": 0,
+              "visibleInLegend": false,
+              "enableInteractivity": false
+            },
+            "2": {
+              "pointSize": 0,
+              "visibleInLegend": false,
+              "enableInteractivity": false
+            },
+            "3": {
+              "pointSize": 0,
+              "visibleInLegend": false,
+              "enableInteractivity": false
+            },
+            "4": {
+              "pointSize": 0,
+              "visibleInLegend": false,
+              "enableInteractivity": false
+            },
+            "5": {
+              "pointSize": 0,
+              "visibleInLegend": false,
+              "enableInteractivity": false
+            },
+            "6": {
+              "lineWidth": 1.5,
+              "type": "line",
+              "color": "#555"
+            },
+            "7": {
+              "lineWidth": 1.25,
+              "type": "line",
+              "color": "#555",
+              "lineDashStyle": [
+                5,
+                1.5
+              ]
+            },
+            "8": {
+              "lineWidth": 1.25,
+              "type": "line",
+              "color": "#555",
+              "lineDashStyle": [
+                1.25,
+                0.75
+              ]
+            }
+          },
+          "vAxis": {
+            "title": "US AQI",
+            "gridlines": {
+              "count": 0
+            }
+          }
+        }
+      },
+      {
+        "title": "Daily AQI, All Time",
+        "subtitle": "This calendar chart shows how the daily AQI varies throughout the year across different locations of the air quality network. Each square cell represents one day and its color corresponds to the category of the AQI. Hover over each square cell to see the specific date and its average AQI.<br><br><small><b>Note: </b>There were some gaps in our data collection. Dates where there was no recorded data are represented by empty cells.</small>",
+        "gid": 1764126775,
+        "headers": 1,
+        "chartType": "Calendar",
+        "subcharts": [
+          {
+            "query": "SELECT A, B, E, I WHERE NOT E='No Data'",
+            "subchartTitle": "Outdoor"
+          },
+          {
+            "query": "SELECT A, C, F, J WHERE NOT F='No Data'",
+            "subchartTitle": "Campus Center"
+          },
+          {
+            "query": "SELECT A, D, G, K WHERE NOT G='No Data'",
+            "subchartTitle": "Dining Hall D2"
+          }
+        ],
+        "columns": [
+          0,
+          1,
+          {
+            "role": "tooltip",
+            "properties": {
+              "html": true
+            },
+            "sourceColumn": 3
+          }
+        ],
+        "options": {
+          "colorAxis": {
+            "colors": "aqi"
+          },
+          "legend": {
+            "position": "none"
+          }
+        },
+        "control": {
+          "controlType": "CategoryFilter",
+          "options": {
+            "filterColumnIndex": 2,
+            "ui": {
+              "label": "Filter by AQI Category:",
+              "allowTyping": false,
+              "allowMultiple": true
+            }
+          }
+        }
+      },
+      {
+        "title": "Percentage of Daily Air Quality Categories by Month",
+        "subcharts": [
+          {
+            "gid": 354322334,
+            "subchartTitle": "Outdoor",
+            "subchartSubtitle": "Outdoor air quality at the NYUAD campus exhibits seasonal variations. Although the figure also varies year-to-year, air quality often gets worse during the summer months compared to the winter months. For example, August 2021 and October 2022 witnessed more than 10 days each where the daily air quality crossed the <b>Unhealthy</b> mark. This variation is consistent with trends found in existing scientific studies <sup>[1][2][3]</sup>, and is potentially explained by higher electricity consumption and more frequent dust storms during the summer. ",
+            "reference": "[1] Al-Jallad, Fadi A., Clarence C. Rodrigues, and Hamda A. Al-Thani. \"Ambient Levels of TSP, PM10, PM2. 5 and Particle Number Concentration in Al Samha, UAE.\" <i>Journal of Environmental Protection</i> 8.09 (2017): 1002.<br>[2] Phanikumar, Devulapalli Venkata, et al. \"Assessment of particulate matter concentration and gaseous pollutants in urban and rural regions over the Emirate of Abu Dhabi, UAE.\" <i>Journal of Atmospheric and Solar-Terrestrial Physics</i> 199 (2020): 105217.<br>[3] Al-Taani, Ahmed A., et al. \"Long-term trends in ambient fine particulate matter from 1980 to 2016 in United Arab Emirates.\" <i>Environmental monitoring and assessment</i> 191 (2019): 1-19."
+          },
+          {
+            "gid": 719182390,
+            "subchartTitle": "Campus Center",
+            "subchartSubtitle": "The air quality inside the Campus Center is almost always <b>Good</b> throughout the year, except for some <b>Moderate</b> days in late spring to late summer."
+          },
+          {
+            "gid": 2110383587,
+            "subchartTitle": "Dining Hall D2",
+            "subchartSubtitle": "Meanwhile, the air quality inside the Dining Hall D2 varies throughout the year, often getting worse during the academic year compared to the summer due to heightened cooking activities."
+          }
+        ],
+        "subtitle": "",
+        "headers": 1,
+        "chartType": "ColumnChart",
+        "options": {
+          "isStacked": "percent",
+          "hAxis": {
+            "title": "Month",
+            "slantedText": true,
+            "slantedTextAngle": 30
+          },
+          "vAxis": {
+            "format": "#%",
+            "title": "Percentage"
+          },
+          "colors": "aqi"
+        }
+      },
+      {
+        "title": "Yearly Average PM2.5 Concentration (µg/m³) by Day of the Week, with 1 Standard Deviation",
+        "subcharts": [
+          {
+            "gid": 803236520,
+            "subchartTitle": "Outdoor"
+          },
+          {
+            "gid": 835066434,
+            "subchartTitle": "Campus Center"
+          },
+          {
+            "gid": 1646757274,
+            "subchartTitle": "Dining Hall D2"
+          }
+        ],
+        "query": "SELECT A, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, B, C, D",
+        "subtitle": "There is no statistically significant difference in the yearly average PM2.5 concentration across 7 days of the week in any of the 3 locations.",
+        "headers": 1,
+        "chartType": "ColumnChart",
+        "columns": [
+          0,
+          1,
+          {
+            "role": "interval",
+            "sourceColumn": 2
+          },
+          {
+            "role": "interval",
+            "sourceColumn": 3
+          },
+          4,
+          {
+            "role": "interval",
+            "sourceColumn": 5
+          },
+          {
+            "role": "interval",
+            "sourceColumn": 6
+          },
+          7,
+          {
+            "role": "interval",
+            "sourceColumn": 8
+          },
+          {
+            "role": "interval",
+            "sourceColumn": 9
+          },
+          10,
+          {
+            "role": "interval",
+            "sourceColumn": 11
+          },
+          {
+            "role": "interval",
+            "sourceColumn": 12
+          },
+          13,
+          {
+            "role": "interval",
+            "sourceColumn": 14
+          },
+          {
+            "role": "interval",
+            "sourceColumn": 15
+          },
+          16,
+          {
+            "role": "interval",
+            "sourceColumn": 17
+          },
+          {
+            "role": "interval",
+            "sourceColumn": 18
+          },
+          19,
+          {
+            "role": "interval",
+            "sourceColumn": 20
+          },
+          {
+            "role": "interval",
+            "sourceColumn": 21
+          }
+        ],
+        "options": {
+          "colors": "monochromatic2Colors",
+          "vAxis": {
+            "title": "PM2.5 Concentration (µg/m³)"
+          },
+          "hAxis": {
+            "title": "Day of the Week"
+          }
+        }
+      },
+      {
+        "title": "Hourly Average PM2.5 Concentration (µg/m³) by Month",
+        "query": "SELECT A, B, C, D, E, F, G, H, I, J, K, L, M, N",
+        "subcharts": [
+          {
+            "gid": 1768452772,
+            "subchartTitle": "Outdoor",
+            "subchartSubtitle": "<ul><li>Outdoor dust concentration often peaks in the early morning, followed by a sharp drop until noon and a gradual build-up throughout the night. This is consistent with other studies conducted in Abu Dhabi <sup>[1][2]</sup>, and can potentially be explained by high humidity levels causing secondary formation of aerosol particles and hygroscopic growth of aerosols.</li></ul>",
+            "reference": "[1] Al-Jallad, Fadi A., Clarence C. Rodrigues, and Hamda A. Al-Thani. \"Ambient Levels of TSP, PM10, PM2. 5 and Particle Number Concentration in Al Samha, UAE.\" <i>Journal of Environmental Protection</i> 8.09 (2017): 1002.<br>[2] Phanikumar, Devulapalli Venkata, et al. \"Assessment of particulate matter concentration and gaseous pollutants in urban and rural regions over the Emirate of Abu Dhabi, UAE.\" <i>Journal of Atmospheric and Solar-Terrestrial Physics</i> 199 (2020): 105217."
+          },
+          {
+            "gid": 916513168,
+            "subchartTitle": "Campus Center",
+            "subchartSubtitle": "<ul><li>Inside the Campus Center, PM2.5 levels stay relatively constant throughout the day, with a small increase during the morning rush hours as a lot of staff and students enter the building</li></ul>"
+          },
+          {
+            "gid": 1406231328,
+            "subchartTitle": "Dining Hall D2",
+            "subchartSubtitle": "<ul><li>In the Dining Hall, the concentration gradually builds up throughout the day, hitting bigger peaks after each meal (breakfast, lunch, and dinner) with small troughs in-between meals. This might be explained by cooking activities, especially grilling, that produce volatile microscopic particles, and to a lesser extent, people repeatedly entering and exiting the building.</li><li>For those with a sharp eye for <b>anomalies</b>, it is instantly clear that an influx of students <b>every September</b> causes a remarkable deterioration of the air quality during lunch when students usually hang out with friends. And as the semester progresses, more and more students opt for take-outs for convenience. During the past two Ramadans (May 2020 and Apr 2021), similar deteriorations are observed during dinner and Suhur (before sunrise) compared to other months.</li></ul>"
+          }
+        ],
+        "subtitle": "The graph shows the average hourly PM2.5 concentration (µg/m3) throughout a 24-period for each month. <b>Each thin line represents a calendar month, while the highlighted line represents the all-time average.</b><br>Here are some clear trends:",
+        "vAxisTitle": "PM2.5 Concentration (µg/m3)",
+        "headers": 2,
+        "chartType": "LineChart",
+        "options": {
+          "seriesSelector": {
+            "allowMultiple": true,
+            "method": "toggleVisibility"
+          },
+          "colors": "grayscale",
+          "vAxis": {
+            "title": "PM2.5 Concentration (µg/m3)"
+          },
+          "hAxis": {
+            "title": "Hour of the Day",
+            "slantedText": true,
+            "slantedTextAngle": 60
+          },
+          "lineWidth": 0.6,
+          "series": {
+            "12": {
+              "lineWidth": 5,
+              "color": "default",
+              "labelInLegend": "Average"
+            }
+          }
+        }
+      },
+      {
+        "title": "Correlation Between Daily Average Outdoor and Indoor PM2.5 Concentrations (µg/m³)",
+        "subcharts": [
+          {
+            "query": "SELECT A, B, G",
+            "subchartTitle": "Outdoor - Campus Center",
+            "options": {
+              "hAxis": {
+                "viewWindow": {
+                  "min": 0
+                },
+                "title": "Outdoor PM2.5 Concentration (µg/m³)"
+              },
+              "vAxis": {
+                "title": "Campus Center PM2.5 Concentration (µg/m³)"
+              }
+            }
+          },
+          {
+            "query": "SELECT A, B, L",
+            "subchartTitle": "Outdoor - Dining Hall D2",
+            "options": {
+              "hAxis": {
+                "viewWindow": {
+                  "min": 0
+                },
+                "title": "Outdoor PM2.5 Concentration (µg/m³)"
+              },
+              "vAxis": {
+                "title": "Dining Hall D2 PM2.5 Concentration (µg/m³)"
+              }
+            }
+          },
+          {
+            "query": "SELECT A, G, L",
+            "subchartTitle": "Campus Center - Dining Hall D2",
+            "options": {
+              "hAxis": {
+                "viewWindow": {
+                  "min": 0
+                },
+                "title": "Campus Center PM2.5 Concentration (µg/m³)"
+              },
+              "vAxis": {
+                "title": "Dining Hall D2 PM2.5 Concentration (µg/m³)"
+              }
+            }
+          }
+        ],
+        "subtitle": "This chart shows that indoor air quality correlates with outdoor air quality, with R<sup>2</sup> around 0.5-0.6 <i>(hover on the best fit equations to see the exact R<sup>2</sup> value)</i>. Thanks to air filtration systems, indoor PM2.5 concentrations are significantly lower than its outdoor counterpart, around <b>6x</b> and <b>4x</b> lower for Campus Center (C2) and East Dining Hall (D2), respectively. Due to cooking activities, air quality in D2 is estimated to be <b>1.5x</b> worse than the Campus Center when comparing their daily average.",
+        "gid": 584789045,
+        "headers": 1,
+        "columns": [
+          1,
+          2,
+          {
+            "role": "tooltip",
+            "sourceColumn": 0
+          }
+        ],
+        "chartType": "ScatterChart",
+        "options": {
+          "colors": "grayscale",
+          "pointSize": 1,
+          "trendlines": [
+            {
+              "type": "linear",
+              "visibleInLegend": true,
+              "color": "default",
+              "opacity": 1,
+              "showR2": true,
+              "enableInteractivity": false
+            }
+          ],
+          "series": {
+            "0": {
+              "visibleInLegend": false
+            }
+          },
+          "legend": {
+            "position": "top"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "isActive": true,
+    "id": "athletics-fabs-membership",
+    "title": "Athletics FABS Membership",
+    "sheetId": "1mRberQXQI9uHCP_gGXgK8NfjbiA2DdQc-HH1c01eEDk",
+    "description": "This dataset visualizes the number of unique active memberships registered in the Fitness and Athletics Booking system (FABS) by academic year (AY). For FABS, an AY starts from <b>August 1</b> of the first calendar year to <b>July 31</b> of the second calendar year. After <b>July 31</b>, all existing memberships expire and members need to register again for the next AY. FABS members can register for sport classes, reserve lockers, and book and access Athletic facilities.<br><br>While there are 11 original types of FABS accounts, our data visualizations simplify them into <b>four distinct demographic groups</b>. For detailed data of the original 11 types of FABS accounts, you can download the raw dataset. <table><thead><tr><th>Simplified demographic groups</th><th>Original type(s) of FABS accounts</th></tr></thead><tbody><tr><td>Undergraduate students</td><td>Student</td></tr><tr><td>Graduate students and Alumni</td><td>Grad student and Alumni</td></tr><tr><td>Faculty and Staff</td><td>Faculty, Staff, and Family Member</td></tr><tr><td>External and Other</td><td>Community, Contract, External Instructor, Guest, and Tamkeen</td></tr></tbody></table>",
+    "owners": [
+      "Department of Athletics"
+    ],
+    "contact": "nyuad.athletics@nyu.edu",
+    "rawDataTables": [
+      {
+        "gid": 560722866
+      },
+      {
+        "gid": 337720664,
+        "query": "SELECT A, B, C, D, E, F"
+      }
+    ],
+    "charts": [
+      {
+        "title": "Number of Unique FABS Memberships",
+        "subtitle": "As the <a href='./student-population'>university population</a> continues to grow, FABS membership registrations have generally exhibited an upward trend, except for a 40% decline in AY20-21. During this period, the university introduced remote working policies and campus access restrictions to combat the COVID-19 pandemic. As a result, there was a significant decrease in Faculty and Staff together with External and Other memberships; meanwhile, undergraduate student memberships only decreased by 14% in AY20-21 as most students were allowed to stay on-campus.<br><br>From March 2020 to June 2022, access to the Fitness Center, Women's Only-Gym, Indoor and Outdoor Tracks, and the 50m Pool required advanced booking on FABS' Capacity Management portal. Thus, those who wished to use these facilities must have a FABS membership. <br><br>AY21-22 and AY22-23 saw a remarkable rebounce in the number of memberships that exceeded pre-COVID figures across all demographic categories. Notably, the number of External and Other memberships (consisting of guests and other external communities) almost quadrupled in AY21-22, following the relaxation of most COVID restrictions for indoor places.",
+        "gid": 337720664,
+        "chartType": "ComboChart",
+        "headers": 1,
+        "subcharts": [
+          {
+            "subchartTitle": "Absolute Numbers",
+            "query": "SELECT A, B, C, D, E, F, V, W, X, Y, Z",
+            "columns": [
+              0,
+              1,
+              {
+                "role": "tooltip",
+                "type": "string",
+                "properties": {
+                  "html": true
+                },
+                "sourceColumn": 6
+              },
+              2,
+              {
+                "role": "tooltip",
+                "type": "string",
+                "properties": {
+                  "html": true
+                },
+                "sourceColumn": 7
+              },
+              3,
+              {
+                "role": "tooltip",
+                "type": "string",
+                "properties": {
+                  "html": true
+                },
+                "sourceColumn": 8
+              },
+              4,
+              {
+                "role": "tooltip",
+                "type": "string",
+                "properties": {
+                  "html": true
+                },
+                "sourceColumn": 9
+              },
+              5,
+              {
+                "role": "tooltip",
+                "type": "string",
+                "properties": {
+                  "html": true
+                },
+                "sourceColumn": 10
+              }
+            ],
+            "options": {
+              "vAxis": {
+                "title": "Number of Unique FABS Memberships"
+              },
+              "seriesType": "bars",
+              "series": {
+                "4": {
+                  "type": "line",
+                  "lineWidth": 3,
+                  "pointSize": 5
+                }
+              }
+            }
+          },
+          {
+            "subchartTitle": "Year-over-Year Change",
+            "query": "SELECT A, O, P, Q, R, S",
+            "options": {
+              "vAxis": {
+                "title": "YoY Change (%)",
+                "format": "#%",
+                "viewWindow": {
+                  "min": -1
+                }
+              },
+              "seriesType": "line",
+              "pointSize": 3,
+              "lineWidth": 1.5,
+              "series": {
+                "4": {
+                  "lineWidth": 3,
+                  "pointSize": 6
+                }
+              }
+            }
+          }
+        ],
+        "options": {
+          "seriesSelector": {
+            "allowMultiple": true,
+            "method": "setViewColumn"
+          },
+          "curveType": "none",
+          "hAxis": {
+            "title": "Academic Year (Aug - Sep next year)"
+          }
+        }
+      },
+      {
+        "title": "Percentage of Demographic Groups in FABS",
+        "subtitle": "Undergraduate students have remained the largest group of FABS in recent years, representing around two-thirds of all memberships.",
+        "gid": 337720664,
+        "query": "SELECT A, B, C, D, E, I, J, K , L",
+        "headers": 1,
+        "columns": [
+          0,
+          1,
+          {
+            "calc": "stringify",
+            "type": "string",
+            "role": "annotation",
+            "sourceColumn": 5
+          },
+          2,
+          3,
+          {
+            "calc": "stringify",
+            "type": "string",
+            "role": "annotation",
+            "sourceColumn": 7
+          },
+          4
+        ],
+        "chartType": "ColumnChart",
+        "options": {
+          "bar": {
+            "groupWidth": "40%"
+          },
+          "isStacked": "percent",
+          "vAxis": {
+            "format": "#.#%"
+          },
+          "hAxis": {
+            "title": "Academic Year (Aug - Sep next year)"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "isActive": true,
+    "id": "athletic-facilities-check-in",
+    "title": "Athletic Facilities Check-in",
+    "sheetId": "1iomqWbAsG75KBxiXPn76DBVGTes1PUnmB5tA0bgG5Jw",
+    "description": "This dataset visualizes the number of check-ins throughout different Athletic facilities on campus, such as the fitness center, women's-only gym, faculty pool, 50m pool, 400m track, and indoor track. This dataset can serve as a proxy for estimating the community's fitness level and physical activity. Temporal data visualizations can help the community avoid peak times in indoor spaces and spread exercises evenly throughout the day or the week.<br><br><small><b>Note: </b> We are working hard to collect 2023's data. Stay tuned!</small>",
+    "owners": [
+      "Department of Athletics"
+    ],
+    "contact": "nyuad.athletics@nyu.edu",
+    "rawDataTables": [
+      {
+        "gid": 1993454060
+      },
+      {
+        "gid": 948552227
+      },
+      {
+        "gid": 30903651
+      }
+    ],
+    "charts": [
+      {
+        "subcharts": [
+          {
+            "subchartTitle": "All time average (2020-2022)",
+            "subchartSubtitle": "As the typical workday draws to a close at around <b>5-6pm</b> for students, faculty, and staff, this time window is the busiest period for fitness activities. There is another relatively smaller peak in the morning from 8-9am; however, its magnitude doesn't usually surpass half of the afternoon rush's. For those who prefer a quieter workout, aim for <b>early-morning or midday</b> time slots where the occupancy rate is only a quarter of the busiest time.",
+            "query": "SELECT A, F, H, I",
+            "columns": [
+              0,
+              1,
+              {
+                "role": "interval",
+                "sourceColumn": 2
+              },
+              {
+                "role": "interval",
+                "sourceColumn": 3
+              }
+            ],
+            "options": {
+              "colors": "monochromatic2Colors",
+              "series": {
+                "0": {
+                  "type": "line",
+                  "lineWidth": 3
+                }
+              },
+              "intervals": {
+                "style": "area"
+              }
+            }
+          },
+          {
+            "subchartTitle": "By year",
+            "subchartSubtitle": "Due to COVID-19 restrictions, there was a limit on how many people could be in the same facilities during 2020-2022. Take the fitness center, for example, the cap was 15 people in 2020, which was gradually loosened to 25 people in 2022.",
+            "query": "SELECT A, B, C, D",
+            "options": {
+              "seriesType": "line"
+            }
+          }
+        ],
+        "title": "Average Number of Facilities Check-in Throughout the Day",
+        "gid": 947338007,
+        "headers": 1,
+        "chartType": "LineChart",
+        "options": {
+          "vAxis": {
+            "title": "Average Hourly Number of Facilities Check-in"
+          },
+          "hAxis": {
+            "title": "Hour of the Day",
+            "slantedText": true,
+            "slantedTextAngle": 30
+          }
+        }
+      },
+      {
+        "title": "Facilities Check-in Per Week Day, Normalized to the Max Value of Each Year",
+        "subtitle": "While the number of check-ins exhibits a clear diurnal variation, it remains more stable throughout the weekdays than on the weekends. The second day of the weekend and the first work day of the week have historically been off-peak days, where attendance is around 10-30% lower than the busiest day. Interestingly, this pattern still holds even after the UAE changed its weekend days on January 1, 2022 (from Fri-Sat to Sat-Sun). 2021's off-peak days are Sat and Sun, whereas 2022's off-peak days are Sun and Mon.",
+        "gid": 654076094,
+        "headers": 1,
+        "columns": [
+          0,
+          1,
+          {
+            "role": "tooltip",
+            "sourceColumn": 10
+          },
+          2,
+          {
+            "role": "tooltip",
+            "sourceColumn": 11
+          },
+          3,
+          {
+            "role": "tooltip",
+            "sourceColumn": 12
+          },
+          4,
+          {
+            "role": "tooltip",
+            "sourceColumn": 13
+          },
+          5,
+          {
+            "role": "tooltip",
+            "sourceColumn": 14
+          },
+          {
+            "role": "annotation",
+            "sourceColumn": 17
+          },
+          6,
+          {
+            "role": "tooltip",
+            "sourceColumn": 15
+          },
+          {
+            "role": "annotation",
+            "sourceColumn": 18
+          },
+          7,
+          {
+            "role": "tooltip",
+            "sourceColumn": 16
+          },
+          {
+            "role": "annotation",
+            "sourceColumn": 19
+          }
+        ],
+        "chartType": "ColumnChart",
+        "options": {
+          "annotations": {
+            "stem": {
+              "length": 30
+            }
+          },
+          "colors": "rainbow",
+          "vAxis": {
+            "title": "Relative Number of Check-in, Normalized to Day with the Highest Number of Each Year",
+            "format": "#.#%"
+          },
+          "hAxis": {
+            "title": "Year"
+          }
+        }
+      },
+      {
+        "title": "Total Monthly Facilities Check-in, Historical",
+        "subtitle": "This visualization shows how much fitness activity has increased since the introduction of FABS. This can be attributed to the gradual relaxation of COVID-19 restrictions and the increase in on-campus residents over the period of 2020-2022.",
+        "gid": 1045014031,
+        "headers": 1,
+        "columns": [
+          0,
+          1,
+          {
+            "role": "annotation",
+            "type": "string",
+            "sourceColumn": 2
+          },
+          3,
+          {
+            "role": "annotation",
+            "type": "string",
+            "sourceColumn": 4
+          },
+          5,
+          {
+            "role": "annotation",
+            "type": "string",
+            "sourceColumn": 6
+          }
+        ],
+        "options": {
+          "vAxis": {
+            "title": "Number of check-in per month"
+          },
+          "hAxis": {
+            "title": "Month of the Year"
+          }
+        },
+        "chartType": "ColumnChart"
+      },
+      {
+        "title": "Heat Map for the Average Hourly Number of Check-in, by Day of the Week",
+        "subtitle": "Explore them and see for yourself the differences between each year, each day of the week, and each hour.",
+        "publishedSheetId": "2PACX-1vTN1TnqxRYhVu1SXrxaQOa9S5sgpKalPyB5RpfknuBn4xwN_pafHtnF91Y96W09FNKkR271ObS2w9fC",
+        "subchartsPortrait": {
+          "gid": 1445127203,
+          "maxWidth": "350px",
+          "height": "620px",
+          "subcharts": [
+            {
+              "subchartTitle": "2022",
+              "range": "W2:AF21"
+            },
+            {
+              "subchartTitle": "2021",
+              "range": "L2:U21"
+            },
+            {
+              "subchartTitle": "2020",
+              "range": "A2:J21"
+            }
+          ]
+        },
+        "subchartsLandscape": {
+          "gid": 729452023,
+          "maxWidth": "580px",
+          "height": "350px",
+          "subcharts": [
+            {
+              "subchartTitle": "2022",
+              "range": "A28:S38"
+            },
+            {
+              "subchartTitle": "2021",
+              "range": "A15:S25"
+            },
+            {
+              "subchartTitle": "2020",
+              "range": "A2:S12"
+            }
+          ]
+        },
+        "chartType": "HeatMap"
+      },
+      {
+        "title": "Heat Map for the Total Monthly Number of Check-in, by Day of the Week",
+        "subtitle": "Explore them and see for yourself the differences between each year, each day of the week, and each month.",
+        "publishedSheetId": "2PACX-1vTN1TnqxRYhVu1SXrxaQOa9S5sgpKalPyB5RpfknuBn4xwN_pafHtnF91Y96W09FNKkR271ObS2w9fC",
+        "subchartsPortrait": {
+          "gid": 309021928,
+          "maxWidth": "350px",
+          "height": "500px",
+          "subcharts": [
+            {
+              "subchartTitle": "2022",
+              "range": "W2:AF17"
+            },
+            {
+              "subchartTitle": "2021",
+              "range": "L2:U17"
+            },
+            {
+              "subchartTitle": "2020",
+              "range": "A2:J17"
+            }
+          ]
+        },
+        "subchartsLandscape": {
+          "gid": 1248059258,
+          "maxWidth": "480px",
+          "height": "350px",
+          "subcharts": [
+            {
+              "subchartTitle": "2022",
+              "range": "A28:O38"
+            },
+            {
+              "subchartTitle": "2021",
+              "range": "A15:O25"
+            },
+            {
+              "subchartTitle": "2020",
+              "range": "A2:O12"
+            }
+          ]
+        },
+        "chartType": "HeatMap"
+      }
+    ]
+  },
+  {
+    "isActive": true,
+    "id": "food-waste",
+    "title": "Food Waste",
+    "sheetId": "1jQYr20b4c93RmIT4M014YY-qSC-n-qpNMysy6Oz3J6U",
+    "description": "This dataset visualizes food waste in the East Dining Hall (D2). The amount of food waste is measured by weighing the <i>plate-waste</i> (leftover food from the customers) with calibrated scales operated by the Dining service provider. Past data visualizations, such as the calendar-style monthly food waste counter at the entrance of D2, have brought about awareness among the community. Not being constrained by the crowded space of the Dining Hall, this visualization allows for a more detailed and nuanced break-down of the dataset into timeline, monthly, by-meal statistics.<br><br>The data provided here is the absolute amount of food waste. The number of transactions per meal or the number of customers who eat in D2 at each meal still need to be considered to shed light on the food waste variability over time. We are currently working with the service provider to get this data. In more detail, we aim to collect aggregate, anonymized numbers of transactions to calculate per-transaction waste.",
+    "owners": [
+      "NYUAD Dining"
+    ],
+    "contact": "nyuad.dining@nyu.edu",
+    "rawDataTables": [
+      {
+        "gid": 1952244844,
+        "query": "SELECT A, B, C, D, E, F"
+      }
+    ],
+    "charts": [
+      {
+        "title": "Mean Daily Food Waste (kg) by Week",
+        "headers": 1,
+        "chartType": "ComboChart",
+        "gid": 1409006115,
+        "subcharts": [
+          {
+            "subchartTitle": "Total (3 meals)",
+            "subchartSubtitle": "<b>Adjust the slider to zoom in.</b><br><br>From this visualization of average daily food waste by month, it is evident that the absolute amount of food waste is on the rise. This might be due to several factors:<ul><li>The loosening of COVID restrictions in 2022, which allowed more people to come back to campus</li><li>An absolute increase in the number of people eating at D2 as the student population increases year-by-year</li><li>Operational changes during the hand-over period between the catering providers (ADNH: prior to July 2022, RCS: after July 2022)</li></ul>",
+            "query": "SELECT C, N, O, P, T, U WHERE A IS NOT NULL",
+            "columns": [
+              0,
+              1,
+              {
+                "role": "interval",
+                "sourceColumn": 2
+              },
+              {
+                "role": "interval",
+                "sourceColumn": 3
+              },
+              {
+                "role": "tooltip",
+                "type": "string",
+                "properties": {
+                  "html": true
+                },
+                "sourceColumn": 4
+              },
+              {
+                "role": "annotation",
+                "type": "string",
+                "sourceColumn": 5
+              }
+            ],
+            "options": {
+              "colors": "monochromatic2Colors",
+              "seriesType": "line",
+              "series": {
+                "0": {
+                  "lineWidth": 3
+                }
+              }
+            },
+            "control": {
+              "controlType": "ChartRangeFilter",
+              "options": {
+                "filterColumnIndex": 0,
+                "ui": {
+                  "minRangeSize": 31536000000
+                }
+              }
+            }
+          },
+          {
+            "subchartTitle": "by Meal (Stacked)",
+            "subchartSubtitle": "When the data is broken down into the three constituent meals, the majority of food waste comes from lunch and dinner",
+            "query": "SELECT C, E, Q, H, R, K, S, U WHERE A IS NOT NULL",
+            "columns": [
+              0,
+              1,
+              {
+                "role": "tooltip",
+                "type": "string",
+                "properties": {
+                  "html": true
+                },
+                "sourceColumn": 2
+              },
+              3,
+              {
+                "role": "tooltip",
+                "type": "string",
+                "properties": {
+                  "html": true
+                },
+                "sourceColumn": 4
+              },
+              5,
+              {
+                "role": "tooltip",
+                "type": "string",
+                "properties": {
+                  "html": true
+                },
+                "sourceColumn": 6
+              },
+              {
+                "role": "annotation",
+                "type": "string",
+                "sourceColumn": 7
+              }
+            ],
+            "options": {
+              "seriesType": "area",
+              "isStacked": true
+            },
+            "control": {
+              "controlType": "ChartRangeFilter",
+              "options": {
+                "filterColumnIndex": 0,
+                "ui": {
+                  "minRangeSize": 31536000000
+                }
+              }
+            }
+          }
+        ],
+        "options": {
+          "hAxis": {
+            "title": "Month - Year (hover on the line chart to see week number)",
+            "gridlines": {
+              "units": {
+                "months": {
+                  "format": "MMM YYYY"
+                }
+              }
+            },
+            "minorGridlines": {
+              "count": 0
+            }
+          },
+          "vAxis": {
+            "title": "Food Waste (in Kilogram)"
+          },
+          "annotations": {
+            "stem": {
+              "length": 50
+            }
+          },
+          "intervals": {
+            "style": "area"
+          }
+        }
+      },
+      {
+        "title": "Historical Daily Food Waste (kg)",
+        "subtitle": "Interact with this calendar to explore the amount of daily food waste (desktop recommended). The unit of measurement is in kilograms of food waste.<br><br>On average, a full plate of food weighs around 0.5kg (150g for each portion of starch, protein, and vegetable), not including other side dishes. Thus, when you hover on each cell of the calendar, you can see how many full plates of food could have been saved that day (we simply multiplied the food waste kilogram figure by two).</b>",
+        "gid": 1952244844,
+        "headers": 1,
+        "chartType": "Calendar",
+        "query": "SELECT A, F, L, C, I, D, J, E, K",
+        "subcharts": [
+          {
+            "subchartTitle": "Total (3 meals)",
+            "columns": [
+              0,
+              1,
+              {
+                "role": "tooltip",
+                "type": "string",
+                "properties": {
+                  "html": true
+                },
+                "sourceColumn": 2
+              }
+            ],
+            "options": {
+              "colorAxis": {
+                "colors": "default"
+              }
+            }
+          },
+          {
+            "subchartTitle": "Breakfast",
+            "columns": [
+              0,
+              3,
+              {
+                "role": "tooltip",
+                "type": "string",
+                "properties": {
+                  "html": true
+                },
+                "sourceColumn": 4
+              }
+            ],
+            "options": {
+              "colorAxis": {
+                "colors": "matchingColor",
+                "colorIndex": 0
+              }
+            }
+          },
+          {
+            "subchartTitle": "Lunch",
+            "columns": [
+              0,
+              5,
+              {
+                "role": "tooltip",
+                "type": "string",
+                "properties": {
+                  "html": true
+                },
+                "sourceColumn": 6
+              }
+            ],
+            "options": {
+              "colorAxis": {
+                "colors": "matchingColor",
+                "colorIndex": 1
+              }
+            }
+          },
+          {
+            "subchartTitle": "Dinner",
+            "columns": [
+              0,
+              7,
+              {
+                "role": "tooltip",
+                "type": "string",
+                "properties": {
+                  "html": true
+                },
+                "sourceColumn": 8
+              }
+            ],
+            "options": {
+              "colorAxis": {
+                "colors": "matchingColor",
+                "colorIndex": 2
+              }
+            }
+          }
+        ]
+      },
+      {
+        "title": "Percentage of Food Waste By Meal",
+        "subtitle": "Lunch and dinner make up the majority of the food waste in D2. Each accounts for roughly two-fifths of the total waste for a given day.",
+        "gid": 387300968,
+        "headers": 1,
+        "chartType": "ColumnChart",
+        "columns": [
+          0,
+          4,
+          {
+            "calc": "stringify",
+            "type": "string",
+            "role": "annotation",
+            "sourceColumn": 4
+          },
+          5,
+          {
+            "calc": "stringify",
+            "type": "string",
+            "role": "annotation",
+            "sourceColumn": 5
+          },
+          6,
+          {
+            "calc": "stringify",
+            "type": "string",
+            "role": "annotation",
+            "sourceColumn": 6
+          }
+        ],
+        "options": {
+          "isStacked": true,
+          "vAxis": {
+            "title": "Percentage",
+            "format": "#.#%"
+          },
+          "hAxis": {
+            "title": "Quarter - Year"
+          }
+        }
+      },
+      {
+        "title": "Mean Food Waste (kg) by Day of the Week, with 1 Standard Deviation",
+        "subtitle": "Each year, the amount of food wastage is essentially constant among different days of the week",
+        "subcharts": [
+          {
+            "gid": 635067311,
+            "subchartTitle": "Total (3 meals)"
+          },
+          {
+            "gid": 1112965050,
+            "subchartTitle": "Breakfast"
+          },
+          {
+            "gid": 825083155,
+            "subchartTitle": "Lunch"
+          },
+          {
+            "gid": 1561192646,
+            "subchartTitle": "Dinner"
+          }
+        ],
+        "query": "SELECT A, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, B, C, D LIMIT 3",
+        "headers": 1,
+        "chartType": "ColumnChart",
+        "columns": [
+          0,
+          1,
+          {
+            "role": "interval",
+            "sourceColumn": 2
+          },
+          {
+            "role": "interval",
+            "sourceColumn": 3
+          },
+          4,
+          {
+            "role": "interval",
+            "sourceColumn": 5
+          },
+          {
+            "role": "interval",
+            "sourceColumn": 6
+          },
+          7,
+          {
+            "role": "interval",
+            "sourceColumn": 8
+          },
+          {
+            "role": "interval",
+            "sourceColumn": 9
+          },
+          10,
+          {
+            "role": "interval",
+            "sourceColumn": 11
+          },
+          {
+            "role": "interval",
+            "sourceColumn": 12
+          },
+          13,
+          {
+            "role": "interval",
+            "sourceColumn": 14
+          },
+          {
+            "role": "interval",
+            "sourceColumn": 15
+          },
+          16,
+          {
+            "role": "interval",
+            "sourceColumn": 17
+          },
+          {
+            "role": "interval",
+            "sourceColumn": 18
+          },
+          19,
+          {
+            "role": "interval",
+            "sourceColumn": 20
+          },
+          {
+            "role": "interval",
+            "sourceColumn": 21
+          }
+        ],
+        "options": {
+          "colors": "rainbow",
+          "bar": {
+            "groupWidth": "40%"
+          },
+          "intervals": {
+            "style": "bars"
+          },
+          "vAxis": {
+            "title": "Food Waste (in Kilogram)",
+            "maxValue": 100
+          },
+          "hAxis": {
+            "title": "Year",
+            "format": "",
+            "minorGridlines": {
+              "count": 0
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "isActive": true,
+    "id": "student-population",
+    "title": "Student Population",
+    "sheetId": "1xRuDQem0jvTil1MfXXI4sptWU37Q53VkTwVunqdnSY0",
+    "description": "This dataset provides a comprehensive view of the student population at NYUAD. It visualizes the number enrolled of students in each term since Fall 2010, including those visiting from other NYU campuses, those studying abroad, as well as the number of students registered for on-campus housing. It also presents data on student compositions based on education levels and countries of origin.<br><br>This dataset serves as a foundational for assessing the impact of the student population on various campus metrics such as the number of <a href='/project/athletics-fabs-membership'>Athletics FABS Memberships</a>, the number of <a href='/project/athletic-facilities-check-in'>Athletic Facilities Check-in</a>, and the amount of <a href='/project/food-waste'>Food Waste</a> in dining facilities. It is important to note, however, that the dataset estimates the theoretical maximum of on-campus students every semester and actual numbers may vary.<br><br>In a somewhat familiar vein, NYUAD also publish student enrollment data on its <a href='https://nyuad.nyu.edu/en/about/nyuad-at-a-glance/fast-facts.html'>Fast Fact</a> public page, albeit with less detailed historical statistics.",
+    "owners": [
+      "NYU Institutional Research",
+      "NYUAD Residential Education (ResEd)"
+    ],
+    "contact": "cities.nyuad@nyu.edu",
+    "rawDataTables": [
+      {
+        "gid": 1622588326,
+        "query": "SELECT A, B, C, D, E, F, G"
+      }
+    ],
+    "charts": [
+      {
+        "title": "Number of Students on Campus",
+        "subtitle": "The lines in this visualization illustrate the approximate number of <i>on-campus</i> students from two different approaches (data sources): <ul><li>Formulaic (Institutional Research):<br><div style='margin-left: 1.5rem; margin-top: 0.75rem'>Visiting students from other campuses (New York and Shanghai) <div style='margin-left: -1rem; margin-top: -0.5rem; margin-bottom: -0.5rem'>+</div>Enrolled NYUAD students (Undergraduate, Master's, and PhD)<div style='margin-left: -0.92rem; margin-top: -0.5rem; margin-bottom: -0.5rem'>-</div>NYUAD undergraduates studying abroad at <a href='https://www.nyu.edu/about/leadership-university-administration/office-of-the-president/office-of-the-provost/global-programs/OfficeOfGlobalPrograms.html'>NYU global sites</a><div style='margin-left: -1rem; margin-top: 0.5rem; padding-top: 0.5rem; border-top: solid 1px; display: table'><div style='margin-left: 1rem'><i>Maximum number of students on NYUAD campus&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i></div></div></div></li><li>Number of students registered for NYUAD on-campus housing (ResEd)</li></ul>These data sources offer estimates of <i>on-campus</i> student presence each semester, influenced by variables that cannot be accurately measured. These variables include weekend home visits of some Emirati students, off-campus residency of some PhD students, mid-semester leave-of-absence, and  COVID-19 housing disruptions affecting data reliability between Spring 2020 and Spring 2021. Nonetheless, under typical conditions, these figures effectively demonstrate the growth of the student population and a reduced on-campus presence in Spring semesters when more undergraduates study abroad. Despite disruptions from the COVID-19 pandemic, the chart shows a steady increase in on-campus student numbers, reflecting NYUAD's growth and resilience, especially post Fall 2022 when the campus community largely returned.",
+        "chartType": "ComboChart",
+        "gid": 1803261581,
+        "headers": 1,
+        "query": "SELECT B, H, I, P, F, G, O, C, L, D, M, E, N",
+        "columns": [
+          0,
+          1,
+          {
+            "role": "certainty",
+            "sourceColumn": 2
+          },
+          {
+            "role": "emphasis",
+            "sourceColumn": 2
+          },
+          {
+            "role": "tooltip",
+            "properties": {
+              "html": true
+            },
+            "sourceColumn": 3
+          },
+          4,
+          {
+            "role": "certainty",
+            "sourceColumn": 5
+          },
+          {
+            "role": "emphasis",
+            "sourceColumn": 2
+          },
+          {
+            "role": "tooltip",
+            "properties": {
+              "html": true
+            },
+            "sourceColumn": 6
+          },
+          7,
+          {
+            "role": "tooltip",
+            "properties": {
+              "html": true
+            },
+            "sourceColumn": 8
+          },
+          9,
+          {
+            "role": "tooltip",
+            "properties": {
+              "html": true
+            },
+            "sourceColumn": 10
+          },
+          11,
+          {
+            "role": "tooltip",
+            "properties": {
+              "html": true
+            },
+            "sourceColumn": 12
+          }
+        ],
+        "options": {
+          "colors": "studentPopulation",
+          "seriesType": "bars",
+          "isStacked": true,
+          "lineWidth": 1,
+          "bar": {
+            "groupWidth": "35%"
+          },
+          "series": {
+            "0": {
+              "type": "line"
+            },
+            "1": {
+              "type": "line"
+            }
+          },
+          "pointSize": 3.5,
+          "hAxis": {
+            "title": "Academic Term",
+            "format": "yyyy",
+            "minorGridlines": {
+              "count": 0
+            }
+          },
+          "vAxis": {
+            "title": "Number of Students",
+            "viewWindow": {
+              "min": -400
+            }
+          }
+        },
+        "control": {
+          "controlType": "ChartRangeFilter",
+          "options": {
+            "filterColumnIndex": 0,
+            "ui": {
+              "minRangeSize": 94608000000,
+              "chartOptions": {
+                "pointSize": 3,
+                "hAxis": {
+                  "format": "yyyy",
+                  "minorGridlines": {
+                    "count": 0
+                  }
+                },
+                "vAxis": {
+                  "viewWindow": {
+                    "min": 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "title": "Compositions of Students by Level of Education (Undergraduate, Master's, PhD), by Academic Year (AY)",
+        "gid": 1652589087,
+        "subtitle": "Charting NYUAD's expansion since Fall 2010, this visualization dissects the student population by level of education: Undergraduate, Master's, and Global PhD students. Overall, the majority of NYUAD students are undergraduates, representing around <b>95%</b> of the entire student body in recent years. Despite undergraduates maintaining consistent yearly growths of around 10-20% since Fall 2014, the figure is projected to stabilize at around <b>2,200 undergraduate students</b>, according to the university's target <sup>[1][2]</sup>. As of Fall 2022, the figure already exceeded the 2,100 mark. <br><br>Meanwhile, with a target of <b>600 graduate students</b> <sup>[2]</sup>, the number of Master's and Global PhD students is expected to continue its growth in the near future. The first Global PhD cohort in Fall 2013 and first Master's in Fall 2020 started out small, comprising only 8 and 7 students, respectively. However, by Fall 2022, the number of Global PhD students had grown over 10-time to almost 100 students, while the number of Master's students more than doubled. A gradual expansion in the number of graduate students highlights the institution's growing academic diversity and depth.",
+        "reference": "[1] \"Class of 2023: NYUAD's Tenth and Largest Incoming Class\". NYU Abu Dhabi, Oct 2019, <a href='https://nyuad.nyu.edu/en/news/latest-news/community-life/2019/october/class-of-2023.html'>https://nyuad.nyu.edu/en/news/latest-news/community-life/2019/october/class-of-2023.html</a><br>[2] \"NYU Abu Dhabi Backgrounder\". NYU Abu Dhabi, May 2021, <a href='https://nyuad.nyu.edu/content/dam/nyuad/news/documents/NYU Abu Dhabi 2021 Backgrounder - Updated May 2021.pdf'>https://nyuad.nyu.edu/content/dam/nyuad/news/documents/NYU Abu Dhabi 2021 Backgrounder - Updated May 2021.pdf</a>",
+        "headers": 1,
+        "chartType": "ComboChart",
+        "subcharts": [
+          {
+            "subchartTitle": "Absolute Numbers",
+            "query": "SELECT A, B, C, D",
+            "options": {
+              "vAxis": {
+                "title": "Number of Students"
+              },
+              "seriesType": "line",
+              "pointSize": 5,
+              "series": {
+                "3": {
+                  "type": "line"
+                }
+              }
+            }
+          },
+          {
+            "subchartTitle": "Percentage",
+            "query": "SELECT A, B, C, D",
+            "options": {
+              "seriesType": "bars",
+              "isStacked": "percent",
+              "vAxis": {
+                "format": "#.#%"
+              }
+            }
+          }
+        ],
+        "options": {
+          "seriesSelector": {
+            "allowMultiple": true,
+            "method": "setViewColumn"
+          }
+        }
+      },
+      {
+        "title": "Compositions of Undergraduate Student Population, by Academic Year (AY)",
+        "gid": 690526695,
+        "subtitle": "The following visualizations explore the composition of undergraduate students at NYUAD over the years. Although first-year students made up a significant percentage of undergraduate student body during the early years, it has stabilized to around <b>30%</b> of the undergraduate student population since AY16-17. This figure will likely approach 25% in the future as the undergraduate student population tops out at around 2,200 students, as mentioned above.",
+        "headers": 1,
+        "chartType": "ComboChart",
+        "subcharts": [
+          {
+            "subchartTitle": "Absolute Numbers",
+            "query": "SELECT A, B, C, D",
+            "options": {
+              "vAxis": {
+                "title": "Number of Students",
+                "format": "decimal"
+              },
+              "seriesType": "line",
+              "series": {
+                "0": {
+                  "type": "line"
+                }
+              }
+            }
+          },
+          {
+            "subchartTitle": "Percentage",
+            "query": "SELECT A, C, D",
+            "options": {
+              "vAxis": {
+                "title": "Percentage of Undergraduate Student Population",
+                "format": "#%"
+              },
+              "seriesType": "bars",
+              "isStacked": "percent"
+            }
+          }
+        ],
+        "options": {
+          "pointSize": 5,
+          "hAxis": {
+            "slantedText": true,
+            "slantedTextAngle": 45
+          }
+        }
+      },
+      {
+        "title": "Breakdown of Undergraduate Students' Citizenship (UAE and US)*",
+        "subtitle": "This visualization showcases a rising proportion of Emirati students in the makeup of the NYUAD undergraduate student body, from a mere <b>4%</b> in the very first year (Fall 2020) to a whopping <b>20%</b> in Fall 2022. As a result, in recent years, Emirati citizens make up the largest group of students by nationality, reflecting the NYUAD's deepening roots in the UAE. Conversely, the absolute number of US citizen undergraduates has plateaued over the last seven years (around 170 students), resulting in a relative decline in their representation within the expanding student population.<br><br><small><i>*Due to privacy policies, detailed reports on other nationalities apart from Emirati and US citizen is not reported.<br>**The source data on undergraduate students' citizenship is reported in percentage points rounded to the nearest whole numbers. Thus, the absolute number of students based on citizenship is estimated by multiplying the percentage with the total number of enrolled students.</i></small>",
+        "gid": 1856255581,
+        "chartType": "ComboChart",
+        "headers": 1,
+        "options": {
+          "colors": "monochromatic3Colors"
+        },
+        "subcharts": [
+          {
+            "subchartTitle": "Absolute Numbers **",
+            "query": "SELECT A, F, G, H",
+            "options": {
+              "vAxis": {
+                "title": "Number of Students"
+              },
+              "seriesType": "line",
+              "pointSize": 5
+            }
+          },
+          {
+            "subchartTitle": "Percentage",
+            "query": "SELECT A, B, C, D",
+            "options": {
+              "isStacked": true,
+              "seriesType": "bars",
+              "vAxis": {
+                "format": "#.#%"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "isActive": false,
+    "id": "noise-pollution",
+    "title": "Noise Pollution",
+    "sheetId": "",
+    "description": "",
+    "owners": [
+      "CITIES Research"
+    ],
+    "contact": "cities.nyuad@nyu.edu",
+    "rawDataTables": [
+      {}
+    ],
+    "charts": []
+  },
+  {
+    "isActive": false,
+    "id": "weather",
+    "title": "Weather Data at NYUAD",
+    "sheetId": "",
+    "description": "",
+    "owners": [
+      "CITIES Research"
+    ],
+    "contact": "cities.nyuad@nyu.edu",
+    "rawDataTables": [
+      {}
+    ],
+    "charts": []
+  }
+]
