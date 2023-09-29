@@ -21,6 +21,7 @@ import LoadingAnimation from './Components/LoadingAnimation';
 // Lazy load pages
 const Home = lazy(() => import('./Pages/Home/Home'));
 const Project = lazy(() => import('./Pages/Project/Project'));
+const Screen = lazy(() => import('./Pages/Screen/Screen'));
 
 // Create theme design tokens based on theme preference
 const getDesignTokens = (themePreference) => ({
@@ -72,35 +73,40 @@ function App() {
           }}
         >
           <DeviceOrientationNotification />
+          <Suspense fallback={<LoadingAnimation optionalText="Loading Dashboard" />}>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <Box>
+                    <Header setThemePreference={setThemePreference} />
+                    <Home themePreference={themePreference} title="CITIESair" />
+                    <Footer />
+                  </Box>
+                }
+              />
 
-          {useMemo(
-            () => (
-              <Header setThemePreference={setThemePreference} />
-            ),
-            []
-          )}
-          <Box flex={1} display="flex" width="100%">
-            <Suspense fallback={<LoadingAnimation optionalText="Loading Dashboard" />}>
-              <Routes>
-                <Route
-                  path="/"
-                  element={<Home themePreference={themePreference} title="CITIES Dashboard" />}
-                />
-                <Route
-                  path="/project/:id"
-                  element={<Project themePreference={themePreference} />}
-                />
-                <Route path="/404" element={<FourOhFour title="Page Not Found | CITIES Dashboard" />} />
-                <Route path="*" element={<Navigate replace to="/404" />} />
-              </Routes>
-            </Suspense>
-          </Box>
-          {useMemo(
-            () => (
-              <Footer />
-            ),
-            []
-          )}
+              <Route
+                path="/screen"
+                element={<Screen />}
+              />
+
+              <Route
+                path="/:id"
+                element={
+                  <Box>
+                    <Header setThemePreference={setThemePreference} />
+                    <Project themePreference={themePreference} />
+                    <Footer />
+                  </Box>
+                }
+              />
+
+              <Route path="/404" element={<FourOhFour title="Page Not Found | CITIESair" />} />
+              <Route path="*" element={<Navigate replace to="/404" />} />
+
+            </Routes>
+          </Suspense>
         </Box>
       </ThemeProvider>
     </BrowserRouter>

@@ -3,7 +3,6 @@ import parse from 'html-react-parser';
 
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
-import CommentIcon from '@mui/icons-material/Comment';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import NorthIcon from '@mui/icons-material/North';
 
@@ -79,16 +78,6 @@ export default function SpeedDialButton(props) {
         behavior={NavLinkBehavior.doNothing}
         label="Charts List:"
         icon={<BarChartIcon />}
-        sx={{ fontSize: '0.8rem' }}
-      />
-    );
-    menuItemsArray.push(
-      <MenuItemAsNavLink
-        behavior={NavLinkBehavior.scrollTo}
-        scrollToSectionID={jsonData.commentSection.id}
-        label={jsonData.commentSection.id}
-        icon={<CommentIcon />}
-        analyticsOriginID="speed-dial"
         sx={{ fontSize: '0.8rem' }}
       />
     );

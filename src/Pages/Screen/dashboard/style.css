@@ -1,0 +1,236 @@
+html,
+body {
+  margin: 0;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  font-family: "Open Sans", sans-serif;
+}
+
+body * {
+  color: #ccc;
+}
+
+#cities-logo {
+  position: absolute;
+  top: 0;
+  width: 5%;
+  margin: 2%;
+}
+
+.cities-logo-anchor-left {
+  left: 0;
+}
+
+.cities-logo-anchor-right {
+  right: 0;
+}
+
+h1,
+h2 {
+  font-weight: 600;
+  color: white;
+}
+
+#right-upper-wrapper * {
+  color: black !important;
+}
+
+h3,
+h4,
+h5,
+h6,
+text,
+ol,
+ul {
+  font-family: "Open Sans Condensed", sans-serif;
+  font-weight: 700;
+}
+
+h6 {
+  font-weight: 300;
+}
+
+h6>b {
+  font-weight: 700;
+}
+
+body>div {
+  width: 50vw;
+}
+
+.no-padding {
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin: 0;
+}
+
+#health-suggestions {
+  list-style-type: disclosure-closed;
+  text-align: start;
+  font-size: 1.5em;
+
+  margin-left: 2em;
+  padding-right: 2em;
+}
+
+li::marker {
+  padding-right: 2em;
+}
+
+#right-upper-wrapper {
+  height: 33%;
+}
+
+#right-upper-wrapper h2 {
+  margin-bottom: 0;
+}
+
+#historical-graph-wrapper {
+  height: 67%;
+}
+
+.location {
+  margin-bottom: 0;
+}
+
+.aqi-index {
+  font-size: 6em;
+  line-height: 0.8;
+}
+
+.aqi-category {
+  background-color: none !important;
+}
+
+.suggestion-flashing {
+  color: rgb(255, 100, 100);
+  animation: suggestion-flashing 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+}
+
+.sensor-status{
+  color: grey;
+}
+
+.arrow-down{
+  font-weight: 300;
+  transform: scaleX(2);
+}
+
+.weather *, .weather, .heat-index-wrapper, .heat-index-wrapper * {
+  color: rgb(200, 220, 255);
+}
+
+/* D3 graph */
+.line {
+  fill: none;
+  stroke: black;
+}
+
+#line-outdoor {
+  stroke-width: 4px;
+}
+
+#line-indoor {
+  stroke-width: 4px;
+  opacity: 0.4;
+}
+
+.category-block-graph {
+  opacity: 0.5;
+}
+
+.category-text-graph,
+.category-text-graph-sm {
+  filter: brightness(0.8) contrast(1.2) saturate(1.2);
+}
+
+/* .category-text-graph {
+  font-size: 2.75em;
+}
+.category-text-graph-sm {
+  font-size: 1.25em;
+} */
+
+.location-label-graph {
+  color: black;
+  font-size: 1.25em;
+  text-anchor: left;
+  alignment-baseline: middle;
+}
+
+.x-axis {
+  font-size: 1.25em;
+  opacity: 0.5;
+  font-weight: bold;
+}
+
+.x-axis text {
+  color: black;
+}
+
+.live-dot {
+  stroke: #666;
+  animation: pulse-dot 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+}
+
+.live-ring {
+  filter: brightness(0.5);
+  animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+}
+
+.live-ring[data-category="inactive"] {
+  visibility: hidden;
+}
+
+.tick line {
+  stroke-width: 2;
+  color: white;
+  shape-rendering: crispEdges;
+}
+
+#qr-code img{
+  width: 100% !important;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.2);
+  }
+
+  80%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pulse-dot {
+  0% {
+    transform: scale(0.5);
+  }
+
+  50% {
+    transform: scale(1);
+    filter: brightness(1.2) contrast(1.2) saturate(1.2);
+  }
+
+  100% {
+    transform: scale(0.5);
+  }
+}
+
+@keyframes suggestion-flashing {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
