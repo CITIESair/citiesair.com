@@ -9,7 +9,7 @@
       "timestamp": "2023-10-01T10:40:00+04:00",
       "temperature": 25,
       "rel_humidity": 50,
-      "pm2.5": 30
+      "pm2.5": 8.0
     },
     "historical": [
       {
