@@ -6,7 +6,7 @@
       "location_long": "Campus Center C2"
     },
     "current": {
-      "timestamp": "2023-10-01T10:40:00+04:00",
+      "timestamp": "2023-10-02T21:55:06+04:00",
       "temperature": 25,
       "rel_humidity": 50,
       "pm2.5": 8.0
@@ -309,7 +309,7 @@
       "location_long": "Outdoors NYUAD"
     },
     "current": {
-      "timestamp": "2023-10-02T15:50:00+04:00",
+      "timestamp": "2023-10-02T21:50:00+04:00",
       "temperature": 34,
       "rel_humidity": 60,
       "pm2.5": 30.0
