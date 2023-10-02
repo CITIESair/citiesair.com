@@ -1,7 +1,7 @@
 {
   "C2": {
     "sensor": {
-      "location_type": "indoors - generic",
+      "location_type": "indoors_generic",
       "location_short": "C2",
       "location_long": "Campus Center C2"
     },
