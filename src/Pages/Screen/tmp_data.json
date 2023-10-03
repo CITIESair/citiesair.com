@@ -186,7 +186,7 @@
     },
     "current": {
       "timestamp": "2023-10-03T12:30:00+04:00",
-      "temperature": 40,
+      "temperature": 30,
       "rel_humidity": 60,
       "pm2.5": 48.8
     },

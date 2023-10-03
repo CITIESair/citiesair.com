@@ -8,7 +8,8 @@ import ErrorIcon from '@mui/icons-material/Error';
 
 import CITIESlogoLinkToHome from '../../Components/Header/CITIESlogoLinkToHome';
 
-import { calculateHeatIndex, celsiusToFahrenheit, fahrenheitToCelsius, returnSensorStatus, SensorStatus, calculateSensorStatus, removeLastDirectoryFromURL } from './ScreenUtils';
+import { returnSensorStatus, SensorStatus, calculateSensorStatus, removeLastDirectoryFromURL } from './ScreenUtils';
+import { TemperatureUnits, getFormattedTemperature, calculateHeatIndex } from "./TemperatureUtils";
 
 import RecentHistoricalGraph from './RecentHistoricalGraph';
 
@@ -24,7 +25,7 @@ import QRCode from "react-qr-code";
 
 const Screen = () => {
   const [isLayoutReversed, setIsLayoutReversed] = useState();
-  const [isFahrenheit, setIsFahrenheit] = useState(false);
+  const [temperatureUnit, setTemperatureUnit] = useState(TemperatureUnits.celsius); // default
 
   const [data, setData] = useState({});
 
@@ -77,7 +78,7 @@ const Screen = () => {
     searchParamsKeys.forEach((value, key) => {
       switch (key) {
         case 'isFahrenheit':
-          setIsFahrenheit(Boolean(value ? value === "true" : true));
+          setTemperatureUnit(TemperatureUnits.fahrenheit);
           break;
         default:
           break;
@@ -110,33 +111,28 @@ const Screen = () => {
       const now = new Date();
       const currentTimestamp = new Date(sensorData.current?.timestamp);
       const lastSeenInHours = Math.round((now - currentTimestamp) / 1000 / 3600);
-      sensorData.current.lastSeenInHours = lastSeenInHours;
-      sensorData.current.sensor_status = calculateSensorStatus(lastSeenInHours);
-
-      // Calculate AQI from raw measurements
-      const aqiObject = convertToAQI(sensorData.current["pm2.5"]);
-      if (aqiObject) {
-        const aqiCategory = AQIdatabase[aqiObject.aqi_category_index];
-        sensorData.current.aqi = aqiObject.aqi;
-        sensorData.current.category = aqiCategory.category;
-
-        // Only add color and healthSuggestion if the sensor is active
-        if (sensorData.current.sensor_status === SensorStatus.active) {
-          sensorData.current = {
-            ...sensorData.current,
-            color: aqiCategory.lightThemeColor,
-            healthSuggestion: aqiCategory.healthSuggestions[sensorData.sensor?.location_type]
-          };
-        }
+      if (sensorData.current) {
+        sensorData.current.lastSeenInHours = lastSeenInHours;
+        sensorData.current.sensor_status = calculateSensorStatus(lastSeenInHours);
       }
 
-      // Calculate heat index, but only for outdoors and indoors_gym sensor
-      if (['outdoors', 'indoors_gym'].includes(sensorData.sensor.location_type)) {
-        sensorData.current.heatIndex = calculateHeatIndex({
-          tempF: celsiusToFahrenheit(sensorData.current.temperature),
-          rel_humidity: sensorData.current.rel_humidity,
-          shouldReturnFahrenheit: isFahrenheit
-        });
+      // Calculate AQI from raw measurements
+      if (sensorData.current?.["pm2.5"]) {
+        const aqiObject = convertToAQI(sensorData.current["pm2.5"]);
+        if (aqiObject) {
+          const aqiCategory = AQIdatabase[aqiObject.aqi_category_index];
+          sensorData.current.aqi = aqiObject.aqi;
+          sensorData.current.category = aqiCategory.category;
+
+          // Only add color and healthSuggestion if the sensor is active
+          if (sensorData.current.sensor_status === SensorStatus.active) {
+            sensorData.current = {
+              ...sensorData.current,
+              color: aqiCategory.lightThemeColor,
+              healthSuggestion: aqiCategory.healthSuggestions[sensorData.sensor?.location_type]
+            };
+          }
+        }
       }
     });
 
@@ -152,7 +148,7 @@ const Screen = () => {
     // Don't display comparison if outdoor air is good
     for (let i = 0; i < Object.values(data).length; i++) {
       const sensorData = Object.values(data)[i];
-      if (sensorData.sensor.location_type === "outdoors") {
+      if (sensorData.sensor?.location_type === "outdoors") {
         outdoorsAQI = sensorData.current.aqi;
         if (outdoorsAQI <= AQIdatabase[0].aqiUS.high) return null;
       }
@@ -264,32 +260,40 @@ const Screen = () => {
                 >
                   <Box sx={{ '& *': { color: sensorData.current?.color } }}>
                     <Typography variant="h4" data-category="" fontWeight="500" className='condensedFont'>
-                      {sensorData.sensor.location_long}
+                      {sensorData.sensor?.location_long || sensorData.sensor?.location_short || 'No Location Name'}
                     </Typography>
                     <Typography variant="h1" data-category="" fontWeight="500" lineHeight={0.8}>
-                      {sensorData.current?.aqi}
+                      {sensorData.current?.aqi || '--'}
                     </Typography>
                     <Typography variant="h4" data-category="" fontWeight="500" className='condensedFont'>
-                      {sensorData.current?.category}
+                      {sensorData.current?.category || '--'}
                     </Typography>
                   </Box>
 
-                  <Box sx={{ '& *': { color: '#c8dcff' } }} className='condensedFont'>
+                  <Box sx={{ '& *': { color: '#c8dcff' }, mt: 2 }} className='condensedFont'>
                     <Typography variant="h6">
                       <ThermostatIcon />
-                      {sensorData.current?.temperature}°{isFahrenheit === true ? 'F' : 'C'}
+                      {
+                        getFormattedTemperature({
+                          rawTemp: sensorData.current?.temperature || "--",
+                          currentUnit: TemperatureUnits.celsius,
+                          returnUnit: temperatureUnit
+                        })
+                      }
                       &nbsp;&nbsp;-&nbsp;
                       <WaterDropIcon sx={{ transform: 'scaleX(0.9)' }} />
-                      {sensorData.current?.rel_humidity}%
+                      {sensorData.current?.rel_humidity || "--"}%
                     </Typography>
                     {
-                      sensorData.current?.heatIndex &&
+                      // Show heat index for selected location types
+                      ['outdoors', 'indoors_gym'].includes(sensorData.sensor?.location_type) &&
                       <Typography variant="body1" sx={{ fontWeight: '300 !important' }}>
-                        Heat Index:
-                        &nbsp;
-                        {sensorData.current?.heatIndex.heatIndex}°{isFahrenheit === true ? 'F' : 'C'}
-                        &nbsp;-&nbsp;
-                        {sensorData.current?.heatIndex.category}
+                        {calculateHeatIndex({
+                          rawTemp: sensorData.current?.temperature,
+                          currentUnit: TemperatureUnits.celsius,
+                          rel_humidity: sensorData.current?.rel_humidity,
+                          returnUnit: temperatureUnit
+                        })}
                       </Typography>
                     }
                     {

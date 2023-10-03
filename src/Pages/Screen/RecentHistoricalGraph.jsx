@@ -50,7 +50,6 @@ const RecentHistoricalGraph = (props) => {
     if (!layerXaxisWrapper.current) return;
     if (!layerLines.current) return;
 
-    console.log('called')
     svg = d3.select(graphContainer.current);
     width = graphContainer.current.clientWidth;
     height = graphContainer.current.clientHeight - margin.top;
@@ -74,11 +73,12 @@ const RecentHistoricalGraph = (props) => {
       });
 
       // Calculate the maximum value AQI of this sensor
-      const max = d3.max(sensorData.historical, function (d) {
-        return d.aqi;
-      });
-
-      if (max > maxAQItoDisplay) maxAQItoDisplay = max;
+      if (sensorData.historical && Array.isArray(sensorData.historical)) {
+        const max = d3.max(sensorData.historical, function (d) {
+          return d.aqi;
+        });
+        if (max > maxAQItoDisplay) maxAQItoDisplay = max;
+      }
     });
 
     // Calculate the maximum AQI for the y-axis to display
@@ -179,17 +179,17 @@ const RecentHistoricalGraph = (props) => {
       // Append the line chart for this location
       d3.select(layerLines.current)
         .append("path")
-        .datum(sensorData.historical)
+        .datum(sensorData.historical || [])
         .attr("x", margin.left)
         .attr("class", "line")
         .attr("d", lineGenerator)
         .attr("fill", "transparent")
         .attr("stroke", "black")
         .attr("stroke-width", "5px")
-        .attr("opacity", sensorData.sensor.location_type === "outdoors" ? 1 : 0.5);
+        .attr("opacity", sensorData.sensor?.location_type === "outdoors" ? 1 : 0.5);
 
       // Append the circle marker at the end of this line chart to denote its liveness
-      const mostRecentData = sensorData.historical.length > 0 ? sensorData.historical[sensorData.historical.length - 1] : null;
+      const mostRecentData = sensorData.historical?.length > 0 ? sensorData.historical?.[sensorData.historical.length - 1] : null;
       if (mostRecentData) {
         const aqiObject = AQIdatabase[convertToAQI(mostRecentData["pm2.5"]).aqi_category_index];
         const markerWrapper = d3.select(layerLines.current)
@@ -203,12 +203,12 @@ const RecentHistoricalGraph = (props) => {
             ")"
           )
           .attr("fill",
-            sensorData.current.sensor_status === SensorStatus.active
+            sensorData.current?.sensor_status === SensorStatus.active
               ? aqiObject.lightThemeColor
               : CustomThemes.universal.palette.inactiveSensor)
           ;
 
-        sensorData.current.sensor_status === SensorStatus.active &&
+        sensorData.current?.sensor_status === SensorStatus.active &&
           markerWrapper.append("circle")
             .attr("cx", 0)
             .attr("cy", 0)
@@ -220,7 +220,7 @@ const RecentHistoricalGraph = (props) => {
           .attr("cx", 0)
           .attr("cy", 0)
           .attr("stroke", "#666")
-          .attr("class", sensorData.current.sensor_status === SensorStatus.active && "pulse-dot")
+          .attr("class", sensorData.current?.sensor_status === SensorStatus.active && "pulse-dot")
           .attr("r", dotRadius);
 
         markerWrapper.append("text")
@@ -230,7 +230,7 @@ const RecentHistoricalGraph = (props) => {
           .attr("alignment-baseline", "middle")
           .attr("text-anchor", "left")
           .attr("font-size", font_size / 3)
-          .text(capitalizeFirstCharacter(sensorData.sensor.location_short));
+          .text(capitalizeFirstCharacter(sensorData.sensor?.location_short));
       }
     });
 
