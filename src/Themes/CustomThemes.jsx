@@ -128,6 +128,7 @@ const CustomThemes = {
     palette: {
       NYUpurple: '#57068c',
       backgroundColorForNavLink: 'rgba(0, 0, 0, 0.2)',
+      inactiveSensor: '#bbbbbb'
     },
     typography: {
       fontFamily: "'IBM Plex Sans', sans-serif !important"

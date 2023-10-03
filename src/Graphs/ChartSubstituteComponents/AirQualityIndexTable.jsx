@@ -1,6 +1,9 @@
-import { Box, Table, TableBody, TableCell, TableHead, TableRow, Stack, styled } from '@mui/material';
+import { Box, Table, TableBody, TableCell, TableHead, TableRow, styled } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import parse from 'html-react-parser';
+import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
 import ChartComponent from '../ChartComponent';
+import AQIdatabase from '../../Utils/AirQualityIndexHelper';
 
 export const StyledTable = styled(Table)(({ theme, isTiny }) => ({
   minWidth: isTiny || 700,
@@ -20,59 +23,9 @@ export const StyledTable = styled(Table)(({ theme, isTiny }) => ({
 
 function AirQualityIndexTable(props) {
   const { isTiny, hideAQIDescription } = props;
-  // Air quality index legend
-  const theme = useTheme();
 
-  const airQualityIndexCategories = [
-    {
-      name: 'Good',
-      color: theme.palette.chart.optionsColors.aqi[0],
-      aqi: '0 - 50',
-      rawPM2_5: '0.0 - 12.0',
-      description: 'Air quality is satisfactory, and air pollution poses little or no risk',
-      suggestion: 'Enjoy the clean air'
-    },
-    {
-      name: 'Moderate',
-      color: theme.palette.chart.optionsColors.aqi[1],
-      aqi: '51 - 100',
-      rawPM2_5: '12.1 - 35.4',
-      description: 'Air quality is acceptable. However, there may be a risk for some people, particularly those who are unusually sensitive to air pollution',
-      suggestion: 'Individuals with respiratory issues might need to reduce prolonged outdoor exertion'
-    },
-    {
-      name: 'Unhealthy for Sensitive Groups',
-      color: theme.palette.chart.optionsColors.aqi[2],
-      aqi: '101 - 150',
-      rawPM2_5: '35.5 - 55.4',
-      description: 'Members of sensitive groups may experience health effects. The general public is less likely to be affected',
-      suggestion: 'Children and individuals with respiratory issues should limit outdoor exertion'
-    },
-    {
-      name: 'Unhealthy',
-      color: theme.palette.chart.optionsColors.aqi[3],
-      aqi: '151 - 200',
-      rawPM2_5: '55.5 - 150.4',
-      description: 'Some members of the general public may experience health effects; members of sensitive groups may experience more serious health effects',
-      suggestion: ''
-    },
-    {
-      name: 'Very Unhealthy',
-      color: theme.palette.chart.optionsColors.aqi[4],
-      aqi: '201 - 300',
-      rawPM2_5: '150.5 - 250.4',
-      description: 'Health alert: The risk of health effects is increased for everyone',
-      suggestion: ''
-    },
-    {
-      name: 'Hazardous',
-      color: theme.palette.chart.optionsColors.aqi[5],
-      aqi: '300 - 500',
-      rawPM2_5: '250.5 - 550.5',
-      description: 'Health warning of emergency conditions: everyone is more likely to be affected',
-      suggestion: ''
-    },
-  ];
+  const theme = useTheme();
+  const isLightMode = theme.palette.primary.main === theme.palette.primary.light;
 
   return (
     <>
@@ -98,23 +51,42 @@ function AirQualityIndexTable(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {airQualityIndexCategories.map((element) => (
+            {AQIdatabase.map((element) => (
               <TableRow
                 key={element.name}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCell sx={{ pr: 0 }}>
-                  <Box sx={{ width: '1em', height: '1em', backgroundColor: element.color }} />
+                  <Box sx={{ width: '1em', height: '1em', backgroundColor: isLightMode ? element.lightThemeColor : element.darkThemeColor }} />
                 </TableCell>
                 <TableCell sx={{ pl: 1 }}>
                   {element.name}
                 </TableCell>
-                <TableCell align="right">{element.aqi}</TableCell>
                 <TableCell align="right">
-                  {element.rawPM2_5}
+                  {element.aqiUS.low}
+                  &nbsp;
+                  -
+                  &nbsp;
+                  {element.aqiUS.high}
+                </TableCell>
+                <TableCell align="right">
+                  {element.rawPM2_5.low}
+                  &nbsp;
+                  -
+                  &nbsp;
+                  {element.rawPM2_5.high}
                 </TableCell>
                 {!hideAQIDescription && <TableCell align="left">{element.description}</TableCell>}
-                {!hideAQIDescription && <TableCell align="left">{element.suggestion}</TableCell>}
+                {!hideAQIDescription
+                  && (
+                    <TableCell align="left">
+                      {
+                        parse(element.healthSuggestions.outdoors, {
+                          replace: replacePlainHTMLWithMuiComponents,
+                        })
+                      }
+                    </TableCell>
+                  )}
               </TableRow>
             ))}
           </TableBody>
