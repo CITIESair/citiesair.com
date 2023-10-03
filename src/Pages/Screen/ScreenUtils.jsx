@@ -97,3 +97,11 @@ export function calculateHeatIndex({ tempF, rel_humidity, shouldReturnFahrenheit
 
 // ----- Misc
 export const capitalizeFirstCharacter = (inputString) => inputString.charAt(0).toUpperCase() + inputString.slice(1);
+
+export const removeLastDirectoryFromURL = (url) => {
+  const urlComponents = url.split('/');
+  // Remove the last component (directory)
+  urlComponents.pop();
+  // Reconstruct the URL with the last directory removed
+  return urlComponents.join('/') + '/';
+}

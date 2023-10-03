@@ -8,7 +8,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 
 import CITIESlogoLinkToHome from '../../Components/Header/CITIESlogoLinkToHome';
 
-import { calculateHeatIndex, celsiusToFahrenheit, fahrenheitToCelsius, returnSensorStatus, SensorStatus, calculateSensorStatus } from './ScreenUtils';
+import { calculateHeatIndex, celsiusToFahrenheit, fahrenheitToCelsius, returnSensorStatus, SensorStatus, calculateSensorStatus, removeLastDirectoryFromURL } from './ScreenUtils';
 
 import RecentHistoricalGraph from './RecentHistoricalGraph';
 
@@ -19,6 +19,8 @@ import convertToAQI from '../../Utils/AirQualityIndexCalculator';
 import CustomThemes from '../../Themes/CustomThemes';
 
 import tmpData from './tmp_data.json';
+
+import QRCode from "react-qr-code";
 
 const Screen = () => {
   const [isLayoutReversed, setIsLayoutReversed] = useState();
@@ -366,31 +368,39 @@ const Screen = () => {
         >
           <CITIESlogoLinkToHome />
         </Box>
-        <Stack
-          direction="column"
-          justifyContent="space-between"
+        <Grid
+          container
+          alignContent="space-between"
+          justifyContent="center"
           height="100%"
           textAlign="center"
         >
-          <Box sx={{ p: 2 }}>
+          <Grid item xs={12} sx={{ pt: 3, px: 2 }}>
             <Typography variant="h4" fontWeight="500" sx={{ color: 'black' }} className='condensedFont'>
               SCAN FOR HISTORICAL DATA
             </Typography>
-
-            <div id="qr-wrapper" className="row d-flex justify-content-center align-items-center">
-              <div id="qr-code" className="col-2 p-0">
-                {/* You can add QR code rendering here */}
-              </div>
-            </div>
-          </Box>
-          <Box
+          </Grid>
+          <Grid item xs={2}>
+            <Box height="auto" width="100%">
+              <QRCode
+                size={256}
+                style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                value={
+                  `${removeLastDirectoryFromURL(document.location.href)}?screen`
+                } viewBox={`0 0 256 256`}
+              />
+            </Box>
+          </Grid>
+          <Grid
+            item
+            xs={12}
             height="70%"
             className='condensedFont'
             sx={{ '& *': { fontWeight: '600 !important' } }}
           >
             <RecentHistoricalGraph data={data} />
-          </Box>
-        </Stack>
+          </Grid>
+        </Grid>
 
       </Grid>
     </Grid >
