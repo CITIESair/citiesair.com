@@ -189,7 +189,7 @@ const RecentHistoricalGraph = (props) => {
         .attr("opacity", sensorData.sensor?.location_type === "outdoors" ? 1 : 0.5);
 
       // Append the circle marker at the end of this line chart to denote its liveness
-      const mostRecentData = sensorData.historical?.length > 0 ? sensorData.historical?.[sensorData.historical.length - 1] : null;
+      const mostRecentData = sensorData.historical?.length > 0 ? sensorData.historical?.[0] : null;
       if (mostRecentData) {
         const aqiObject = AQIdatabase[convertToAQI(mostRecentData["pm2.5"]).aqi_category_index];
         const markerWrapper = d3.select(layerLines.current)

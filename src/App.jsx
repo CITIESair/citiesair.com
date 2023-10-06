@@ -87,11 +87,6 @@ function App() {
               />
 
               <Route
-                path="/screen"
-                element={<Screen />}
-              />
-
-              <Route
                 path="/:id"
                 element={
                   <Box>
@@ -100,6 +95,11 @@ function App() {
                     <Footer />
                   </Box>
                 }
+              />
+
+              <Route
+                path="/:id/screen"
+                element={<Screen />}
               />
 
               <Route path="/404" element={<FourOhFour title="Page Not Found | CITIESair" />} />

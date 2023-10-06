@@ -19,9 +19,9 @@ import convertToAQI from '../../Utils/AirQualityIndexCalculator';
 
 import CustomThemes from '../../Themes/CustomThemes';
 
-import tmpData from './tmp_data.json';
-
 import QRCode from "react-qr-code";
+
+import parse from 'html-react-parser';
 
 const Screen = () => {
   const [isLayoutReversed, setIsLayoutReversed] = useState();
@@ -86,58 +86,54 @@ const Screen = () => {
     });
   }, []);
 
-  const urls = [
-    'https://raw.githubusercontent.com/CITIES-air/cities-air.github.io/main/src/Pages/Screen/tmp_data.json'
-  ];
+  const url =
+    'https://api.citiesair.com/screen/nyuad';
+
   // Fetch air quality data from database
   useEffect(() => {
-    const fetchDataForAllUrls = async () => {
-      const requests = urls.map((url) => fetchDataFromURL(url, 'json'));
-      const results = await Promise.all(requests);
-
-      // Filter out null results (failed fetches)
-      const validData = results.filter((data) => data !== null);
-
-      let data = validData[0];
-
-      setData(data);
-      console.log(data)
-    };
-
-    // fetchDataForAllUrls();
-
-    Object.entries(tmpData).map(([key, sensorData]) => {
-      // Calculate if the sensor is currently active or not
-      const now = new Date();
-      const currentTimestamp = new Date(sensorData.current?.timestamp);
-      const lastSeenInHours = Math.round((now - currentTimestamp) / 1000 / 3600);
-      if (sensorData.current) {
-        sensorData.current.lastSeenInHours = lastSeenInHours;
-        sensorData.current.sensor_status = calculateSensorStatus(lastSeenInHours);
-      }
-
-      // Calculate AQI from raw measurements
-      if (sensorData.current?.["pm2.5"]) {
-        const aqiObject = convertToAQI(sensorData.current["pm2.5"]);
-        if (aqiObject) {
-          const aqiCategory = AQIdatabase[aqiObject.aqi_category_index];
-          sensorData.current.aqi = aqiObject.aqi;
-          sensorData.current.category = aqiCategory.category;
-
-          // Only add color and healthSuggestion if the sensor is active
-          if (sensorData.current.sensor_status === SensorStatus.active) {
-            sensorData.current = {
-              ...sensorData.current,
-              color: aqiCategory.lightThemeColor,
-              healthSuggestion: aqiCategory.healthSuggestions[sensorData.sensor?.location_type]
-            };
+    const fetchScreenData = () => {
+      fetchDataFromURL(url, 'json').then((data => {
+        Object.entries(data).map(([key, sensorData]) => {
+          // Calculate if the sensor is currently active or not
+          const now = new Date();
+          const currentTimestamp = new Date(sensorData.current?.timestamp);
+          const lastSeenInHours = Math.round((now - currentTimestamp) / 1000 / 3600);
+          if (sensorData.current) {
+            sensorData.current.lastSeenInHours = lastSeenInHours;
+            sensorData.current.sensor_status = calculateSensorStatus(lastSeenInHours);
           }
-        }
-      }
-    });
 
-    setData(tmpData);
+          // Calculate AQI from raw measurements
+          if (sensorData.current?.["pm2.5"]) {
+            const aqiObject = convertToAQI(sensorData.current["pm2.5"]);
+            if (aqiObject) {
+              const aqiCategory = AQIdatabase[aqiObject.aqi_category_index];
+              sensorData.current.aqi = aqiObject.aqi;
+              sensorData.current.category = aqiCategory.category;
 
+              // Only add color and healthSuggestion if the sensor is active
+              if (sensorData.current.sensor_status === SensorStatus.active) {
+                sensorData.current = {
+                  ...sensorData.current,
+                  color: aqiCategory.lightThemeColor,
+                  healthSuggestion: parse(aqiCategory.healthSuggestions[sensorData.sensor?.location_type])
+                };
+              }
+            }
+          }
+        });
+        setData(data);
+      }))
+    }
+    fetchScreenData();
+
+    // Create an interval that fetch new data every 5 minute
+    const fetchInterval = 5 * 60 * 1000; // 5min
+    const intervalId = setInterval(fetchScreenData, fetchInterval);
+    // Clean up the interval when the component unmounts
+    return () => {
+      clearInterval(intervalId);
+    };
   }, []);
 
   const AirQualityComparison = () => {
@@ -282,7 +278,7 @@ const Screen = () => {
                       }
                       &nbsp;&nbsp;-&nbsp;
                       <WaterDropIcon sx={{ transform: 'scaleX(0.9)' }} />
-                      {sensorData.current?.rel_humidity || "--"}%
+                      {sensorData.current?.rel_humidity ? Math.round(sensorData.current?.rel_humidity) : "--"}%
                     </Typography>
                     {
                       // Show heat index for selected location types
@@ -390,7 +386,7 @@ const Screen = () => {
                 size={256}
                 style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                 value={
-                  `${removeLastDirectoryFromURL(document.location.href)}?screen`
+                  `${removeLastDirectoryFromURL(document.location.href)}?source=screen`
                 } viewBox={`0 0 256 256`}
               />
             </Box>

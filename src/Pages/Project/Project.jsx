@@ -7,7 +7,7 @@ import { TabContext } from '../../ContextProviders/TabContext';
 import parse from 'html-react-parser';
 import ChartComponent from '../../Graphs/ChartComponent';
 import UppercaseTitle from '../../Components/UppercaseTitle';
-import { Box, Typography, Container, Divider, Chip, Grid, Tooltip } from '@mui/material';
+import { Box, Typography, Container, Divider, Chip, Grid, Tooltip, Stack } from '@mui/material';
 
 import { useTheme } from '@mui/material/styles';
 
@@ -28,6 +28,7 @@ import PlaceIcon from '@mui/icons-material/Place';
 
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
 import DatasetDownloadDialog from '../../Components/DatasetDownload/DatasetDownloadDialog';
+import ScreenDialog from '../../Components/ScreenDialog';
 
 import { scrollToSection } from '../../Components/Header/MenuItemAsNavLink';
 import FullWidthBox from '../../Components/FullWidthBox';
@@ -166,7 +167,11 @@ const Project = ({ themePreference }) => {
                 })}
               </Typography>
 
-              <DatasetDownloadDialog project={project} />
+              <Stack direction="row" spacing={2}>
+                <ScreenDialog />
+
+                <DatasetDownloadDialog project={project} />
+              </Stack>
             </Container>
           </FullWidthBox>
 
