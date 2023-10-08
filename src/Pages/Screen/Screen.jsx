@@ -87,7 +87,7 @@ const Screen = () => {
   }, []);
 
   const url =
-    'https://api.citiesair.com/screen/nyuad';
+    'https://api.citiesair.com/screen/nyuad/c2';
 
   // Fetch air quality data from database
   useEffect(() => {

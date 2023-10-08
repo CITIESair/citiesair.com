@@ -88,7 +88,7 @@ const Project = ({ themePreference }) => {
     <>
       {loading && (
         <Box width="100%">
-          <AirQualityIndexLegendQuickGlance />
+          <AirQualityIndexLegendQuickGlance themePreference={themePreference} />
 
           <FullWidthBox backgroundColor='customAlternateBackground'>
             <Container sx={{ pt: 5, pb: 3 }}>

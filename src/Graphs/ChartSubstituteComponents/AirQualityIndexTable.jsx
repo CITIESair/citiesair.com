@@ -1,9 +1,9 @@
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, styled } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
 import ChartComponent from '../ChartComponent';
 import AQIdatabase from '../../Utils/AirQualityIndexHelper';
+import ThemePreferences from '../../Themes/ThemePreferences';
 
 export const StyledTable = styled(Table)(({ theme, isTiny }) => ({
   minWidth: isTiny || 700,
@@ -22,10 +22,7 @@ export const StyledTable = styled(Table)(({ theme, isTiny }) => ({
 }));
 
 function AirQualityIndexTable(props) {
-  const { isTiny, hideAQIDescription } = props;
-
-  const theme = useTheme();
-  const isLightMode = theme.palette.primary.main === theme.palette.primary.light;
+  const { isTiny, hideAQIDescription, themePreference } = props;
 
   return (
     <>
@@ -57,7 +54,7 @@ function AirQualityIndexTable(props) {
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCell sx={{ pr: 0 }}>
-                  <Box sx={{ width: '1em', height: '1em', backgroundColor: isLightMode ? element.lightThemeColor : element.darkThemeColor }} />
+                  <Box sx={{ width: '1em', height: '1em', backgroundColor: themePreference === ThemePreferences.light ? element.lightThemeColor : element.darkThemeColor }} />
                 </TableCell>
                 <TableCell sx={{ pl: 1 }}>
                   {element.name}

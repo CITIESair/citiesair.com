@@ -10,6 +10,7 @@ import * as Tracking from '../Utils/Tracking';
 import AirQualityIndexTable from '../Graphs/ChartSubstituteComponents/AirQualityIndexTable';
 
 export default function AirQualityIndexLegendQuickGlance(props) {
+  const { themePreference } = props;
   // Mechanism for opening and closing the Quick Glance on hover
   const [anchorEl, setAnchorEl] = useState(null);
   const handlePopperOpen = (event) => {
@@ -20,9 +21,6 @@ export default function AirQualityIndexLegendQuickGlance(props) {
     setAnchorEl(null);
   };
   const open = Boolean(anchorEl);
-
-  // Air quality index legend
-  const theme = useTheme();
 
   return (
     <>
@@ -66,7 +64,7 @@ export default function AirQualityIndexLegendQuickGlance(props) {
               <Typography sx={{ mx: 2, mt: 1 }} color="text.disabled" variant="body1" fontWeight={500}>
                 AQI at quick glance
               </Typography>
-              <AirQualityIndexTable isTiny hideAQIDescription />
+              <AirQualityIndexTable isTiny hideAQIDescription themePreference />
             </Paper>
           </Fade>
         )}
