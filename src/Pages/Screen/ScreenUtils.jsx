@@ -1,3 +1,26 @@
+// ---------- Calculate time difference and return appropriate format
+export const getFormattedElapsedTimeFromNow = (dateString) => {
+  const inputDate = new Date(dateString);
+  const currentDate = new Date();
+  const timeDifference = currentDate - inputDate;
+
+  // Calculate time differences in seconds, minutes, hours, and days
+  const seconds = Math.floor(timeDifference / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  // Determine the most prominent time unit
+  if (days > 0) {
+    return `${days}d`;
+  } else if (hours > 0) {
+    return `${hours}h`;
+  } else if (minutes > 0) {
+    return `${minutes}m`;
+  } else {
+    return `${seconds}s`;
+  }
+}
 
 // ---------- Sensor status
 export const SensorStatus = {

@@ -23,8 +23,6 @@ function convertToAQI(val) {
       }
     }
   };
-
 }
-
 
 export default convertToAQI;

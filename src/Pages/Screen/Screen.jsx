@@ -93,7 +93,7 @@ const Screen = () => {
   useEffect(() => {
     const fetchScreenData = () => {
       fetchDataFromURL(url, 'json').then((data => {
-        Object.entries(data).map(([key, sensorData]) => {
+        Object.entries(data).map(([_, sensorData]) => {
           // Calculate if the sensor is currently active or not
           const now = new Date();
           const currentTimestamp = new Date(sensorData.current?.timestamp);
