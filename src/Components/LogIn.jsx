@@ -10,7 +10,20 @@ import DataObjectIcon from '@mui/icons-material/DataObject';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import HelpIcon from '@mui/icons-material/Help';
 
+async function loginUser(credentials) {
+  return fetch('https://api.citiesair.com/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(credentials)
+  })
+    .then(data => data)
+}
+
 export default function LogIn() {
+  const [username, setUserName] = useState();
+  const [password, setPassword] = useState();
 
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -19,13 +32,11 @@ export default function LogIn() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+
+    const response = await loginUser({ username, password });
+    console.log(response)
   };
 
   return (
@@ -33,9 +44,7 @@ export default function LogIn() {
       <Button
         onClick={() => {
           handleOpen();
-          Tracking.sendEventAnalytics(Tracking.Events.rawDatasetButtonClicked, {
-            project_id: project.id
-          });
+
         }}
         variant="contained"
       >
@@ -78,7 +87,9 @@ export default function LogIn() {
               id="schoolID"
               label="School ID"
               name="schoolID"
+              autoComplete="username"
               autoFocus
+              onChange={e => setUserName(e.target.value)}
             />
             <TextField
               margin="normal"
@@ -89,6 +100,7 @@ export default function LogIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={e => setPassword(e.target.value)}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}

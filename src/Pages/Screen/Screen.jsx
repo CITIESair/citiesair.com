@@ -1,6 +1,7 @@
 // disable eslint for this file
 /* eslint-disable */
 import { useState, useEffect } from 'react';
+
 import { Box, Grid, Typography, Stack, List, ListItem, ListItemText } from '@mui/material';
 import ThermostatIcon from '@mui/icons-material/Thermostat';
 import WaterDropIcon from '@mui/icons-material/WaterDrop';
@@ -86,44 +87,54 @@ const Screen = () => {
     });
   }, []);
 
-  const url =
-    'https://api.citiesair.com/screen/nyuad/c2';
-
   // Fetch air quality data from database
   useEffect(() => {
+    const currentUrl = window.location.href;
+    const regex = /\/screen\/(.+)/;
+    const match = currentUrl.match(regex);
+
+    let apiUrl;
+    if (match && match.length > 1) {
+      apiUrl = `https://api.citiesair.com/screen/${match[1]}`
+    }
+
     const fetchScreenData = () => {
-      fetchDataFromURL(url, 'json').then((data => {
-        Object.entries(data).map(([_, sensorData]) => {
-          // Calculate if the sensor is currently active or not
-          const now = new Date();
-          const currentTimestamp = new Date(sensorData.current?.timestamp);
-          const lastSeenInHours = Math.round((now - currentTimestamp) / 1000 / 3600);
-          if (sensorData.current) {
-            sensorData.current.lastSeenInHours = lastSeenInHours;
-            sensorData.current.sensor_status = calculateSensorStatus(lastSeenInHours);
-          }
+      fetchDataFromURL(apiUrl, 'json')
+        .then((data => {
+          Object.entries(data).map(([_, sensorData]) => {
+            // Calculate if the sensor is currently active or not
+            const now = new Date();
+            const currentTimestamp = new Date(sensorData.current?.timestamp);
+            const lastSeenInHours = Math.round((now - currentTimestamp) / 1000 / 3600);
+            if (sensorData.current) {
+              sensorData.current.lastSeenInHours = lastSeenInHours;
+              sensorData.current.sensor_status = calculateSensorStatus(lastSeenInHours);
+            }
 
-          // Calculate AQI from raw measurements
-          if (sensorData.current?.["pm2.5"]) {
-            const aqiObject = convertToAQI(sensorData.current["pm2.5"]);
-            if (aqiObject) {
-              const aqiCategory = AQIdatabase[aqiObject.aqi_category_index];
-              sensorData.current.aqi = aqiObject.aqi;
-              sensorData.current.category = aqiCategory.category;
+            // Calculate AQI from raw measurements
+            if (sensorData.current?.["pm2.5"]) {
+              const aqiObject = convertToAQI(sensorData.current["pm2.5"]);
+              if (aqiObject) {
+                const aqiCategory = AQIdatabase[aqiObject.aqi_category_index];
+                sensorData.current.aqi = aqiObject.aqi;
+                sensorData.current.category = aqiCategory.category;
 
-              // Only add color and healthSuggestion if the sensor is active
-              if (sensorData.current.sensor_status === SensorStatus.active) {
-                sensorData.current = {
-                  ...sensorData.current,
-                  color: aqiCategory.lightThemeColor,
-                  healthSuggestion: parse(aqiCategory.healthSuggestions[sensorData.sensor?.location_type])
-                };
+                // Only add color and healthSuggestion if the sensor is active
+                if (sensorData.current.sensor_status === SensorStatus.active) {
+                  sensorData.current = {
+                    ...sensorData.current,
+                    color: aqiCategory.lightThemeColor,
+                    healthSuggestion: parse(aqiCategory.healthSuggestions[sensorData.sensor?.location_type])
+                  };
+                }
               }
             }
-          }
+          });
+          setData(data);
+        }))
+        .catch((error) => {
+          console.log(error);
         });
-        setData(data);
-      }))
     }
     fetchScreenData();
 

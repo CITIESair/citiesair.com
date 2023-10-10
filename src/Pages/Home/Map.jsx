@@ -21,6 +21,15 @@ import convertToAQI from '../../Utils/AirQualityIndexCalculator';
 
 import ThermostatIcon from '@mui/icons-material/Thermostat';
 import WaterDropIcon from '@mui/icons-material/WaterDrop';
+import ThemePreferences from '../../Themes/ThemePreferences';
+
+import { styled } from '@mui/material/styles';
+
+const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
+    '& .leaflet-popup-tip-container': {
+        display: 'none !important'
+    }
+}));
 
 function MapPlaceholder() {
     return (
@@ -35,7 +44,7 @@ const Map = ({ themePreference }) => {
     const [mapData, setMapData] = useState({});
     const theme = useTheme();
 
-    const url = 'https://raw.githubusercontent.com/CITIES-air/cities-air.github.io/main/src/Pages/Home/tmp_data.json';
+    const url = 'https://api.citiesair.com/map_public_outdoors_stations';
 
     useEffect(() => {
         fetchDataFromURL(url, 'json').then((data => {
@@ -65,7 +74,7 @@ const Map = ({ themePreference }) => {
                 // Create the marker icon on the map
                 location.markerIcon = new L.DivIcon({
                     className: 'aqi-marker-icon',
-                    html: `<div style="width: 2.25rem; height: 2.25rem; background-color: ${location.current.color}; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1rem; color: white;">${location.current.aqi || '--'}</div>`
+                    html: `<div onmouseover="this.style.opacity=1;" onmouseleave="this.style.opacity=0.75;" style="width: 2.25rem; height: 2.25rem; background-color: ${location.current.color}; border-radius: 50%; border: solid 2px; display: flex; justify-content: center; align-items: center; font-size: 1rem; font-weight: 500; color: ${themePreference === ThemePreferences.light ? 'black' : 'white'}; opacity: 0.75; :hover: {opacity: 1}">${location.current.aqi || '--'}</div>`
 
                 });
             });
@@ -106,7 +115,7 @@ const Map = ({ themePreference }) => {
                             position={[location.sensor?.coordinates?.latitude, location.sensor?.coordinates?.longitude]}
                             icon={location.markerIcon}
                         >
-                            <Popup>
+                            <StyledLeafletPopup>
                                 <Stack direction="row" spacing={3}>
                                     <Link
                                         variant="body1"
@@ -159,7 +168,7 @@ const Map = ({ themePreference }) => {
                                             returnUnit: TemperatureUnits.celsius
                                         })}
                                     &nbsp;&nbsp;-&nbsp;&nbsp;
-                                    <WaterDropIcon sx={{ fontSize: '1rem', verticalAlign: 'sub' }} />{location.current?.rel_humidity || '--'}%
+                                    {location.current?.rel_humidity ? Math.round(location.current?.rel_humidity) : "--"}%
                                 </Typography>
                                 <Typography variant="caption" sx={{ display: 'block', fontWeight: 500 }}>
 
@@ -172,7 +181,7 @@ const Map = ({ themePreference }) => {
                                             : '--'}
                                     </Typography>
                                 </Box>
-                            </Popup>
+                            </StyledLeafletPopup>
                         </Marker>
 
                     ))

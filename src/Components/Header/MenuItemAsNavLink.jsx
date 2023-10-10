@@ -1,6 +1,6 @@
 import { styled } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
-import { MenuItem, Box } from '@mui/material';
+import { MenuItem, Box, Button } from '@mui/material';
 
 import NavLinkBehavior from './NavLinkBehavior';
 
@@ -67,10 +67,34 @@ export default function MenuItemAsNavLink(props) {
           }}
         >
           {icon && <StyledIcon>{icon}</StyledIcon>}
-          {newPageLabel}
+          {label || newPageLabel}
         </StyledMenuItem>
       );
     }
+
+    case NavLinkBehavior.toExternalPage:
+      return (
+        <StyledMenuItem
+          sx={{ ...sx, textTransform: 'none' }}
+          component={Button}
+          href={to}
+          target='blank'
+          rel="noopener noreferrer"
+          onClick={() => {
+            Tracking.sendEventAnalytics(
+              Tracking.Events.internalNavigation,
+              {
+                destination_id: to,
+                destination_label: label,
+                origin_id: analyticsOriginID
+              }
+            );
+          }}
+        >
+          {icon && <StyledIcon>{icon}</StyledIcon>}
+          {label}
+        </StyledMenuItem>
+      );
 
     case NavLinkBehavior.scrollTo:
       return (

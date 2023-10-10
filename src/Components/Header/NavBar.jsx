@@ -2,11 +2,10 @@ import { styled } from '@mui/material/styles';
 import { MenuList } from '@mui/material';
 
 import HomeIcon from '@mui/icons-material/Home';
-import EmailIcon from '@mui/icons-material/Email';
-import InfoIcon from '@mui/icons-material/Info';
-import jsonData from '../../section_data.json';
+
 import MenuItemAsNavLink from './MenuItemAsNavLink';
 import NavLinkBehavior from './NavLinkBehavior';
+import BarChartIcon from '@mui/icons-material/BarChart';
 
 const StyledMenuList = styled(MenuList)(({ theme }) => ({
   // Make these items display on the same line on large display
@@ -24,16 +23,26 @@ export default function NavBar(props) {
   return (
     <StyledMenuList sx={{ height: '100%', p: 0 }}>
       {
-        // If the current page is homepage, then display ABOUT link
+        // If the current page is homepage, then display Dashboard link
         // If not homepage, display HOME link
         currentPage === 'home'
           ? (
-            <MenuItemAsNavLink
-              behavior={NavLinkBehavior.scrollTo}
-              scrollToSectionID={jsonData.about.id}
-              icon={<InfoIcon />}
-              analyticsOriginID="navbar"
-            />
+            <>
+              <MenuItemAsNavLink
+                label={"NYUAD Dashboard (Public access)"}
+                behavior={NavLinkBehavior.toExternalPage}
+                to="https://citiesdashboard.com/project/air-quality"
+                icon={<BarChartIcon />}
+                analyticsOriginID="navbar"
+              />
+              <MenuItemAsNavLink
+                label={"School Dashboard (Required login)"}
+                behavior={NavLinkBehavior.toNewPage}
+                to="/dashboard"
+                icon={<BarChartIcon />}
+                analyticsOriginID="navbar"
+              />
+            </>
           )
           : (
             <MenuItemAsNavLink
@@ -44,12 +53,6 @@ export default function NavBar(props) {
             />
           )
       }
-      <MenuItemAsNavLink
-        behavior={NavLinkBehavior.scrollTo}
-        scrollToSectionID={jsonData.getInTouch.id}
-        icon={<EmailIcon />}
-        analyticsOriginID="navbar"
-      />
     </StyledMenuList>
   );
 }

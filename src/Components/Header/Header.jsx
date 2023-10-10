@@ -93,9 +93,9 @@ export default function Header(props) {
                   height="100%"
                 >
                   {/* Navbar in landscape placed here, will be hidden in mobile  */}
-                  {/* <Box sx={{ ...showInDesktop('block'), height: '100%' }}>
+                  <Box sx={{ ...showInDesktop('block'), height: '100%' }}>
                     <NavBar currentPage={currentPage} />
-                  </Box> */}
+                  </Box>
 
                   <Tooltip title="Navigation Menu" enterDelay={0} leaveDelay={200}>
                     <IconButton
@@ -115,7 +115,7 @@ export default function Header(props) {
                       aria-label="open setting drawer"
                       edge="start"
                       onClick={handleDrawerToggle}
-                      sx={showInDesktop('flex')}
+                      sx={{ ...showInDesktop('flex'), ml: 0 }}
                     >
                       <SettingsIcon sx={{ fontSize: '1.25rem' }} />
                     </IconButton>
@@ -126,7 +126,7 @@ export default function Header(props) {
             </Container>
           </Toolbar>
         </StyledAppBar>
-      </Slide>
+      </Slide >
 
       <Box>
         <StyledDrawer
@@ -140,7 +140,7 @@ export default function Header(props) {
         >
           <Stack onClick={handleDrawerToggle}>
             {/* // Only show the NavBar here in mobile  */}
-            {/* <Box sx={showInMobile('block')}>
+            <Box sx={showInMobile('block')}>
               <Container sx={{ py: 2 }}>
                 <Typography variant="h6" color="text.secondary" fontWeight="medium" gutterBottom>
                   CITIES Dashboard
@@ -148,7 +148,7 @@ export default function Header(props) {
                 <NavBar currentPage={currentPage} />
               </Container>
               <Divider />
-            </Box> */}
+            </Box>
 
             <Container sx={{ pt: 2, pb: 3 }}>
               <Typography variant="h6" color="text.secondary" fontWeight="medium" gutterBottom>
@@ -173,34 +173,36 @@ export default function Header(props) {
         sx={{ backgroundColor: 'customAlternateBackground', height: `${toolBarHeightInRem * 1.5}rem` }}
       />
 
-      {(
-        currentPage === 'home'
-        && (
-          <FullWidthBox sx={{
-            width: '100%',
-            pt: 4,
-            pb: 3,
-            backgroundColor: 'customAlternateBackground'
-          }}
-          >
-            <Container>
-              <Typography
-                variant="h3"
-                color="text.primary"
-                fontWeight="medium"
-              >
-                CITIESair
-              </Typography>
-              <Typography variant="body1" color="text.secondary" gutterBottom>
-                {parse(jsonData.siteDescription, {
-                  replace: replacePlainHTMLWithMuiComponents,
-                })}
-                <br />
-              </Typography>
-            </Container>
-          </FullWidthBox>
+      {
+        (
+          currentPage === 'home'
+          && (
+            <FullWidthBox sx={{
+              width: '100%',
+              pt: 4,
+              pb: 3,
+              backgroundColor: 'customAlternateBackground'
+            }}
+            >
+              <Container>
+                <Typography
+                  variant="h3"
+                  color="text.primary"
+                  fontWeight="medium"
+                >
+                  CITIESair
+                </Typography>
+                <Typography variant="body1" color="text.secondary" gutterBottom>
+                  {parse(jsonData.siteDescription, {
+                    replace: replacePlainHTMLWithMuiComponents,
+                  })}
+                  <br />
+                </Typography>
+              </Container>
+            </FullWidthBox>
+          )
         )
-      )}
+      }
 
       <SpeedDialButton chartsTitlesList={chartsTitlesList} topAnchorID={jsonData.topAnchor.id} />
 

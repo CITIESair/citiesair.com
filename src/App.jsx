@@ -17,10 +17,11 @@ import Footer from './Components/Footer/Footer';
 import FourOhFour from './Pages/404';
 import DeviceOrientationNotification from './Components/SnackBarNotifications';
 import LoadingAnimation from './Components/LoadingAnimation';
+import LogIn from './Components/LogIn';
 
 // Lazy load pages
 const Home = lazy(() => import('./Pages/Home/Home'));
-const Project = lazy(() => import('./Pages/Project/Project'));
+const Dashboard = lazy(() => import('./Pages/Dashboard/Dashboard'));
 const Screen = lazy(() => import('./Pages/Screen/Screen'));
 
 // Create theme design tokens based on theme preference
@@ -42,6 +43,12 @@ const getDesignTokens = (themePreference) => ({
 });
 
 function App() {
+
+  const [authenticated, setAuthenticated] = useState(false);
+  const handleLogin = (isAuthenticated) => {
+    setAuthenticated(isAuthenticated);
+  };
+
   // Set theme preference state based on localStorage or system preference
   const [themePreference, setThemePreference] = useState(
     localStorage.getItem('theme')
@@ -87,18 +94,28 @@ function App() {
               />
 
               <Route
-                path="/:id"
+                path="/dashboard"
                 element={
-                  <Box>
-                    <Header setThemePreference={setThemePreference} />
-                    <Project themePreference={themePreference} />
-                    <Footer />
-                  </Box>
+                  authenticated
+                    ? (
+                      <Box>
+                        <Header setThemePreference={setThemePreference} />
+                        <Dashboard themePreference={themePreference} />
+                        <Footer />
+                      </Box>
+                    )
+                    : (
+                      <Box>
+                        <Header setThemePreference={setThemePreference} />
+                        <LogIn onLogin={handleLogin} />
+                        <Footer />
+                      </Box>
+                    )
                 }
               />
 
               <Route
-                path="/:id/screen"
+                path="/screen/*"
                 element={<Screen />}
               />
 
