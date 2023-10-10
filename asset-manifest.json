@@ -1,22 +1,29 @@
 {
   "files": {
     "main.css": "/static/css/main.ccadb9c5.css",
-    "main.js": "/static/js/main.a2341bac.js",
-    "static/js/143.11215a79.chunk.js": "/static/js/143.11215a79.chunk.js",
-    "static/js/739.12759d1b.chunk.js": "/static/js/739.12759d1b.chunk.js",
-    "static/js/692.dce2f439.chunk.js": "/static/js/692.dce2f439.chunk.js",
-    "static/js/104.f622d632.chunk.js": "/static/js/104.f622d632.chunk.js",
+    "main.js": "/static/js/main.95591e4b.js",
+    "static/js/728.def97217.chunk.js": "/static/js/728.def97217.chunk.js",
+    "static/js/914.2010858b.chunk.js": "/static/js/914.2010858b.chunk.js",
+    "static/js/538.6fad59da.chunk.js": "/static/js/538.6fad59da.chunk.js",
+    "static/js/953.14c0f570.chunk.js": "/static/js/953.14c0f570.chunk.js",
+    "static/js/846.964a6281.chunk.js": "/static/js/846.964a6281.chunk.js",
+    "static/js/503.9c452f80.chunk.js": "/static/js/503.9c452f80.chunk.js",
+    "static/js/447.ba7f2622.chunk.js": "/static/js/447.ba7f2622.chunk.js",
     "static/media/cities-logo.png": "/static/media/cities-logo.6e8b8fce882b8a120203.png",
+    "static/media/IQAir_logo.svg": "/static/media/IQAir_logo.6664e0a790249b05f736fb791effaaf3.svg",
     "index.html": "/index.html",
     "main.ccadb9c5.css.map": "/static/css/main.ccadb9c5.css.map",
-    "main.a2341bac.js.map": "/static/js/main.a2341bac.js.map",
-    "143.11215a79.chunk.js.map": "/static/js/143.11215a79.chunk.js.map",
-    "739.12759d1b.chunk.js.map": "/static/js/739.12759d1b.chunk.js.map",
-    "692.dce2f439.chunk.js.map": "/static/js/692.dce2f439.chunk.js.map",
-    "104.f622d632.chunk.js.map": "/static/js/104.f622d632.chunk.js.map"
+    "main.95591e4b.js.map": "/static/js/main.95591e4b.js.map",
+    "728.def97217.chunk.js.map": "/static/js/728.def97217.chunk.js.map",
+    "914.2010858b.chunk.js.map": "/static/js/914.2010858b.chunk.js.map",
+    "538.6fad59da.chunk.js.map": "/static/js/538.6fad59da.chunk.js.map",
+    "953.14c0f570.chunk.js.map": "/static/js/953.14c0f570.chunk.js.map",
+    "846.964a6281.chunk.js.map": "/static/js/846.964a6281.chunk.js.map",
+    "503.9c452f80.chunk.js.map": "/static/js/503.9c452f80.chunk.js.map",
+    "447.ba7f2622.chunk.js.map": "/static/js/447.ba7f2622.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.ccadb9c5.css",
-    "static/js/main.a2341bac.js"
+    "static/js/main.95591e4b.js"
   ]
 }
