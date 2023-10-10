@@ -1,9 +1,9 @@
 // disable eslint for this file
 /* eslint-disable */
-export const fetchDataFromURL = async (url, extension) => {
+export const fetchDataFromURL = async (url, extension, needsAuthorization) => {
   try {
     const response = await fetch(url, {
-      credentials: 'include'
+      credentials: needsAuthorization && 'include'
     });
     if (!response.ok) {
       throw new Error('Network response was not ok');

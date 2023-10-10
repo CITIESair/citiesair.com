@@ -2,7 +2,7 @@
 /* eslint-disable */
 import { useState, useEffect, useContext } from 'react';
 
-import { Button, TextField, FormControlLabel, Checkbox, Link, Grid, Box, Typography, Container, Dialog, DialogActions, DialogContent, useMediaQuery, Tooltip, IconButton } from "@mui/material";
+import { Button, TextField, FormControlLabel, Checkbox, Link, Grid, Box, Typography, Container, Dialog, DialogActions, DialogContent, useMediaQuery, Tooltip, IconButton, Alert } from "@mui/material";
 
 import { useTheme } from '@mui/material/styles';
 
@@ -22,9 +22,10 @@ async function loginUser(credentials) {
     .then(data => data)
 }
 
-export default function LogIn() {
+export default function LogIn({ onLogin }) {
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
+  const [errorMessage, setErrorMessage] = useState('');
 
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -36,8 +37,28 @@ export default function LogIn() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const response = await loginUser({ username, password });
-    console.log(response)
+    const response = fetch('https://api.citiesair.com/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username, password
+      }),
+      credentials: 'include',
+    })
+      .then((response) => {
+        if (response.ok) {
+          onLogin(true);
+        }
+        else {
+          throw new Error(`Error authenticating`);
+        }
+      })
+      .catch((error) => {
+        setErrorMessage(prefabErrorMessage);
+        console.log(error);
+      })
   };
 
   return (
@@ -45,7 +66,6 @@ export default function LogIn() {
       <Button
         onClick={() => {
           handleOpen();
-
         }}
         variant="contained"
       >
@@ -81,6 +101,11 @@ export default function LogIn() {
             Login
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+            {
+              errorMessage &&
+              <Alert severity="error">{errorMessage}</Alert>
+            }
+
             <TextField
               margin="normal"
               required

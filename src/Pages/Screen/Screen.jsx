@@ -99,7 +99,7 @@ const Screen = () => {
     }
 
     const fetchScreenData = () => {
-      fetchDataFromURL(apiUrl, 'json')
+      fetchDataFromURL(apiUrl, 'json', true)
         .then((data => {
           Object.entries(data).map(([_, sensorData]) => {
             // Calculate if the sensor is currently active or not
