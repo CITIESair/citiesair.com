@@ -2,7 +2,9 @@
 /* eslint-disable */
 export const fetchDataFromURL = async (url, extension) => {
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      credentials: 'include'
+    });
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
