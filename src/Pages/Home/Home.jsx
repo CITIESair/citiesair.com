@@ -1,4 +1,4 @@
-import { useEffect, useContext } from 'react';
+import { useEffect, useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Button, Box, Grid, Stack, Typography, Container, Card, CardContent, CardMedia, CardActionArea, Divider, Tooltip } from '@mui/material';
@@ -12,13 +12,13 @@ import FullWidthBox from '../../Components/FullWidthBox';
 import About from './About';
 
 import jsonData from '../../section_data.json';
-import locations from '../../temp_locations.json';
 
 import * as Tracking from '../../Utils/Tracking';
 
 import Map from './Map';
 
-import LogIn from '../../Components/LogIn';
+import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
+import { fetchAndProcessCurrentData } from '../../Utils/ApiUtils';
 
 function Home({ themePreference, title }) {
   // Update the page's title
@@ -29,7 +29,6 @@ function Home({ themePreference, title }) {
   // useState for home page data
   // eslint-disable-next-line no-unused-vars
   const [_, setCurrentPage, __, setChartsTitlesList] = useContext(LinkContext);
-  const [homeData] = useContext(HomeDataContext);
 
   // set underline link to home
   useEffect(() => {
@@ -37,31 +36,58 @@ function Home({ themePreference, title }) {
     setChartsTitlesList([]);
   }, [setCurrentPage, setChartsTitlesList]);
 
+  // Fetch public NYUAD sensors data
+  const [nyuadCurrentSensorData, setNyuadCurrentSensorData] = useState({});
+
+  useEffect(() => {
+    let apiUrl = 'https://api.citiesair.com/screen/nyuad/c2';
+
+    fetchAndProcessCurrentData(apiUrl)
+      .then((data) => {
+        setNyuadCurrentSensorData(data)
+      })
+      .catch((error) => console.log(error));
+  }, []);
+
   return (
     <Box width="100%">
       <FullWidthBox>
         <Container sx={{ pt: 3, pb: 4 }}>
           <UppercaseTitle text="air quality at NYUAD" />
-          <LogIn />
-
           {/* Display public sensors at NYUAD (outdoors and indoors) → Link to air quality project of CITIES Dashboard
  */}
-
-          <Stack width="fit-content">
-            <Button variant='contained'>
-              Historical data
-            </Button>
-          </Stack>
+          <Grid container justifyContent="center" spacing={3}>
+            <Grid item textAlign="center" xs={10}>
+              <CurrentAQIGrid currentData={nyuadCurrentSensorData} isScreen={false} />
+            </Grid>
+            <Grid item xs={12}>
+              <Stack width="fit-content" alignItems="center" margin="auto">
+                <Button
+                  variant='contained'
+                  sx={{ width: "fit-content", mb: 1 }}
+                  href="https://citiesdashboard.com/project/air-quality"
+                  target="blank"
+                  rel="noopener noreferrer"
+                >
+                  NYUAD Dashboard (Public Access)
+                </Button>
+                <Typography variant="caption" color="text.secondary">
+                  See detailed analysis of historical air quality data at NYUAD
+                </Typography>
+              </Stack>
+            </Grid>
+          </Grid>
 
 
         </Container>
       </FullWidthBox>
 
       <FullWidthBox sx={{ backgroundColor: 'customAlternateBackground' }}>
-        <Container sx={{ pt: 3 }}>
+        <Container sx={{ py: 3 }}>
           <UppercaseTitle text="public stations" />
-          {/* Add markers of published stations on IQAir (NYUAD, Cranleigh, LTM, ACS - Khalidiya). For now: there will be links to the published stations. In the future: display live AQI at these locations without clicking on the link to IQAir
- */}
+          <Typography variant="body1" color="text.secondary">
+            Below is a map of CITIESair's public outdoor air quality monitoring stations. This map does not display indoor air quality monitoring stations in participating schools to protect their privacy. That said, we strive to publish all outdoor monitoring stations' measurements on IQAir, the world's most popular air quality monitoring platform, to make the data publicly available the surrounding community, school teachers, staff, and parents.
+          </Typography>
         </Container>
         <Map themePreference={themePreference} />
 
@@ -78,7 +104,7 @@ function Home({ themePreference, title }) {
           </Grid>
         </Container>
       </FullWidthBox>
-    </Box>
+    </Box >
   );
 }
 

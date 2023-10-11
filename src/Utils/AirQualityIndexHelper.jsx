@@ -61,7 +61,6 @@ const AQIdatabase = [
     description: 'Members of sensitive groups may experience health effects. The general public is less likely to be affected',
     healthSuggestions: {
       outdoors: 'Children and individuals with respiratory issues should limit outdoor exertion',
-      indoors_generic: '',
       indoors_dining_hall: 'Consider take-aways<br>Avoid Grill area',
       indoors_gym: 'Individuals with respiratory issues should lower the intensity of indoor exercises',
       indoors_vulnerable: 'Monitor closely individuals with respiratory issues for any symptom'
@@ -83,7 +82,6 @@ const AQIdatabase = [
     description: 'Some members of the general public may experience health effects; members of sensitive groups may experience more serious health effects',
     healthSuggestions: {
       outdoors: 'Everyone should limit outdoor activities<br>Wear masks when going outside',
-      indoors_generic: '',
       indoors_dining_hall:
         'Consider take-aways<br>Avoid Grill area<br>Come back at off-peak hours',
       indoors_gym: 'Everyone should lower the intensity of indoor exercises',
@@ -106,7 +104,6 @@ const AQIdatabase = [
     description: 'Health alert: The risk of health effects is increased for everyone',
     healthSuggestions: {
       outdoors: 'Avoid outdoor activities at all cost<br>Wear N95 masks when going outside',
-      indoors_generic: '',
       indoors_dining_hall:
         'Consider take-aways<br>Avoid Grill area<br>Come back at off-peak hours',
       indoors_gym: 'Indoor air quality is not suitable for any physical activities',
@@ -129,7 +126,6 @@ const AQIdatabase = [
     description: 'Health warning of emergency conditions: everyone is more likely to be affected',
     healthSuggestions: {
       outdoors: 'Avoid outdoor activities at all cost<br>Wear N95 masks when going outside',
-      indoors_generic: '',
       indoors_dining_hall:
         'Consider take-aways<br>Avoid Grill area<br>Come back at off-peak hours',
       indoors_gym: 'Indoor air quality is not suitable for any physical activities',

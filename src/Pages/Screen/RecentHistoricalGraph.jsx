@@ -8,7 +8,7 @@ import AQIdatabase from '../../Utils/AirQualityIndexHelper';
 import { SensorStatus } from './ScreenUtils';
 import { Box } from '@mui/material';
 
-import { capitalizeFirstCharacter } from './ScreenUtils';
+import { capitalizeFirstCharacter, areDOMOverlapped } from './ScreenUtils';
 
 import CustomThemes from '../../Themes/CustomThemes';
 
@@ -224,6 +224,7 @@ const RecentHistoricalGraph = (props) => {
           .attr("r", dotRadius);
 
         markerWrapper.append("text")
+          .attr("class", "location-label")
           .attr("x", dotRadius * 1.5)
           .attr("y", 0)
           .attr("fill", "black")
@@ -231,6 +232,19 @@ const RecentHistoricalGraph = (props) => {
           .attr("text-anchor", "left")
           .attr("font-size", font_size / 3)
           .text(capitalizeFirstCharacter(sensorData.sensor?.location_short));
+
+        const locationLabels = document.getElementsByClassName("location-label");
+        for (let i = 1; i < locationLabels.length; i++) {
+          const locationLabel_1 = locationLabels[i - 1];
+          const locationLabel_2 = locationLabels[i];
+          const overlapped = areDOMOverlapped(locationLabel_1.getBoundingClientRect(), locationLabel_2.getBoundingClientRect());
+
+          if (overlapped !== 0) {
+            console.log("haha")
+            locationLabel_1.setAttribute("y", overlapped * dotRadius);
+            locationLabel_2.setAttribute("y", - overlapped * dotRadius);
+          }
+        }
       }
     });
 

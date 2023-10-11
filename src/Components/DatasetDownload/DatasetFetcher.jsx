@@ -2,16 +2,16 @@
 /* eslint-disable */
 export const fetchDataFromURL = async (url, extension, needsAuthorization) => {
   try {
+    const dotIndex = url.lastIndexOf('.');
+    if (dotIndex === -1) {
+      throw new Error('Unsupported format');
+    }
+
     const response = await fetch(url, {
       credentials: needsAuthorization && 'include'
     });
     if (!response.ok) {
       throw new Error('Network response was not ok');
-    }
-
-    const dotIndex = url.lastIndexOf('.');
-    if (dotIndex === -1) {
-      throw new Error('Unsupported format');
     }
 
     switch (extension) {

@@ -25,6 +25,8 @@ async function loginUser(credentials) {
 export default function LogIn({ onLogin }) {
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
+  const [rememberMe, setRememberMe] = useState(false);
+
   const [errorMessage, setErrorMessage] = useState('');
 
   const theme = useTheme();
@@ -37,13 +39,13 @@ export default function LogIn({ onLogin }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const response = fetch('https://api.citiesair.com/login', {
+    fetch('https://api.citiesair.com/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        username, password
+        username, password, rememberMe
       }),
       credentials: 'include',
     })
@@ -129,7 +131,8 @@ export default function LogIn({ onLogin }) {
               onChange={e => setPassword(e.target.value)}
             />
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+              control={<Checkbox value={rememberMe} color="primary" />}
+              onChange={e => setRememberMe(e.target.checked)}
               label="Remember this device"
               sx={{ mb: -1 }}
             />

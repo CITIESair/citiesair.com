@@ -449,7 +449,7 @@ const PreviewDataset = (props) => {
     <Stack spacing={1}>
       <Box sx={{ '& *': { fontFamily: "monospace !important" } }}>
         <Stack direction="row">
-          <Typography variant='body2' gutterBottom fontWeight={600}>
+          <Typography variant='body2' gutterBottom fontWeight={500}>
             {previewingDataset ?
               `Previewing: ${previewingDataset.name} (${previewingDataset?.version})`
               : 'Not previewing any dataset'}
