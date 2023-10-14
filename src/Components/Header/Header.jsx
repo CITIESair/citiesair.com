@@ -143,7 +143,7 @@ export default function Header(props) {
             <Box sx={showInMobile('block')}>
               <Container sx={{ py: 2 }}>
                 <Typography variant="h6" color="text.secondary" fontWeight="medium" gutterBottom>
-                  CITIES Dashboard
+                  CITIESair
                 </Typography>
                 <NavBar currentPage={currentPage} />
               </Container>
@@ -152,7 +152,7 @@ export default function Header(props) {
 
             <Container sx={{ pt: 2, pb: 3 }}>
               <Typography variant="h6" color="text.secondary" fontWeight="medium" gutterBottom>
-                Dashboard Settings
+                Page Settings
               </Typography>
               <ThemeSelector isFullWidth setThemePreference={setThemePreference} />
             </Container>
@@ -192,7 +192,7 @@ export default function Header(props) {
                 >
                   CITIESair
                 </Typography>
-                <Typography variant="body1" color="text.secondary" gutterBottom>
+                <Typography variant="body1" color="text.secondary">
                   {parse(jsonData.siteDescription, {
                     replace: replacePlainHTMLWithMuiComponents,
                   })}

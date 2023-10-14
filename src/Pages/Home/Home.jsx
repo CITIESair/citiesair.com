@@ -40,7 +40,7 @@ function Home({ themePreference, title }) {
   const [nyuadCurrentSensorData, setNyuadCurrentSensorData] = useState({});
 
   useEffect(() => {
-    let apiUrl = 'https://api.citiesair.com/screen/nyuad/c2';
+    let apiUrl = 'https://api.citiesair.com/current/nyuad';
 
     fetchAndProcessCurrentData(apiUrl)
       .then((data) => {
@@ -53,12 +53,18 @@ function Home({ themePreference, title }) {
     <Box width="100%">
       <FullWidthBox>
         <Container sx={{ pt: 3, pb: 4 }}>
-          <UppercaseTitle text="air quality at NYUAD" />
-          {/* Display public sensors at NYUAD (outdoors and indoors) → Link to air quality project of CITIES Dashboard
- */}
+          <UppercaseTitle text="real-time air quality at NYUAD" />
+          <Typography variant='body1' color='text.secondary' sx={{ mt: -2, mb: 2 }}>
+            PM2.5 (Particulate Matter Smaller Than 2.5 Micrometer)
+          </Typography>
+
           <Grid container justifyContent="center" spacing={3}>
             <Grid item textAlign="center" xs={10}>
-              <CurrentAQIGrid currentData={nyuadCurrentSensorData} isScreen={false} />
+              <CurrentAQIGrid
+                currentData={nyuadCurrentSensorData}
+                isScreen={false}
+                orderOfItems={[3, 1, 2]}
+              />
             </Grid>
             <Grid item xs={12}>
               <Stack width="fit-content" alignItems="center" margin="auto">
@@ -84,9 +90,9 @@ function Home({ themePreference, title }) {
 
       <FullWidthBox sx={{ backgroundColor: 'customAlternateBackground' }}>
         <Container sx={{ py: 3 }}>
-          <UppercaseTitle text="public stations" />
+          <UppercaseTitle text="public outdoor stations" />
           <Typography variant="body1" color="text.secondary">
-            Below is a map of CITIESair's public outdoor air quality monitoring stations. This map does not display indoor air quality monitoring stations in participating schools to protect their privacy. That said, we strive to publish all outdoor monitoring stations' measurements on IQAir, the world's most popular air quality monitoring platform, to make the data publicly available the surrounding community, school teachers, staff, and parents.
+            Below is a map of CITIESair's public outdoor air quality monitoring stations. We are expanding the network to cover various schools in Abu Dhabi to raise air quality awareness towards more sustainable and healthy-living lifestyles. This map <u><b>does not</b></u> display indoor stations in participating schools to protect their privacy. That said, we strive to publish all outdoor monitoring stations' measurements on IQAir, the world's most popular air quality monitoring platform, to make the data publicly available the surrounding community, school teachers, staff, and parents.
           </Typography>
         </Container>
         <Map themePreference={themePreference} />

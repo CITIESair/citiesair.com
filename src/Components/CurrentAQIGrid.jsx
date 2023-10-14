@@ -7,7 +7,7 @@ import ThermostatIcon from '@mui/icons-material/Thermostat';
 import WaterDropIcon from '@mui/icons-material/WaterDrop';
 import ErrorIcon from '@mui/icons-material/Error';
 
-import { returnSensorStatus, SensorStatus, calculateSensorStatus, removeLastDirectoryFromURL } from '../Pages/Screen/ScreenUtils';
+import { returnSensorStatus, SensorStatus, getFormattedElapsedTimeFromNow } from '../Pages/Screen/ScreenUtils';
 import { TemperatureUnits, getFormattedTemperature, calculateHeatIndex } from "../Pages/Screen/TemperatureUtils";
 
 import AQIdatabase from '../Utils/AirQualityIndexHelper';
@@ -16,7 +16,12 @@ import CustomThemes from '../Themes/CustomThemes';
 
 const CurrentAQIGrid = (props) => {
 
-  const { currentData, temperatureUnit = TemperatureUnits.celsius, isScreen = true } = props;
+  const {
+    currentData,
+    temperatureUnit = TemperatureUnits.celsius,
+    isScreen = true,
+    orderOfItems
+  } = props;
 
   return (
     <Grid
@@ -38,9 +43,10 @@ const CurrentAQIGrid = (props) => {
       }}
     >
       {
-        Object.entries(currentData).map(([key, sensorData]) => (
+        Object.entries(currentData).map(([key, sensorData], index) => (
           <Grid
             item
+            order={orderOfItems && orderOfItems[index]}
             key={key}
             xs={12 / Object.keys(currentData).length}
             sx={
@@ -87,23 +93,7 @@ const CurrentAQIGrid = (props) => {
                 </Typography>
               }
               {
-                sensorData.current?.sensor_status !== SensorStatus.active
-                &&
-                <Typography variant="h6" sx={{ fontWeight: '500 !important' }}>
-                  <ErrorIcon
-                    sx={{
-                      '& *': {
-                        color: `${AQIdatabase[3].lightThemeColor} !important`
-                      },
-                      mr: 0.5
-                    }} />
-                  Offline
-                  {
-                    sensorData.current?.sensor_status === SensorStatus.temporaryOffline
-                    &&
-                    ` - Last seen ${sensorData.current?.lastSeenInHours}hr${sensorData.current?.lastSeenInHours > 1 && "s"} ago`
-                  }
-                </Typography>
+                displayLastUpdateAndSensorStatus({ sensorData, isScreen })
               }
             </Box>
 
@@ -120,5 +110,39 @@ const CurrentAQIGrid = (props) => {
     </Grid>
   );
 };
+
+const displayLastUpdateAndSensorStatus = ({ sensorData, isScreen }) => {
+  if (isScreen && sensorData.current.sensor_status === SensorStatus.active) return null;
+  else
+    return (
+      <Typography
+        variant={isScreen ? 'h6' : 'caption'}
+        sx={{
+          mt: 0,
+          fontWeight: isScreen && '500 !important'
+        }}
+      >
+        {
+          sensorData.current?.sensor_status !== SensorStatus.active
+          &&
+          <>
+            <ErrorIcon
+              sx={{
+                fontSize: isScreen ? null : '1rem',
+                '& *': {
+                  color: `${AQIdatabase[3].lightThemeColor} !important`
+                },
+                mr: 0.5
+              }} />
+            Offline.&nbsp;
+          </>
+        }
+        Last update:
+        {sensorData.current?.timestamp
+          ? ` ${getFormattedElapsedTimeFromNow(sensorData.current.timestamp)} ago`
+          : '--'}
+      </Typography>
+    )
+}
 
 export default CurrentAQIGrid;

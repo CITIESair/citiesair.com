@@ -1,5 +1,5 @@
 // React components
-import { React, useState, useMemo, lazy, Suspense } from 'react';
+import { React, useState, useMemo, lazy, Suspense, useContext } from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 
 // MUI components
@@ -18,6 +18,9 @@ import FourOhFour from './Pages/404';
 import DeviceOrientationNotification from './Components/SnackBarNotifications';
 import LoadingAnimation from './Components/LoadingAnimation';
 import LogIn from './Components/LogIn';
+
+// Contexts
+import { UserContext } from './ContextProviders/UserContext';
 
 // Lazy load pages
 const Home = lazy(() => import('./Pages/Home/Home'));
@@ -43,11 +46,8 @@ const getDesignTokens = (themePreference) => ({
 });
 
 function App() {
-
-  const [authenticated, setAuthenticated] = useState(false);
-  const handleLogin = (isAuthenticated) => {
-    setAuthenticated(isAuthenticated);
-  };
+  // Get authentication context
+  const [authenticated, _] = useContext(UserContext);
 
   // Set theme preference state based on localStorage or system preference
   const [themePreference, setThemePreference] = useState(
@@ -107,7 +107,7 @@ function App() {
                     : (
                       <Box>
                         <Header setThemePreference={setThemePreference} />
-                        <LogIn onLogin={handleLogin} />
+                        <LogIn />
                         <Footer />
                       </Box>
                     )

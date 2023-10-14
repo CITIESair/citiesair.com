@@ -1,3 +1,4 @@
+import { useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import { MenuList } from '@mui/material';
 
@@ -6,6 +7,8 @@ import HomeIcon from '@mui/icons-material/Home';
 import MenuItemAsNavLink from './MenuItemAsNavLink';
 import NavLinkBehavior from './NavLinkBehavior';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import { UserContext } from '../../ContextProviders/UserContext';
 
 const StyledMenuList = styled(MenuList)(({ theme }) => ({
   // Make these items display on the same line on large display
@@ -19,6 +22,14 @@ const StyledMenuList = styled(MenuList)(({ theme }) => ({
 
 export default function NavBar(props) {
   const { currentPage } = props;
+  const [authenticated, userName] = useContext(UserContext);
+  const getSchoolDashboardLinkLabel = () => {
+    if (authenticated && userName) {
+      return `School Dashboard (User: ${userName})`
+    } else {
+      return 'School Dashboard (Private access)';
+    }
+  };
 
   return (
     <StyledMenuList sx={{ height: '100%', p: 0 }}>
@@ -36,10 +47,16 @@ export default function NavBar(props) {
                 analyticsOriginID="navbar"
               />
               <MenuItemAsNavLink
-                label={"School Dashboard (Required login)"}
+                label={getSchoolDashboardLinkLabel()}
                 behavior={NavLinkBehavior.toNewPage}
                 to="/dashboard"
                 icon={<BarChartIcon />}
+                analyticsOriginID="navbar"
+              /><MenuItemAsNavLink
+                label={"CITIESair Blog"}
+                behavior={NavLinkBehavior.toExternalPage}
+                to="https://blog.citiesair.com"
+                icon={<MenuBookIcon />}
                 analyticsOriginID="navbar"
               />
             </>

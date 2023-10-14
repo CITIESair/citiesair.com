@@ -27,10 +27,7 @@ export default function FourOhFour({ title }) {
         Page not found
       </Typography>
       <Typography variant="h5" color="text.secondary" gutterBottom>
-        Bad links happen to good people
-      </Typography>
-      <Typography variant="h5" color="text.secondary" gutterBottom>
-        Either you&apos;re lost or we&apos;re still developing this project
+        Please contact CITIESair if you think this is a mistake.
       </Typography>
       <Button component={Link} to="/" variant="contained" sx={{ mt: 3 }}>
         <Typography>Return home</Typography>

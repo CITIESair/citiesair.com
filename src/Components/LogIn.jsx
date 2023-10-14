@@ -2,13 +2,14 @@
 /* eslint-disable */
 import { useState, useEffect, useContext } from 'react';
 
-import { Button, TextField, FormControlLabel, Checkbox, Link, Grid, Box, Typography, Container, Dialog, DialogActions, DialogContent, useMediaQuery, Tooltip, IconButton, Alert } from "@mui/material";
+import { Button, TextField, FormControlLabel, Checkbox, Link, Grid, Box, Typography, Container, Paper, useMediaQuery, Tooltip, IconButton, Alert } from "@mui/material";
 
 import { useTheme } from '@mui/material/styles';
 
 import DataObjectIcon from '@mui/icons-material/DataObject';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import HelpIcon from '@mui/icons-material/Help';
+import { UserContext } from '../ContextProviders/UserContext';
 
 async function loginUser(credentials) {
   return fetch('https://api.citiesair.com/login', {
@@ -23,18 +24,20 @@ async function loginUser(credentials) {
 }
 
 export default function LogIn({ onLogin }) {
+  const [_, __, setAuthenticated, setContextUserName] = useContext(UserContext);
+
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
   const [rememberMe, setRememberMe] = useState(false);
 
-  const [errorMessage, setErrorMessage] = useState('');
+  const [message, setMessage] = useState();
+  const [isWrongCredentials, setIsWrongCredentials] = useState(false);
+
+  const prefabErrorMessage = 'Incorrect school ID or access code. Please try again or contact CITIESair if you think there is a mistake.';
+  const prefabSuccessMessage = 'Successfully logged in.';
 
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -51,113 +54,100 @@ export default function LogIn({ onLogin }) {
     })
       .then((response) => {
         if (response.ok) {
-          onLogin(true);
+          setIsWrongCredentials(false);
+          setMessage(prefabSuccessMessage);
+          setContextUserName(username);
+
+          // Introduce a delay of 1 second before setting authenticated to true
+          // for the user to read success message
+          setTimeout(() => {
+            setAuthenticated(true);
+          }, 1000);
+
         }
         else {
           throw new Error(`Error authenticating`);
         }
       })
       .catch((error) => {
-        setErrorMessage(prefabErrorMessage);
+        setMessage(prefabErrorMessage);
+        setIsWrongCredentials(true);
         console.log(error);
       })
   };
 
   return (
-    <>
-      <Button
-        onClick={() => {
-          handleOpen();
-        }}
-        variant="contained"
-      >
-        <DataObjectIcon sx={{ fontSize: '1rem' }} />&nbsp;Raw Dataset
-      </Button>
+    <Container maxWidth="sm" sx={{ my: 3 }}>
+      <Paper sx={{ p: 3 }} elevation={3}>
+        <Typography variant="h5" fontWeight={500}>
+          Login
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          {
+            message &&
+            <Alert severity={isWrongCredentials ? "error" : "success"}>{message}</Alert>
+          }
 
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        maxWidth="sm"
-        fullWidth
-        fullScreen={smallScreen}
-        keepMounted
-      >
-        {(
-          smallScreen &&
-          <DialogActions justifyContent="flex-start">
-            <Button autoFocus onClick={handleClose}>
-              <ChevronLeftIcon sx={{ fontSize: '1rem' }} />Back
-            </Button>
-          </DialogActions>
-        )}
-
-        <DialogContent sx={{
-          px: smallScreen ? 2 : 3,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'start',
-          height: '100%'
-        }}>
-          <Typography component="h1" variant="h5">
-            Login
-          </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            {
-              errorMessage &&
-              <Alert severity="error">{errorMessage}</Alert>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="schoolID"
+            label="School ID"
+            name="schoolID"
+            autoComplete="username"
+            autoFocus
+            onChange={e => setUserName(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Access Code"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            onChange={e => setPassword(e.target.value)}
+          />
+          <FormControlLabel
+            control={<Checkbox value={rememberMe} color="primary" />}
+            onChange={e => setRememberMe(e.target.checked)}
+            label={
+              <Typography lineHeight={1.25}>
+                Remember this device.
+                <br />
+                <Typography variant='caption' color='text.secondary'>
+                  (Recommended for public air quality screens that need to run autonomously)
+                </Typography>
+              </Typography>
             }
+            sx={{
+              mb: -1,
+              display: 'flex',
+              alignItems: 'start',
+              '& .MuiCheckbox-root': {
+                pt: 0.25
+              }
+            }}
+          />
 
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="schoolID"
-              label="School ID"
-              name="schoolID"
-              autoComplete="username"
-              autoFocus
-              onChange={e => setUserName(e.target.value)}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Access Code"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              onChange={e => setPassword(e.target.value)}
-            />
-            <FormControlLabel
-              control={<Checkbox value={rememberMe} color="primary" />}
-              onChange={e => setRememberMe(e.target.checked)}
-              label="Remember this device"
-              sx={{ mb: -1 }}
-            />
-            <br />
-            <Typography variant="caption" sx={{ ml: 3.75 }}>
-              (Recommended for public air quality screens that need to run autonomously)
-            </Typography>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              LogIn
-            </Button>
-            <Typography variant="caption">
-              <i>
-                Login with the provided credentials to see your school's air quality dashboard, including indoor and outdoor devices. If you do not have the credentials, please contact your school admin or CITIESair.
-              </i>
-            </Typography>
-
-          </Box>
-        </DialogContent>
-      </Dialog>
-    </>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            LogIn
+          </Button>
+          <Typography variant="caption">
+            <i>
+              Login with the provided credentials to see your school's air quality dashboard, including indoor and outdoor devices. If you do not have the credentials, please contact your school admin or CITIESair.
+            </i>
+          </Typography>
+        </Box>
+      </Paper>
+    </Container>
 
   );
 }

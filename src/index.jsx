@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 
 import './index.css';
 import App from './App';
+import { UserProvider } from './ContextProviders/UserContext';
 import { GoogleProvider } from './ContextProviders/GoogleContext';
 import { LinkProvider } from './ContextProviders/LinkContext';
 import { HomePageProvider } from './ContextProviders/HomePageContext';
@@ -11,17 +12,19 @@ import { RawDatasetsMetadataProvider } from './ContextProviders/RawDatasetsMetad
 
 ReactDOM.render(
   <React.StrictMode>
-    <GoogleProvider>
-      <HomePageProvider>
-        <RawDatasetsMetadataProvider>
-          <LinkProvider>
-            <TabProvider>
-              <App />
-            </TabProvider>
-          </LinkProvider>
-        </RawDatasetsMetadataProvider>
-      </HomePageProvider>
-    </GoogleProvider>
+    <UserProvider>
+      <GoogleProvider>
+        <HomePageProvider>
+          <RawDatasetsMetadataProvider>
+            <LinkProvider>
+              <TabProvider>
+                <App />
+              </TabProvider>
+            </LinkProvider>
+          </RawDatasetsMetadataProvider>
+        </HomePageProvider>
+      </GoogleProvider>
+    </UserProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
