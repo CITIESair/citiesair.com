@@ -50,7 +50,7 @@ export default function DatasetCalendar(props) {
   return (
     <ClickAwayListener onClickAway={() => onChange('close')}>
       <Card
-        sx={!smallScreen && { position: 'absolute', right: 0, zIndex: 999 }}
+        sx={!smallScreen && { position: 'absolute', right: 0, zIndex: 9999 }}
         raised
       >
         <LocalizationProvider dateAdapter={AdapterDayjs}>

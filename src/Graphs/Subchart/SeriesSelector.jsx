@@ -148,7 +148,7 @@ export default function SeriesSelector(props) {
           {/* Show the option to select all if multiSelect is true*/}
           {allowMultiple && <MenuItem key={SELECT_ALL} value={SELECT_ALL} sx={{
             borderTop: 'solid 0.5px', borderColor: theme.palette.text.secondary,
-            position: 'sticky', bottom: 0, zIndex: 9999, marginBottom: theme.spacing(-1),
+            position: 'sticky', bottom: 0, zIndex: 99999, marginBottom: theme.spacing(-1),
             background: theme.palette.customAlternateBackground,
             "&:hover": {
               background: theme.palette.customAlternateBackground
