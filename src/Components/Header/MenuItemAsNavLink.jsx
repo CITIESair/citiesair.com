@@ -42,14 +42,15 @@ export const scrollToSection = (scrollToSectionID) => {
 
 export default function MenuItemAsNavLink(props) {
   // eslint-disable-next-line max-len
-  const { behavior, to, scrollToSectionID, icon, sx, analyticsOriginID, analyticsDestinationLabel } = props;
+  const { behavior, to, scrollToSectionID, icon, sx, analyticsOriginID, analyticsDestinationLabel, bindHoverProps, bindFocusProps } = props;
   let { label } = props;
 
   if (label && typeof label === 'string') label = capitalizePhrase(label);
 
+  const newPageLabel = capitalizePhrase((to === '/') ? 'home' : to);
+
   switch (behavior) {
     case NavLinkBehavior.toNewPage: {
-      const newPageLabel = capitalizePhrase((to === '/') ? 'home' : to);
       return (
         <StyledMenuItem
           sx={sx}
@@ -116,6 +117,30 @@ export default function MenuItemAsNavLink(props) {
         >
           {icon && <StyledIcon>{icon}</StyledIcon>}
           {label || capitalizePhrase(scrollToSectionID)}
+        </StyledMenuItem>
+      );
+
+    case NavLinkBehavior.hoverMenu:
+      return (
+        <StyledMenuItem
+          sx={sx}
+          component={to && Link}
+          to={to}
+          onClick={() => {
+            Tracking.sendEventAnalytics(
+              Tracking.Events.internalNavigation,
+              {
+                destination_id: to,
+                destination_label: newPageLabel,
+                origin_id: analyticsOriginID
+              }
+            );
+          }}
+          {...bindHoverProps}
+          {...bindFocusProps}
+        >
+          {icon && <StyledIcon>{icon}</StyledIcon>}
+          {label}
         </StyledMenuItem>
       );
 

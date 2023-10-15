@@ -13,8 +13,6 @@ import NavLinkBehavior from './NavLinkBehavior';
 import * as Tracking from '../../Utils/Tracking';
 import { FadeInButtonForSpeedDial } from './FadeInButtonForSpeedDial';
 
-import jsonData from '../../section_data.json';
-
 function HoverFocusMenu(props) {
   const { popupId, label, menuItems } = props;
 

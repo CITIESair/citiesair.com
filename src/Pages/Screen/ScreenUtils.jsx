@@ -81,6 +81,16 @@ export const capitalizeFirstCharacter = (inputString) => {
   else return null;
 };
 
+export const getDomainName = (url) => {
+  return new URL(url).hostname;
+}
+
+export const getUrlAfterScreen = (url) => {
+  const screenString = 'screen';
+  const urlComponents = url.split(screenString);
+  return `${screenString}${urlComponents.pop()}`;
+}
+
 export const removeLastDirectoryFromURL = (url) => {
   const urlComponents = url.split('/');
   // Remove the last component (directory)

@@ -94,7 +94,7 @@ export default function Header(props) {
                 >
                   {/* Navbar in landscape placed here, will be hidden in mobile  */}
                   <Box sx={{ ...showInDesktop('block'), height: '100%' }}>
-                    <NavBar currentPage={currentPage} />
+                    <NavBar currentPage={currentPage} isMobile={false} />
                   </Box>
 
                   <Tooltip title="Navigation Menu" enterDelay={0} leaveDelay={200}>
@@ -139,13 +139,12 @@ export default function Header(props) {
           }}
         >
           <Stack onClick={handleDrawerToggle}>
-            {/* // Only show the NavBar here in mobile  */}
             <Box sx={showInMobile('block')}>
               <Container sx={{ py: 2 }}>
                 <Typography variant="h6" color="text.secondary" fontWeight="medium" gutterBottom>
                   CITIESair
                 </Typography>
-                <NavBar currentPage={currentPage} />
+                <NavBar currentPage={currentPage} isMobile={true} />
               </Container>
               <Divider />
             </Box>

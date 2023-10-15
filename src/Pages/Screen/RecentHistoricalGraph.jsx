@@ -167,6 +167,7 @@ const RecentHistoricalGraph = (props) => {
           })
       )
       .attr("font-size", font_size / 2.25)
+      .attr("color", CustomThemes.universal.palette.inactiveSensor)
       .select(".domain")
       .remove();
     d3.select(layerXaxisWrapper.current)

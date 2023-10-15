@@ -23,15 +23,24 @@ const CurrentAQIGrid = (props) => {
     orderOfItems
   } = props;
 
+  const getGridItemSize = (numOfItems) => {
+    return {
+      xs: Math.max(12 / numOfItems, 6),
+      sm: Math.max(12 / numOfItems, 4),
+      lg: isScreen ? (12 / numOfItems) : Math.min(5, Math.max(12 / numOfItems, 3))
+    }
+  }
+
   return (
     <Grid
       container
+      justifyContent="center"
       sx={{
         '& .MuiSvgIcon-root': {
-          verticalAlign: 'sub'
+          verticalAlign: 'sub',
+          fontSize: isScreen ? null : '1rem'
         },
         '& *': {
-          color: CustomThemes.universal.palette.inactiveSensor,
           fontWeight: '500'
         },
         '& .condensedFont': {
@@ -48,26 +57,26 @@ const CurrentAQIGrid = (props) => {
             item
             order={orderOfItems && orderOfItems[index]}
             key={key}
-            xs={12 / Object.keys(currentData).length}
+            {...getGridItemSize(Object.keys(currentData).length)}
             sx={
               sensorData.current?.sensor_status !== SensorStatus.active &&
               { '& *': { color: `${CustomThemes.universal.palette.inactiveSensor}!important` } }
             }
           >
             <Box sx={{ '& *': { color: sensorData.current?.color } }}>
-              <Typography variant="h4" data-category="" fontWeight="500" className='condensedFont'>
+              <Typography variant={isScreen ? "h4" : 'h5'} fontWeight="500" className='condensedFont'>
                 {sensorData.sensor?.location_long || sensorData.sensor?.location_short || 'No Location Name'}
               </Typography>
-              <Typography variant="h1" data-category="" fontWeight="500" lineHeight={0.8}>
+              <Typography variant={isScreen ? "h1" : 'h2'} fontWeight="500" lineHeight={isScreen ? 0.8 : 0.9}>
                 {sensorData.current?.aqi || '--'}
               </Typography>
-              <Typography variant="h4" data-category="" fontWeight="500" className='condensedFont'>
+              <Typography variant={isScreen ? "h4" : 'h5'} fontWeight="500" className='condensedFont'>
                 {sensorData.current?.category || '--'}
               </Typography>
             </Box>
 
-            <Box sx={{ '& *': { color: isScreen ? '#c8dcff' : 'text.secondary' }, mt: 2 }} className='condensedFont'>
-              <Typography variant="h6">
+            <Box sx={{ '& *': { color: isScreen ? '#c8dcff' : 'text.secondary' }, mt: isScreen ? 2 : 1 }} className='condensedFont'>
+              <Typography variant={isScreen ? "h6" : 'body1'}>
                 <ThermostatIcon />
                 {
                   getFormattedTemperature({
@@ -83,7 +92,7 @@ const CurrentAQIGrid = (props) => {
               {
                 // Show heat index for selected location types
                 ['outdoors', 'indoors_gym'].includes(sensorData.sensor?.location_type) &&
-                <Typography variant="body1" sx={{ fontWeight: '300 !important' }}>
+                <Typography variant={isScreen ? "body1" : 'body2'} sx={{ fontWeight: '300 !important' }}>
                   {calculateHeatIndex({
                     rawTemp: sensorData.current?.temperature,
                     currentUnit: TemperatureUnits.celsius,
@@ -100,7 +109,7 @@ const CurrentAQIGrid = (props) => {
             {
               // Display outdoor-indoor comparison if both sensors are active
               sensorData.sensor_status !== SensorStatus.active &&
-              <Typography variant="h6" data-category="" className="condensedFont">
+              <Typography variant={isScreen ? "h6" : 'body1'} className="condensedFont">
                 {returnSensorStatus(sensorData)}
               </Typography>
             }
@@ -128,7 +137,6 @@ const displayLastUpdateAndSensorStatus = ({ sensorData, isScreen }) => {
           <>
             <ErrorIcon
               sx={{
-                fontSize: isScreen ? null : '1rem',
                 '& *': {
                   color: `${AQIdatabase[3].lightThemeColor} !important`
                 },

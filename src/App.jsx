@@ -17,7 +17,7 @@ import Footer from './Components/Footer/Footer';
 import FourOhFour from './Pages/404';
 import DeviceOrientationNotification from './Components/SnackBarNotifications';
 import LoadingAnimation from './Components/LoadingAnimation';
-import LogIn from './Components/LogIn';
+import LogIn from './Components/Account/LogIn';
 
 // Contexts
 import { UserContext } from './ContextProviders/UserContext';
@@ -88,6 +88,17 @@ function App() {
                   <Box>
                     <Header setThemePreference={setThemePreference} />
                     <Home themePreference={themePreference} title="CITIESair" />
+                    <Footer />
+                  </Box>
+                }
+              />
+
+              <Route
+                path="/login"
+                element={
+                  <Box>
+                    <Header setThemePreference={setThemePreference} />
+                    <LogIn />
                     <Footer />
                   </Box>
                 }

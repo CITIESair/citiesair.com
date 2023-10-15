@@ -44,23 +44,27 @@ export function calculateHeatIndex({ rawTemp, currentUnit, rel_humidity, returnU
 
   if (tempF < 80) heatIndexF = tempF;
   else
-    heatIndexF =
-      -42.379 +
-      (2.04901523 * tempF) +
-      (10.14333127 * rel_humidity) -
-      (0.22475541 * tempF * rel_humidity) -
-      (0.00683783 * tempF * tempF) -
-      (0.05481717 * rel_humidity * rel_humidity) +
-      (0.00122874 * tempF * tempF * rel_humidity) +
-      (0.00085282 * tempF * rel_humidity * rel_humidity) -
-      (0.00000199 * tempF * tempF * rel_humidity * rel_humidity);
+    heatIndexF = Math.round(
+      (
+        -42.379 +
+        (2.04901523 * tempF) +
+        (10.14333127 * rel_humidity) -
+        (0.22475541 * tempF * rel_humidity) -
+        (0.00683783 * tempF * tempF) -
+        (0.05481717 * rel_humidity * rel_humidity) +
+        (0.00122874 * tempF * tempF * rel_humidity) +
+        (0.00085282 * tempF * rel_humidity * rel_humidity) -
+        (0.00000199 * tempF * tempF * rel_humidity * rel_humidity)
+      )
+      * 10
+    ) / 10
+      ;
 
   // Find the appropriate category for the calculated heat index
   const category = heatIndexCategories.find((c) => heatIndexF < c.threshold);
-
   // Return an object with the heat index and the category name
   const formattedHeatIndex = getFormattedTemperature({
-    rawTemp: heatIndexF.toFixed(1),
+    rawTemp: heatIndexF,
     currentUnit: TemperatureUnits.fahrenheit,
     returnUnit: returnUnit
   });

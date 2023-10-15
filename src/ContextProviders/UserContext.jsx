@@ -6,16 +6,16 @@ export const UserContext = createContext();
 export function UserProvider({ children }) {
   const [checkAuthentication, setCheckAuthentication] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
-  const [userName, setContextUserName] = useState();
+  const [username, setContextUsername] = useState();
 
   useEffect(() => {
     if (!checkAuthentication) {
       const url = 'https://api.citiesair.com/me';
       try {
-        fetchDataFromURL(url, 'json')
+        fetchDataFromURL(url, 'json', true)
           .then((data) => {
-            if (data.userName) {
-              setContextUserName(data.userName);
+            if (data.username) {
+              setContextUsername(data.username);
               setAuthenticated(true);
             }
           });
@@ -27,7 +27,7 @@ export function UserProvider({ children }) {
   }, []);
 
   // eslint-disable-next-line max-len
-  const providerValue = useMemo(() => [authenticated, userName, setAuthenticated, setContextUserName], [authenticated, userName]);
+  const providerValue = useMemo(() => [authenticated, username, setAuthenticated, setContextUsername], [authenticated, username]);
 
   // return context provider
   return (

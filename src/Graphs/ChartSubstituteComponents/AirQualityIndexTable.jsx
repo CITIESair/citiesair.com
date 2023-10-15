@@ -48,9 +48,9 @@ function AirQualityIndexTable(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {AQIdatabase.map((element) => (
+            {AQIdatabase.map((element, index) => (
               <TableRow
-                key={element.name}
+                key={index}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCell sx={{ pr: 0 }}>

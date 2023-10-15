@@ -1,30 +1,14 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useState, useEffect, useContext } from 'react';
+import { useState, useContext } from 'react';
+import { useNavigate } from "react-router-dom";
 
-import { Button, TextField, FormControlLabel, Checkbox, Link, Grid, Box, Typography, Container, Paper, useMediaQuery, Tooltip, IconButton, Alert } from "@mui/material";
+import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper, useMediaQuery, Alert } from "@mui/material";
 
-import { useTheme } from '@mui/material/styles';
+import { UserContext } from '../../ContextProviders/UserContext';
 
-import DataObjectIcon from '@mui/icons-material/DataObject';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import HelpIcon from '@mui/icons-material/Help';
-import { UserContext } from '../ContextProviders/UserContext';
-
-async function loginUser(credentials) {
-  return fetch('https://api.citiesair.com/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    credentials: 'include',
-    body: JSON.stringify(credentials)
-  })
-    .then(data => data)
-}
-
-export default function LogIn({ onLogin }) {
-  const [_, __, setAuthenticated, setContextUserName] = useContext(UserContext);
+export default function LogIn() {
+  const [_, __, setAuthenticated, setContextUsername] = useContext(UserContext);
 
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
@@ -32,15 +16,17 @@ export default function LogIn({ onLogin }) {
 
   const [message, setMessage] = useState();
   const [isWrongCredentials, setIsWrongCredentials] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const prefabErrorMessage = 'Incorrect school ID or access code. Please try again or contact CITIESair if you think there is a mistake.';
   const prefabSuccessMessage = 'Successfully logged in.';
 
-  const theme = useTheme();
-  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    setLoading(true);
 
     fetch('https://api.citiesair.com/login', {
       method: 'POST',
@@ -56,13 +42,14 @@ export default function LogIn({ onLogin }) {
         if (response.ok) {
           setIsWrongCredentials(false);
           setMessage(prefabSuccessMessage);
-          setContextUserName(username);
+          setContextUsername(username);
+          setAuthenticated(true);
+          setLoading(false);
 
-          // Introduce a delay of 1 second before setting authenticated to true
-          // for the user to read success message
+          // Introduce a delay of 1 second before directing to dashboard page
           setTimeout(() => {
-            setAuthenticated(true);
-          }, 1000);
+            navigate("/dashboard");
+          }, 1500);
 
         }
         else {
@@ -138,7 +125,11 @@ export default function LogIn({ onLogin }) {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            LogIn
+            {
+              loading
+                ? <CircularProgress disableShrink color="inherit" size="1.5rem" />
+                : "Log In"
+            }
           </Button>
           <Typography variant="caption">
             <i>

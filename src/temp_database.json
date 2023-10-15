@@ -1,9 +1,9 @@
 {
   "isActive": true,
   "id": "air-quality",
-  "title": "Air Quality Analytics",
+  "title": "Air Quality Dashboard",
   "sheetId": "157f6vu47RBEvnBnW24jGI7cz-ov1aSBUFPdkb5sDKDc",
-  "description": "",
+  "description": "This is the dashboard subtitle, say something descriptive here.",
   "rawDataTables": [
     {
       "gid": 584789045,

@@ -6,7 +6,7 @@ import { Box, Grid, Typography, Stack, List, ListItem, ListItemText } from '@mui
 
 import CITIESlogoLinkToHome from '../../Components/Header/CITIESlogoLinkToHome';
 
-import { SensorStatus, removeLastDirectoryFromURL } from './ScreenUtils';
+import { SensorStatus, getDomainName, getUrlAfterScreen } from './ScreenUtils';
 import { TemperatureUnits } from "./TemperatureUtils";
 
 import RecentHistoricalGraph from './RecentHistoricalGraph';
@@ -129,7 +129,9 @@ const Screen = () => {
           <>Indoors air is
             <Typography
               component="span"
-              color={AQIdatabase[0].lightThemeColor}>{` ${comparison} `}
+              color={`${AQIdatabase[0].lightThemeColor} !important`}
+            >
+              {` ${comparison} `}
             </Typography>
             better than outdoors</>
         } />
@@ -147,7 +149,6 @@ const Screen = () => {
         overflow: 'hidden',
         background: "white",
         '& *': {
-          color: CustomThemes.universal.palette.inactiveSensor,
           fontWeight: '500 !important'
         },
         '& .condensedFont': {
@@ -197,7 +198,7 @@ const Screen = () => {
             <Typography variant="h4" fontWeight="500" color="white">
               PM2.5 AIR QUALITY INDEX
             </Typography>
-            <Typography variant="h5" className='condensedFont'>
+            <Typography variant="h5" className='condensedFont' color={CustomThemes.universal.palette.inactiveSensor}>
               Particulate Matter &lt; 2.5μm
             </Typography>
           </Box>
@@ -213,13 +214,16 @@ const Screen = () => {
             sx={{
               listStyleType: 'disclosure-closed',
               '& .MuiTypography-root': {
-                fontSize: '1.5rem'
+                fontSize: '1.5rem',
               },
               '& .MuiListItem-root': {
                 display: 'list-item',
                 ml: 3,
                 p: 0,
-                pr: 3
+                pr: 3,
+              },
+              '& .MuiTypography-root, .MuiListItem-root': {
+                color: CustomThemes.universal.palette.inactiveSensor
               }
             }}>
             <AirQualityComparison />
@@ -230,7 +234,9 @@ const Screen = () => {
                   key={key}
                   className={sensorData.current?.aqi >= AQIdatabase[2].aqiUS.low && 'flashingRed'}
                 >
-                  <ListItemText primary={sensorData.current?.healthSuggestion} />
+                  <ListItemText
+                    primary={sensorData.current?.healthSuggestion}
+                  />
                 </ListItem>
               ))
             }
@@ -260,8 +266,8 @@ const Screen = () => {
           textAlign="center"
         >
           <Grid item xs={12} sx={{ pt: 3, px: 2 }}>
-            <Typography variant="h4" fontWeight="500" sx={{ color: 'black' }} className='condensedFont'>
-              SCAN FOR HISTORICAL DATA
+            <Typography variant="h4" fontWeight="500" sx={{ color: 'black' }}>
+              AN INITIATIVE BY CITIESair
             </Typography>
           </Grid>
           <Grid item xs={2}>
@@ -270,7 +276,7 @@ const Screen = () => {
                 size={256}
                 style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                 value={
-                  `${removeLastDirectoryFromURL(document.location.href)}?source=screen`
+                  `${getDomainName(document.location.href)}?source=${getUrlAfterScreen(document.location.href)}`
                 } viewBox={`0 0 256 256`}
               />
             </Box>

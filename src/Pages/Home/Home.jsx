@@ -1,9 +1,7 @@
 import { useEffect, useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
 
 import { Button, Box, Grid, Stack, Typography, Container, Card, CardContent, CardMedia, CardActionArea, Divider, Tooltip } from '@mui/material';
 import { LinkContext } from '../../ContextProviders/LinkContext';
-import { HomeDataContext } from '../../ContextProviders/HomePageContext';
 
 import UppercaseTitle from '../../Components/UppercaseTitle';
 import FullWidthBox from '../../Components/FullWidthBox';
@@ -19,6 +17,8 @@ import Map from './Map';
 
 import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
 import { fetchAndProcessCurrentData } from '../../Utils/ApiUtils';
+
+import LaunchIcon from '@mui/icons-material/Launch';
 
 function Home({ themePreference, title }) {
   // Update the page's title
@@ -75,7 +75,7 @@ function Home({ themePreference, title }) {
                   target="blank"
                   rel="noopener noreferrer"
                 >
-                  NYUAD Dashboard (Public Access)
+                  <LaunchIcon sx={{ fontSize: '0.8rem' }} />&nbsp;NYUAD Dashboard (Public Access)
                 </Button>
                 <Typography variant="caption" color="text.secondary">
                   See detailed analysis of historical air quality data at NYUAD
