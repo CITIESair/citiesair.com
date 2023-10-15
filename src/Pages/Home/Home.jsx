@@ -20,7 +20,7 @@ import { fetchAndProcessCurrentData } from '../../Utils/ApiUtils';
 
 import LaunchIcon from '@mui/icons-material/Launch';
 
-function Home({ themePreference, title }) {
+function Home({ themePreference, temperatureUnitPreference, title }) {
   // Update the page's title
   useEffect(() => {
     document.title = title;
@@ -64,6 +64,7 @@ function Home({ themePreference, title }) {
                 currentData={nyuadCurrentSensorData}
                 isScreen={false}
                 orderOfItems={[3, 1, 2]}
+                temperatureUnitPreference={temperatureUnitPreference}
               />
             </Grid>
             <Grid item xs={12}>
@@ -95,7 +96,7 @@ function Home({ themePreference, title }) {
             Below is a map of CITIESair's public outdoor air quality monitoring stations. We are expanding the network to cover various schools in Abu Dhabi to raise air quality awareness towards more sustainable and healthy-living lifestyles. This map <u><b>does not</b></u> display indoor stations in participating schools to protect their privacy. That said, we strive to publish all outdoor monitoring stations' measurements on IQAir, the world's most popular air quality monitoring platform, to make the data publicly available the surrounding community, school teachers, staff, and parents.
           </Typography>
         </Container>
-        <Map themePreference={themePreference} />
+        <Map themePreference={themePreference} temperatureUnitPreference={temperatureUnitPreference} />
 
       </FullWidthBox>
 

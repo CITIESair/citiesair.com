@@ -49,7 +49,7 @@ export const CustomChip = (props) => {
   );
 }
 
-const Project = ({ themePreference, currentSensorData, dashboardData, fetchDashboardData }) => {
+const Project = ({ themePreference, currentSensorData, dashboardData, fetchDashboardData, temperatureUnitPreference }) => {
   const [_, __, chartsTitlesList, setChartsTitlesList] = useContext(LinkContext);
 
   const [loading, setLoading] = useState(false);
@@ -132,6 +132,7 @@ const Project = ({ themePreference, currentSensorData, dashboardData, fetchDashb
               <CurrentAQIGrid
                 currentData={currentSensorData}
                 isScreen={false}
+                temperatureUnitPreference={temperatureUnitPreference}
               />
             </Box>
             <Typography

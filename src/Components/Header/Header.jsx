@@ -20,6 +20,7 @@ import SpeedDialButton from './SpeedDialButton';
 import jsonData from '../../section_data.json';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
 import CITIESlogoLinkToHome from './CITIESlogoLinkToHome';
+import TemperatureUnitToggle from './TemperatureUnitToggle';
 
 export const showInMobile = (defaultDisplay) => ({ display: { xs: (defaultDisplay || 'block'), lg: 'none' } });
 export const showInDesktop = (defaultDisplay) => ({ display: { xs: 'none', lg: (defaultDisplay || 'block') } });
@@ -43,7 +44,7 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
 }));
 
 export default function Header(props) {
-  const { setThemePreference } = props;
+  const { setThemePreference, temperatureUnitPreference, setTemperatureUnitPreference } = props;
 
   // eslint-disable-next-line no-unused-vars
   const [currentPage, _, chartsTitlesList, __] = useContext(LinkContext);
@@ -150,10 +151,14 @@ export default function Header(props) {
             </Box>
 
             <Container sx={{ pt: 2, pb: 3 }}>
-              <Typography variant="h6" color="text.secondary" fontWeight="medium" gutterBottom>
-                Page Settings
-              </Typography>
-              <ThemeSelector isFullWidth setThemePreference={setThemePreference} />
+              <Stack direction="column" spacing={1}>
+                <Typography variant="h6" color="text.secondary" fontWeight="medium" >
+                  Page Settings
+                </Typography>
+                <ThemeSelector isFullWidth setThemePreference={setThemePreference} />
+                <TemperatureUnitToggle passedTemperatureUnit={temperatureUnitPreference} setTemperatureUnitPreference={setTemperatureUnitPreference} />
+              </Stack>
+
             </Container>
 
           </Stack>

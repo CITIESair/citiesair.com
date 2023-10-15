@@ -21,6 +21,7 @@ import LogIn from './Components/Account/LogIn';
 
 // Contexts
 import { UserContext } from './ContextProviders/UserContext';
+import { TemperatureUnits } from './Pages/Screen/TemperatureUtils';
 
 // Lazy load pages
 const Home = lazy(() => import('./Pages/Home/Home'));
@@ -55,6 +56,11 @@ function App() {
     || (window.matchMedia('(prefers-color-scheme: dark)').matches
       ? ThemePreferences.dark : ThemePreferences.light)
   );
+  // Set temperature unit preference state based on localStorage
+  const [temperatureUnitPreference, setTemperatureUnitPreference] = useState(
+    localStorage.getItem('temperatureUnit')
+    || TemperatureUnits.celsius
+  );
 
   // Create theme using getDesignTokens
   const theme = useMemo(
@@ -86,8 +92,8 @@ function App() {
                 path="/"
                 element={
                   <Box>
-                    <Header setThemePreference={setThemePreference} />
-                    <Home themePreference={themePreference} title="CITIESair" />
+                    <Header setThemePreference={setThemePreference} temperatureUnitPreference={temperatureUnitPreference} setTemperatureUnitPreference={setTemperatureUnitPreference} />
+                    <Home themePreference={themePreference} temperatureUnitPreference={temperatureUnitPreference} title="CITIESair" />
                     <Footer />
                   </Box>
                 }
@@ -97,7 +103,7 @@ function App() {
                 path="/login"
                 element={
                   <Box>
-                    <Header setThemePreference={setThemePreference} />
+                    <Header setThemePreference={setThemePreference} temperatureUnitPreference={temperatureUnitPreference} setTemperatureUnitPreference={setTemperatureUnitPreference} />
                     <LogIn />
                     <Footer />
                   </Box>
@@ -110,14 +116,14 @@ function App() {
                   authenticated
                     ? (
                       <Box>
-                        <Header setThemePreference={setThemePreference} />
-                        <Dashboard themePreference={themePreference} title="CITIESair | Dashboard" />
+                        <Header setThemePreference={setThemePreference} temperatureUnitPreference={temperatureUnitPreference} setTemperatureUnitPreference={setTemperatureUnitPreference} />
+                        <Dashboard themePreference={themePreference} temperatureUnitPreference={temperatureUnitPreference} title="CITIESair | Dashboard" />
                         <Footer />
                       </Box>
                     )
                     : (
                       <Box>
-                        <Header setThemePreference={setThemePreference} title="CITIESair | Login" />
+                        <Header setThemePreference={setThemePreference} temperatureUnitPreference={temperatureUnitPreference} setTemperatureUnitPreference={setTemperatureUnitPreference} title="CITIESair | Login" />
                         <LogIn />
                         <Footer />
                       </Box>
@@ -127,7 +133,7 @@ function App() {
 
               <Route
                 path="/screen/*"
-                element={<Screen title="CITIESair | Screen" />}
+                element={<Screen temperatureUnitPreference={temperatureUnitPreference} title="CITIESair | Screen" />}
               />
 
               <Route path="/404" element={<FourOhFour title="Page Not Found | CITIESair" />} />

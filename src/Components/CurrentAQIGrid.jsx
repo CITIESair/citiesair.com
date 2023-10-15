@@ -16,12 +16,7 @@ import CustomThemes from '../Themes/CustomThemes';
 
 const CurrentAQIGrid = (props) => {
 
-  const {
-    currentData,
-    temperatureUnit = TemperatureUnits.celsius,
-    isScreen = true,
-    orderOfItems
-  } = props;
+  const { currentData, temperatureUnitPreference, isScreen = true, orderOfItems } = props;
 
   const getGridItemSize = (numOfItems) => {
     return {
@@ -82,7 +77,7 @@ const CurrentAQIGrid = (props) => {
                   getFormattedTemperature({
                     rawTemp: sensorData.current?.temperature || "--",
                     currentUnit: TemperatureUnits.celsius,
-                    returnUnit: temperatureUnit
+                    returnUnit: temperatureUnitPreference
                   })
                 }
                 &nbsp;&nbsp;-&nbsp;
@@ -97,7 +92,7 @@ const CurrentAQIGrid = (props) => {
                     rawTemp: sensorData.current?.temperature,
                     currentUnit: TemperatureUnits.celsius,
                     rel_humidity: sensorData.current?.rel_humidity,
-                    returnUnit: temperatureUnit
+                    returnUnit: temperatureUnitPreference
                   })}
                 </Typography>
               }

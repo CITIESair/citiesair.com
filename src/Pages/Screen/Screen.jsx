@@ -20,14 +20,13 @@ import QRCode from "react-qr-code";
 import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
 import { fetchAndProcessCurrentData } from '../../Utils/ApiUtils';
 
-const Screen = ({ title }) => {
+const Screen = ({ title, temperatureUnitPreference }) => {
   // Update the page's title
   useEffect(() => {
     document.title = title;
   }, [title]);
 
   const [isLayoutReversed, setIsLayoutReversed] = useState();
-  const [temperatureUnit, setTemperatureUnit] = useState(TemperatureUnits.celsius); // default
 
   const [data, setData] = useState({});
 
@@ -55,24 +54,6 @@ const Screen = ({ title }) => {
     return () => {
       clearInterval(intervalId);
     };
-  }, []);
-
-  // Get searchParams for customization
-  // like switching to Fahrenheit / turning on-off heatIndex
-  // urlParams should be something like this /?isFahrenheit
-  useEffect(() => {
-    const url = new URL(document.location.href);
-    const searchParamsKeys = url.searchParams;
-
-    searchParamsKeys.forEach((value, key) => {
-      switch (key) {
-        case 'isFahrenheit':
-          setTemperatureUnit(TemperatureUnits.fahrenheit);
-          break;
-        default:
-          break;
-      }
-    });
   }, []);
 
   // Fetch air quality data from database
@@ -212,7 +193,7 @@ const Screen = ({ title }) => {
             container
             justifyContent="space-around"
           >
-            <CurrentAQIGrid currentData={data} temperatureUnit={temperatureUnit} />
+            <CurrentAQIGrid currentData={data} temperatureUnitPreference={temperatureUnitPreference} />
           </Grid>
 
           <List className='condensedFont'

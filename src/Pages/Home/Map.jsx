@@ -40,7 +40,7 @@ function MapPlaceholder() {
     )
 }
 
-const Map = ({ themePreference }) => {
+const Map = ({ themePreference, temperatureUnitPreference }) => {
     const [mapData, setMapData] = useState({});
     const theme = useTheme();
 
@@ -165,7 +165,7 @@ const Map = ({ themePreference }) => {
                                         getFormattedTemperature({
                                             rawTemp: location.current?.temperature,
                                             currentUnit: TemperatureUnits.celsius,
-                                            returnUnit: TemperatureUnits.celsius
+                                            returnUnit: temperatureUnitPreference
                                         })}
                                     &nbsp;&nbsp;-&nbsp;&nbsp;
                                     {location.current?.rel_humidity ? Math.round(location.current?.rel_humidity) : "--"}%

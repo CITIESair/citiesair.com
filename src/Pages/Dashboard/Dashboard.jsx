@@ -9,7 +9,7 @@ import Project from "../Project/Project";
 import { processCurrentData } from "../../Utils/ApiUtils";
 import { LinkContext } from "../../ContextProviders/LinkContext";
 
-const Dashboard = ({ themePreference, title }) => {
+const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
   // Update the page's title
   useEffect(() => {
     document.title = title;
@@ -51,6 +51,7 @@ const Dashboard = ({ themePreference, title }) => {
         currentSensorData={currentSensorData}
         dashboardData={dashboardData}
         fetchDashboardData={fetchDashboardData}
+        temperatureUnitPreference={temperatureUnitPreference}
       />
     </>
   )
