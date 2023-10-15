@@ -57,8 +57,6 @@ const Project = ({ themePreference, currentSensorData, dashboardData, fetchDashb
 
   let lastUpdate;
 
-  // Update the page's title
-  // useEffect(() => { if (locationData) document.title = `${locationData.name} | ${project.title}`, [locationData] });
   useEffect(() => {
     setChartsTitlesList([]);
   }, [setChartsTitlesList]);

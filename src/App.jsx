@@ -111,13 +111,13 @@ function App() {
                     ? (
                       <Box>
                         <Header setThemePreference={setThemePreference} />
-                        <Dashboard themePreference={themePreference} />
+                        <Dashboard themePreference={themePreference} title="CITIESair | Dashboard" />
                         <Footer />
                       </Box>
                     )
                     : (
                       <Box>
-                        <Header setThemePreference={setThemePreference} />
+                        <Header setThemePreference={setThemePreference} title="CITIESair | Login" />
                         <LogIn />
                         <Footer />
                       </Box>
@@ -127,7 +127,7 @@ function App() {
 
               <Route
                 path="/screen/*"
-                element={<Screen />}
+                element={<Screen title="CITIESair | Screen" />}
               />
 
               <Route path="/404" element={<FourOhFour title="Page Not Found | CITIESair" />} />

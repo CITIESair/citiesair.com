@@ -9,7 +9,12 @@ import Project from "../Project/Project";
 import { processCurrentData } from "../../Utils/ApiUtils";
 import { LinkContext } from "../../ContextProviders/LinkContext";
 
-const Dashboard = ({ themePreference }) => {
+const Dashboard = ({ themePreference, title }) => {
+  // Update the page's title
+  useEffect(() => {
+    document.title = title;
+  }, [title]);
+
   const [_, setCurrentPage, __, ___] = useContext(LinkContext);
   useEffect(() => {
     setCurrentPage('dashboard');

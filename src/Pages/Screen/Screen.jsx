@@ -20,7 +20,12 @@ import QRCode from "react-qr-code";
 import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
 import { fetchAndProcessCurrentData } from '../../Utils/ApiUtils';
 
-const Screen = () => {
+const Screen = ({ title }) => {
+  // Update the page's title
+  useEffect(() => {
+    document.title = title;
+  }, [title]);
+
   const [isLayoutReversed, setIsLayoutReversed] = useState();
   const [temperatureUnit, setTemperatureUnit] = useState(TemperatureUnits.celsius); // default
 
