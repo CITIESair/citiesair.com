@@ -36,6 +36,7 @@ import ChartSubstituteComponentLoader from '../../Graphs/ChartSubstituteComponen
 import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
 import { SchoolSelector } from "../Dashboard/SchoolSelector";
 
+
 // Custom Chip component to display metadata
 export const CustomChip = (props) => {
   const { tooltipTitle, ...otherProps } = props;
@@ -58,8 +59,9 @@ const Project = ({ themePreference, currentSensorData, dashboardData, fetchDashb
   let lastUpdate;
 
   useEffect(() => {
-    setChartsTitlesList([]);
-  }, [setChartsTitlesList]);
+    const chartsTitles = project.charts.map((element, index) => ({ chartTitle: element.title, chartID: `chart-${index + 1}` }));
+    setChartsTitlesList(chartsTitles);
+  }, []);
   const theme = useTheme();
 
   return (
@@ -157,6 +159,76 @@ const Project = ({ themePreference, currentSensorData, dashboardData, fetchDashb
             </Stack>
           </Container>
         </FullWidthBox>
+
+        <Box id={jsonData.charts.id}>
+          {project.charts.map((element, index) => (
+            <FullWidthBox
+              key={index}
+              backgroundColor={
+                index % 2 != 0 && 'customAlternateBackground'
+              }
+            >
+              <Container
+                sx={{ pt: 4, pb: 4 }}
+                height="auto"
+                className={themePreference === ThemePreferences.dark ? 'dark' : ''}
+              >
+                <Typography variant="h6" color="text.primary">
+                  {index + 1}. {element.title}
+                </Typography>
+
+                {/* Either display the regular ChartComponent, or substitute with a customized component in ../../Graphs/ChartSubstituteComponents/ (if specified) */}
+                {element.chartSubstituteComponentName ?
+                  <ChartSubstituteComponentLoader chartSubstituteComponentName={element.chartSubstituteComponentName} />
+                  : (
+                    <ChartComponent
+                      chartData={{
+                        chartIndex: index,
+                        sheetId: project.sheetId,
+                        ...element,
+                      }}
+                      dataArray={dashboardData?.charts}
+                    />
+                  )}
+
+                <Box sx={{ my: 3 }}>
+                  <Typography
+                    component="div"
+                    variant="body1"
+                    color="text.secondary"
+                  >
+                    {element.subtitle && parse(element.subtitle, {
+                      replace: replacePlainHTMLWithMuiComponents,
+                    })}
+                    {Object.keys(tab)[index] == index &&
+                      element.subcharts &&
+                      element.subcharts[Object.values(tab)[index]]
+                        .subchartSubtitle &&
+                      parse(
+                        element.subcharts[Object.values(tab)[index]]
+                          .subchartSubtitle, {
+                        replace: replacePlainHTMLWithMuiComponents,
+                      }
+                      )}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {element.reference && parse(element.reference, {
+                      replace: replacePlainHTMLWithMuiComponents,
+                    })}
+                    {Object.keys(tab)[index] == index &&
+                      element.subcharts &&
+                      element.subcharts[Object.values(tab)[index]].reference &&
+                      parse(
+                        element.subcharts[Object.values(tab)[index]].reference, {
+                        replace: replacePlainHTMLWithMuiComponents,
+                      }
+                      )}
+                  </Typography>
+                </Box>
+              </Container>
+            </FullWidthBox>
+          ))}
+        </Box>
 
         <Divider />
       </Box>

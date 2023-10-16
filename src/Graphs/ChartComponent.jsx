@@ -48,7 +48,7 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
 }));
 
 // eslint-disable-next-line max-len
-function ChartComponent({ chartData: passedChartData, chartHeight: passedChartHeight, isHomepage }) {
+function ChartComponent({ chartData: passedChartData, chartHeight: passedChartHeight, isHomepage, dataArray: passedDataArray }) {
   const isSmallWidth = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   const [isPortrait, setIsPortrait] = useState(window.matchMedia('(orientation: portrait)').matches);
@@ -128,6 +128,7 @@ function ChartComponent({ chartData: passedChartData, chartHeight: passedChartHe
     if (isHomepage) {
       renderedComponent = (
         <SubChart
+          dataArray={passedDataArray}
           chartData={chartData}
           subchartIndex={0}
           isPortrait={isPortrait}
@@ -171,6 +172,7 @@ function ChartComponent({ chartData: passedChartData, chartHeight: passedChartHe
                 }}
               >
                 <SubChart
+                  dataArray={passedDataArray}
                   chartData={chartData}
                   subchartIndex={index}
                   isPortrait={isPortrait}
@@ -193,6 +195,7 @@ function ChartComponent({ chartData: passedChartData, chartHeight: passedChartHe
     // If there is only one single chart
     renderedComponent = (
       <SubChart
+        dataArray={passedDataArray}
         chartData={chartData}
         isPortrait={isPortrait}
         isHomepage={isHomepage}

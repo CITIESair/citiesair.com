@@ -20,7 +20,7 @@ import ChartSubstituteComponentLoader from '../ChartSubstituteComponents/ChartSu
 
 export default function SubChart(props) {
   // Props
-  const { chartData, subchartIndex, windowSize, isPortrait, isHomepage, height, maxHeight } = props;
+  const { dataArray, chartData, subchartIndex, windowSize, isPortrait, isHomepage, height, maxHeight } = props;
 
   // Early return if this doesn't contain a normal Google Chart but a chartSubstituteComponent
   const chartSubstituteComponentName = chartData.subcharts?.[subchartIndex].chartSubstituteComponentName;
@@ -305,63 +305,58 @@ export default function SubChart(props) {
 
   // Call this function to fetch the data and draw the initial chart
   useEffect(() => {
-    if (google && !chartWrapper) {
-      fetchDataFromSheet({ chartData: chartData, subchartIndex: subchartIndex })
-        .then(response => {
-          const thisDataTable = response.getDataTable();
-          setDataTable(thisDataTable);
-          const thisChartWrapper = new google.visualization.ChartWrapper({
-            chartType: chartData.chartType,
-            dataTable: (!hasChartControl) ? thisDataTable : undefined,
-            options: options,
-            view: {
-              columns:
-                chartData.columns
-                || (chartData.subcharts
-                  && chartData.subcharts[subchartIndex].columns)
-                || null
-                || null,
-            },
-            containerId: chartID
-          });
-          setChartWrapper(thisChartWrapper);
+    if (google && !chartWrapper && dataArray) {
+      const thisDataTable = google.visualization.arrayToDataTable(dataArray);
+      setDataTable(thisDataTable);
+      const thisChartWrapper = new google.visualization.ChartWrapper({
+        chartType: chartData.chartType,
+        dataTable: (!hasChartControl) ? thisDataTable : undefined,
+        options: options,
+        view: {
+          columns:
+            chartData.columns
+            || (chartData.subcharts
+              && chartData.subcharts[subchartIndex].columns)
+            || null
+            || null,
+        },
+        containerId: chartID
+      });
+      setChartWrapper(thisChartWrapper);
 
-          if (hasChartControl) {
-            const thisDashboardWrapper = new google.visualization.Dashboard(
-              document.getElementById(`dashboard-${chartID}`));
-            setDashboardWrapper(thisDashboardWrapper);
+      if (hasChartControl) {
+        const thisDashboardWrapper = new google.visualization.Dashboard(
+          document.getElementById(`dashboard-${chartID}`));
+        setDashboardWrapper(thisDashboardWrapper);
 
-            google.visualization.events.addListener(thisDashboardWrapper, 'ready', onChartReady);
+        google.visualization.events.addListener(thisDashboardWrapper, 'ready', onChartReady);
 
-            const thisControlWrapper = new google.visualization.ControlWrapper({
-              controlType: chartControl.controlType,
-              options: chartControlOptions,
-              containerId: `control-${chartID}`
-            });
-            setControlWrapper(thisControlWrapper);
-
-            // Establish dependencies
-            thisDashboardWrapper.bind(thisControlWrapper, thisChartWrapper);
-
-            thisDashboardWrapper.draw(thisDataTable);
-          }
-          else {
-            google.visualization.events.addListener(thisChartWrapper, 'ready', onChartReady);
-            thisChartWrapper.draw();
-          }
-
-          // Run the seriesSelector for the first time
-          if (seriesSelector) {
-            const initColumns = getInitialColumns({ chartWrapper: thisChartWrapper, dataTable: thisDataTable, seriesSelector: seriesSelector });
-            handleSeriesSelection(initColumns, thisChartWrapper);
-          }
-
-        })
-        .catch(error => {
-          console.log(error);
+        const thisControlWrapper = new google.visualization.ControlWrapper({
+          controlType: chartControl.controlType,
+          options: chartControlOptions,
+          containerId: `control-${chartID}`
         });
+        setControlWrapper(thisControlWrapper);
+
+        // Establish dependencies
+        thisDashboardWrapper.bind(thisControlWrapper, thisChartWrapper);
+
+        thisDashboardWrapper.draw(thisDataTable);
+      }
+      else {
+        google.visualization.events.addListener(thisChartWrapper, 'ready', onChartReady);
+        thisChartWrapper.draw();
+      }
+
+      // Run the seriesSelector for the first time
+      if (seriesSelector) {
+        const initColumns = getInitialColumns({ chartWrapper: thisChartWrapper, dataTable: thisDataTable, seriesSelector: seriesSelector });
+        handleSeriesSelection(initColumns, thisChartWrapper);
+      }
+
+
     }
-  }, [google]);
+  }, [google, dataArray]);
 
   const renderChart = () => {
     if (hasChartControl) {

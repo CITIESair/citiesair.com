@@ -70,7 +70,16 @@ const CurrentAQIGrid = (props) => {
               </Typography>
             </Box>
 
-            <Box sx={{ '& *': { color: (isScreen && sensorData.current?.sensor_status === SensorStatus.active) ? '#c8dcff' : 'text.secondary' }, mt: isScreen ? 2 : 1 }} className='condensedFont'>
+            <Box sx={{
+              '& *': {
+                color:
+                  isScreen ? (
+                    sensorData.current?.sensor_status === SensorStatus.active ?
+                      '#c8dcff' : CustomThemes.universal.palette.inactiveSensor
+                  )
+                    : 'text.secondary'
+              }, mt: isScreen ? 2 : 1
+            }} className='condensedFont'>
               <Typography variant={isScreen ? "h6" : 'body1'}>
                 <ThermostatIcon />
                 {
