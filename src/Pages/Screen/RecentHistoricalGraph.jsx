@@ -241,7 +241,6 @@ const RecentHistoricalGraph = (props) => {
           const overlapped = areDOMOverlapped(locationLabel_1.getBoundingClientRect(), locationLabel_2.getBoundingClientRect());
 
           if (overlapped !== 0) {
-            console.log("haha")
             locationLabel_1.setAttribute("y", overlapped * dotRadius);
             locationLabel_2.setAttribute("y", - overlapped * dotRadius);
           }
