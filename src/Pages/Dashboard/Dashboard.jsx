@@ -26,7 +26,8 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (checkAuthentication && !authenticated) {
+    console.log(checkAuthentication)
+    if (checkAuthentication === true && authenticated === false) {
       navigate('/login');
     }
   }, [authenticated, checkAuthentication])

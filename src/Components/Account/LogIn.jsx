@@ -1,6 +1,6 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 
 import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper, useMediaQuery, Alert } from "@mui/material";
@@ -8,7 +8,13 @@ import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, T
 import { UserContext } from '../../ContextProviders/UserContext';
 
 export default function LogIn() {
-  const { setAuthenticated, setContextUsername } = useContext(UserContext);
+  const { authenticated, checkAuthentication, setAuthenticated, setContextUsername } = useContext(UserContext);
+
+  useEffect(() => {
+    if (checkAuthentication === true && authenticated === true) {
+      navigate('/dashboard');
+    }
+  }, [authenticated, checkAuthentication])
 
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
@@ -19,7 +25,6 @@ export default function LogIn() {
   const [loading, setLoading] = useState(false);
 
   const prefabErrorMessage = 'Incorrect school ID or access code. Please try again or contact CITIESair if you think there is a mistake.';
-  const prefabSuccessMessage = 'Successfully logged in.';
 
   const navigate = useNavigate();
 
@@ -41,16 +46,10 @@ export default function LogIn() {
       .then((response) => {
         if (response.ok) {
           setIsWrongCredentials(false);
-          setMessage(prefabSuccessMessage);
           setContextUsername(username);
           setAuthenticated(true);
           setLoading(false);
-
-          // Introduce a delay of 1 second before directing to dashboard page
-          setTimeout(() => {
-            navigate("/dashboard");
-          }, 1500);
-
+          navigate("/dashboard");
         }
         else {
           throw new Error(`Error authenticating`);
@@ -60,7 +59,6 @@ export default function LogIn() {
         setMessage(prefabErrorMessage);
         setIsWrongCredentials(true);
         setLoading(false);
-
         console.log(error);
       })
   };

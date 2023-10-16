@@ -9,21 +9,19 @@ export function UserProvider({ children }) {
   const [username, setContextUsername] = useState();
 
   useEffect(() => {
-    if (!checkAuthentication) {
-      const url = 'https://api.citiesair.com/me';
-      try {
-        fetchDataFromURL(url, 'json', true)
-          .then((data) => {
-            if (data.username) {
-              setContextUsername(data.username);
-              setAuthenticated(true);
-            }
-          });
+    const url = 'https://api.citiesair.com/me';
+    fetchDataFromURL(url, 'json', true)
+      .then((data) => {
         setCheckAuthentication(true);
-      } catch (error) {
+        if (data.username) {
+          setContextUsername(data.username);
+          setAuthenticated(true);
+        }
+      })
+      .catch((error) => {
+        setCheckAuthentication(true);
         console.log(error);
-      }
-    }
+      });
   }, []);
 
   // eslint-disable-next-line max-len
