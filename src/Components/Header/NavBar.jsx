@@ -29,7 +29,7 @@ const StyledMenuList = styled(MenuList)(({ theme }) => ({
 
 export default function NavBar(props) {
   const { currentPage, isMobile } = props;
-  const [authenticated, username] = useContext(UserContext);
+  const { authenticated, username } = useContext(UserContext);
   const [navbar, setNavbar] = useState();
 
   const homeNavLink = (

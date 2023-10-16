@@ -48,7 +48,7 @@ const getDesignTokens = (themePreference) => ({
 
 function App() {
   // Get authentication context
-  const [authenticated, _] = useContext(UserContext);
+  const { authenticated, checkAuthentication } = useContext(UserContext);
 
   // Set theme preference state based on localStorage or system preference
   const [themePreference, setThemePreference] = useState(
@@ -113,21 +113,11 @@ function App() {
               <Route
                 path="/dashboard"
                 element={
-                  authenticated
-                    ? (
-                      <Box>
-                        <Header setThemePreference={setThemePreference} temperatureUnitPreference={temperatureUnitPreference} setTemperatureUnitPreference={setTemperatureUnitPreference} />
-                        <Dashboard themePreference={themePreference} temperatureUnitPreference={temperatureUnitPreference} title="CITIESair | Dashboard" />
-                        <Footer />
-                      </Box>
-                    )
-                    : (
-                      <Box>
-                        <Header setThemePreference={setThemePreference} temperatureUnitPreference={temperatureUnitPreference} setTemperatureUnitPreference={setTemperatureUnitPreference} title="CITIESair | Login" />
-                        <LogIn />
-                        <Footer />
-                      </Box>
-                    )
+                  <Box>
+                    <Header setThemePreference={setThemePreference} temperatureUnitPreference={temperatureUnitPreference} setTemperatureUnitPreference={setTemperatureUnitPreference} />
+                    <Dashboard themePreference={themePreference} temperatureUnitPreference={temperatureUnitPreference} title="CITIESair | Dashboard" />
+                    <Footer />
+                  </Box>
                 }
               />
 

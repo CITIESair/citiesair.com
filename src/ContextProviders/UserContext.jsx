@@ -27,7 +27,13 @@ export function UserProvider({ children }) {
   }, []);
 
   // eslint-disable-next-line max-len
-  const providerValue = useMemo(() => [authenticated, username, setAuthenticated, setContextUsername], [authenticated, username]);
+  const providerValue = useMemo(() => ({
+    authenticated,
+    checkAuthentication,
+    username,
+    setAuthenticated,
+    setContextUsername
+  }), [checkAuthentication, authenticated, username]);
 
   // return context provider
   return (

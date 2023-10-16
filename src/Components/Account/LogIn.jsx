@@ -8,7 +8,7 @@ import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, T
 import { UserContext } from '../../ContextProviders/UserContext';
 
 export default function LogIn() {
-  const [_, __, setAuthenticated, setContextUsername] = useContext(UserContext);
+  const { setAuthenticated, setContextUsername } = useContext(UserContext);
 
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
@@ -59,6 +59,8 @@ export default function LogIn() {
       .catch((error) => {
         setMessage(prefabErrorMessage);
         setIsWrongCredentials(true);
+        setLoading(false);
+
         console.log(error);
       })
   };

@@ -2,12 +2,14 @@
 /* eslint-disable */
 
 import { useState, useEffect, useContext } from "react";
-import { Box, Chip } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 import { fetchDataFromURL } from "../../Components/DatasetDownload/DatasetFetcher";
 import Project from "../Project/Project";
 import { processCurrentData } from "../../Utils/ApiUtils";
 import { LinkContext } from "../../ContextProviders/LinkContext";
+
+import { UserContext } from "../../ContextProviders/UserContext";
 
 const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
   // Update the page's title
@@ -19,6 +21,15 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
   useEffect(() => {
     setCurrentPage('dashboard');
   }, []);
+
+  const { authenticated, checkAuthentication } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (checkAuthentication && !authenticated) {
+      navigate('/login');
+    }
+  }, [authenticated, checkAuthentication])
 
   const [dashboardData, setDashboardData] = useState({});
   const [currentSensorData, setCurrentSensorData] = useState({});

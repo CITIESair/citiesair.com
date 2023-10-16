@@ -55,7 +55,7 @@ const CurrentAQIGrid = (props) => {
             {...getGridItemSize(Object.keys(currentData).length)}
             sx={
               sensorData.current?.sensor_status !== SensorStatus.active &&
-              { '& *': { color: `${CustomThemes.universal.palette.inactiveSensor}!important` } }
+              { '& *': { color: `${CustomThemes.universal.palette.inactiveSensor}` } }
             }
           >
             <Box sx={{ '& *': { color: sensorData.current?.color } }}>
@@ -70,7 +70,7 @@ const CurrentAQIGrid = (props) => {
               </Typography>
             </Box>
 
-            <Box sx={{ '& *': { color: isScreen ? '#c8dcff' : 'text.secondary' }, mt: isScreen ? 2 : 1 }} className='condensedFont'>
+            <Box sx={{ '& *': { color: (isScreen && sensorData.current?.sensor_status === SensorStatus.active) ? '#c8dcff' : 'text.secondary' }, mt: isScreen ? 2 : 1 }} className='condensedFont'>
               <Typography variant={isScreen ? "h6" : 'body1'}>
                 <ThermostatIcon />
                 {
