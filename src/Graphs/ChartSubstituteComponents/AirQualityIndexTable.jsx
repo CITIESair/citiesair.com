@@ -89,7 +89,7 @@ function AirQualityIndexTable(props) {
           </TableBody>
         </StyledTable>
       </Box>
-      {!hideAQIDescription
+      {/* {!hideAQIDescription
         && (
           <ChartComponent
             chartHeight="4rem"
@@ -119,7 +119,7 @@ function AirQualityIndexTable(props) {
               }
             }
           />
-        )}
+        )} */}
     </>
 
   );

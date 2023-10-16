@@ -156,7 +156,7 @@ export default function Header(props) {
                   Page Settings
                 </Typography>
                 <ThemeSelector isFullWidth setThemePreference={setThemePreference} />
-                <TemperatureUnitToggle passedTemperatureUnit={temperatureUnitPreference} setTemperatureUnitPreference={setTemperatureUnitPreference} />
+                <TemperatureUnitToggle passedTemperatureUnit={temperatureUnitPreference} passedSetTemperatureUnitPreference={setTemperatureUnitPreference} />
               </Stack>
 
             </Container>

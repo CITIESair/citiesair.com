@@ -3,12 +3,13 @@ import { Box, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 
 import { TemperatureUnits } from '../../Pages/Screen/TemperatureUtils';
 
-export default function TemperatureUnitToggle({ passedTemperatureUnit }) {
+export default function TemperatureUnitToggle({ passedTemperatureUnit, passedSetTemperatureUnitPreference }) {
   const [temperatureUnit, setTemperatureUnit] = useState(passedTemperatureUnit);
 
   const handleChange = (event, newUnit) => {
     localStorage.setItem('temperatureUnit', newUnit);
     setTemperatureUnit(newUnit);
+    passedSetTemperatureUnitPreference(newUnit);
   };
 
   return (

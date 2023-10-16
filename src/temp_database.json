@@ -2,7 +2,7 @@
   "isActive": true,
   "id": "air-quality",
   "title": "Air Quality Dashboard",
-  "description": "This page provides detailed analytics of the air quality sensors deployed at your school. Our team at CITIESair is working hard to bring the existing data visualizations on <a href='https://citiesdashboard.com/project/air-quality'>NYUAD's Air Quality Dashboard</a> to your dashboard here. We expect the transition to be completed by the end of <b>October 2023</b>.<br/><br/>In the meantime, you can browse the descriptions of various air quality categories and historical air quality data at your school below. You can also click on the <b>TV Screen</b> button below to visualize on a big public TV screen real-time air quality comparison between the indoor and outdoor sensors.",
+  "description": "This page provides detailed analytics of the air quality sensors deployed at your school. Our team at CITIESair is working hard to bring the existing data visualizations on <a href='https://citiesdashboard.com/project/air-quality'>NYUAD's Air Quality Dashboard</a> to your dashboard here. We expect the transition to be completed by the end of <b>October 2023</b>.<br/><br/>In the meantime, you can browse the descriptions of air quality categories and recent historical air quality data at your school below. All past historical data will be added soon. You can also click on the <b>TV Screen</b> button below to visualize on a big public TV screen real-time air quality comparison between the indoor and outdoor sensors.",
   "charts": [
     {
       "title": "An Introduction of the US Air Quality Index (AQI)",
@@ -16,8 +16,7 @@
       "subcharts": [
         {
           "subchartTitle": "Hourly (Last 7 Days)",
-          "query": "SELECT A, E, F, G, H, I, J, B, C, D",
-          "subchartSubtitle": "<b>Adjust the slider to zoom in.</b><br><br>Explore the <b>latest</b> hourly average AQI over the past month to see the differences in the air quality between different locations on the NYUAD campus.",
+          "subchartSubtitle": "<b>Adjust the slider to zoom in.</b><br><br>Explore the <b>latest</b> hourly average AQI  to see the differences in the air quality between different locations on the school campus.",
           "options": {
             "hAxis": {
               "title": "Date Time",
@@ -37,7 +36,6 @@
           }
         }
       ],
-      "headers": 1,
       "chartType": "ComboChart",
       "options": {
         "seriesSelector": {
@@ -103,6 +101,15 @@
             "lineDashStyle": [
               1.25,
               0.75
+            ]
+          },
+          "9": {
+            "lineWidth": 1.25,
+            "type": "line",
+            "color": "#555",
+            "lineDashStyle": [
+              2.5,
+              2.5
             ]
           }
         },
