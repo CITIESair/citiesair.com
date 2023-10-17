@@ -1,6 +1,8 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { useNavigate } from "react-router-dom";
+import { UserContext } from '../../ContextProviders/UserContext';
 
 import { Box, Grid, Typography, Stack, List, ListItem, ListItemText } from '@mui/material';
 
@@ -21,6 +23,15 @@ import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
 import { fetchAndProcessCurrentData } from '../../Utils/ApiUtils';
 
 const Screen = ({ title, temperatureUnitPreference }) => {
+  const { authenticated, checkAuthentication } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (checkAuthentication === true && authenticated === false) {
+      navigate('/login');
+    }
+  }, [authenticated, checkAuthentication])
+
   // Update the page's title
   useEffect(() => {
     document.title = title;
