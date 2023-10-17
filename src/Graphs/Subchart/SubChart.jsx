@@ -21,7 +21,6 @@ import ChartSubstituteComponentLoader from '../ChartSubstituteComponents/ChartSu
 export default function SubChart(props) {
   // Props
   const { dataArray, chartData, subchartIndex, windowSize, isPortrait, isHomepage, height, maxHeight } = props;
-
   // Early return if this doesn't contain a normal Google Chart but a chartSubstituteComponent
   const chartSubstituteComponentName = chartData.subcharts?.[subchartIndex].chartSubstituteComponentName;
   if (chartSubstituteComponentName) {
@@ -305,7 +304,7 @@ export default function SubChart(props) {
 
   // Call this function to fetch the data and draw the initial chart
   useEffect(() => {
-    if (google && !chartWrapper && dataArray) {
+    if (google && dataArray) {
       const thisDataTable = google.visualization.arrayToDataTable(dataArray);
       setDataTable(thisDataTable);
       const thisChartWrapper = new google.visualization.ChartWrapper({
