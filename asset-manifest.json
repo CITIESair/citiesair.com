@@ -1,29 +1,29 @@
 {
   "files": {
     "main.css": "/static/css/main.ccadb9c5.css",
-    "main.js": "/static/js/main.2f1b7e15.js",
-    "static/js/728.52d4d367.chunk.js": "/static/js/728.52d4d367.chunk.js",
+    "main.js": "/static/js/main.e86143b5.js",
+    "static/js/728.5d5e46c4.chunk.js": "/static/js/728.5d5e46c4.chunk.js",
     "static/js/405.9f7da54f.chunk.js": "/static/js/405.9f7da54f.chunk.js",
     "static/js/538.1857e3d1.chunk.js": "/static/js/538.1857e3d1.chunk.js",
     "static/js/759.246890a3.chunk.js": "/static/js/759.246890a3.chunk.js",
     "static/js/436.b576cb05.chunk.js": "/static/js/436.b576cb05.chunk.js",
     "static/js/400.a93dbb21.chunk.js": "/static/js/400.a93dbb21.chunk.js",
-    "static/js/831.d7a5666a.chunk.js": "/static/js/831.d7a5666a.chunk.js",
+    "static/js/843.3dd8ab1e.chunk.js": "/static/js/843.3dd8ab1e.chunk.js",
     "static/media/cities-logo.png": "/static/media/cities-logo.6e8b8fce882b8a120203.png",
     "static/media/IQAir_logo.svg": "/static/media/IQAir_logo.6664e0a790249b05f736fb791effaaf3.svg",
     "index.html": "/index.html",
     "main.ccadb9c5.css.map": "/static/css/main.ccadb9c5.css.map",
-    "main.2f1b7e15.js.map": "/static/js/main.2f1b7e15.js.map",
-    "728.52d4d367.chunk.js.map": "/static/js/728.52d4d367.chunk.js.map",
+    "main.e86143b5.js.map": "/static/js/main.e86143b5.js.map",
+    "728.5d5e46c4.chunk.js.map": "/static/js/728.5d5e46c4.chunk.js.map",
     "405.9f7da54f.chunk.js.map": "/static/js/405.9f7da54f.chunk.js.map",
     "538.1857e3d1.chunk.js.map": "/static/js/538.1857e3d1.chunk.js.map",
     "759.246890a3.chunk.js.map": "/static/js/759.246890a3.chunk.js.map",
     "436.b576cb05.chunk.js.map": "/static/js/436.b576cb05.chunk.js.map",
     "400.a93dbb21.chunk.js.map": "/static/js/400.a93dbb21.chunk.js.map",
-    "831.d7a5666a.chunk.js.map": "/static/js/831.d7a5666a.chunk.js.map"
+    "843.3dd8ab1e.chunk.js.map": "/static/js/843.3dd8ab1e.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.ccadb9c5.css",
-    "static/js/main.2f1b7e15.js"
+    "static/js/main.e86143b5.js"
   ]
 }
