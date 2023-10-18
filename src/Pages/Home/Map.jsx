@@ -1,9 +1,10 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Box, Typography, Stack, Link } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { MapContainer, TileLayer, Marker, Popup, useMap, AttributionControl } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, AttributionControl, useMapEvent, Rectangle, CircleMarker } from 'react-leaflet';
+import { useEventHandlers } from '@react-leaflet/core';
 import L from 'leaflet';
 
 import LaunchIcon from '@mui/icons-material/Launch';
@@ -31,6 +32,7 @@ const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
     }
 }));
 
+
 function MapPlaceholder() {
     return (
         <p>
@@ -38,6 +40,50 @@ function MapPlaceholder() {
             <noscript>You need to enable JavaScript to see this map.</noscript>
         </p>
     )
+}
+
+const getTileUrl = ({ themePreference, isMiniMap }) => {
+    let tileTheme;
+    switch (themePreference) {
+        case ThemePreferences.dark:
+            tileTheme = isMiniMap ? 'light' : 'dark';
+            break
+        default:
+            tileTheme = isMiniMap ? 'dark' : 'light';
+            break
+    }
+    return `https://{s}.tile.jawg.io/jawg-${tileTheme}/{z}/{x}/{y}{r}.png?access-token={accessToken}`;
+}
+const getMiniMapBoundOptions = ({ themePreference }) => {
+    switch (themePreference) {
+        case ThemePreferences.dark:
+            return {
+                fillColor: "#000",
+                color: "#000"
+            }
+        default:
+            return {
+                fillColor: "#fff",
+                color: "#fff"
+            }
+    }
+}
+const tileAttribution = '<a href="https://leafletjs.com/" target="_blank"><b>Leaflet</b></a> | <a href="https://jawg.io" target="_blank">&copy; <b>Jawg</b>Maps</a> <a href="https://www.openstreetmap.org/copyright">&copy; OpenStreetMap</a> contributors';
+const tileAccessToken = 'N4ppJQTC3M3uFOAsXTbVu6456x1MQnQTYityzGPvAkVB3pS27NMwJ4b3AfebMfjY';
+const centerCoordinate = [24.46, 54.52];
+const maxBounds = [
+    [22.608292, 51.105185], // [Southwest corner coordinates]
+    [26.407575, 56.456571], // [Northeast corner coordinates]
+];
+
+const MIN_ZOOM = 8;
+const MAX_ZOOM = 12;
+const DEFAULT_ZOOM = 10;
+const POSITION_CLASSES = {
+    bottomleft: 'leaflet-bottom leaflet-left',
+    bottomright: 'leaflet-bottom leaflet-right',
+    topleft: 'leaflet-top leaflet-left',
+    topright: 'leaflet-top leaflet-right',
 }
 
 const Map = ({ themePreference, temperatureUnitPreference }) => {
@@ -83,10 +129,93 @@ const Map = ({ themePreference, temperatureUnitPreference }) => {
 
     }, []);
 
-    const tileUrl = `https://{s}.tile.jawg.io/jawg-${themePreference ? themePreference.toLowerCase() : 'light'}/{z}/{x}/{y}{r}.png?access-token={accessToken}`;
-    const tileAttribution = '<a href="https://leafletjs.com/" target="_blank"><b>Leaflet</b></a> | <a href="https://jawg.io" target="_blank">&copy; <b>Jawg</b>Maps</a> <a href="https://www.openstreetmap.org/copyright">&copy; OpenStreetMap</a> contributors';
-    const tileAccessToken = 'N4ppJQTC3M3uFOAsXTbVu6456x1MQnQTYityzGPvAkVB3pS27NMwJ4b3AfebMfjY';
-    const centerCoordinate = [24.4132075, 54.5181108];
+    function MinimapBounds({ parentMap, zoom }) {
+        const minimap = useMap()
+
+        // Clicking a point on the minimap sets the parent's map center
+        const onClick = useCallback(
+            (e) => {
+                parentMap.setView(e.latlng, parentMap.getZoom())
+            },
+            [parentMap],
+        )
+        useMapEvent('click', onClick)
+
+        // Keep track of bounds in state to trigger renders
+        const [bounds, setBounds] = useState(parentMap.getBounds())
+        const onChange = useCallback(() => {
+            setBounds(parentMap.getBounds())
+            // Update the minimap's view to match the parent map's center and zoom
+            minimap.setView(parentMap.getCenter(), zoom)
+        }, [minimap, parentMap, zoom])
+
+        // Listen to events on the parent map
+        const handlers = useMemo(() => ({ move: onChange, zoom: onChange }), [])
+        useEventHandlers({ instance: parentMap }, handlers)
+
+        return (
+            <Rectangle
+                bounds={bounds}
+                pathOptions={{
+                    weight: 1,
+                    ...getMiniMapBoundOptions({ themePreference })
+                }}
+            />
+        );
+        return null;
+    }
+
+    function MinimapControl({ position, zoom, mapData }) {
+        const parentMap = useMap()
+        const mapZoom = zoom || MIN_ZOOM - 2;
+
+        // Memoize the minimap so it's not affected by position changes
+        const minimap = useMemo(
+            () => (
+                <MapContainer
+                    style={{ height: "20vh", width: "30vw", maxWidth: "250px", maxHeight: "200px" }}
+                    center={parentMap.getCenter()}
+                    zoom={mapZoom}
+                    dragging={false}
+                    doubleClickZoom={false}
+                    scrollWheelZoom={false}
+                    attributionControl={false}
+                    zoomControl={false}
+                >
+                    <TileLayer
+                        url={getTileUrl({ themePreference, isMiniMap: true })}
+                        accessToken={tileAccessToken}
+                    />
+                    {
+                        Object.entries(mapData).map(([key, location]) => (
+                            <CircleMarker
+                                key={key}
+                                center={[location.sensor?.coordinates?.latitude, location.sensor?.coordinates?.longitude]}
+                                pathOptions={{
+                                    fillColor: location.current?.color,
+                                    radius: 3,
+                                    weight: 0,
+                                    fillOpacity: 1
+                                }}
+                            >
+                            </CircleMarker>
+
+                        ))
+                    }
+                    <MinimapBounds parentMap={parentMap} zoom={mapZoom} />
+                </MapContainer>
+            ),
+            [],
+        )
+
+        const positionClass =
+            (position && POSITION_CLASSES[position]) || POSITION_CLASSES.bottomleft
+        return (
+            <div className={positionClass}>
+                <div className="leaflet-control leaflet-bar">{minimap}</div>
+            </div>
+        )
+    }
 
     return (
         <Box height="50vh" sx={{
@@ -95,16 +224,18 @@ const Map = ({ themePreference, temperatureUnitPreference }) => {
         }}>
             <MapContainer
                 center={centerCoordinate}
-                zoom={10}
+                zoom={DEFAULT_ZOOM}
+                maxBounds={maxBounds}
                 scrollWheelZoom={false}
                 placeholder={<MapPlaceholder />}
                 attributionControl={false}
             >
                 <TileLayer
                     attribution={tileAttribution}
-                    url={tileUrl}
-                    minZoom={8}
-                    maxZoom={12}
+                    url={getTileUrl({ themePreference })}
+                    minZoom={MIN_ZOOM}
+                    maxZoom={MAX_ZOOM}
+                    bounds={maxBounds}
                     accessToken={tileAccessToken}
                 />
                 <AttributionControl position="bottomright" prefix={false} />
@@ -168,6 +299,7 @@ const Map = ({ themePreference, temperatureUnitPreference }) => {
                                             returnUnit: temperatureUnitPreference
                                         })}
                                     &nbsp;&nbsp;-&nbsp;&nbsp;
+                                    <WaterDropIcon sx={{ fontSize: '1rem', verticalAlign: 'sub' }} />
                                     {location.current?.rel_humidity ? Math.round(location.current?.rel_humidity) : "--"}%
                                 </Typography>
                                 <Typography variant="caption" sx={{ display: 'block', fontWeight: 500 }}>
@@ -186,6 +318,7 @@ const Map = ({ themePreference, temperatureUnitPreference }) => {
 
                     ))
                 }
+                <MinimapControl position="bottomleft" mapData={mapData} />
 
             </MapContainer>
         </Box>
