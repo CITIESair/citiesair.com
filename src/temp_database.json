@@ -11,112 +11,37 @@
       "chartSubstituteComponentName": "AirQualityIndexTable"
     },
     {
-      "title": "Historical Snapshots of AQI",
-      "customClassName": "historical-snapshot-aqi",
-      "subcharts": [
+      "title": "Daily AQI, All Time",
+      "subtitle": "This calendar chart shows how the daily AQI varies throughout the year across different locations of the air quality network. Each square cell represents one day and its color corresponds to the category of the AQI. Hover over each square cell to see the specific date and its average AQI.<br><br><small><b>Note: </b>There were some gaps in our data collection. Dates where there was no recorded data are represented by empty cells.</small>",
+      "chartType": "Calendar",
+      "columns": [
+        0,
+        1,
         {
-          "subchartTitle": "Hourly (Last 7 Days)",
-          "subchartSubtitle": "<b>Adjust the slider to zoom in.</b><br><br>Explore the <b>latest</b> hourly average AQI  to see the differences in the air quality between different locations on the school campus.",
-          "options": {
-            "hAxis": {
-              "title": "Date Time",
-              "gridlines": {
-                "color": "transparent"
-              }
-            }
+          "type": "string",
+          "role": "tooltip",
+          "properties": {
+            "html": true
           },
-          "control": {
-            "controlType": "ChartRangeFilter",
-            "options": {
-              "filterColumnIndex": 0,
-              "ui": {
-                "minRangeSize": 172800000
-              }
-            }
-          }
+          "calc": "function getTooltip(dataTable, rowNum){return dataTable.getValue(rowNum, 1).toString()}"
         }
       ],
-      "chartType": "ComboChart",
       "options": {
-        "seriesSelector": {
-          "allowMultiple": true,
-          "method": "toggleVisibility"
+        "colorAxis": {
+          "colors": "aqi"
         },
-        "colors": "reverseAqi",
-        "chartArea": {
-          "backgroundColor": "#fff"
-        },
-        "seriesType": "area",
-        "lineWidth": 0,
-        "areaOpacity": 1,
-        "series": {
-          "0": {
-            "pointSize": 0,
-            "visibleInLegend": false,
-            "enableInteractivity": false
-          },
-          "1": {
-            "pointSize": 0,
-            "visibleInLegend": false,
-            "enableInteractivity": false
-          },
-          "2": {
-            "pointSize": 0,
-            "visibleInLegend": false,
-            "enableInteractivity": false
-          },
-          "3": {
-            "pointSize": 0,
-            "visibleInLegend": false,
-            "enableInteractivity": false
-          },
-          "4": {
-            "pointSize": 0,
-            "visibleInLegend": false,
-            "enableInteractivity": false
-          },
-          "5": {
-            "pointSize": 0,
-            "visibleInLegend": false,
-            "enableInteractivity": false
-          },
-          "6": {
-            "lineWidth": 1.5,
-            "type": "line",
-            "color": "#555"
-          },
-          "7": {
-            "lineWidth": 1.25,
-            "type": "line",
-            "color": "#555",
-            "lineDashStyle": [
-              5,
-              1.5
-            ]
-          },
-          "8": {
-            "lineWidth": 1.25,
-            "type": "line",
-            "color": "#555",
-            "lineDashStyle": [
-              1.25,
-              0.75
-            ]
-          },
-          "9": {
-            "lineWidth": 1.25,
-            "type": "line",
-            "color": "#555",
-            "lineDashStyle": [
-              2.5,
-              2.5
-            ]
-          }
-        },
-        "vAxis": {
-          "title": "US AQI",
-          "gridlines": {
-            "count": 0
+        "legend": {
+          "position": "none"
+        }
+      },
+      "control": {
+        "controlType": "CategoryFilter",
+        "options": {
+          "filterColumnIndex": 2,
+          "ui": {
+            "label": "Filter by AQI Category:",
+            "allowTyping": false,
+            "allowMultiple": true
           }
         }
       }

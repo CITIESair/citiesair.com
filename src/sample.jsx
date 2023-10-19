@@ -1,0 +1,1 @@
+export const sampleData = [[{ label: "time", type: "date" }, "Outdoors", "AQI Category"], ["Date(2021, 4, 1)", 65, "Moderate"], ["Date(2021, 4, 2)", 124, "Unhealthy for Sensitive Groups"]]

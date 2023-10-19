@@ -18,6 +18,11 @@ import LoadingAnimation from '../../Components/LoadingAnimation';
 
 import ChartSubstituteComponentLoader from '../ChartSubstituteComponents/ChartSubstituteComponentLoader';
 
+function getTooltip(dataTable, rowNum) {
+  return dataTable.getValue(rowNum, 1)
+}
+
+
 export default function SubChart(props) {
   // Props
   const { dataArray, chartData, subchartIndex, windowSize, isPortrait, isHomepage, height, maxHeight } = props;
@@ -302,22 +307,52 @@ export default function SubChart(props) {
     }
   };
 
+  const reconstructFunctionFromJSONstring = (columns) => {
+    if (!columns) return;
+
+    const evaluatedColumns = [];
+    for (const column of columns) {
+      if (typeof column === 'number') {
+        // If it's a number, add it as-is
+        evaluatedColumns.push(column);
+      } else if (typeof column === 'object') {
+        if (column.calc) {
+          // If it's an object with a 'calc' property, evaluate the 'calc' function
+          // using eval and add the result to the evaluatedColumns array
+          const calcFunction = eval(`(${column.calc})`);
+          evaluatedColumns.push({
+            ...column,
+            calc: calcFunction,
+          });
+        } else {
+          // If it's an object without a 'calc' property, add it as-is
+          evaluatedColumns.push(column);
+        }
+      }
+    }
+    return evaluatedColumns;
+  }
+
+
   // Call this function to fetch the data and draw the initial chart
   useEffect(() => {
     if (google && dataArray) {
       const thisDataTable = google.visualization.arrayToDataTable(dataArray);
       setDataTable(thisDataTable);
+
+      const columns = chartData.columns
+        || (chartData.subcharts
+          && chartData.subcharts[subchartIndex].columns)
+        || null
+        || null;
+      const reconstructedColumns = reconstructFunctionFromJSONstring(columns);
+
       const thisChartWrapper = new google.visualization.ChartWrapper({
         chartType: chartData.chartType,
         dataTable: (!hasChartControl) ? thisDataTable : undefined,
         options: options,
         view: {
-          columns:
-            chartData.columns
-            || (chartData.subcharts
-              && chartData.subcharts[subchartIndex].columns)
-            || null
-            || null,
+          columns: reconstructedColumns
         },
         containerId: chartID
       });
@@ -352,8 +387,6 @@ export default function SubChart(props) {
         const initColumns = getInitialColumns({ chartWrapper: thisChartWrapper, dataTable: thisDataTable, seriesSelector: seriesSelector });
         handleSeriesSelection(initColumns, thisChartWrapper);
       }
-
-
     }
   }, [google, dataArray]);
 

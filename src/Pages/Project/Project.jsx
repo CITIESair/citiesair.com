@@ -36,6 +36,7 @@ import ChartSubstituteComponentLoader from '../../Graphs/ChartSubstituteComponen
 import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
 import { SchoolSelector } from "../Dashboard/SchoolSelector";
 
+import { sampleData } from '../../sample';
 
 // Custom Chip component to display metadata
 export const CustomChip = (props) => {
@@ -187,7 +188,8 @@ const Project = ({ themePreference, currentSensorData, dashboardData, fetchDashb
                         sheetId: project.sheetId,
                         ...element,
                       }}
-                      dataArray={dashboardData?.charts}
+                      // dataArray={dashboardData?.charts}
+                      dataArray={sampleData}
                     />
                   )}
 
