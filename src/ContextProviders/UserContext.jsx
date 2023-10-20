@@ -12,11 +12,11 @@ export function UserProvider({ children }) {
     const url = 'https://api.citiesair.com/me';
     fetchDataFromURL(url, 'json', true)
       .then((data) => {
-        setCheckAuthentication(true);
         if (data.username) {
           setContextUsername(data.username);
           setAuthenticated(true);
         }
+        setCheckAuthentication(true);
       })
       .catch((error) => {
         setCheckAuthentication(true);
