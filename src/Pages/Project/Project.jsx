@@ -35,6 +35,10 @@ import ChartSubstituteComponentLoader from '../../Graphs/ChartSubstituteComponen
 import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
 import { SchoolSelector } from "../Dashboard/SchoolSelector";
 
+import AirQualityIndexTable from '../../Graphs/ChartSubstituteComponents/AirQualityIndexTable';
+import ExpandableSection from './ExpandableSection';
+import AirQualityExplanation from '../../Utils/AirQualityExplanation';
+
 // Custom Chip component to display metadata
 export const CustomChip = (props) => {
   const { tooltipTitle, ...otherProps } = props;
@@ -158,7 +162,37 @@ const Project = ({ themePreference, currentSchoolData, dashboardData, allowedSch
               <ScreenDialog schoolID={currentSchoolData?.school_id} screens={currentSchoolData?.screens} />
 
               {/* <DatasetDownloadDialog project={project} /> */}
+
             </Stack>
+            <ExpandableSection
+              title={AirQualityExplanation.title}
+              content={(
+                <>
+                  <AirQualityIndexTable themePreference={themePreference} />
+                  <Typography
+                    component="div"
+                    variant="body1"
+                    color="text.secondary"
+                    sx={{ mt: 2 }}
+                  >
+                    {parse(AirQualityExplanation.subtitle, {
+                      replace: replacePlainHTMLWithMuiComponents,
+                    })}
+                  </Typography>
+                  <ExpandableSection
+                    title={"Reference"}
+                    content={(
+                      <Typography variant="caption" color="text.secondary">
+                        {parse(AirQualityExplanation.reference, {
+                          replace: replacePlainHTMLWithMuiComponents,
+                        })}
+                      </Typography>
+                    )}
+                  />
+                </>
+              )}
+            />
+
           </Container>
         </FullWidthBox>
 

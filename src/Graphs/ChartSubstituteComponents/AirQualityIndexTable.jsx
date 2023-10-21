@@ -24,6 +24,45 @@ export const StyledTable = styled(Table)(({ theme, isTiny }) => ({
 function AirQualityIndexTable(props) {
   const { isTiny, hideAQIDescription, themePreference } = props;
 
+  const renderAQIchart = ({ shouldRender }) => {
+    if (!shouldRender) {
+      return null;
+    }
+    else {
+      const dataArray = [["category"], ["US AQI"]];
+      for (let category of AQIdatabase) {
+        dataArray[0].push(category.category);
+        dataArray[1].push(Math.ceil((category.aqiUS.high - category.aqiUS.low) / 50) * 50);
+      }
+      return (
+        <ChartComponent
+          chartHeight="4rem"
+          chartData={
+            {
+              dataArray: dataArray,
+              chartType: 'BarChart',
+              options: {
+                enableInteractivity: false,
+                legend: { position: 'none' },
+                hAxis: {
+                  ticks: [0, 50, 100, 150, 200, 300, 500]
+                },
+                chartArea:
+                {
+                  width: { portrait: '98%', landscape: '50%' },
+                  height: { portrait: '20%', landscape: '30%' }
+                },
+                isStacked: true,
+                colors: 'aqi',
+                bar: { groupWidth: '100%' }
+              }
+            }
+          }
+        />
+      )
+    }
+  }
+
   return (
     <>
       <Box overflow="auto">
@@ -57,7 +96,7 @@ function AirQualityIndexTable(props) {
                   <Box sx={{ width: '1em', height: '1em', backgroundColor: themePreference === ThemePreferences.light ? element.lightThemeColor : element.darkThemeColor }} />
                 </TableCell>
                 <TableCell sx={{ pl: 1 }}>
-                  {element.name}
+                  {element.category}
                 </TableCell>
                 <TableCell align="right">
                   {element.aqiUS.low}
@@ -89,37 +128,7 @@ function AirQualityIndexTable(props) {
           </TableBody>
         </StyledTable>
       </Box>
-      {/* {!hideAQIDescription
-        && (
-          <ChartComponent
-            chartHeight="4rem"
-            chartData={
-              {
-                sheetId: '157f6vu47RBEvnBnW24jGI7cz-ov1aSBUFPdkb5sDKDc',
-                gid: 1958405288,
-                query: 'SELECT * WHERE A = "US AQI"',
-                headers: 1,
-                chartType: 'BarChart',
-                columns: [0, 1, 3, 5, 7, 9, 11],
-                options: {
-                  legend: { position: 'none' },
-                  enableInteractivity: false,
-                  hAxis: {
-                    ticks: [0, 50, 100, 150, 200, 300, 500]
-                  },
-                  chartArea:
-                  {
-                    width: { portrait: '98%', landscape: '50%' },
-                    height: { portrait: '20%', landscape: '30%' }
-                  },
-                  isStacked: true,
-                  colors: 'aqi',
-                  bar: { groupWidth: '100%' }
-                }
-              }
-            }
-          />
-        )} */}
+      {renderAQIchart({ shouldRender: !hideAQIDescription })}
     </>
 
   );
