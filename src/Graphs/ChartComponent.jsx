@@ -59,10 +59,7 @@ function ChartComponent({ chartData: passedChartData, chartHeight: passedChartHe
 
   let chartMaxHeight;
   let chartHeight = passedChartHeight;
-  let chartData = passedChartData;
-
-  // use tab context
-  const [_, setTab] = useContext(TabContext);
+  const chartData = passedChartData;
 
   // Props for tab panels (multiple data visualizations in the same chart area,
   // navigate with tab panels)
@@ -73,6 +70,8 @@ function ChartComponent({ chartData: passedChartData, chartHeight: passedChartHe
   // Filter & Calendar charts are not automatically respnsive, so we have to redraw them.
   // redraw other charts when device orientation changes
   useEffect(() => {
+    setIndexValue(0); // set tab back to 0 if chartData changes (changed school)
+
     let timeoutID = null;
 
     const handleWindowResize = () => {
@@ -104,43 +103,13 @@ function ChartComponent({ chartData: passedChartData, chartHeight: passedChartHe
     chartMaxHeight = isPortrait ? '800px' : '500px';
   }
 
-  // Assign the subcharts array for HeatMap based on the device orientation
-  if (chartData.chartType === 'HeatMap') {
-    chartData = {
-      ...chartData,
-      ...chartData[isPortrait ? 'subchartsPortrait' : 'subchartsLandscape'],
-    };
-  }
+  const handleChange = (__, newValue) => {
+    setIndexValue(newValue);
+  };
 
-  let renderedComponent;
-
-  // Display multiple subcharts
-  // but not in homepage
-  if (chartData.subcharts) {
-    // Handle tab change
-    const handleChange = (__, newValue) => {
-      // use setTab to copy the tab object and update the subIndex
-      setTab((prevState) => ({ ...prevState, [chartData.chartIndex]: newValue }));
-      setIndexValue(newValue);
-    };
-
-    // If the chart in in homepage, just display the first subChart
-    if (isHomepage) {
-      renderedComponent = (
-        <SubChart
-          chartData={chartData}
-          subchartIndex={0}
-          isPortrait={isPortrait}
-          isHomepage={isHomepage}
-          windowSize={windowSize}
-          height={chartData.height ? chartData.height : chartHeight}
-          maxHeight={
-            chartData.chartType === 'HeatMap' ? '' : chartMaxHeight
-          }
-        />
-      );
-    } else {
-      renderedComponent = (
+  return (
+    <ChartStyleWrapper height="100%">
+      {chartData.subcharts ?
         <>
           <StyledTabs
             value={indexValue}
@@ -178,7 +147,7 @@ function ChartComponent({ chartData: passedChartData, chartHeight: passedChartHe
                   windowSize={windowSize}
                   height={chartData.height ? chartData.height : chartHeight}
                   maxHeight={
-                    ['HeatMap', 'Calendar'].includes(chartData.chartType)
+                    ['Calendar'].includes(chartData.chartType)
                       ? ''
                       : chartMaxHeight
                   }
@@ -187,27 +156,15 @@ function ChartComponent({ chartData: passedChartData, chartHeight: passedChartHe
             ))}
           </Box>
         </>
-      );
-    }
-  } else {
-    // If there is only one single chart
-    renderedComponent = (
-      <SubChart
-        chartData={chartData}
-        isPortrait={isPortrait}
-        isHomepage={isHomepage}
-        windowSize={windowSize}
-        height={chartData.height ? chartData.height : chartHeight}
-        maxHeight={
-          chartData.chartType === 'HeatMap' ? '' : chartMaxHeight
-        }
-      />
-    );
-  }
-
-  return (
-    <ChartStyleWrapper height="100%">
-      {renderedComponent}
+        :
+        <SubChart
+          chartData={chartData}
+          isPortrait={isPortrait}
+          isHomepage={isHomepage}
+          windowSize={windowSize}
+          height={chartData.height ? chartData.height : chartHeight}
+        />
+      }
     </ChartStyleWrapper>
   );
 }

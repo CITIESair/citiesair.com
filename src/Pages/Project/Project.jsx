@@ -113,15 +113,15 @@ const Project = ({ themePreference, currentSchoolData, dashboardData, allowedSch
                   icon={<BarChartIcon />}
                   label={`${dashboardData?.charts?.length} Chart${dashboardData?.charts?.length > 1 && "s"}`}
                   tooltipTitle="Number of Charts"
-                // onClick={() => {
-                //   scrollToSection(jsonData.charts.id);
-                //   Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
-                //     {
-                //       destination_id: jsonData.charts.id,
-                //       destination_label: jsonData.dashboardData?.toString(),
-                //       origin_id: 'chip'
-                //     })
-                // }}
+                  onClick={() => {
+                    scrollToSection(jsonData.charts.id);
+                    // Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
+                    //   {
+                    //     destination_id: jsonData.charts.id,
+                    //     destination_label: jsonData.dashboardData?.toString(),
+                    //     origin_id: 'chip'
+                    //   })
+                  }}
                 />
               </Grid>
 
@@ -208,6 +208,7 @@ const Project = ({ themePreference, currentSchoolData, dashboardData, allowedSch
                 sx={{ pt: 4, pb: 4 }}
                 height="auto"
                 className={themePreference === ThemePreferences.dark ? 'dark' : ''}
+                id={`chart-${index + 1}`}
               >
                 <Typography variant="h6" color="text.primary">
                   {index + 1}. {element.title}

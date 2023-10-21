@@ -7,7 +7,6 @@ import { GoogleContext } from '../../ContextProviders/GoogleContext';
 import { Box, Stack } from '@mui/material/';
 
 import { useTheme } from '@mui/material/styles';
-import HeatMap from '../HeatMap';
 import SeriesSelector from './SeriesSelector';
 
 import { fetchDataFromSheet, generateRandomID, returnGenericOptions, returnCalendarChartOptions, returnChartControlUI, ChartControlType, addTouchEventListenerForChartControl } from '../GoogleChartHelper';
@@ -29,28 +28,6 @@ export default function SubChart(props) {
 
   // Formulate the className
   const className = chartData.customClassName ? `${chartData.chartType} ${chartData.customClassName}` : chartData.chartType;
-
-  // Early return for 'HeatMap' chartType
-  if (chartData.chartType === 'HeatMap') {
-    return (
-      <Box
-        position="relative"
-        className={className}
-        height={chartData.height}
-        maxWidth={chartData.maxWidth ? chartData.maxWidth : '100%'}
-        width="100%"
-        sx={{ pt: 2, pb: 2, margin: 'auto' }}
-      >
-        <HeatMap
-          publishedSheetId={chartData.publishedSheetId}
-          gid={chartData.gid || chartData.subcharts[subchartIndex].gid || null}
-          range={
-            chartData.range || chartData.subcharts[subchartIndex].range || null
-          }
-        />
-      </Box>
-    );
-  }
 
   // Use GoogleContext for loading and manipulating the Google Charts
   const [google, _] = useContext(GoogleContext);
