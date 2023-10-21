@@ -20,17 +20,17 @@ import CustomThemes from '../../Themes/CustomThemes';
 import QRCode from "react-qr-code";
 
 import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
-import { fetchAndProcessCurrentData } from '../../Utils/ApiUtils';
+import { fetchAndprocessCurrentSensorsData } from '../../Utils/ApiUtils';
 
 const Screen = ({ title, temperatureUnitPreference }) => {
-  const { authenticated, checkAuthentication } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (checkAuthentication === true && authenticated === false) {
+    if (user.checkedAuthentication === true && user.authenticated === false) {
       navigate('/login');
     }
-  }, [authenticated, checkAuthentication])
+  }, [user])
 
   // Update the page's title
   useEffect(() => {
@@ -77,7 +77,7 @@ const Screen = ({ title, temperatureUnitPreference }) => {
     if (match && match.length > 1) apiUrl = `https://api.citiesair.com/screen/${match[1]}`
     else return;
 
-    fetchAndProcessCurrentData(apiUrl)
+    fetchAndprocessCurrentSensorsData(apiUrl)
       .then((data) => {
         setData(data)
       })
@@ -86,7 +86,7 @@ const Screen = ({ title, temperatureUnitPreference }) => {
     // Create an interval that fetch new data every 5 minute
     const fetchInterval = 5 * 60 * 1000; // 5min
     const intervalId = setInterval(() => {
-      fetchAndProcessCurrentData(apiUrl)
+      fetchAndprocessCurrentSensorsData(apiUrl)
         .then((data) => {
           setData(data)
         })
@@ -204,7 +204,7 @@ const Screen = ({ title, temperatureUnitPreference }) => {
             container
             justifyContent="space-around"
           >
-            <CurrentAQIGrid currentData={data} temperatureUnitPreference={temperatureUnitPreference} />
+            <CurrentAQIGrid currentSensorsData={data} temperatureUnitPreference={temperatureUnitPreference} />
           </Grid>
 
           <List className='condensedFont'

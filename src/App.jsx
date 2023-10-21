@@ -47,9 +47,6 @@ const getDesignTokens = (themePreference) => ({
 });
 
 function App() {
-  // Get authentication context
-  const { authenticated, checkAuthentication } = useContext(UserContext);
-
   // Set theme preference state based on localStorage or system preference
   const [themePreference, setThemePreference] = useState(
     localStorage.getItem('theme')
