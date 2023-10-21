@@ -14,7 +14,6 @@ import ThemePreferences from '../../Themes/ThemePreferences';
 
 import AirQualityIndexLegendQuickGlance from '../../Components/AirQualityHelper';
 
-import project from '../../temp_database.json';
 import jsonData from '../../section_data.json';
 
 import PersonIcon from '@mui/icons-material/Person';
@@ -36,7 +35,6 @@ import ChartSubstituteComponentLoader from '../../Graphs/ChartSubstituteComponen
 import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
 import { SchoolSelector } from "../Dashboard/SchoolSelector";
 
-
 // Custom Chip component to display metadata
 export const CustomChip = (props) => {
   const { tooltipTitle, ...otherProps } = props;
@@ -50,7 +48,7 @@ export const CustomChip = (props) => {
   );
 }
 
-const Project = ({ themePreference, currentSensorData, dashboardData, fetchDashboardData, temperatureUnitPreference }) => {
+const Project = ({ themePreference, currentSchoolData, dashboardData, allowedSchoolsData, fetchDashboardData, temperatureUnitPreference }) => {
   const [_, __, chartsTitlesList, setChartsTitlesList] = useContext(LinkContext);
 
   const [loading, setLoading] = useState(false);
@@ -58,10 +56,14 @@ const Project = ({ themePreference, currentSensorData, dashboardData, fetchDashb
 
   let lastUpdate;
 
+  // Update the chart title list for quick navigation
   useEffect(() => {
-    const chartsTitles = project.charts.map((element, index) => ({ chartTitle: element.title, chartID: `chart-${index + 1}` }));
+    if (!dashboardData?.charts) return;
+
+    const chartsTitles = dashboardData?.charts.map((element, index) => ({ chartTitle: element.title, chartID: `chart-${index + 1}` }));
     setChartsTitlesList(chartsTitles);
-  }, []);
+  }, [dashboardData]);
+
   const theme = useTheme();
 
   return (
@@ -71,14 +73,14 @@ const Project = ({ themePreference, currentSensorData, dashboardData, fetchDashb
 
         <FullWidthBox backgroundColor='customAlternateBackground'>
           <Container sx={{ pt: 5, pb: 3 }}>
-            <UppercaseTitle text={project.title} />
+            <UppercaseTitle text={dashboardData?.title} />
 
             <Grid container spacing={1} sx={{ mt: -3, pb: 3 }}>
               <Grid item>
                 <SchoolSelector
-                  currentSchoolID={dashboardData.currentSchool?.school_id}
-                  currentSchoolName={dashboardData.currentSchool?.name}
-                  allowedSchools={dashboardData.allowedSchools}
+                  currentSchoolID={currentSchoolData?.school_id}
+                  currentSchoolName={currentSchoolData?.name}
+                  allowedSchoolsData={allowedSchoolsData}
                   fetchDashboardData={fetchDashboardData}
                 />
               </Grid>
@@ -86,7 +88,7 @@ const Project = ({ themePreference, currentSensorData, dashboardData, fetchDashb
               <Grid item>
                 <CustomChip
                   icon={<PersonIcon />}
-                  label={dashboardData.currentSchool?.contactPerson}
+                  label={currentSchoolData?.contactPerson}
                   tooltipTitle="Contact Person"
                 />
               </Grid>
@@ -94,10 +96,10 @@ const Project = ({ themePreference, currentSensorData, dashboardData, fetchDashb
               <Grid item>
                 <CustomChip
                   icon={<EmailIcon />}
-                  label={dashboardData.currentSchool?.contactEmail}
+                  label={currentSchoolData?.contactEmail}
                   tooltipTitle="Contact Email"
                   component="a"
-                  href={`mailto:${dashboardData.currentSchool?.contactEmail}`}
+                  href={`mailto:${currentSchoolData?.contactEmail}`}
                   clickable
                 />
               </Grid>
@@ -105,17 +107,17 @@ const Project = ({ themePreference, currentSensorData, dashboardData, fetchDashb
               <Grid item>
                 <CustomChip
                   icon={<BarChartIcon />}
-                  label={`${project.charts.length} Chart${project.charts.length > 1 && "s"}`}
+                  label={`${dashboardData?.charts?.length} Chart${dashboardData?.charts?.length > 1 && "s"}`}
                   tooltipTitle="Number of Charts"
-                  onClick={() => {
-                    scrollToSection(jsonData.charts.id);
-                    Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
-                      {
-                        destination_id: jsonData.charts.id,
-                        destination_label: jsonData.project.toString(),
-                        origin_id: 'chip'
-                      })
-                  }}
+                // onClick={() => {
+                //   scrollToSection(jsonData.charts.id);
+                //   Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
+                //     {
+                //       destination_id: jsonData.charts.id,
+                //       destination_label: jsonData.dashboardData?.toString(),
+                //       origin_id: 'chip'
+                //     })
+                // }}
                 />
               </Grid>
 
@@ -132,7 +134,7 @@ const Project = ({ themePreference, currentSensorData, dashboardData, fetchDashb
 
             <Box textAlign="center" sx={{ mb: 2 }}>
               <CurrentAQIGrid
-                currentData={currentSensorData}
+                currentSensorsData={currentSchoolData?.sensors}
                 isScreen={false}
                 temperatureUnitPreference={temperatureUnitPreference}
               />
@@ -148,12 +150,12 @@ const Project = ({ themePreference, currentSensorData, dashboardData, fetchDashb
               }}
               gutterBottom
             >
-              {parse(project.description, {
+              {parse(dashboardData?.description || '', {
                 replace: replacePlainHTMLWithMuiComponents,
               })}
             </Typography>
             <Stack direction="row" spacing={2}>
-              <ScreenDialog schoolID={dashboardData.currentSchool?.school_id} screens={dashboardData.currentSchool?.screens} />
+              <ScreenDialog schoolID={currentSchoolData?.school_id} screens={currentSchoolData?.screens} />
 
               {/* <DatasetDownloadDialog project={project} /> */}
             </Stack>
@@ -161,7 +163,7 @@ const Project = ({ themePreference, currentSensorData, dashboardData, fetchDashb
         </FullWidthBox>
 
         <Box id={jsonData.charts.id}>
-          {project.charts.map((element, index) => (
+          {dashboardData?.charts?.map((element, index) => (
             <FullWidthBox
               key={index}
               backgroundColor={
@@ -184,10 +186,8 @@ const Project = ({ themePreference, currentSensorData, dashboardData, fetchDashb
                     <ChartComponent
                       chartData={{
                         chartIndex: index,
-                        sheetId: project.sheetId,
                         ...element,
                       }}
-                      dataArray={dashboardData?.charts}
                     />
                   )}
 

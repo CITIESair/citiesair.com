@@ -11,7 +11,7 @@ import { StyledMenuItem } from '../Header/MenuItemAsNavLink';
 import { UserContext } from '../../ContextProviders/UserContext';
 
 export default function LogOut() {
-  const { setAuthenticated, setContextUsername } = useContext(UserContext);
+  const { setUser } = useContext(UserContext);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -26,8 +26,11 @@ export default function LogOut() {
     })
       .then((response) => {
         if (response.ok) {
-          setContextUsername(null);
-          setAuthenticated(false);
+          setUser({
+            checkedAuthentication: true,
+            authenticated: false,
+            username: null
+          });
           navigate('/');
         }
         else {

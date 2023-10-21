@@ -4,34 +4,45 @@ import { fetchDataFromURL } from '../Components/DatasetDownload/DatasetFetcher';
 export const UserContext = createContext();
 
 export function UserProvider({ children }) {
-  const [checkAuthentication, setCheckAuthentication] = useState(false);
-  const [authenticated, setAuthenticated] = useState(false);
-  const [username, setContextUsername] = useState();
+  const [user, setUser] = useState({
+    checkedAuthentication: false,
+    authenticated: false,
+    username: null
+  });
 
   useEffect(() => {
     const url = 'https://api.citiesair.com/me';
     fetchDataFromURL(url, 'json', true)
       .then((data) => {
         if (data.username) {
-          setContextUsername(data.username);
-          setAuthenticated(true);
+          setUser({
+            checkedAuthentication: true,
+            authenticated: true,
+            username: data.username
+          })
         }
-        setCheckAuthentication(true);
+        else {
+          setUser({
+            checkedAuthentication: true,
+            authenticated: false,
+            username: null
+          })
+        }
       })
       .catch((error) => {
-        setCheckAuthentication(true);
+        setUser({
+          checkedAuthentication: true,
+          authenticated: false,
+          username: null
+        });
         console.log(error);
       });
   }, []);
 
   // eslint-disable-next-line max-len
   const providerValue = useMemo(() => ({
-    authenticated,
-    checkAuthentication,
-    username,
-    setAuthenticated,
-    setContextUsername
-  }), [checkAuthentication, authenticated, username]);
+    user, setUser
+  }), [user]);
 
   // return context provider
   return (

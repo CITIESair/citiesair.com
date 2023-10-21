@@ -29,7 +29,7 @@ const StyledMenuList = styled(MenuList)(({ theme }) => ({
 
 export default function NavBar(props) {
   const { currentPage, isMobile } = props;
-  const { authenticated, username } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const [navbar, setNavbar] = useState();
 
   const homeNavLink = (
@@ -42,11 +42,11 @@ export default function NavBar(props) {
   );
 
   const reservedAreaMenu = (
-    authenticated ?
+    user.authenticated ?
       (
         isMobile ?
           [<MenuItemAsNavLink
-            label={`${username}'s Dashboard`}
+            label={`${user.username}'s Dashboard`}
             behavior={NavLinkBehavior.toNewPage}
             icon={<PersonIcon />}
             analyticsOriginID="navbar"
@@ -58,7 +58,7 @@ export default function NavBar(props) {
             {(popupState) => (
               <>
                 <MenuItemAsNavLink
-                  label={`${username}'s Dashboard`}
+                  label={`${user.username}'s Dashboard`}
                   behavior={NavLinkBehavior.hoverMenu}
                   icon={<PersonIcon />}
                   analyticsOriginID="navbar"
@@ -121,7 +121,7 @@ export default function NavBar(props) {
         setNavbar([homeNavLink, nyuadDashboardNavLink, blogNavLink, reservedAreaMenu])
         break;
     }
-  }, [currentPage, authenticated, username])
+  }, [currentPage, user])
 
   return (
     <StyledMenuList sx={{ height: '100%', p: 0 }}>

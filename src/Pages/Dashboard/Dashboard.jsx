@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 import { fetchDataFromURL } from "../../Components/DatasetDownload/DatasetFetcher";
 import Project from "../Project/Project";
-import { processCurrentData } from "../../Utils/ApiUtils";
+import { processCurrentSensorsData } from "../../Utils/ApiUtils";
 import { LinkContext } from "../../ContextProviders/LinkContext";
 
 import { UserContext } from "../../ContextProviders/UserContext";
@@ -22,32 +22,44 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
     setCurrentPage('dashboard');
   }, []);
 
-  const { authenticated, checkAuthentication } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (checkAuthentication === true && authenticated === false) {
+    if (user.checkedAuthentication === true && user.authenticated === false) {
       navigate('/login');
     }
-  }, [authenticated, checkAuthentication])
+  }, [user])
 
   const [dashboardData, setDashboardData] = useState({});
-  const [currentSensorData, setCurrentSensorData] = useState({});
-  const [allowedSchools, setAllowedSchools] = useState([]);
+  const [currentSchoolData, setCurrentSchoolData] = useState({
+    school_id: null,
+    name: null,
+    contactPerson: null,
+    contactEmail: null,
+    sensors: null
+  });
+  const [allowedSchoolsData, setAllowedSchoolsData] = useState([]);
 
-  const fetchDashboardData = (schoolID) => {
+  const fetchDashboardData = (optionalSchoolID) => {
     let url;
-    if (schoolID) url = `https://api.citiesair.com/dashboard/${schoolID}`;
+    if (optionalSchoolID) url = `https://api.citiesair.com/dashboard/${optionalSchoolID}`;
     else url = 'https://api.citiesair.com/dashboard';
 
     fetchDataFromURL(url, 'json', true)
       .then(data => {
         if (data.currentSchool?.sensors) {
-          const processedCurrentSensorData = processCurrentData(data.currentSchool?.sensors);
-          setCurrentSensorData(processedCurrentSensorData);
+          const processedCurrentSensorData = processCurrentSensorsData(data.currentSchool?.sensors);
+          setCurrentSchoolData({
+            ...data.currentSchool, sensors: processedCurrentSensorData
+          });
         }
-        setDashboardData(data);
-        setAllowedSchools(data.allowedSchools || []);
+        else {
+          setCurrentSchoolData(data.currentSchool);
+        }
+
+        setDashboardData(data.dashboard);
+        setAllowedSchoolsData(data.allowedSchools || []);
       })
   }
 
@@ -59,8 +71,9 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
     <>
       <Project
         themePreference={themePreference}
-        currentSensorData={currentSensorData}
+        currentSchoolData={currentSchoolData}
         dashboardData={dashboardData}
+        allowedSchoolsData={allowedSchoolsData}
         fetchDashboardData={fetchDashboardData}
         temperatureUnitPreference={temperatureUnitPreference}
       />

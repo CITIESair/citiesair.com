@@ -8,13 +8,13 @@ import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, T
 import { UserContext } from '../../ContextProviders/UserContext';
 
 export default function LogIn() {
-  const { authenticated, checkAuthentication, setAuthenticated, setContextUsername } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
 
   useEffect(() => {
-    if (checkAuthentication === true && authenticated === true) {
+    if (user.checkedAuthentication === true && user.authenticated === true) {
       navigate('/dashboard');
     }
-  }, [authenticated, checkAuthentication])
+  }, [user]);
 
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
@@ -46,9 +46,12 @@ export default function LogIn() {
       .then((response) => {
         if (response.ok) {
           setIsWrongCredentials(false);
-          setContextUsername(username);
-          setAuthenticated(true);
           setLoading(false);
+          setUser({
+            checkedAuthentication: true,
+            authenticated: true,
+            username: username
+          });
           navigate("/dashboard");
         }
         else {

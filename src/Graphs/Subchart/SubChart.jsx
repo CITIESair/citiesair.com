@@ -20,7 +20,7 @@ import ChartSubstituteComponentLoader from '../ChartSubstituteComponents/ChartSu
 
 export default function SubChart(props) {
   // Props
-  const { dataArray, chartData, subchartIndex, windowSize, isPortrait, isHomepage, height, maxHeight } = props;
+  const { chartData, subchartIndex, windowSize, isPortrait, isHomepage, height, maxHeight } = props;
   // Early return if this doesn't contain a normal Google Chart but a chartSubstituteComponent
   const chartSubstituteComponentName = chartData.subcharts?.[subchartIndex].chartSubstituteComponentName;
   if (chartSubstituteComponentName) {
@@ -302,22 +302,62 @@ export default function SubChart(props) {
     }
   };
 
+  const reconstructFunctionFromJSONstring = (columns) => {
+    if (!columns) return;
+
+    const evaluatedColumns = [];
+    for (const column of columns) {
+      if (typeof column === 'number') {
+        // If it's a number, add it as-is
+        evaluatedColumns.push(column);
+      } else if (typeof column === 'object') {
+        if (column.calc && column.calc !== 'stringify') {
+          // If it's an object with a 'calc' property, evaluate the 'calc' function
+          // using new Function() and add the result to the evaluatedColumns array
+          const calcFunction = new Function("dataTable", "rowNum", column.calc);
+          evaluatedColumns.push({
+            ...column,
+            calc: calcFunction,
+          });
+        } else {
+          // If it's an object without a 'calc' property, or with calc = 'stringify', add it as-is
+          evaluatedColumns.push(column);
+        }
+      }
+    }
+    return evaluatedColumns;
+  }
+
+
   // Call this function to fetch the data and draw the initial chart
   useEffect(() => {
-    if (google && dataArray) {
+    if (google && chartData) {
+      // Get and set the dataArray 
+      const dataArray = chartData.dataArray
+        || (chartData.subcharts
+          && chartData.subcharts[subchartIndex].dataArray)
+        || null
+        || null;
+      if (!dataArray) return; // early return if there is no data to render
+
       const thisDataTable = google.visualization.arrayToDataTable(dataArray);
       setDataTable(thisDataTable);
+
+      // Get dataColumn views
+      const columns = chartData.columns
+        || (chartData.subcharts
+          && chartData.subcharts[subchartIndex].columns)
+        || null
+        || null;
+      const reconstructedColumns = reconstructFunctionFromJSONstring(columns);
+
+      // Create chartWrapper
       const thisChartWrapper = new google.visualization.ChartWrapper({
         chartType: chartData.chartType,
         dataTable: (!hasChartControl) ? thisDataTable : undefined,
         options: options,
         view: {
-          columns:
-            chartData.columns
-            || (chartData.subcharts
-              && chartData.subcharts[subchartIndex].columns)
-            || null
-            || null,
+          columns: reconstructedColumns
         },
         containerId: chartID
       });
@@ -352,10 +392,8 @@ export default function SubChart(props) {
         const initColumns = getInitialColumns({ chartWrapper: thisChartWrapper, dataTable: thisDataTable, seriesSelector: seriesSelector });
         handleSeriesSelection(initColumns, thisChartWrapper);
       }
-
-
     }
-  }, [google, dataArray]);
+  }, [google, chartData]);
 
   const renderChart = () => {
     if (hasChartControl) {

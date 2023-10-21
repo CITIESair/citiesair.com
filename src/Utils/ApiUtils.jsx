@@ -6,7 +6,7 @@ import parse from 'html-react-parser';
 
 export const apiDomain = 'https://api.citiesair.com';
 
-export const fetchAndProcessCurrentData = async (apiUrl) => {
+export const fetchAndprocessCurrentSensorsData = async (apiUrl) => {
   try {
     const data = await fetchDataFromURL(apiUrl, 'json', true);
 
@@ -15,7 +15,7 @@ export const fetchAndProcessCurrentData = async (apiUrl) => {
     }
 
     try {
-      return processCurrentData(data);
+      return processCurrentSensorsData(data);
     } catch (error) {
       // Handle the case where data is not an iterable object
       console.error("Error: data is not iterable", error);
@@ -26,7 +26,7 @@ export const fetchAndProcessCurrentData = async (apiUrl) => {
   }
 }
 
-export const processCurrentData = (data) => {
+export const processCurrentSensorsData = (data) => {
   Object.entries(data).map(([_, sensorData]) => {
     // Calculate if the sensor is currently active or not
     const now = new Date();
