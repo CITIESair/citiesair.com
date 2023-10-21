@@ -84,7 +84,7 @@ const RecentHistoricalGraph = (props) => {
     // Calculate the maximum AQI for the y-axis to display
     maxAQItoDisplay = Math.ceil(maxAQItoDisplay / 50) * 50; // round to the nearest 50 points
 
-    for (category of AQIdatabase) {
+    for (let category of AQIdatabase) {
       if (maxAQItoDisplay >= category.aqiUS.low && maxAQItoDisplay <= category.aqiUS.high) {
         maxAQItoDisplay = category.aqiUS.high;
         break;
