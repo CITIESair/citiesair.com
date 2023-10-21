@@ -8,8 +8,8 @@ import { CustomChip } from "../Project/Project";
 import PlaceIcon from '@mui/icons-material/Place';
 
 export const SchoolSelector = (props) => {
-  const { currentSchoolID, currentSchoolName, allowedSchools, fetchDashboardData } = props;
-  if (!Array.isArray(allowedSchools) || allowedSchools.length <= 1)
+  const { currentSchoolID, currentSchoolName, allowedSchoolsData, fetchDashboardData } = props;
+  if (!Array.isArray(allowedSchoolsData) || allowedSchoolsData.length <= 1)
     return (
       <CustomChip
         icon={<PlaceIcon />}
@@ -58,7 +58,7 @@ export const SchoolSelector = (props) => {
         }}
       >
         <MenuList dense>
-          {allowedSchools.map((school, index) => (
+          {allowedSchoolsData.map((school, index) => (
             <MenuItem
               key={index}
               onClick={handleItemSelect(school.school_id)}

@@ -14,6 +14,194 @@
       "title": "Daily AQI, All Time",
       "subtitle": "This calendar chart shows how the daily AQI varies throughout the year across different locations of the air quality network. Each square cell represents one day and its color corresponds to the category of the AQI. Hover over each square cell to see the specific date and its average AQI.<br><br><small><b>Note: </b>There were some gaps in our data collection. Dates where there was no recorded data are represented by empty cells.</small>",
       "chartType": "Calendar",
+      "subcharts": [
+        {
+          "subchartTitle": "1",
+          "dataArray": [
+            [
+              {
+                "type": "date",
+                "label": "date"
+              },
+              "Campus Center C2",
+              "AQI Category"
+            ],
+            [
+              "Date(2023, 9, 6)",
+              37,
+              "Good"
+            ],
+            [
+              "Date(2023, 9, 7)",
+              32,
+              "Good"
+            ],
+            [
+              "Date(2023, 9, 8)",
+              55,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 9)",
+              55,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 10)",
+              65,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 11)",
+              64,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 12)",
+              63,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 13)",
+              51,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 14)",
+              60,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 15)",
+              74,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 16)",
+              77,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 17)",
+              75,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 18)",
+              68,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 19)",
+              68,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 20)",
+              68,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 5)",
+              68,
+              "Moderate"
+            ]
+          ]
+        },
+        {
+          "subchartTitle": "2",
+          "dataArray": [
+            [
+              {
+                "type": "date",
+                "label": "date"
+              },
+              "Campus Center C2",
+              "AQI Category"
+            ],
+            [
+              "Date(2023, 9, 6)",
+              37,
+              "Good"
+            ],
+            [
+              "Date(2023, 9, 7)",
+              32,
+              "Good"
+            ],
+            [
+              "Date(2023, 9, 8)",
+              55,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 9)",
+              55,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 10)",
+              65,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 11)",
+              64,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 12)",
+              63,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 13)",
+              51,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 14)",
+              60,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 15)",
+              74,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 16)",
+              77,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 17)",
+              75,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 18)",
+              68,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 19)",
+              68,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 20)",
+              68,
+              "Moderate"
+            ],
+            [
+              "Date(2023, 9, 5)",
+              68,
+              "Moderate"
+            ]
+          ]
+        }
+      ],
       "columns": [
         0,
         1,
@@ -23,7 +211,7 @@
           "properties": {
             "html": true
           },
-          "calc": "function getTooltip(dataTable, rowNum){return dataTable.getValue(rowNum, 1).toString()}"
+          "calc": "function getTooltip(dataTable, rowNum) {\n  const dateObject = new Date(dataTable.getValue(rowNum, 0));\n  const formattedDate = new Intl.DateTimeFormat('en-US', {\n    year: 'numeric',\n    month: 'short',\n    day: '2-digit',\n  }).format(dateObject)\n\n  return `\n  <b>${formattedDate}</b>\n  <br/>\n  ${dataTable.getColumnLabel(1)}: \n  <b>${dataTable.getValue(rowNum, 1)}</b>\n  (${dataTable.getValue(rowNum, 2)})\n  `\n}"
         }
       ],
       "options": {

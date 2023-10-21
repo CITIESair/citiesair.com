@@ -16,7 +16,7 @@ import * as Tracking from '../../Utils/Tracking';
 import Map from './Map';
 
 import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
-import { fetchAndProcessCurrentData } from '../../Utils/ApiUtils';
+import { fetchAndprocessCurrentSensorsData } from '../../Utils/ApiUtils';
 
 import LaunchIcon from '@mui/icons-material/Launch';
 
@@ -42,7 +42,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
   useEffect(() => {
     let apiUrl = 'https://api.citiesair.com/current/nyuad';
 
-    fetchAndProcessCurrentData(apiUrl)
+    fetchAndprocessCurrentSensorsData(apiUrl)
       .then((data) => {
         setNyuadCurrentSensorData(data)
       })
@@ -61,7 +61,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
           <Grid container justifyContent="center" spacing={3}>
             <Grid item textAlign="center" xs={10}>
               <CurrentAQIGrid
-                currentData={nyuadCurrentSensorData}
+                currentSensorsData={nyuadCurrentSensorData}
                 isScreen={false}
                 orderOfItems={[3, 1, 2]}
                 temperatureUnitPreference={temperatureUnitPreference}
@@ -104,11 +104,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
 
       <FullWidthBox id={jsonData.about.id} sx={{ pt: 3, pb: 4 }}>
         <Container>
-          <Grid container spacing={3}>
-            <Grid item id={jsonData.about.id}>
-              <About />
-            </Grid>
-          </Grid>
+          <About />
         </Container>
       </FullWidthBox>
     </Box >

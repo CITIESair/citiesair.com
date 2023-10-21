@@ -218,7 +218,11 @@ const Map = ({ themePreference, temperatureUnitPreference }) => {
     }
 
     return (
-        <Box height="50vh" sx={{
+        <Box sx={{
+            height: "50vh",
+            [theme.breakpoints.down('md')]: {
+                height: '70vh',
+            },
             '& .leaflet-container': { height: "100%", width: "100%" },
             '& .leaflet-control-attribution': { fontSize: '0.5rem' }
         }}>
@@ -230,6 +234,8 @@ const Map = ({ themePreference, temperatureUnitPreference }) => {
                 placeholder={<MapPlaceholder />}
                 attributionControl={false}
             >
+                <MinimapControl position="bottomleft" mapData={mapData} />
+
                 <TileLayer
                     attribution={tileAttribution}
                     url={getTileUrl({ themePreference })}
@@ -318,7 +324,6 @@ const Map = ({ themePreference, temperatureUnitPreference }) => {
 
                     ))
                 }
-                <MinimapControl position="bottomleft" mapData={mapData} />
 
             </MapContainer>
         </Box>

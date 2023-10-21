@@ -15,8 +15,7 @@ import AQIdatabase from '../Utils/AirQualityIndexHelper';
 import CustomThemes from '../Themes/CustomThemes';
 
 const CurrentAQIGrid = (props) => {
-
-  const { currentData, temperatureUnitPreference, isScreen = true, orderOfItems } = props;
+  const { currentSensorsData, temperatureUnitPreference, isScreen = true, orderOfItems } = props;
 
   const getGridItemSize = (numOfItems) => {
     return {
@@ -25,6 +24,8 @@ const CurrentAQIGrid = (props) => {
       lg: isScreen ? (12 / numOfItems) : Math.min(5, Math.max(12 / numOfItems, 3))
     }
   }
+
+  if (!currentSensorsData) return null;
 
   return (
     <Grid
@@ -47,12 +48,12 @@ const CurrentAQIGrid = (props) => {
       }}
     >
       {
-        Object.entries(currentData).map(([key, sensorData], index) => (
+        Object.entries(currentSensorsData).map(([key, sensorData], index) => (
           <Grid
             item
             order={orderOfItems && orderOfItems[index]}
             key={key}
-            {...getGridItemSize(Object.keys(currentData).length)}
+            {...getGridItemSize(Object.keys(currentSensorsData).length)}
             sx={
               sensorData.current?.sensor_status !== SensorStatus.active &&
               { '& *': { color: `${CustomThemes.universal.palette.inactiveSensor}` } }

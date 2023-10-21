@@ -48,6 +48,7 @@ export const replacePlainHTMLWithMuiComponents = (node) => {
           target="_blank"
           rel="noopener noreferrer"
           underline="hover"
+          sx={{ wordBreak: "break-all" }}
         >
           {parseChildren(node.children)}
         </Link>
