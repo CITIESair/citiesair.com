@@ -5,7 +5,7 @@ export const TemperatureUnits = {
 
 // Converts a temperature to the specified unit
 export function convertTemperature(temp, toUnit) {
-  if (!temp) return;
+  if (!temp) return "--";
 
   if (toUnit === TemperatureUnits.celsius) {
     return ((temp - 32) * 5 / 9).toFixed(1);
@@ -18,6 +18,8 @@ export function convertTemperature(temp, toUnit) {
 
 // Return formatted temperature in the appropriate system
 export function getFormattedTemperature({ rawTemp, currentUnit, returnUnit }) {
+  if (!rawTemp) return `--°${returnUnit}`;
+
   return `${(currentUnit === returnUnit) ? rawTemp : convertTemperature(rawTemp, returnUnit)}°${returnUnit}`;
 }
 

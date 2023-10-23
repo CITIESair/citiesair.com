@@ -85,7 +85,7 @@ const CurrentAQIGrid = (props) => {
                 <ThermostatIcon />
                 {
                   getFormattedTemperature({
-                    rawTemp: sensorData.current?.temperature || "--",
+                    rawTemp: sensorData.current?.temperature,
                     currentUnit: TemperatureUnits.celsius,
                     returnUnit: temperatureUnitPreference
                   })

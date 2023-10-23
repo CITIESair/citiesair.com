@@ -111,7 +111,7 @@ const Project = ({ themePreference, currentSchoolData, dashboardData, allowedSch
               <Grid item>
                 <CustomChip
                   icon={<BarChartIcon />}
-                  label={`${dashboardData?.charts?.length} Chart${dashboardData?.charts?.length > 1 && "s"}`}
+                  label={`${dashboardData?.charts?.length} Chart${dashboardData?.charts?.length > 1 ? "s" : ""}`}
                   tooltipTitle="Number of Charts"
                   onClick={() => {
                     scrollToSection(jsonData.charts.id);

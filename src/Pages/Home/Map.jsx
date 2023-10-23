@@ -25,6 +25,7 @@ import WaterDropIcon from '@mui/icons-material/WaterDrop';
 import ThemePreferences from '../../Themes/ThemePreferences';
 
 import { styled } from '@mui/material/styles';
+import CustomThemes from '../../Themes/CustomThemes';
 
 const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
     '& .leaflet-popup-tip-container': {
@@ -112,8 +113,12 @@ const Map = ({ themePreference, temperatureUnitPreference }) => {
                         location.current.aqi = aqiObject.aqi;
                         location.current.category = aqiCategory.category;
 
-                        // Only add color if the sensor is active
-                        location.current.color = aqiCategory.lightThemeColor;
+                        if (location.current.sensor_status === SensorStatus.active) {
+                            location.current.color = aqiCategory.lightThemeColor;
+                        }
+                        else {
+                            location.current.color = CustomThemes.universal.palette.inactiveSensor;
+                        }
                     }
                 }
 
@@ -162,7 +167,6 @@ const Map = ({ themePreference, temperatureUnitPreference }) => {
                 }}
             />
         );
-        return null;
     }
 
     function MinimapControl({ position, zoom, mapData }) {
@@ -313,10 +317,19 @@ const Map = ({ themePreference, temperatureUnitPreference }) => {
                                 </Typography>
                                 <Box>
                                     <Typography variant='caption' sx={{ mt: 0 }}>
-                                        Last update:
+                                        <Typography variant='caption' fontWeight="500">Last update:</Typography>
                                         {location.current?.timestamp
                                             ? ` ${getFormattedElapsedTimeFromNow(location.current.timestamp)} ago (${new Date(location.current.timestamp).toLocaleString()})`
                                             : '--'}
+                                    </Typography>
+                                    <br />
+                                    <Typography
+                                        variant="caption"
+                                        textTransform="capitalize"
+                                    >
+                                        <Typography variant='caption' fontWeight="500">Status:</Typography>
+                                        &nbsp;
+                                        {location.current?.sensor_status}
                                     </Typography>
                                 </Box>
                             </StyledLeafletPopup>
