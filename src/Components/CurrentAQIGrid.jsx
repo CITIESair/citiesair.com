@@ -126,6 +126,7 @@ const CurrentAQIGrid = (props) => {
 };
 
 const displayLastUpdateAndSensorStatus = ({ sensorData, isScreen }) => {
+  console.log(getFormattedElapsedTimeFromNow(sensorData.current?.timestamp || sensorData.sensor?.last_seen))
   if (isScreen && sensorData.current.sensor_status === SensorStatus.active) return null;
   else
     return (
@@ -151,8 +152,8 @@ const displayLastUpdateAndSensorStatus = ({ sensorData, isScreen }) => {
           </>
         }
         Last update:
-        {sensorData.current?.timestamp
-          ? ` ${getFormattedElapsedTimeFromNow(sensorData.current.timestamp)} ago`
+        {(sensorData.current?.timestamp || sensorData.sensor?.last_seen)
+          ? ` ${getFormattedElapsedTimeFromNow(sensorData.current?.timestamp || sensorData.sensor?.last_seen)} ago`
           : '--'}
       </Typography>
     )
