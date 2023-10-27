@@ -41,12 +41,17 @@ export default function NavBar(props) {
     />
   );
 
+  const getFormattedUsername = (username) => {
+    if (!username) return "NO USERNAME";
+    else return username.toUpperCase();
+  }
+
   const reservedAreaMenu = (
     user.authenticated ?
       (
         isMobile ?
           [<MenuItemAsNavLink
-            label={`${user.username}'s Dashboard`}
+            label={`${getFormattedUsername(user.username)}'s Dashboard`}
             behavior={NavLinkBehavior.toNewPage}
             icon={<PersonIcon />}
             analyticsOriginID="navbar"
@@ -58,7 +63,7 @@ export default function NavBar(props) {
             {(popupState) => (
               <>
                 <MenuItemAsNavLink
-                  label={`${user.username}'s Dashboard`}
+                  label={`${getFormattedUsername(user.username)}'s Dashboard`}
                   behavior={NavLinkBehavior.hoverMenu}
                   icon={<PersonIcon />}
                   analyticsOriginID="navbar"
