@@ -26,13 +26,21 @@ const getAQIPalette = ({ increasingOrder, isDark }) => {
   const shadeValue = isDark ? darkShade : lightShade;
   const array = [
     colors.green[shadeValue],
-    colors.yellow[isDark ? darkShade + 200 : lightShade],
-    colors.orange[isDark ? darkShade : lightShade - 100],
+    colors.yellow[isDark ? shadeValue + 200 : shadeValue],
+    colors.orange[isDark ? shadeValue : shadeValue - 100],
     colors.red[shadeValue],
     colors.purple[shadeValue],
     maroon[shadeValue]
   ];
-  return increasingOrder ? array : array.reverse();
+
+  if (increasingOrder) {
+    const noDataColor = colors.grey[isDark ? shadeValue + 400 : shadeValue - 300];
+    array.push(noDataColor);
+  } else {
+    array.reverse();
+  }
+
+  return array;
 };
 
 const CustomThemes = {
