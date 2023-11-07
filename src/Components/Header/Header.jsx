@@ -202,6 +202,21 @@ export default function Header(props) {
                   })}
                   <br />
                 </Typography>
+                <Link
+                  href={`#${jsonData.getInTouch.id}`}
+                  underline="hover"
+                  onClick={(e) => {
+                    // Smooth scrolling
+                    e.preventDefault();
+                    const section = document.getElementById(jsonData.getInTouch.id);
+                    if (section) {
+                      section.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                  sx={{ mt: 1, display: 'block' }}
+                >
+                  Reach out to get involved!
+                </Link>
               </Container>
             </FullWidthBox>
           )

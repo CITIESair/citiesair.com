@@ -12,6 +12,8 @@ import About from './About';
 import jsonData from '../../section_data.json';
 
 import * as Tracking from '../../Utils/Tracking';
+import parse from 'html-react-parser';
+import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
 
 import Map from './Map';
 
@@ -19,6 +21,7 @@ import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
 import { fetchAndprocessCurrentSensorsData } from '../../Utils/ApiUtils';
 
 import LaunchIcon from '@mui/icons-material/Launch';
+import GetInTouch from './GetInTouch';
 
 function Home({ themePreference, temperatureUnitPreference, title }) {
   // Update the page's title
@@ -93,7 +96,9 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
         <Container sx={{ py: 3 }}>
           <UppercaseTitle text="public outdoor stations" />
           <Typography variant="body1" color="text.secondary">
-            Below is a map of CITIESair's public outdoor air quality monitoring stations. We are expanding the network to cover various schools in Abu Dhabi to raise air quality awareness towards more sustainable and healthy-living lifestyles. This map <u><b>does not</b></u> display indoor stations in participating schools to protect their privacy. That said, we strive to publish all outdoor monitoring stations' measurements on IQAir, the world's most popular air quality monitoring platform, to make the data publicly available the surrounding community, school teachers, staff, and parents.
+            {parse(jsonData.publicOutdoorStations.content, {
+              replace: replacePlainHTMLWithMuiComponents,
+            })}
           </Typography>
         </Container>
         <Map themePreference={themePreference} temperatureUnitPreference={temperatureUnitPreference} />
@@ -107,6 +112,15 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
           <About />
         </Container>
       </FullWidthBox>
+
+      <Divider />
+
+      <FullWidthBox id={jsonData.getInTouch.id} sx={{ pt: 3, pb: 4 }}>
+        <Container>
+          <GetInTouch />
+        </Container>
+      </FullWidthBox>
+
     </Box >
   );
 }

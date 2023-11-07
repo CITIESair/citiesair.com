@@ -51,7 +51,7 @@ const ExpandableSection = ({ title, content }) => {
       >
         <StyledAccordionSummary expanded={expanded} expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
           <Tooltip title={expanded ? "Click to collapse" : "Click to expand"} enterDelay={0} leaveDelay={200}>
-            <Typography component="a" variant="body1">
+            <Typography component="a" variant="body2">
               {title}
             </Typography>
           </Tooltip>
