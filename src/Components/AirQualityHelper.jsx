@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { isMobile } from 'react-device-detect';
 
 import { Fab, Fade, Popper, Paper, Typography, Stack } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import AirIcon from '@mui/icons-material/Air';
 import { FadeInButtonForSpeedDial } from './Header/FadeInButtonForSpeedDial';
 
@@ -10,7 +9,6 @@ import * as Tracking from '../Utils/Tracking';
 import AirQualityIndexTable from '../Graphs/ChartSubstituteComponents/AirQualityIndexTable';
 
 export default function AirQualityIndexLegendQuickGlance(props) {
-  const { themePreference } = props;
   // Mechanism for opening and closing the Quick Glance on hover
   const [anchorEl, setAnchorEl] = useState(null);
   const handlePopperOpen = (event) => {

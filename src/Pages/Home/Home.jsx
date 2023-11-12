@@ -18,7 +18,7 @@ import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
 import Map from './Map';
 
 import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
-import { fetchAndprocessCurrentSensorsData } from '../../Utils/ApiUtils';
+import { fetchAndProcessCurrentSensorsData } from '../../Utils/ApiUtils';
 
 import LaunchIcon from '@mui/icons-material/Launch';
 import GetInTouch from './GetInTouch';
@@ -45,7 +45,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
   useEffect(() => {
     let apiUrl = 'https://api.citiesair.com/current/nyuad';
 
-    fetchAndprocessCurrentSensorsData(apiUrl)
+    fetchAndProcessCurrentSensorsData(apiUrl)
       .then((data) => {
         setNyuadCurrentSensorData(data)
       })

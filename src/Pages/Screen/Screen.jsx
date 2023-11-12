@@ -20,17 +20,17 @@ import CustomThemes from '../../Themes/CustomThemes';
 import QRCode from "react-qr-code";
 
 import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
-import { fetchAndprocessCurrentSensorsData } from '../../Utils/ApiUtils';
+import { fetchAndProcessCurrentSensorsData } from '../../Utils/ApiUtils';
 
 const Screen = ({ title, temperatureUnitPreference }) => {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (user.checkedAuthentication === true && user.authenticated === false) {
-      navigate('/login');
-    }
-  }, [user])
+  // useEffect(() => {
+  //   if (user.checkedAuthentication === true && user.authenticated === false) {
+  //     navigate('/login');
+  //   }
+  // }, [user])
 
   // Update the page's title
   useEffect(() => {
@@ -77,16 +77,22 @@ const Screen = ({ title, temperatureUnitPreference }) => {
     if (match && match.length > 1) apiUrl = `https://api.citiesair.com/screen/${match[1]}`
     else return;
 
-    fetchAndprocessCurrentSensorsData(apiUrl)
+    fetchAndProcessCurrentSensorsData(apiUrl)
       .then((data) => {
         setData(data)
+        console.log(data)
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.log(error);
+        // Check if the error indicates that authentication is required
+        navigate('/login');
+
+      });
 
     // Create an interval that fetch new data every 5 minute
     const fetchInterval = 5 * 60 * 1000; // 5min
     const intervalId = setInterval(() => {
-      fetchAndprocessCurrentSensorsData(apiUrl)
+      fetchAndProcessCurrentSensorsData(apiUrl)
         .then((data) => {
           setData(data)
         })

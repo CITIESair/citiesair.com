@@ -6,7 +6,7 @@ import parse from 'html-react-parser';
 
 export const apiDomain = 'https://api.citiesair.com';
 
-export const fetchAndprocessCurrentSensorsData = async (apiUrl) => {
+export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {
   try {
     const data = await fetchDataFromURL(apiUrl, 'json', true);
 

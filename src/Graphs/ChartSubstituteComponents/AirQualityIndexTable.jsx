@@ -25,21 +25,23 @@ function AirQualityIndexTable(props) {
   const { isTiny, hideAQIDescription, themePreference } = props;
 
   const renderAQIchart = ({ shouldRender }) => {
-    if (!shouldRender) {
-      return null;
-    }
-    else {
-      const dataArray = [["category"], ["US AQI"]];
-      for (let category of AQIdatabase) {
-        dataArray[0].push(category.category);
-        dataArray[1].push(Math.ceil((category.aqiUS.high - category.aqiUS.low) / 50) * 50);
+    let aqiChart = null;
+
+    if (shouldRender) {
+      const dataArray = [['category'], ['US AQI']];
+      for (let i = 0; i < AQIdatabase.length; i += 1) {
+        dataArray[0].push(AQIdatabase[i].category);
+        dataArray[1].push(
+          Math.ceil((AQIdatabase[i].aqiUS.high - AQIdatabase[i].aqiUS.low) / 50) * 50
+        );
       }
-      return (
+
+      aqiChart = (
         <ChartComponent
           chartHeight="4rem"
           chartData={
             {
-              dataArray: dataArray,
+              dataArray,
               chartType: 'BarChart',
               options: {
                 enableInteractivity: false,
@@ -59,9 +61,11 @@ function AirQualityIndexTable(props) {
             }
           }
         />
-      )
+      );
     }
-  }
+
+    return aqiChart;
+  };
 
   return (
     <>
