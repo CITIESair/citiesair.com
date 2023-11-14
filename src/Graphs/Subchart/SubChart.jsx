@@ -67,6 +67,7 @@ export default function SubChart(props) {
   }, [props, theme, chartData.chartType]);
   // State to store transformed data for CalendarChart
   const [calendarData, setCalendarData] = useState(null);
+  const [calendarHeight, setCalendarHeight] = useState(200);
   // Early exit for 'Calendar' chartType
   if (chartData.chartType === 'Calendar') {
     useEffect(() => {
@@ -79,12 +80,24 @@ export default function SubChart(props) {
 
       const dateStrings = dataArray.map(item => item.day);
       const values = dataArray.map(item => item.value);
+      const dateRange = getDateRangeForCalendarChart(dateStrings);
 
       setCalendarData({
         data: dataArray,
-        dateRange: getDateRangeForCalendarChart(dateStrings),
+        dateRange: dateRange,
         valueRange: getValueRangeForCalendarChart(values)
       });
+
+      // Get the number of years in the dateRange
+      const numberOfYears = (dateRange) => {
+        const startYear = new Date(dateRange.min).getFullYear();
+        const endYear = new Date(dateRange.max).getFullYear();
+        return endYear - startYear + 1;
+      }
+
+      // Calculate the height of the chart based on the number of years in the dateRange
+      // This is to ensure that the container sizes dynamically to the chart
+      setCalendarHeight(numberOfYears(dateRange) * 150);
 
     }, [chartData]);
 
@@ -94,7 +107,8 @@ export default function SubChart(props) {
         className={className}
         position="relative"
         minWidth="700px"
-        height={isPortrait ? '400px' : '500px'}
+        minHeight="200px"
+        height={calendarHeight + 'px'}
       >
         {calendarData ?
           <CalendarChart
