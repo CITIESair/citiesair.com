@@ -75,8 +75,18 @@ const CustomThemes = {
         aqiColorAxis: {
           minValue: 0,
           maxValue: 500,
-          colors: [colors.green[darkShade], colors.green[darkShade], colors.yellow[darkShade + 200], colors.yellow[darkShade + 200], colors.orange[darkShade], colors.orange[darkShade], colors.red[darkShade], colors.red[darkShade], colors.purple[darkShade], colors.purple[darkShade], maroon[darkShade], maroon[darkShade]],
-          values: [0, 50, 51, 100, 101, 150, 151, 200, 201, 300, 301, 500]
+          colors: [
+            colors.green[darkShade],
+            colors.yellow[darkShade + 200],
+            colors.orange[darkShade],
+            colors.red[darkShade],
+            colors.purple[darkShade],
+            colors.purple[darkShade],
+            maroon[darkShade],
+            maroon[darkShade],
+            maroon[darkShade],
+            maroon[darkShade]
+          ]
         },
         axisTitle: colors.grey[darkShade - 100],
         axisText: colors.grey[darkShade],
@@ -118,8 +128,18 @@ const CustomThemes = {
         aqiColorAxis: {
           minValue: 0,
           maxValue: 500,
-          colors: [colors.green[lightShade], colors.green[lightShade], colors.yellow[lightShade], colors.yellow[lightShade], colors.orange[lightShade - 100], colors.orange[lightShade - 100], colors.red[lightShade], colors.red[lightShade], colors.purple[lightShade], colors.purple[lightShade], maroon[lightShade], maroon[lightShade]],
-          values: [0, 50, 51, 100, 101, 150, 151, 200, 201, 300, 301, 500]
+          colors: [
+            colors.green[lightShade],
+            colors.yellow[lightShade],
+            colors.orange[lightShade - 100],
+            colors.red[lightShade],
+            colors.purple[lightShade],
+            colors.purple[lightShade],
+            maroon[lightShade],
+            maroon[lightShade],
+            maroon[lightShade],
+            maroon[lightShade]
+          ]
         },
         axisTitle: colors.grey[lightShade + 100],
         axisText: colors.grey[lightShade],

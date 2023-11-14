@@ -44,6 +44,63 @@ export const fetchDataFromSheet = ({ chartData, subchartIndex }) => {
   });
 };
 
+export const transformDataForNivo = (dataTable, dataColumn, tooltipColumn) => {
+  const data = JSON.parse(dataTable.toJSON())
+  const transformed = [];
+
+  const parseDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const formattedDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+    return formattedDate;
+  }
+
+  data.rows.forEach(row => {
+    // Get the date string from the first column 
+    const dateString = row.c[0].f;
+    // Parse and convert the date string to a 'YYYY-MM-DD' format
+    const formattedDate = parseDate(dateString);
+    // Get the data from the appropriate column
+    const value = row.c[dataColumn]?.v;
+    // Get the tooltip from the appropriate column
+    const tooltip = row.c[tooltipColumn]?.v;
+
+    // If the date string and value are both valid, push them into the result array
+    if (dateString && value !== undefined && value !== null) {
+      transformed.push({
+        day: formattedDate,
+        value: value,
+        tooltip: tooltip
+      });
+    }
+  });
+
+  // Get dateRange (from - to)
+  const dateStrings = transformed.map(item => item.day);
+  const dateRange = getDateRangeForCalendarChart(dateStrings);
+
+  // Get valueRange (min - max)
+  const values = transformed.map(item => item.value);
+  const valueRange = getValueRangeForCalendarChart(values);
+
+  return {
+    data: transformed,
+    dateRange: dateRange,
+    valueRange: valueRange
+  };
+};
+export const getDateRangeForCalendarChart = (dateStrings) => {
+  return {
+    min: dateStrings.reduce((min, current) => (current < min ? current : min)),
+    max: dateStrings.reduce((max, current) => (current > max ? current : max))
+  }
+}
+export const getValueRangeForCalendarChart = (values) => {
+  return { min: Math.min(...values), max: Math.max(...values) }
+}
+
 // Function to generate a random ID for the google chart container
 export const generateRandomID = () => {
   return Math.random().toString(36).substr(2, 9); // Generates a random string of length 9

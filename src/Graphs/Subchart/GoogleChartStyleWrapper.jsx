@@ -3,11 +3,16 @@ import { styled } from '@mui/material/styles';
 
 const GoogleChartStyleWrapper = styled(Box)(({ theme, isPortrait }) => ({
   // CSS for HTML tooltip
-  '& .google-visualization-tooltip': {
+  '& .google-visualization-tooltip, .nivo-tooltip': {
     width: 'unset !important',
     maxWidth: '350px',
     height: 'unset',
     padding: '1em',
+    boxShadow: '0px 2px 2px 0px rgba(204, 204, 204, 0.6)',
+    mozBoxShadow: '0px 2px 2px 0px rgba(204, 204, 204, 0.6)',
+    webkitBoxShadow: '0px 2px 2px 0px rgba(204, 204, 204, 0.6)',
+    border: 'solid 1px',
+    borderColor: theme.palette.text.secondaryRGB,
     fontSize: `${isPortrait ? 9 : 12}px`,
     color: theme.palette.chart.tooltip.text,
     background: theme.palette.chart.tooltip.background,

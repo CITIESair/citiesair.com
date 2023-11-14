@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useMemo } from 'react';
 
 import { GoogleContext } from '../../ContextProviders/GoogleContext';
 
@@ -9,13 +9,15 @@ import { Box, Stack } from '@mui/material/';
 import { useTheme } from '@mui/material/styles';
 import SeriesSelector from './SeriesSelector';
 
-import { fetchDataFromSheet, generateRandomID, returnGenericOptions, returnCalendarChartOptions, returnChartControlUI, ChartControlType, addTouchEventListenerForChartControl } from '../GoogleChartHelper';
+import { generateRandomID, returnGenericOptions, returnCalendarChartOptions, returnChartControlUI, ChartControlType, addTouchEventListenerForChartControl, getDateRangeForCalendarChart, getValueRangeForCalendarChart } from '../GoogleChartHelper';
 
 import GoogleChartStyleWrapper from './GoogleChartStyleWrapper';
 
 import LoadingAnimation from '../../Components/LoadingAnimation';
 
 import ChartSubstituteComponentLoader from '../ChartSubstituteComponents/ChartSubstituteComponentLoader';
+
+import { CalendarChart } from './NivoCalendarChart';
 
 export default function SubChart(props) {
   // Props
@@ -56,8 +58,63 @@ export default function SubChart(props) {
   const [chartTotalHeight, setChartTotalHeight] = useState(200);
 
   // Get the options object for chart
-  let options = returnGenericOptions({ ...props, theme });
-  if (chartData.chartType === 'Calendar') options = returnCalendarChartOptions(options);
+  let options = useMemo(() => {
+    let opts = returnGenericOptions({ ...props, theme });
+    if (chartData.chartType === 'Calendar') {
+      opts = returnCalendarChartOptions(opts);
+    }
+    return opts;
+  }, [props, theme, chartData.chartType]);
+  // State to store transformed data for CalendarChart
+  const [calendarData, setCalendarData] = useState(null);
+  // Early exit for 'Calendar' chartType
+  if (chartData.chartType === 'Calendar') {
+    useEffect(() => {
+      const dataArray = chartData.dataArray
+        || (chartData.subcharts
+          && chartData.subcharts[subchartIndex].dataArray)
+        || null
+        || null;
+      if (!dataArray) return; // early return if there is no data to render
+
+      const dateStrings = dataArray.map(item => item.day);
+      const values = dataArray.map(item => item.value);
+
+      setCalendarData({
+        data: dataArray,
+        dateRange: getDateRangeForCalendarChart(dateStrings),
+        valueRange: getValueRangeForCalendarChart(values)
+      });
+
+    }, [chartData]);
+
+    return (
+      <GoogleChartStyleWrapper
+        isPortrait={isPortrait}
+        className={className}
+        position="relative"
+        minWidth="700px"
+        height={isPortrait ? '400px' : '500px'}
+      >
+        {calendarData ?
+          <CalendarChart
+            data={calendarData.data}
+            dateRange={calendarData.dateRange}
+            valueRange={calendarData.valueRange}
+            isPortrait={isPortrait}
+            options={options}
+          />
+          :
+          (
+            <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+              <LoadingAnimation />
+
+            </Box>
+          )
+        }
+      </GoogleChartStyleWrapper>
+    );
+  }
 
   // Properties for chart control (if existed)
   let hasChartControl = false;
@@ -309,6 +366,9 @@ export default function SubChart(props) {
   // Call this function to fetch the data and draw the initial chart
   useEffect(() => {
     if (google && chartData) {
+      // Not applicable for Calendar chart
+      if (chartData.chartType === "Calendar") return;
+
       // Get and set the dataArray 
       const dataArray = chartData.dataArray
         || (chartData.subcharts
@@ -396,16 +456,6 @@ export default function SubChart(props) {
   }
 
   const onChartReady = () => {
-    if (chartData.chartType === 'Calendar') {
-      // querySelector is used to select the first 'g' element in the svg
-      // this is to get the height of the non-responsive element
-      // to set the CalendarChart's height to make it resonsive
-      const chartDOMContainer = document.getElementById(chartID).querySelector('svg > g:nth-of-type(1)');
-      let renderedHeight = chartDOMContainer.getBBox().height;
-      if (options.legend.position === 'none') renderedHeight += 50;
-      setChartTotalHeight(renderedHeight);
-    }
-
     if (!isFirstRender) return;
     // Hide the circleProgress when chart finishes rendering the first time
     setIsFirstRender(false);
