@@ -114,7 +114,7 @@ export default function SubChart(props) {
         className={className}
         position="relative"
         minWidth="700px"
-        minHeight="200px"
+        minHeight={isPortrait ? '200px' : calendarHeight + 'px'}
         height={calendarHeight + 'px'}
         maxHeight={isPortrait && '400px'}
       >
