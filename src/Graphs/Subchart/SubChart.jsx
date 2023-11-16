@@ -68,6 +68,7 @@ export default function SubChart(props) {
   // State to store transformed data for CalendarChart
   const [calendarData, setCalendarData] = useState(null);
   const [calendarHeight, setCalendarHeight] = useState(200);
+  const [containerWidth, setContainerWidth] = useState(1200); // max width of the chart container
   // Early exit for 'Calendar' chartType
   if (chartData.chartType === 'Calendar') {
     useEffect(() => {
@@ -95,9 +96,15 @@ export default function SubChart(props) {
         return endYear - startYear + 1;
       }
 
-      // Calculate the height of the chart based on the number of years in the dateRange
-      // This is to ensure that the container sizes dynamically to the chart
-      setCalendarHeight(numberOfYears(dateRange) * 150);
+      // Calculate the size of each cell
+      const cellSize = Math.min(containerWidth / 60, 20); // max cell size of 20
+      const yearHeight = cellSize * 7; // Height for one year
+      const marginBetweenYears = 40;
+
+      // Calculate the total height based on the number of years and margins
+      const totalHeight = numberOfYears(dateRange) * (yearHeight + marginBetweenYears);
+
+      setCalendarHeight(totalHeight);
 
     }, [chartData]);
 
