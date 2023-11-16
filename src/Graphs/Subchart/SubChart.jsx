@@ -17,7 +17,7 @@ import LoadingAnimation from '../../Components/LoadingAnimation';
 
 import ChartSubstituteComponentLoader from '../ChartSubstituteComponents/ChartSubstituteComponentLoader';
 
-import { CalendarChart } from './NivoCalendarChart';
+import { CalendarChart, getCalendarChartMargin, yearSpacing } from './NivoCalendarChart';
 
 export default function SubChart(props) {
   // Props
@@ -97,15 +97,16 @@ export default function SubChart(props) {
       // Calculate the size of each cell
       const cellSize = Math.min(containerWidth / 60, 20); // max cell size of 20
       const yearHeight = cellSize * 7; // Height for one year
-      const marginBetweenYears = 40;
+
+      const calendarChartMargin = getCalendarChartMargin(isPortrait);
 
       // Calculate the total height based on the number of years and margins
       let totalHeight;
       if (numberOfYear == 1) {
-        totalHeight = yearHeight + marginBetweenYears * 1.75
+        totalHeight = yearHeight + yearSpacing + calendarChartMargin.top + calendarChartMargin.bottom
       }
       else {
-        totalHeight = numberOfYear * (yearHeight + marginBetweenYears);
+        totalHeight = numberOfYear * (yearHeight + yearSpacing) + calendarChartMargin.top + calendarChartMargin.bottom;
       }
       setCalendarHeight(totalHeight);
 

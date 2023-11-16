@@ -7,8 +7,18 @@ import { Box, Chip } from '@mui/material';
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
 
+export const yearSpacing = 40;
+
+export const getCalendarChartMargin = (isPortrait) => {
+    return isPortrait
+        ? { top: 20, right: 0, bottom: 0, left: 20 }
+        : { top: 30, right: 40, bottom: 0, left: 40 }
+}
+
 export const CalendarChart = (props) => {
     const { data, dateRange, valueRange, isPortrait, options } = props;
+
+    const calendarChartMargin = getCalendarChartMargin(isPortrait);
 
     const theme = useTheme();
 
@@ -90,11 +100,8 @@ export const CalendarChart = (props) => {
                 colors={colors}
                 minValue={options?.colorAxis?.minValue}
                 maxValue={options?.colorAxis?.maxValue}
-                margin={isPortrait
-                    ? { top: 30, right: 10, bottom: 10, left: 20 }
-                    : { top: 40, right: 40, bottom: 40, left: 40 }
-                }
-                yearSpacing={40}
+                margin={calendarChartMargin}
+                yearSpacing={yearSpacing}
                 monthBorderColor={theme.palette.text.primary}
                 monthBorderWidth={1}
                 daySpacing={0.25}
