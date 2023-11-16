@@ -90,11 +90,9 @@ export default function SubChart(props) {
       });
 
       // Get the number of years in the dateRange
-      const numberOfYears = (dateRange) => {
-        const startYear = new Date(dateRange.min).getFullYear();
-        const endYear = new Date(dateRange.max).getFullYear();
-        return endYear - startYear + 1;
-      }
+      const startYear = new Date(dateRange.min).getFullYear();
+      const endYear = new Date(dateRange.max).getFullYear();
+      const numberOfYear = endYear - startYear + 1;
 
       // Calculate the size of each cell
       const cellSize = Math.min(containerWidth / 60, 20); // max cell size of 20
@@ -102,8 +100,13 @@ export default function SubChart(props) {
       const marginBetweenYears = 40;
 
       // Calculate the total height based on the number of years and margins
-      const totalHeight = numberOfYears(dateRange) * (yearHeight + marginBetweenYears);
-
+      let totalHeight;
+      if (numberOfYear == 1) {
+        totalHeight = yearHeight + marginBetweenYears * 1.75
+      }
+      else {
+        totalHeight = numberOfYear * (yearHeight + marginBetweenYears);
+      }
       setCalendarHeight(totalHeight);
 
     }, [chartData]);
