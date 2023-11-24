@@ -1,8 +1,6 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useState, useEffect } from 'react';
-
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Grid, Typography, Skeleton, Stack } from '@mui/material';
 import ThermostatIcon from '@mui/icons-material/Thermostat';
 import WaterDropIcon from '@mui/icons-material/WaterDrop';
 import ErrorIcon from '@mui/icons-material/Error';
@@ -25,8 +23,6 @@ const CurrentAQIGrid = (props) => {
     }
   }
 
-  if (!currentSensorsData) return null;
-
   return (
     <Grid
       container
@@ -48,78 +44,91 @@ const CurrentAQIGrid = (props) => {
       }}
     >
       {
-        Object.entries(currentSensorsData).map(([key, sensorData], index) => (
-          <Grid
-            item
-            order={orderOfItems && orderOfItems[index]}
-            key={key}
-            {...getGridItemSize(Object.keys(currentSensorsData).length)}
-            sx={
-              sensorData.current?.sensor_status !== SensorStatus.active &&
-              { '& *': { color: `${CustomThemes.universal.palette.inactiveSensor}` } }
-            }
-          >
-            <Box sx={{ '& *': { color: sensorData.current?.color } }}>
-              <Typography variant={isScreen ? "h4" : 'h5'} fontWeight="500" className='condensedFont'>
-                {sensorData.sensor?.location_long || sensorData.sensor?.location_short || 'No Location Name'}
-              </Typography>
-              <Typography variant={isScreen ? "h1" : 'h2'} fontWeight="500" lineHeight={isScreen ? 0.8 : 0.9}>
-                {sensorData.current?.aqi || '--'}
-              </Typography>
-              <Typography variant={isScreen ? "h4" : 'h5'} fontWeight="500" className='condensedFont'>
-                {sensorData.current?.category || '--'}
-              </Typography>
-            </Box>
+        currentSensorsData ?
 
-            <Box sx={{
-              '& *': {
-                color:
-                  isScreen ? (
-                    sensorData.current?.sensor_status === SensorStatus.active ?
-                      '#c8dcff' : CustomThemes.universal.palette.inactiveSensor
-                  )
-                    : 'text.secondary'
-              }, mt: isScreen ? 2 : 1
-            }} className='condensedFont'>
-              <Typography variant={isScreen ? "h6" : 'body1'}>
-                <ThermostatIcon />
+          (Object.entries(currentSensorsData).map(([key, sensorData], index) => (
+            <Grid
+              item
+              order={orderOfItems && orderOfItems[index]}
+              key={key}
+              {...getGridItemSize(Object.keys(currentSensorsData).length)}
+              sx={
+                sensorData.current?.sensor_status !== SensorStatus.active &&
+                { '& *': { color: `${CustomThemes.universal.palette.inactiveSensor}` } }
+              }
+            >
+              <Box sx={{ '& *': { color: sensorData.current?.color } }}>
+                <Typography variant={isScreen ? "h4" : 'h5'} fontWeight="500" className='condensedFont'>
+                  {sensorData.sensor?.location_long || sensorData.sensor?.location_short || 'No Location Name'}
+                </Typography>
+                <Typography variant={isScreen ? "h1" : 'h2'} fontWeight="500" lineHeight={isScreen ? 0.8 : 0.9}>
+                  {sensorData.current?.aqi || '--'}
+                </Typography>
+                <Typography variant={isScreen ? "h4" : 'h5'} fontWeight="500" className='condensedFont'>
+                  {sensorData.current?.category || '--'}
+                </Typography>
+              </Box>
+
+              <Box sx={{
+                '& *': {
+                  color:
+                    isScreen ? (
+                      sensorData.current?.sensor_status === SensorStatus.active ?
+                        '#c8dcff' : CustomThemes.universal.palette.inactiveSensor
+                    )
+                      : 'text.secondary'
+                }, mt: isScreen ? 2 : 1
+              }} className='condensedFont'>
+                <Typography variant={isScreen ? "h6" : 'body1'}>
+                  <ThermostatIcon />
+                  {
+                    getFormattedTemperature({
+                      rawTemp: sensorData.current?.temperature,
+                      currentUnit: TemperatureUnits.celsius,
+                      returnUnit: temperatureUnitPreference
+                    })
+                  }
+                  &nbsp;&nbsp;-&nbsp;
+                  <WaterDropIcon sx={{ transform: 'scaleX(0.9)' }} />
+                  {sensorData.current?.rel_humidity ? Math.round(sensorData.current?.rel_humidity) : "--"}%
+                </Typography>
                 {
-                  getFormattedTemperature({
-                    rawTemp: sensorData.current?.temperature,
-                    currentUnit: TemperatureUnits.celsius,
-                    returnUnit: temperatureUnitPreference
-                  })
+                  // Show heat index for selected location types
+                  ['outdoors', 'indoors_gym'].includes(sensorData.sensor?.location_type) &&
+                  <Typography variant={isScreen ? "body1" : 'body2'} sx={{ fontWeight: '300 !important' }}>
+                    {calculateHeatIndex({
+                      rawTemp: sensorData.current?.temperature,
+                      currentUnit: TemperatureUnits.celsius,
+                      rel_humidity: sensorData.current?.rel_humidity,
+                      returnUnit: temperatureUnitPreference
+                    })}
+                  </Typography>
                 }
-                &nbsp;&nbsp;-&nbsp;
-                <WaterDropIcon sx={{ transform: 'scaleX(0.9)' }} />
-                {sensorData.current?.rel_humidity ? Math.round(sensorData.current?.rel_humidity) : "--"}%
-              </Typography>
+                {
+                  displayLastUpdateAndSensorStatus({ sensorData, isScreen })
+                }
+              </Box>
+
               {
-                // Show heat index for selected location types
-                ['outdoors', 'indoors_gym'].includes(sensorData.sensor?.location_type) &&
-                <Typography variant={isScreen ? "body1" : 'body2'} sx={{ fontWeight: '300 !important' }}>
-                  {calculateHeatIndex({
-                    rawTemp: sensorData.current?.temperature,
-                    currentUnit: TemperatureUnits.celsius,
-                    rel_humidity: sensorData.current?.rel_humidity,
-                    returnUnit: temperatureUnitPreference
-                  })}
+                // Display outdoor-indoor comparison if both sensors are active
+                sensorData.sensor_status !== SensorStatus.active &&
+                <Typography variant={isScreen ? "h6" : 'body1'} className="condensedFont">
+                  {returnSensorStatus(sensorData)}
                 </Typography>
               }
-              {
-                displayLastUpdateAndSensorStatus({ sensorData, isScreen })
-              }
-            </Box>
-
-            {
-              // Display outdoor-indoor comparison if both sensors are active
-              sensorData.sensor_status !== SensorStatus.active &&
-              <Typography variant={isScreen ? "h6" : 'body1'} className="condensedFont">
-                {returnSensorStatus(sensorData)}
-              </Typography>
-            }
-          </Grid>
-        ))
+            </Grid>
+          ))
+          )
+          :
+          (
+            <Stack direction="column" alignItems="center" justifyContent="center">
+              <Skeleton variant='text' sx={{ width: '15rem', fontSize: '2rem' }} />
+              <Skeleton variant='text' sx={{ width: '5rem', fontSize: '4rem', my: -1.5 }} />
+              <Skeleton variant='text' sx={{ width: '10rem', fontSize: '2rem' }} />
+              <Skeleton variant='text' sx={{ width: '7.5rem', fontSize: '1rem' }} />
+              <Skeleton variant='text' sx={{ width: '7.5rem', fontSize: '1rem' }} />
+            </Stack>
+          )
       }
     </Grid>
   );

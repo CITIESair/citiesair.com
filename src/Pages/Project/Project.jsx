@@ -6,7 +6,7 @@ import { TabContext } from '../../ContextProviders/TabContext';
 import parse from 'html-react-parser';
 import ChartComponent from '../../Graphs/ChartComponent';
 import UppercaseTitle from '../../Components/UppercaseTitle';
-import { Box, Typography, Container, Divider, Chip, Grid, Tooltip, Stack } from '@mui/material';
+import { Box, Typography, Container, Divider, Chip, Grid, Tooltip, Stack, Skeleton } from '@mui/material';
 
 import { useTheme } from '@mui/material/styles';
 
@@ -42,11 +42,12 @@ import { UserContext } from '../../ContextProviders/UserContext';
 
 // Custom Chip component to display metadata
 export const CustomChip = (props) => {
-  const { tooltipTitle, ...otherProps } = props;
+  const { tooltipTitle, label, ...otherProps } = props;
   return (
     <Tooltip title={tooltipTitle} enterDelay={0} leaveDelay={200}>
       <Chip
         size="small"
+        label={label || <Skeleton variant="text" sx={{ minWidth: '5rem' }} />}
         {...otherProps}
       />
     </Tooltip>
@@ -73,6 +74,10 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
 
   const theme = useTheme();
 
+  const getDashboardTitle = () => {
+    if (schoolMetadata?.school_id && dashboardData?.title) return `${dashboardData?.title} | ${schoolMetadata?.school_id}`
+  }
+
   return (
     <>
       <Box width="100%">
@@ -80,7 +85,7 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
 
         <FullWidthBox backgroundColor='customAlternateBackground'>
           <Container sx={{ pt: 5, pb: 3 }}>
-            <UppercaseTitle text={dashboardData?.title} />
+            <UppercaseTitle text={getDashboardTitle()} />
 
             <Grid container spacing={1} sx={{ mt: -3, pb: 3 }}>
               <Grid item>
@@ -114,7 +119,7 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
               <Grid item>
                 <CustomChip
                   icon={<BarChartIcon />}
-                  label={`${dashboardData?.charts?.length} Chart${dashboardData?.charts?.length > 1 ? "s" : ""}`}
+                  label={`${dashboardData?.charts?.length || "..."} Chart${dashboardData?.charts?.length !== 1 ? 's' : ''}`}
                   tooltipTitle="Number of Charts"
                   onClick={() => {
                     scrollToSection(jsonData.charts.id);
@@ -157,9 +162,16 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
               }}
               gutterBottom
             >
-              {parse(dashboardData?.description || '', {
-                replace: replacePlainHTMLWithMuiComponents,
-              })}
+              {
+                dashboardData?.description ?
+                  parse(dashboardData?.description || '', {
+                    replace: replacePlainHTMLWithMuiComponents,
+                  })
+                  :
+                  Array.from({ length: 3 }).map((_, index) => (
+                    <Skeleton key={index} variant='text' />
+                  ))
+              }
             </Typography>
             <Stack direction="row" spacing={2}>
               <ScreenDialog schoolID={schoolMetadata?.school_id} screens={schoolMetadata?.screens} />

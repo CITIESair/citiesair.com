@@ -26,9 +26,12 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
-  const [chartDataForDashboard, setChartDataForDashboard] = useState({});
-  const [currentData, setCurrentData] = useState([]);
-  const [schoolMetadata, setSchoolMetadata] = useState({});
+  const emptySchoolMetadata = {};
+  const [schoolMetadata, setSchoolMetadata] = useState(emptySchoolMetadata);
+  const emptyCurrentData = null;
+  const [currentData, setCurrentData] = useState(emptyCurrentData);
+  const emptyChartDataForDashboard = {};
+  const [chartDataForDashboard, setChartDataForDashboard] = useState(emptyChartDataForDashboard);
 
   useEffect(() => {
     if (user.checkedAuthentication === true && user.authenticated === false) {
@@ -50,10 +53,10 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
 
       // If there is no schoolMetadata or currentData or chartData, then fetch them
       if (Object.keys(schoolMetadata).length === 0 ||
-        (Array.isArray(currentData) && currentData.length === 0) ||
+        !currentData ||
         Object.keys(chartDataForDashboard).length === 0
       ) {
-        fetchDataForDashboard(school_id)
+        fetchDataForDashboard(school_id);
       }
     }
   }, [user]);
@@ -63,6 +66,11 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
       endpoint: EndPoints.schoolmetadata,
       school_id: school_id
     });
+
+    setSchoolMetadata(emptySchoolMetadata);
+    setCurrentData(emptyCurrentData);
+    setChartDataForDashboard(emptyChartDataForDashboard);
+
     fetchDataFromURL(schoolMetadataUrl, 'json', true)
       .then(data => {
         setSchoolMetadata(data);
@@ -72,6 +80,7 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
           endpoint: EndPoints.current,
           school_id: school_id
         });
+
         fetchAndProcessCurrentSensorsData(currentUrl)
           .then((data) => {
             setCurrentData(data);

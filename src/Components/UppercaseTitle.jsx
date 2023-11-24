@@ -1,4 +1,4 @@
-import Typography from '@mui/material/Typography';
+import { Skeleton, Typography } from '@mui/material';
 
 export default function UppercaseTitle({ text }) {
   return (
@@ -7,13 +7,13 @@ export default function UppercaseTitle({ text }) {
       color="text.primary"
       sx={{
         fontWeight: 'medium',
-        display: 'inline-block',
+        display: 'block',
         textTransform: 'uppercase',
         pb: 3,
         lineHeight: 1
       }}
     >
-      {text}
+      {text || <Skeleton variant='text' />}
     </Typography>
   );
 }
