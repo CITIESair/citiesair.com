@@ -39,7 +39,6 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
     contactEmail: null,
     sensors: null
   });
-  const [allowedSchoolsData, setAllowedSchoolsData] = useState([]);
 
   const fetchDashboardData = (optionalSchoolID) => {
     let url;
@@ -59,7 +58,6 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
         }
 
         setDashboardData(data.dashboard);
-        setAllowedSchoolsData(data.allowedSchools || []);
       })
   }
 
@@ -73,7 +71,6 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
         themePreference={themePreference}
         currentSchoolData={currentSchoolData}
         dashboardData={dashboardData}
-        allowedSchoolsData={allowedSchoolsData}
         fetchDashboardData={fetchDashboardData}
         temperatureUnitPreference={temperatureUnitPreference}
       />

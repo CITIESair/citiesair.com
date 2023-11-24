@@ -1,5 +1,6 @@
 import { useState, useEffect, createContext, useMemo } from 'react';
 import { fetchDataFromURL } from '../Components/DatasetDownload/DatasetFetcher';
+import { EndPoints, getApiUrl } from '../Utils/ApiUtils';
 
 export const UserContext = createContext();
 
@@ -7,17 +8,19 @@ export function UserProvider({ children }) {
   const [user, setUser] = useState({
     checkedAuthentication: false,
     authenticated: false,
+    allowedSchools: [],
     username: null
   });
 
   useEffect(() => {
-    const url = 'https://api.citiesair.com/me';
+    const url = getApiUrl({ endpoint: EndPoints.me });
     fetchDataFromURL(url, 'json', true)
       .then((data) => {
         if (data.username) {
           setUser({
             checkedAuthentication: true,
             authenticated: true,
+            allowedSchools: data.allowedSchools,
             username: data.username
           })
         }
@@ -25,6 +28,7 @@ export function UserProvider({ children }) {
           setUser({
             checkedAuthentication: true,
             authenticated: false,
+            allowedSchools: [],
             username: null
           })
         }
@@ -33,6 +37,7 @@ export function UserProvider({ children }) {
         setUser({
           checkedAuthentication: true,
           authenticated: false,
+          allowedSchools: [],
           username: null
         });
         console.log(error);

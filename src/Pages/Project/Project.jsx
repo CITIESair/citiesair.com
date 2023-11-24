@@ -38,6 +38,7 @@ import { SchoolSelector } from "../Dashboard/SchoolSelector";
 import AirQualityIndexTable from '../../Graphs/ChartSubstituteComponents/AirQualityIndexTable';
 import ExpandableSection from './ExpandableSection';
 import AirQualityExplanation from '../../Utils/AirQualityExplanation';
+import { UserContext } from '../../ContextProviders/UserContext';
 
 // Custom Chip component to display metadata
 export const CustomChip = (props) => {
@@ -52,13 +53,15 @@ export const CustomChip = (props) => {
   );
 }
 
-const Project = ({ themePreference, currentSchoolData, dashboardData, allowedSchoolsData, fetchDashboardData, temperatureUnitPreference }) => {
+const Project = ({ themePreference, currentSchoolData, dashboardData, fetchDashboardData, temperatureUnitPreference }) => {
   const [_, __, chartsTitlesList, setChartsTitlesList] = useContext(LinkContext);
 
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useContext(TabContext);
 
   let lastUpdate;
+
+  const { user } = useContext(UserContext);
 
   // Update the chart title list for quick navigation
   useEffect(() => {
@@ -84,7 +87,7 @@ const Project = ({ themePreference, currentSchoolData, dashboardData, allowedSch
                 <SchoolSelector
                   currentSchoolID={currentSchoolData?.school_id}
                   currentSchoolName={currentSchoolData?.name}
-                  allowedSchoolsData={allowedSchoolsData}
+                  allowedSchools={user.allowedSchools}
                   fetchDashboardData={fetchDashboardData}
                 />
               </Grid>

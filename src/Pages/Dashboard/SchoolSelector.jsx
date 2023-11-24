@@ -2,14 +2,15 @@
 /* eslint-disable */
 
 import { useState } from "react";
-import { Menu, MenuItem, MenuList, FormControl, Select, InputLabel } from "@mui/material";
+import { Menu, MenuItem, MenuList } from "@mui/material";
 import { CustomChip } from "../Project/Project";
 
 import PlaceIcon from '@mui/icons-material/Place';
 
 export const SchoolSelector = (props) => {
-  const { currentSchoolID, currentSchoolName, allowedSchoolsData, fetchDashboardData } = props;
-  if (!Array.isArray(allowedSchoolsData) || allowedSchoolsData.length <= 1)
+  const { currentSchoolID, currentSchoolName, allowedSchools, fetchDashboardData } = props;
+
+  if (!Array.isArray(allowedSchools) || allowedSchools.length <= 1)
     return (
       <CustomChip
         icon={<PlaceIcon />}
@@ -58,7 +59,7 @@ export const SchoolSelector = (props) => {
         }}
       >
         <MenuList dense>
-          {allowedSchoolsData.map((school, index) => (
+          {allowedSchools.map((school, index) => (
             <MenuItem
               key={index}
               onClick={handleItemSelect(school.school_id)}
