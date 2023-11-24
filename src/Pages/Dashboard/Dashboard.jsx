@@ -66,30 +66,33 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
     fetchDataFromURL(schoolMetadataUrl, 'json', true)
       .then(data => {
         setSchoolMetadata(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      })
 
-    const currentUrl = getApiUrl({
-      endpoint: EndPoints.current,
-      school_id: school_id
-    });
-    fetchAndProcessCurrentSensorsData(currentUrl)
-      .then((data) => {
-        setCurrentData(data)
-      })
-      .catch((error) => {
-        console.log(error);
-      })
+        // Only call currentData after schoolMetadata is received
+        const currentUrl = getApiUrl({
+          endpoint: EndPoints.current,
+          school_id: school_id
+        });
+        fetchAndProcessCurrentSensorsData(currentUrl)
+          .then((data) => {
+            setCurrentData(data);
 
-    const chartDataUrl = getApiUrl({
-      endpoint: EndPoints.chartdata,
-      school_id: school_id
-    });
-    fetchDataFromURL(chartDataUrl, 'json', true)
-      .then(data => {
-        setChartDataForDashboard(data);
+            // Only call chartData after currentData is received
+            const chartDataUrl = getApiUrl({
+              endpoint: EndPoints.chartdata,
+              school_id: school_id
+            });
+            fetchDataFromURL(chartDataUrl, 'json', true)
+              .then(data => {
+                setChartDataForDashboard(data);
+              })
+              .catch((error) => {
+                console.log(error);
+              })
+
+          })
+          .catch((error) => {
+            console.log(error);
+          })
       })
       .catch((error) => {
         console.log(error);
