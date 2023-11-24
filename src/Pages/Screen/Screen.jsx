@@ -20,7 +20,7 @@ import CustomThemes from '../../Themes/CustomThemes';
 import QRCode from "react-qr-code";
 
 import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
-import { fetchAndProcessCurrentSensorsData } from '../../Utils/ApiUtils';
+import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
 
 const Screen = ({ title, temperatureUnitPreference }) => {
   const { user } = useContext(UserContext);
@@ -69,24 +69,17 @@ const Screen = ({ title, temperatureUnitPreference }) => {
 
   // Fetch air quality data from database
   useEffect(() => {
-    const currentUrl = window.location.href;
-    const regex = /\/screen\/(.+)/;
-    const match = currentUrl.match(regex);
+    const url = getApiUrl({ endpoint: EndPoints.screen });
+    if (!url) return;
 
-    let apiUrl;
-    if (match && match.length > 1) apiUrl = `https://api.citiesair.com/screen/${match[1]}`
-    else return;
-
-    fetchAndProcessCurrentSensorsData(apiUrl)
+    fetchAndProcessCurrentSensorsData(url)
       .then((data) => {
         setData(data)
-        console.log(data)
       })
       .catch((error) => {
         console.log(error);
         // Check if the error indicates that authentication is required
         navigate('/login');
-
       });
 
     // Create an interval that fetch new data every 5 minute

@@ -26,6 +26,7 @@ import ThemePreferences from '../../Themes/ThemePreferences';
 
 import { styled } from '@mui/material/styles';
 import CustomThemes from '../../Themes/CustomThemes';
+import { EndPoints, getApiUrl } from '../../Utils/ApiUtils';
 
 const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
     '& .leaflet-popup-tip-container': {
@@ -91,7 +92,7 @@ const Map = ({ themePreference, temperatureUnitPreference }) => {
     const [mapData, setMapData] = useState({});
     const theme = useTheme();
 
-    const url = 'https://api.citiesair.com/map_public_outdoors_stations';
+    const url = getApiUrl({ endpoint: EndPoints.map });
 
     useEffect(() => {
         fetchDataFromURL(url, 'json').then((data => {

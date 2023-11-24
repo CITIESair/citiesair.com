@@ -14,13 +14,20 @@ export const EndPoints = {
   screen: `${apiDomain}/screen`,
   login: `${apiDomain}/login`,
   logout: `${apiDomain}/logout`,
+  map: `${apiDomain}/map_public_outdoors_stations`
 }
 
 export const getApiUrl = ({ endpoint, school_id }) => {
-  if ([EndPoints.login, EndPoints.logout, EndPoints.me].includes(endpoint)) return endpoint;
-  else {
-    return `${endpoint}/${school_id}`
+  if ([EndPoints.current, EndPoints.schoolmetadata, EndPoints.chartdata].includes(endpoint)) return `${endpoint}/${school_id}`;
+  else if (endpoint === EndPoints.screen) {
+    const currentUrl = window.location.href;
+    const regex = /\/screen\/(.+)/;
+    const match = currentUrl.match(regex);
+
+    if (match && match.length > 1) return `${endpoint}/${match[1]}`
+    else return;
   }
+  else return endpoint
 }
 
 export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {

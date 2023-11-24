@@ -9,6 +9,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { StyledMenuItem } from '../Header/MenuItemAsNavLink';
 
 import { UserContext } from '../../ContextProviders/UserContext';
+import { EndPoints, getApiUrl } from '../../Utils/ApiUtils';
 
 export default function LogOut() {
   const { setUser } = useContext(UserContext);
@@ -17,7 +18,9 @@ export default function LogOut() {
 
   const logOut = async () => {
     setLoading(true);
-    fetch('https://api.citiesair.com/logout', {
+
+    const url = getApiUrl({ endpoint: EndPoints.logout })
+    fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'

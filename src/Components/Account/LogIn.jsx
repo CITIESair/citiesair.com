@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper, useMediaQuery, Alert } from "@mui/material";
 
 import { UserContext } from '../../ContextProviders/UserContext';
+import { EndPoints, getApiUrl } from '../../Utils/ApiUtils';
 
 export default function LogIn() {
   const { user, setUser } = useContext(UserContext);
@@ -33,7 +34,9 @@ export default function LogIn() {
 
     setLoading(true);
 
-    fetch('https://api.citiesair.com/login', {
+    const url = getApiUrl({ endpoint: EndPoints.login });
+
+    fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
