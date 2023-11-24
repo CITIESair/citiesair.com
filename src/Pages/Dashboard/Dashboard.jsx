@@ -25,11 +25,11 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (user.checkedAuthentication === true && user.authenticated === false) {
-  //     navigate('/login');
-  //   }
-  // }, [user])
+  useEffect(() => {
+    if (user.checkedAuthentication === true && user.authenticated === false) {
+      navigate('/login');
+    }
+  }, [user])
 
   const [dashboardData, setDashboardData] = useState({});
   const [currentSchoolData, setCurrentSchoolData] = useState({
