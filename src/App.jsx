@@ -22,6 +22,7 @@ import LogIn from './Components/Account/LogIn';
 // Contexts
 import { UserContext } from './ContextProviders/UserContext';
 import { TemperatureUnits } from './Pages/Screen/TemperatureUtils';
+import { LocalStorage } from './Utils/LocalStorage';
 
 // Lazy load pages
 const Home = lazy(() => import('./Pages/Home/Home'));
@@ -49,13 +50,13 @@ const getDesignTokens = (themePreference) => ({
 function App() {
   // Set theme preference state based on localStorage or system preference
   const [themePreference, setThemePreference] = useState(
-    localStorage.getItem('theme')
+    localStorage.getItem(LocalStorage.theme)
     || (window.matchMedia('(prefers-color-scheme: dark)').matches
       ? ThemePreferences.dark : ThemePreferences.light)
   );
   // Set temperature unit preference state based on localStorage
   const [temperatureUnitPreference, setTemperatureUnitPreference] = useState(
-    localStorage.getItem('temperatureUnit')
+    localStorage.getItem(LocalStorage.temperatureUnit)
     || TemperatureUnits.celsius
   );
 

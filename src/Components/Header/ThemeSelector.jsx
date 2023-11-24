@@ -10,6 +10,7 @@ import { LightMode, DarkMode, Contrast } from '@mui/icons-material';
 import ThemePreferences from '../../Themes/ThemePreferences';
 
 import * as Tracking from '../../Utils/Tracking';
+import { LocalStorage } from '../../Utils/LocalStorage';
 
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
   borderRadius: '0.5rem',
@@ -50,14 +51,14 @@ const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
 }));
 
 export default function ThemeSelector({ isFullWidth, setThemePreference }) {
-  const [themeValue, setThemeValue] = useState(localStorage.getItem('theme') || ThemePreferences.system);
+  const [themeValue, setThemeValue] = useState(localStorage.getItem(LocalStorage.theme) || ThemePreferences.system);
 
   const handleChange = (event) => {
     Tracking.sendEventAnalytics(Tracking.Events.themeChange, {
       old_theme: themeValue,
       new_theme: event.target.value,
     });
-    localStorage.setItem('theme', event.target.value);
+    localStorage.setItem(LocalStorage.theme, event.target.value);
     setThemeValue(event.target.value);
   };
 
