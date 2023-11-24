@@ -6,10 +6,11 @@ import { useNavigate } from "react-router-dom";
 
 import { fetchDataFromURL } from "../../Components/DatasetDownload/DatasetFetcher";
 import Project from "../Project/Project";
-import { processCurrentSensorsData } from "../../Utils/ApiUtils";
+import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from "../../Utils/ApiUtils";
 import { LinkContext } from "../../ContextProviders/LinkContext";
 
 import { UserContext } from "../../ContextProviders/UserContext";
+import { LocalStorage } from "../../Utils/LocalStorage";
 
 const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
   // Update the page's title
@@ -25,53 +26,84 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
+  const [chartDataForDashboard, setChartDataForDashboard] = useState({});
+  const [currentData, setCurrentData] = useState([]);
+  const [schoolMetadata, setSchoolMetadata] = useState({});
+
   useEffect(() => {
     if (user.checkedAuthentication === true && user.authenticated === false) {
       navigate('/login');
     }
-  }, [user])
 
-  const [dashboardData, setDashboardData] = useState({});
-  const [currentSchoolData, setCurrentSchoolData] = useState({
-    school_id: null,
-    name: null,
-    contactPerson: null,
-    contactEmail: null,
-    sensors: null
-  });
+    const allowedSchools = user.allowedSchools;
+    if (Array.isArray(allowedSchools) && allowedSchools.length > 0) {
+      let school_id;
 
-  const fetchDashboardData = (optionalSchoolID) => {
-    let url;
-    if (optionalSchoolID) url = `https://api.citiesair.com/dashboard/${optionalSchoolID}`;
-    else url = 'https://api.citiesair.com/dashboard';
+      // If there has been a previouslySelectedSchoolID, then load dashboard data for this one
+      const previouslySelectedSchoolID = localStorage.getItem(LocalStorage.schoolID);
+      if (allowedSchools.map((school) => school.school_id).includes(previouslySelectedSchoolID)) school_id = previouslySelectedSchoolID;
+      // If not existed yet, then just get the first school in the list
+      else {
+        school_id = allowedSchools[0].school_id;
+        localStorage.setItem(LocalStorage.schoolID, school_id)
+      }
 
-    fetchDataFromURL(url, 'json', true)
+      // If there is no schoolMetadata or currentData or chartData, then fetch them
+      if (Object.keys(schoolMetadata).length === 0 ||
+        (Array.isArray(currentData) && currentData.length === 0) ||
+        Object.keys(chartDataForDashboard).length === 0
+      ) {
+        fetchDataForDashboard(school_id)
+      }
+    }
+  }, [user]);
+
+  const fetchDataForDashboard = (school_id) => {
+    const schoolMetadataUrl = getApiUrl({
+      endpoint: EndPoints.schoolmetadata,
+      school_id: school_id
+    });
+    fetchDataFromURL(schoolMetadataUrl, 'json', true)
       .then(data => {
-        if (data.currentSchool?.sensors) {
-          const processedCurrentSensorData = processCurrentSensorsData(data.currentSchool?.sensors);
-          setCurrentSchoolData({
-            ...data.currentSchool, sensors: processedCurrentSensorData
-          });
-        }
-        else {
-          setCurrentSchoolData(data.currentSchool);
-        }
+        setSchoolMetadata(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      })
 
-        setDashboardData(data.dashboard);
+    const currentUrl = getApiUrl({
+      endpoint: EndPoints.current,
+      school_id: school_id
+    });
+    fetchAndProcessCurrentSensorsData(currentUrl)
+      .then((data) => {
+        setCurrentData(data)
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+
+    const chartDataUrl = getApiUrl({
+      endpoint: EndPoints.chartdata,
+      school_id: school_id
+    });
+    fetchDataFromURL(chartDataUrl, 'json', true)
+      .then(data => {
+        setChartDataForDashboard(data);
+      })
+      .catch((error) => {
+        console.log(error);
       })
   }
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
 
   return (
     <>
       <Project
         themePreference={themePreference}
-        currentSchoolData={currentSchoolData}
-        dashboardData={dashboardData}
-        fetchDashboardData={fetchDashboardData}
+        schoolMetadata={schoolMetadata}
+        currentData={currentData}
+        dashboardData={chartDataForDashboard}
+        fetchDataForDashboard={fetchDataForDashboard}
         temperatureUnitPreference={temperatureUnitPreference}
       />
     </>

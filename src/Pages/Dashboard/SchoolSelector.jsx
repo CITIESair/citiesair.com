@@ -6,9 +6,10 @@ import { Menu, MenuItem, MenuList } from "@mui/material";
 import { CustomChip } from "../Project/Project";
 
 import PlaceIcon from '@mui/icons-material/Place';
+import { LocalStorage } from "../../Utils/LocalStorage";
 
 export const SchoolSelector = (props) => {
-  const { currentSchoolID, currentSchoolName, allowedSchools, fetchDashboardData } = props;
+  const { currentSchoolID, currentSchoolName, allowedSchools, fetchDataForDashboard } = props;
 
   if (!Array.isArray(allowedSchools) || allowedSchools.length <= 1)
     return (
@@ -32,8 +33,9 @@ export const SchoolSelector = (props) => {
 
   const handleItemSelect = (schoolID) => () => {
     if (currentSchoolID !== schoolID) {
+      localStorage.setItem(LocalStorage.schoolID, schoolID)
       setSchoolID(schoolID);
-      fetchDashboardData(schoolID);
+      fetchDataForDashboard(schoolID);
     }
     handleClose();
   };

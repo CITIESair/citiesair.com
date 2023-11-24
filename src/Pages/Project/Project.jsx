@@ -53,7 +53,7 @@ export const CustomChip = (props) => {
   );
 }
 
-const Project = ({ themePreference, currentSchoolData, dashboardData, fetchDashboardData, temperatureUnitPreference }) => {
+const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, fetchDataForDashboard, temperatureUnitPreference }) => {
   const [_, __, chartsTitlesList, setChartsTitlesList] = useContext(LinkContext);
 
   const [loading, setLoading] = useState(false);
@@ -85,17 +85,17 @@ const Project = ({ themePreference, currentSchoolData, dashboardData, fetchDashb
             <Grid container spacing={1} sx={{ mt: -3, pb: 3 }}>
               <Grid item>
                 <SchoolSelector
-                  currentSchoolID={currentSchoolData?.school_id}
-                  currentSchoolName={currentSchoolData?.name}
+                  currentSchoolID={schoolMetadata?.school_id}
+                  currentSchoolName={schoolMetadata?.name}
                   allowedSchools={user.allowedSchools}
-                  fetchDashboardData={fetchDashboardData}
+                  fetchDataForDashboard={fetchDataForDashboard}
                 />
               </Grid>
 
               <Grid item>
                 <CustomChip
                   icon={<PersonIcon />}
-                  label={currentSchoolData?.contactPerson}
+                  label={schoolMetadata?.contactPerson}
                   tooltipTitle="Contact Person"
                 />
               </Grid>
@@ -103,10 +103,10 @@ const Project = ({ themePreference, currentSchoolData, dashboardData, fetchDashb
               <Grid item>
                 <CustomChip
                   icon={<EmailIcon />}
-                  label={currentSchoolData?.contactEmail}
+                  label={schoolMetadata?.contactEmail}
                   tooltipTitle="Contact Email"
                   component="a"
-                  href={`mailto:${currentSchoolData?.contactEmail}`}
+                  href={`mailto:${schoolMetadata?.contactEmail}`}
                   clickable
                 />
               </Grid>
@@ -141,7 +141,7 @@ const Project = ({ themePreference, currentSchoolData, dashboardData, fetchDashb
 
             <Box textAlign="center" sx={{ mb: 2 }}>
               <CurrentAQIGrid
-                currentSensorsData={currentSchoolData?.sensors}
+                currentSensorsData={currentData}
                 isScreen={false}
                 temperatureUnitPreference={temperatureUnitPreference}
               />
@@ -162,7 +162,7 @@ const Project = ({ themePreference, currentSchoolData, dashboardData, fetchDashb
               })}
             </Typography>
             <Stack direction="row" spacing={2}>
-              <ScreenDialog schoolID={currentSchoolData?.school_id} screens={currentSchoolData?.screens} />
+              <ScreenDialog schoolID={schoolMetadata?.school_id} screens={schoolMetadata?.screens} />
 
               {/* <DatasetDownloadDialog project={project} /> */}
 
