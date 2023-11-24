@@ -4,7 +4,24 @@ import convertToAQI from "./AirQualityIndexCalculator";
 import AQIdatabase from "./AirQualityIndexHelper";
 import parse from 'html-react-parser';
 
-export const apiDomain = 'https://api.citiesair.com';
+const apiDomain = 'https://api.citiesair.com';
+
+export const EndPoints = {
+  me: `${apiDomain}/me`,
+  current: `${apiDomain}/current`,
+  schoolmetadata: `${apiDomain}/schoolmetadata`,
+  chartdata: `${apiDomain}/chartdata`,
+  screen: `${apiDomain}/screen`,
+  login: `${apiDomain}/login`,
+  logout: `${apiDomain}/logout`,
+}
+
+export const getApiUrl = ({ endpoint, school_id }) => {
+  if ([EndPoints.login, EndPoints.logout, EndPoints.me].includes(endpoint)) return endpoint;
+  else {
+    return `${endpoint}/${school_id}`
+  }
+}
 
 export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {
   try {
