@@ -69,7 +69,7 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
 
     setSchoolMetadata(emptySchoolMetadata);
     setCurrentData(emptyCurrentData);
-    setChartDataForDashboard(emptyChartDataForDashboard);
+    setChartDataForDashboard({ ...chartDataForDashboard, charts: null });
 
     fetchDataFromURL(schoolMetadataUrl, 'json', true)
       .then(data => {

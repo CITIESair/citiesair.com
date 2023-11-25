@@ -48,13 +48,16 @@ export default function LogIn() {
     })
       .then((response) => {
         if (response.ok) {
-          setIsWrongCredentials(false);
-          setLoading(false);
-          setUser({
-            checkedAuthentication: true,
-            authenticated: true,
-            username: username
-          });
+          response.json().then((data) => {
+            setIsWrongCredentials(false);
+            setLoading(false);
+            setUser({
+              checkedAuthentication: true,
+              authenticated: true,
+              allowedSchools: data.allowedSchools,
+              username: data.username,
+            });
+          })
           navigate("/dashboard");
         }
         else {
