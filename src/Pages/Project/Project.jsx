@@ -39,6 +39,7 @@ import AirQualityIndexTable from '../../Graphs/ChartSubstituteComponents/AirQual
 import ExpandableSection from './ExpandableSection';
 import AirQualityExplanation from '../../Utils/AirQualityExplanation';
 import { UserContext } from '../../ContextProviders/UserContext';
+import LoadingAnimation from '../../Components/LoadingAnimation';
 
 // Custom Chip component to display metadata
 export const CustomChip = (props) => {
@@ -75,7 +76,7 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
   const theme = useTheme();
 
   const getDashboardTitle = () => {
-    if (schoolMetadata?.school_id && dashboardData?.title) return `${dashboardData?.title} | ${schoolMetadata?.school_id}`
+    if (schoolMetadata?.school_id) return `Air Quality | ${schoolMetadata?.school_id}`
   }
 
   return (
@@ -212,72 +213,78 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
         </FullWidthBox>
 
         <Box id={jsonData.charts.id}>
-          {dashboardData?.charts?.map((element, index) => (
-            <FullWidthBox
-              key={index}
-              backgroundColor={
-                index % 2 != 0 && 'customAlternateBackground'
-              }
-            >
-              <Container
-                sx={{ pt: 4, pb: 4 }}
-                height="auto"
-                className={themePreference === ThemePreferences.dark ? 'dark' : ''}
-                id={`chart-${index + 1}`}
-              >
-                <Typography variant="h6" color="text.primary">
-                  {index + 1}. {element.title}
-                </Typography>
-
-                {/* Either display the regular ChartComponent, or substitute with a customized component in ../../Graphs/ChartSubstituteComponents/ (if specified) */}
-                {element.chartSubstituteComponentName ?
-                  <ChartSubstituteComponentLoader chartSubstituteComponentName={element.chartSubstituteComponentName} />
-                  : (
-                    <ChartComponent
-                      chartData={{
-                        chartIndex: index,
-                        ...element,
-                      }}
-                    />
-                  )}
-
-                <Box sx={{ my: 3 }}>
-                  <Typography
-                    component="div"
-                    variant="body1"
-                    color="text.secondary"
+          {
+            dashboardData?.charts ?
+              dashboardData?.charts?.map((element, index) => (
+                <FullWidthBox
+                  key={index}
+                  backgroundColor={
+                    index % 2 != 0 && 'customAlternateBackground'
+                  }
+                >
+                  <Container
+                    sx={{ pt: 4, pb: 4 }}
+                    height="auto"
+                    className={themePreference === ThemePreferences.dark ? 'dark' : ''}
+                    id={`chart-${index + 1}`}
                   >
-                    {element.subtitle && parse(element.subtitle, {
-                      replace: replacePlainHTMLWithMuiComponents,
-                    })}
-                    {Object.keys(tab)[index] == index &&
-                      element.subcharts &&
-                      element.subcharts[Object.values(tab)[index]]
-                        .subchartSubtitle &&
-                      parse(
-                        element.subcharts[Object.values(tab)[index]]
-                          .subchartSubtitle, {
-                        replace: replacePlainHTMLWithMuiComponents,
-                      }
+                    <Typography variant="h6" color="text.primary">
+                      {index + 1}. {element.title}
+                    </Typography>
+
+                    {/* Either display the regular ChartComponent, or substitute with a customized component in ../../Graphs/ChartSubstituteComponents/ (if specified) */}
+                    {element.chartSubstituteComponentName ?
+                      <ChartSubstituteComponentLoader chartSubstituteComponentName={element.chartSubstituteComponentName} />
+                      : (
+                        <ChartComponent
+                          chartData={{
+                            chartIndex: index,
+                            ...element,
+                          }}
+                        />
                       )}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {element.reference && parse(element.reference, {
-                      replace: replacePlainHTMLWithMuiComponents,
-                    })}
-                    {Object.keys(tab)[index] == index &&
-                      element.subcharts &&
-                      element.subcharts[Object.values(tab)[index]].reference &&
-                      parse(
-                        element.subcharts[Object.values(tab)[index]].reference, {
-                        replace: replacePlainHTMLWithMuiComponents,
-                      }
-                      )}
-                  </Typography>
-                </Box>
-              </Container>
-            </FullWidthBox>
-          ))}
+
+                    <Box sx={{ my: 3 }}>
+                      <Typography
+                        component="div"
+                        variant="body1"
+                        color="text.secondary"
+                      >
+                        {element.subtitle && parse(element.subtitle, {
+                          replace: replacePlainHTMLWithMuiComponents,
+                        })}
+                        {Object.keys(tab)[index] == index &&
+                          element.subcharts &&
+                          element.subcharts[Object.values(tab)[index]]
+                            .subchartSubtitle &&
+                          parse(
+                            element.subcharts[Object.values(tab)[index]]
+                              .subchartSubtitle, {
+                            replace: replacePlainHTMLWithMuiComponents,
+                          }
+                          )}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {element.reference && parse(element.reference, {
+                          replace: replacePlainHTMLWithMuiComponents,
+                        })}
+                        {Object.keys(tab)[index] == index &&
+                          element.subcharts &&
+                          element.subcharts[Object.values(tab)[index]].reference &&
+                          parse(
+                            element.subcharts[Object.values(tab)[index]].reference, {
+                            replace: replacePlainHTMLWithMuiComponents,
+                          }
+                          )}
+                      </Typography>
+                    </Box>
+                  </Container>
+                </FullWidthBox>
+              ))
+              :
+              <LoadingAnimation optionalText="Loading Dashboard" />
+          }
+
         </Box>
 
         <Divider />
