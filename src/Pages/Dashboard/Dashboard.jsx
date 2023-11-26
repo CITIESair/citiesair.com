@@ -61,7 +61,7 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
     }
   }, [user]);
 
-  const fetchDataForDashboard = (school_id) => {
+  const fetchDataForDashboard = async (school_id) => {
     const schoolMetadataUrl = getApiUrl({
       endpoint: EndPoints.schoolmetadata,
       school_id: school_id
@@ -71,41 +71,35 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
     setCurrentData(emptyCurrentData);
     setChartDataForDashboard({ ...chartDataForDashboard, charts: null });
 
-    fetchDataFromURL(schoolMetadataUrl, 'json', true)
-      .then(data => {
-        setSchoolMetadata(data);
+    const currentUrl = getApiUrl({
+      endpoint: EndPoints.current,
+      school_id: school_id
+    });
+    
+    const chartDataUrl = getApiUrl({
+      endpoint: EndPoints.chartdata,
+      school_id: school_id
+    });
+    
+    const dashboardData = await Promise.all([
+      fetchDataFromURL(schoolMetadataUrl, 'json', true),
+      fetchAndProcessCurrentSensorsData(currentUrl)
+    ]) 
 
-        // Only call currentData after schoolMetadata is received
-        const currentUrl = getApiUrl({
-          endpoint: EndPoints.current,
-          school_id: school_id
-        });
+    const schoolMetadata = dashboardData[0]
+    const currentData = dashboardData[1]
+    setSchoolMetadata(schoolMetadata);
+    setCurrentData(currentData);
 
-        fetchAndProcessCurrentSensorsData(currentUrl)
-          .then((data) => {
-            setCurrentData(data);
+    fetchDataFromURL(chartDataUrl, 'json', true)
+    .then(data => {
+      setChartDataForDashboard(data);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
 
-            // Only call chartData after currentData is received
-            const chartDataUrl = getApiUrl({
-              endpoint: EndPoints.chartdata,
-              school_id: school_id
-            });
-            fetchDataFromURL(chartDataUrl, 'json', true)
-              .then(data => {
-                setChartDataForDashboard(data);
-              })
-              .catch((error) => {
-                console.log(error);
-              })
-
-          })
-          .catch((error) => {
-            console.log(error);
-          })
-      })
-      .catch((error) => {
-        console.log(error);
-      })
+    
   }
 
   return (
