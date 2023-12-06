@@ -13,7 +13,7 @@ import AQIdatabase from '../Utils/AirQualityIndexHelper';
 import CustomThemes from '../Themes/CustomThemes';
 
 const CurrentAQIGrid = (props) => {
-  const { currentSensorsData, temperatureUnitPreference, isScreen = true, orderOfItems } = props;
+  const { currentSensorsData, temperatureUnitPreference, isScreen = true } = props;
 
   const getGridItemSize = (numOfItems) => {
     return {
@@ -49,7 +49,6 @@ const CurrentAQIGrid = (props) => {
           (Object.entries(currentSensorsData).map(([key, sensorData], index) => (
             <Grid
               item
-              order={orderOfItems && orderOfItems[index]}
               key={key}
               {...getGridItemSize(Object.keys(currentSensorsData).length)}
               sx={
