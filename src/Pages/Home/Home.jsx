@@ -66,7 +66,6 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
               <CurrentAQIGrid
                 currentSensorsData={nyuadCurrentSensorData}
                 isScreen={false}
-                orderOfItems={[3, 1, 2]}
                 temperatureUnitPreference={temperatureUnitPreference}
               />
             </Grid>
