@@ -24,7 +24,7 @@
     },
     "publicOutdoorStations": {
         "id": "public-outdoor-stations",
-        "content": "Below is a map of CITIESair's public outdoor air quality monitoring stations. This map <u><b>does not</b></u> display indoor stations in participating schools to protect their privacy. That said, we publish schools' outdoor monitoring stations on IQAir, the world's most popular air quality monitoring platform, to make the data publicly available the surrounding community, school teachers, staff, and parents."
+        "content": "Below is a map of CITIESair's public outdoor air quality monitoring stations. This map <u><b>does not</b></u> display indoor stations in participating schools to protect their privacy. That said, we publish schools' outdoor monitoring stations on IQAir, the world's most popular air quality monitoring platform, to make the data publicly available to the surrounding community, school teachers, staff, and parents."
     },
     "getInTouch": {
         "id": "get-in-touch",
