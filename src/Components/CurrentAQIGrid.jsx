@@ -19,7 +19,7 @@ const CurrentAQIGrid = (props) => {
     return {
       xs: Math.max(12 / numOfItems, 6),
       sm: Math.max(12 / numOfItems, 4),
-      lg: isScreen ? (12 / numOfItems) : Math.min(5, Math.max(12 / numOfItems, 3))
+      lg: isScreen ? (12 / numOfItems) : Math.min(5, Math.max(12 / numOfItems, 2))
     }
   }
 

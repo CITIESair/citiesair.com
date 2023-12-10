@@ -2,9 +2,8 @@
 /* eslint-disable */
 import { useState, useEffect, useContext } from 'react';
 import { LinkContext } from '../../ContextProviders/LinkContext';
-import { TabContext } from '../../ContextProviders/TabContext';
 import parse from 'html-react-parser';
-import ChartComponent from '../../Graphs/ChartComponent';
+import ChartControl from '../../Graphs/ChartControl';
 import UppercaseTitle from '../../Components/UppercaseTitle';
 import { Box, Typography, Container, Divider, Chip, Grid, Tooltip, Stack, Skeleton } from '@mui/material';
 
@@ -30,8 +29,6 @@ import FullWidthBox from '../../Components/FullWidthBox';
 
 import * as Tracking from '../../Utils/Tracking';
 
-import ChartSubstituteComponentLoader from '../../Graphs/ChartSubstituteComponents/ChartSubstituteComponentLoader';
-
 import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
 import { SchoolSelector } from "../Dashboard/SchoolSelector";
 
@@ -56,10 +53,7 @@ export const CustomChip = (props) => {
 }
 
 const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, fetchDataForDashboard, temperatureUnitPreference }) => {
-  const [_, __, chartsTitlesList, setChartsTitlesList] = useContext(LinkContext);
-
-  const [loading, setLoading] = useState(false);
-  const [tab, setTab] = useContext(TabContext);
+  const [_, __, ___, setChartsTitlesList] = useContext(LinkContext);
 
   let lastUpdate;
 
@@ -232,52 +226,14 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
                       {index + 1}. {element.title}
                     </Typography>
 
-                    {/* Either display the regular ChartComponent, or substitute with a customized component in ../../Graphs/ChartSubstituteComponents/ (if specified) */}
-                    {element.chartSubstituteComponentName ?
-                      <ChartSubstituteComponentLoader chartSubstituteComponentName={element.chartSubstituteComponentName} />
-                      : (
-                        <ChartComponent
-                          chartData={{
-                            chartIndex: index,
-                            ...element,
-                          }}
-                        />
-                      )}
-
-                    <Box sx={{ my: 3 }}>
-                      <Typography
-                        component="div"
-                        variant="body1"
-                        color="text.secondary"
-                      >
-                        {element.subtitle && parse(element.subtitle, {
-                          replace: replacePlainHTMLWithMuiComponents,
-                        })}
-                        {Object.keys(tab)[index] == index &&
-                          element.subcharts &&
-                          element.subcharts[Object.values(tab)[index]]
-                            .subchartSubtitle &&
-                          parse(
-                            element.subcharts[Object.values(tab)[index]]
-                              .subchartSubtitle, {
-                            replace: replacePlainHTMLWithMuiComponents,
-                          }
-                          )}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {element.reference && parse(element.reference, {
-                          replace: replacePlainHTMLWithMuiComponents,
-                        })}
-                        {Object.keys(tab)[index] == index &&
-                          element.subcharts &&
-                          element.subcharts[Object.values(tab)[index]].reference &&
-                          parse(
-                            element.subcharts[Object.values(tab)[index]].reference, {
-                            replace: replacePlainHTMLWithMuiComponents,
-                          }
-                          )}
-                      </Typography>
-                    </Box>
+                    <ChartControl
+                      generalChartSubtitle={element.subtitle}
+                      generalChartReference={element.reference}
+                      chartData={{
+                        chartIndex: index,
+                        ...element,
+                      }}
+                    />
                   </Container>
                 </FullWidthBox>
               ))

@@ -6,7 +6,6 @@ import App from './App';
 import { UserProvider } from './ContextProviders/UserContext';
 import { GoogleProvider } from './ContextProviders/GoogleContext';
 import { LinkProvider } from './ContextProviders/LinkContext';
-import { TabProvider } from './ContextProviders/TabContext';
 import { RawDatasetsMetadataProvider } from './ContextProviders/RawDatasetsMetadataContext';
 
 ReactDOM.render(
@@ -15,9 +14,7 @@ ReactDOM.render(
       <GoogleProvider>
         <RawDatasetsMetadataProvider>
           <LinkProvider>
-            <TabProvider>
-              <App />
-            </TabProvider>
+            <App />
           </LinkProvider>
         </RawDatasetsMetadataProvider>
       </GoogleProvider>

@@ -1,7 +1,7 @@
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, styled } from '@mui/material';
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
-import ChartComponent from '../ChartComponent';
+import ChartControl from '../ChartControl';
 import AQIdatabase from '../../Utils/AirQualityIndexHelper';
 import ThemePreferences from '../../Themes/ThemePreferences';
 
@@ -37,7 +37,7 @@ function AirQualityIndexTable(props) {
       }
 
       aqiChart = (
-        <ChartComponent
+        <ChartControl
           chartHeight="4rem"
           chartData={
             {
