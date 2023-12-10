@@ -61,33 +61,27 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
             PM2.5 (Particulate Matter Smaller Than 2.5 Micrometer)
           </Typography>
 
-          <Grid container justifyContent="center" spacing={3}>
-            <Grid item textAlign="center" xs={10}>
-              <CurrentAQIGrid
-                currentSensorsData={nyuadCurrentSensorData}
-                isScreen={false}
-                temperatureUnitPreference={temperatureUnitPreference}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Stack width="fit-content" alignItems="center" margin="auto">
-                <Button
-                  variant='contained'
-                  sx={{ width: "fit-content", mb: 1 }}
-                  href="https://citiesdashboard.com/project/air-quality"
-                  target="blank"
-                  rel="noopener noreferrer"
-                >
-                  <LaunchIcon sx={{ fontSize: '0.8rem' }} />&nbsp;NYUAD Dashboard (Public Access)
-                </Button>
-                <Typography variant="caption" color="text.secondary">
-                  See detailed analysis of historical air quality data at NYUAD
-                </Typography>
-              </Stack>
-            </Grid>
-          </Grid>
-
-
+          <Stack spacing={2} alignItems="center" textAlign="center">
+            <CurrentAQIGrid
+              currentSensorsData={nyuadCurrentSensorData}
+              isScreen={false}
+              temperatureUnitPreference={temperatureUnitPreference}
+            />
+            <Stack width="fit-content" alignItems="center" margin="auto">
+              <Button
+                variant='contained'
+                sx={{ width: "fit-content", mb: 1 }}
+                href="https://citiesdashboard.com/project/air-quality"
+                target="blank"
+                rel="noopener noreferrer"
+              >
+                <LaunchIcon sx={{ fontSize: '0.8rem' }} />&nbsp;NYUAD Dashboard (Public Access)
+              </Button>
+              <Typography variant="caption" color="text.secondary">
+                See detailed analysis of historical air quality data at NYUAD
+              </Typography>
+            </Stack>
+          </Stack>
         </Container>
       </FullWidthBox>
 
