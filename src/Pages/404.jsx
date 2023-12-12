@@ -2,6 +2,7 @@ import { useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Typography, Container } from '@mui/material';
 import { LinkContext } from '../ContextProviders/LinkContext';
+import { UniqueRoutes } from '../Utils/RoutesUtils';
 
 export default function FourOhFour({ title }) {
   // Update the page's title
@@ -13,7 +14,7 @@ export default function FourOhFour({ title }) {
 
   // set underline link to 404 (to undo any other underlined links)
   useEffect(() => {
-    setCurrentPage('404');
+    setCurrentPage(UniqueRoutes[404]);
   }, [setCurrentPage]);
 
   return (

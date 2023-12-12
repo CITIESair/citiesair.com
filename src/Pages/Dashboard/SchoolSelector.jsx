@@ -9,9 +9,9 @@ import PlaceIcon from '@mui/icons-material/Place';
 import { LocalStorage } from "../../Utils/LocalStorage";
 
 export const SchoolSelector = (props) => {
-  const { currentSchoolID, currentSchoolName, allowedSchools, fetchDataForDashboard } = props;
+  const { allowSelect, currentSchoolID, currentSchoolName, allowedSchools, fetchDataForDashboard } = props;
 
-  if (!Array.isArray(allowedSchools) || allowedSchools.length <= 1)
+  if (allowSelect === false || !Array.isArray(allowedSchools) || allowedSchools.length <= 1)
     return (
       <CustomChip
         icon={<PlaceIcon />}

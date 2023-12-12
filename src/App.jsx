@@ -23,6 +23,7 @@ import LogIn from './Components/Account/LogIn';
 import { UserContext } from './ContextProviders/UserContext';
 import { TemperatureUnits } from './Pages/Screen/TemperatureUtils';
 import { LocalStorage } from './Utils/LocalStorage';
+import { UniqueRoutes } from './Utils/RoutesUtils';
 
 // Lazy load pages
 const Home = lazy(() => import('./Pages/Home/Home'));
@@ -87,7 +88,7 @@ function App() {
           <Suspense fallback={<LoadingAnimation optionalText="Loading Dashboard" />}>
             <Routes>
               <Route
-                path="/"
+                path={UniqueRoutes.home}
                 element={
                   <Box>
                     <Header setThemePreference={setThemePreference} temperatureUnitPreference={temperatureUnitPreference} setTemperatureUnitPreference={setTemperatureUnitPreference} />
@@ -98,7 +99,7 @@ function App() {
               />
 
               <Route
-                path="/login"
+                path={UniqueRoutes.login}
                 element={
                   <Box>
                     <Header setThemePreference={setThemePreference} temperatureUnitPreference={temperatureUnitPreference} setTemperatureUnitPreference={setTemperatureUnitPreference} />
@@ -109,7 +110,7 @@ function App() {
               />
 
               <Route
-                path="/dashboard"
+                path={UniqueRoutes.dashboard}
                 element={
                   <Box>
                     <Header setThemePreference={setThemePreference} temperatureUnitPreference={temperatureUnitPreference} setTemperatureUnitPreference={setTemperatureUnitPreference} />
@@ -119,13 +120,25 @@ function App() {
                 }
               />
 
+              {/* Only nyuad is accessible publicly */}
               <Route
-                path="/screen/*"
+                path={UniqueRoutes.nyuad}
+                element={
+                  <Box>
+                    <Header setThemePreference={setThemePreference} temperatureUnitPreference={temperatureUnitPreference} setTemperatureUnitPreference={setTemperatureUnitPreference} />
+                    <Dashboard isNyuad={true} themePreference={themePreference} temperatureUnitPreference={temperatureUnitPreference} title="CITIESair | NYUAD Air Quality" />
+                    <Footer />
+                  </Box>
+                }
+              />
+
+              <Route
+                path={UniqueRoutes.anyScreen}
                 element={<Screen temperatureUnitPreference={temperatureUnitPreference} title="CITIESair | Screen" />}
               />
 
-              <Route path="/404" element={<FourOhFour title="Page Not Found | CITIESair" />} />
-              <Route path="*" element={<Navigate replace to="/404" />} />
+              <Route path={UniqueRoutes[404]} element={<FourOhFour title="Page Not Found | CITIESair" />} />
+              <Route path="*" element={<Navigate replace to={UniqueRoutes[404]} />} />
 
             </Routes>
           </Suspense>

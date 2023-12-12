@@ -11,8 +11,9 @@ import { LinkContext } from "../../ContextProviders/LinkContext";
 
 import { UserContext } from "../../ContextProviders/UserContext";
 import { LocalStorage } from "../../Utils/LocalStorage";
+import { UniqueRoutes } from "../../Utils/RoutesUtils";
 
-const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
+const Dashboard = ({ isNyuad = false, themePreference, temperatureUnitPreference, title }) => {
   // Update the page's title
   useEffect(() => {
     document.title = title;
@@ -20,7 +21,7 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
 
   const [_, setCurrentPage, __, ___] = useContext(LinkContext);
   useEffect(() => {
-    setCurrentPage('dashboard');
+    setCurrentPage((isNyuad === true) ? UniqueRoutes.nyuad : UniqueRoutes.dashboard);
   }, []);
 
   const { user } = useContext(UserContext);
@@ -34,6 +35,11 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
   const [chartDataForDashboard, setChartDataForDashboard] = useState(emptyChartDataForDashboard);
 
   useEffect(() => {
+    if (isNyuad === true) {
+      fetchDataForDashboard('nyuad');
+      return;
+    };
+
     if (user.checkedAuthentication === true && user.authenticated === false) {
       navigate('/login');
     }
@@ -75,16 +81,16 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
       endpoint: EndPoints.current,
       school_id: school_id
     });
-    
+
     const chartDataUrl = getApiUrl({
       endpoint: EndPoints.chartdata,
       school_id: school_id
     });
-    
+
     const dashboardData = await Promise.all([
       fetchDataFromURL(schoolMetadataUrl, 'json', true),
       fetchAndProcessCurrentSensorsData(currentUrl)
-    ]) 
+    ])
 
     const schoolMetadata = dashboardData[0]
     const currentData = dashboardData[1]
@@ -92,19 +98,20 @@ const Dashboard = ({ themePreference, temperatureUnitPreference, title }) => {
     setCurrentData(currentData);
 
     fetchDataFromURL(chartDataUrl, 'json', true)
-    .then(data => {
-      setChartDataForDashboard(data);
-    })
-    .catch((error) => {
-      console.log(error);
-    })
+      .then(data => {
+        setChartDataForDashboard(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      })
 
-    
+
   }
 
   return (
     <>
       <Project
+        isNyuad={isNyuad}
         themePreference={themePreference}
         schoolMetadata={schoolMetadata}
         currentData={currentData}

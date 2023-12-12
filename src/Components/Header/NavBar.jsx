@@ -9,13 +9,14 @@ import NavLinkBehavior from './NavLinkBehavior';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { UserContext } from '../../ContextProviders/UserContext';
 
-import LaunchIcon from '@mui/icons-material/Launch';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import PersonIcon from '@mui/icons-material/Person';
 
 import HoverMenu from 'material-ui-popup-state/HoverMenu';
 import PopupState, { bindHover, bindFocus, bindMenu } from 'material-ui-popup-state';
 
 import LogOut from '../Account/Logout';
+import { UniqueRoutes } from '../../Utils/RoutesUtils';
 
 const StyledMenuList = styled(MenuList)(({ theme }) => ({
   // Make these items display on the same line on large display
@@ -35,7 +36,7 @@ export default function NavBar(props) {
   const homeNavLink = (
     <MenuItemAsNavLink
       behavior={NavLinkBehavior.toNewPage}
-      to="/"
+      to={UniqueRoutes.home}
       icon={<HomeIcon />}
       analyticsOriginID="navbar"
     />
@@ -55,7 +56,7 @@ export default function NavBar(props) {
             behavior={NavLinkBehavior.toNewPage}
             icon={<PersonIcon />}
             analyticsOriginID="navbar"
-            to={"/dashboard"}
+            to={UniqueRoutes.dashboard}
           />,
           <LogOut />]
           :
@@ -67,7 +68,7 @@ export default function NavBar(props) {
                   behavior={NavLinkBehavior.hoverMenu}
                   icon={<PersonIcon />}
                   analyticsOriginID="navbar"
-                  to={"/dashboard"}
+                  to={UniqueRoutes.dashboard}
                   bindHoverProps={bindHover(popupState)}
                   bindFocusProps={bindFocus(popupState)}
                 />
@@ -94,16 +95,16 @@ export default function NavBar(props) {
         behavior={NavLinkBehavior.toNewPage}
         icon={<PersonIcon />}
         analyticsOriginID="navbar"
-        to={"/login"}
+        to={UniqueRoutes.login}
       />
 
   );
   const nyuadDashboardNavLink = (
     <MenuItemAsNavLink
       label={"NYUAD Dashboard (Public access)"}
-      behavior={NavLinkBehavior.toExternalPage}
-      to="https://citiesdashboard.com/project/air-quality"
-      icon={<LaunchIcon />}
+      behavior={NavLinkBehavior.toNewPage}
+      to={UniqueRoutes.nyuad}
+      icon={<BarChartIcon />}
       analyticsOriginID="navbar"
     />
   );
@@ -111,7 +112,7 @@ export default function NavBar(props) {
     <MenuItemAsNavLink
       label={"CITIESair Blog"}
       behavior={NavLinkBehavior.toExternalPage}
-      to="https://blog.citiesair.com"
+      to={UniqueRoutes.blogSubdomain}
       icon={<MenuBookIcon />}
       analyticsOriginID="navbar"
     />
@@ -119,11 +120,11 @@ export default function NavBar(props) {
 
   useEffect(() => {
     switch (currentPage) {
-      case 'home':
-        setNavbar([nyuadDashboardNavLink, blogNavLink, reservedAreaMenu])
+      case UniqueRoutes.home:
+        setNavbar([nyuadDashboardNavLink, blogNavLink, reservedAreaMenu]);
         break;
       default:
-        setNavbar([homeNavLink, nyuadDashboardNavLink, blogNavLink, reservedAreaMenu])
+        setNavbar([homeNavLink, blogNavLink, reservedAreaMenu]);
         break;
     }
   }, [currentPage, user])

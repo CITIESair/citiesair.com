@@ -1,4 +1,5 @@
 import { useEffect, useContext, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 
 import { Button, Box, Grid, Stack, Typography, Container, Card, CardContent, CardMedia, CardActionArea, Divider, Tooltip } from '@mui/material';
 import { LinkContext } from '../../ContextProviders/LinkContext';
@@ -20,8 +21,9 @@ import Map from './Map';
 import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
 import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
 
-import LaunchIcon from '@mui/icons-material/Launch';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import GetInTouch from './GetInTouch';
+import { UniqueRoutes } from '../../Utils/RoutesUtils';
 
 function Home({ themePreference, temperatureUnitPreference, title }) {
   // Update the page's title
@@ -35,7 +37,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
 
   // set underline link to home
   useEffect(() => {
-    setCurrentPage('home');
+    setCurrentPage(UniqueRoutes.home);
     setChartsTitlesList([]);
   }, [setCurrentPage, setChartsTitlesList]);
 
@@ -69,13 +71,12 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
             />
             <Stack width="fit-content" alignItems="center" margin="auto">
               <Button
+                component={RouterLink}
                 variant='contained'
                 sx={{ width: "fit-content", mb: 1 }}
-                href="https://citiesdashboard.com/project/air-quality"
-                target="blank"
-                rel="noopener noreferrer"
+                to={UniqueRoutes.nyuad}
               >
-                <LaunchIcon sx={{ fontSize: '0.8rem' }} />&nbsp;NYUAD Dashboard (Public Access)
+                <BarChartIcon sx={{ fontSize: '0.8rem' }} />&nbsp;NYUAD Dashboard (Public Access)
               </Button>
               <Typography variant="caption" color="text.secondary">
                 See detailed analysis of historical air quality data at NYUAD

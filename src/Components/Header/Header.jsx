@@ -21,6 +21,7 @@ import jsonData from '../../section_data.json';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
 import CITIESlogoLinkToHome from './CITIESlogoLinkToHome';
 import TemperatureUnitToggle from './TemperatureUnitToggle';
+import { UniqueRoutes } from '../../Utils/RoutesUtils';
 
 export const showInMobile = (defaultDisplay) => ({ display: { xs: (defaultDisplay || 'block'), lg: 'none' } });
 export const showInDesktop = (defaultDisplay) => ({ display: { xs: 'none', lg: (defaultDisplay || 'block') } });
@@ -179,7 +180,7 @@ export default function Header(props) {
 
       {
         (
-          currentPage === 'home'
+          currentPage === UniqueRoutes.home
           && (
             <FullWidthBox sx={{
               width: '100%',
