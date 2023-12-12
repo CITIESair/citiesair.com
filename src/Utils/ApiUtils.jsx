@@ -51,7 +51,7 @@ export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {
 }
 
 export const processCurrentSensorsData = (data) => {
-  Object.entries(data).map(([_, sensorData]) => {
+  Object.entries(data).forEach(([_, sensorData]) => {
     // Calculate if the sensor is currently active or not
     const now = new Date();
     const currentTimestamp = new Date(sensorData.current?.timestamp);

@@ -150,7 +150,7 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
                         destination_id: jsonData.charts.id,
                         destination_label: jsonData.dashboardData?.toString(),
                         origin_id: 'chip'
-                      })
+                      });
                   }}
                 />
               </Grid>
