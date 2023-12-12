@@ -2,7 +2,7 @@
 /* eslint-disable */
 
 import { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { fetchDataFromURL } from "../../Components/DatasetDownload/DatasetFetcher";
 import Project from "../Project/Project";
@@ -13,15 +13,19 @@ import { UserContext } from "../../ContextProviders/UserContext";
 import { LocalStorage } from "../../Utils/LocalStorage";
 import { UniqueRoutes } from "../../Utils/RoutesUtils";
 
-const Dashboard = ({ isNyuad = false, themePreference, temperatureUnitPreference, title }) => {
-  // Update the page's title
+const Dashboard = ({ themePreference, temperatureUnitPreference }) => {
+  const { school_id_param } = useParams();
+
+  // Update the page's title based on school_id_param
   useEffect(() => {
-    document.title = title;
-  }, [title]);
+    if (!school_id_param) return;
+
+    document.title = `CITIESair | ${school_id_param.toUpperCase()}`;
+  }, [school_id_param]);
 
   const [_, setCurrentPage, __, ___] = useContext(LinkContext);
   useEffect(() => {
-    setCurrentPage((isNyuad === true) ? UniqueRoutes.nyuad : UniqueRoutes.dashboard);
+    setCurrentPage(UniqueRoutes.dashboard);
   }, []);
 
   const { user } = useContext(UserContext);
@@ -35,7 +39,8 @@ const Dashboard = ({ isNyuad = false, themePreference, temperatureUnitPreference
   const [chartDataForDashboard, setChartDataForDashboard] = useState(emptyChartDataForDashboard);
 
   useEffect(() => {
-    if (isNyuad === true) {
+    // NYUAD is public --> skip authentication and just fetch data
+    if (school_id_param === "nyuad") {
       fetchDataForDashboard('nyuad');
       return;
     };
@@ -45,27 +50,40 @@ const Dashboard = ({ isNyuad = false, themePreference, temperatureUnitPreference
     }
 
     const allowedSchools = user.allowedSchools;
-    if (Array.isArray(allowedSchools) && allowedSchools.length > 0) {
-      let school_id;
 
-      // If there has been a previouslySelectedSchoolID, then load dashboard data for this one
-      const previouslySelectedSchoolID = localStorage.getItem(LocalStorage.schoolID);
-      if (allowedSchools.map((school) => school.school_id).includes(previouslySelectedSchoolID)) school_id = previouslySelectedSchoolID;
-      // If not existed yet, then just get the first school in the list
-      else {
-        school_id = allowedSchools[0].school_id;
-        localStorage.setItem(LocalStorage.schoolID, school_id)
+    if (Array.isArray(allowedSchools) && allowedSchools.length > 0) {
+      // If no school_id_param is given
+      if (!school_id_param) {
+        let school_id;
+
+        // If there has been a previouslySelectedSchoolID, then load dashboard data for this one
+        const previouslySelectedSchoolID = localStorage.getItem(LocalStorage.schoolID);
+        if (allowedSchools.map((school) => school.school_id).includes(previouslySelectedSchoolID)) school_id = previouslySelectedSchoolID;
+        // If not existed yet, then just get the first school in the list
+        else {
+          school_id = allowedSchools[0].school_id;
+          localStorage.setItem(LocalStorage.schoolID, school_id)
+        }
+
+        // If there is no schoolMetadata or currentData or chartData, then fetch them
+        if (Object.keys(schoolMetadata).length === 0 ||
+          !currentData ||
+          Object.keys(chartDataForDashboard).length === 0
+        ) {
+          fetchDataForDashboard(school_id);
+        }
+
+        navigate(school_id); // navigate to the correct url: /dashboard/:school_id_param
       }
 
-      // If there is no schoolMetadata or currentData or chartData, then fetch them
-      if (Object.keys(schoolMetadata).length === 0 ||
-        !currentData ||
-        Object.keys(chartDataForDashboard).length === 0
-      ) {
-        fetchDataForDashboard(school_id);
+      // If there is school_id_param, check if school_id_param is in the allowedSchools
+      if (allowedSchools.map((school) => school.school_id).includes(school_id_param)) {
+        fetchDataForDashboard(school_id_param);
+        localStorage.setItem(LocalStorage.schoolID, school_id_param);
+        return;
       }
     }
-  }, [user]);
+  }, [user, school_id_param]);
 
   const fetchDataForDashboard = async (school_id) => {
     const schoolMetadataUrl = getApiUrl({
@@ -111,7 +129,6 @@ const Dashboard = ({ isNyuad = false, themePreference, temperatureUnitPreference
   return (
     <>
       <Project
-        isNyuad={isNyuad}
         themePreference={themePreference}
         schoolMetadata={schoolMetadata}
         currentData={currentData}

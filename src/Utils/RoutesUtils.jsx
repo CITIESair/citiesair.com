@@ -1,7 +1,8 @@
 export const UniqueRoutes = {
-  nyuad: '/air-quality-nyuad',
+  nyuad: '/dashboard/nyuad',
   login: '/login',
-  dashboard: 'dashboard',
+  dashboard: '/dashboard',
+  dashboardWithParam: '/dashboard/:school_id_param',
   home: '/',
   anyScreen: '/screen/*',
   404: '/404',

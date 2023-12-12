@@ -56,7 +56,7 @@ export const CustomChip = (props) => {
   );
 }
 
-const Project = ({ isNyuad = false, themePreference, schoolMetadata, currentData, dashboardData, fetchDataForDashboard, temperatureUnitPreference }) => {
+const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, fetchDataForDashboard, temperatureUnitPreference }) => {
   const [_, __, ___, setChartsTitlesList] = useContext(LinkContext);
 
   let lastUpdate;
@@ -68,12 +68,12 @@ const Project = ({ isNyuad = false, themePreference, schoolMetadata, currentData
   const [displayCommentSection, setDisplayCommentSection] = useState(false);
 
   useEffect(() => {
-    if (isNyuad || schoolMetadata?.school_id === 'nyuad') {
+    if (schoolMetadata?.school_id === 'nyuad') {
       setDisplayCommentSection(true);
       return;
     }
     setDisplayCommentSection(false);
-  }, [isNyuad, schoolMetadata])
+  }, [schoolMetadata])
 
   useEffect(() => {
     if (!displayCommentSection) return;
@@ -112,7 +112,6 @@ const Project = ({ isNyuad = false, themePreference, schoolMetadata, currentData
             <Grid container spacing={1} sx={{ mt: -3, pb: 3 }}>
               <Grid item>
                 <SchoolSelector
-                  allowSelect={isNyuad === true ? false : true}
                   currentSchoolID={schoolMetadata?.school_id}
                   currentSchoolName={schoolMetadata?.name}
                   allowedSchools={user.allowedSchools}

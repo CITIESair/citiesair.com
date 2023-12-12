@@ -109,28 +109,23 @@ function App() {
                 }
               />
 
-              <Route
-                path={UniqueRoutes.dashboard}
-                element={
-                  <Box>
-                    <Header setThemePreference={setThemePreference} temperatureUnitPreference={temperatureUnitPreference} setTemperatureUnitPreference={setTemperatureUnitPreference} />
-                    <Dashboard themePreference={themePreference} temperatureUnitPreference={temperatureUnitPreference} title="CITIESair | Dashboard" />
-                    <Footer />
-                  </Box>
-                }
-              />
-
-              {/* Only nyuad is accessible publicly */}
-              <Route
-                path={UniqueRoutes.nyuad}
-                element={
-                  <Box>
-                    <Header setThemePreference={setThemePreference} temperatureUnitPreference={temperatureUnitPreference} setTemperatureUnitPreference={setTemperatureUnitPreference} />
-                    <Dashboard isNyuad={true} themePreference={themePreference} temperatureUnitPreference={temperatureUnitPreference} title="CITIESair | NYUAD Air Quality" />
-                    <Footer />
-                  </Box>
-                }
-              />
+              {
+                [UniqueRoutes.dashboard, UniqueRoutes.dashboardWithParam].map((path) =>
+                (
+                  <Route
+                    key={path}
+                    path={path}
+                    element={
+                      <Box>
+                        <Header setThemePreference={setThemePreference} temperatureUnitPreference={temperatureUnitPreference} setTemperatureUnitPreference={setTemperatureUnitPreference} />
+                        <Dashboard themePreference={themePreference} temperatureUnitPreference={temperatureUnitPreference} />
+                        <Footer />
+                      </Box>
+                    }
+                  />
+                )
+                )
+              }
 
               <Route
                 path={UniqueRoutes.anyScreen}

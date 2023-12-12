@@ -2,11 +2,14 @@
 /* eslint-disable */
 
 import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
 import { Menu, MenuItem, MenuList } from "@mui/material";
 import { CustomChip } from "../Project/Project";
 
 import PlaceIcon from '@mui/icons-material/Place';
 import { LocalStorage } from "../../Utils/LocalStorage";
+import { UniqueRoutes } from "../../Utils/RoutesUtils";
 
 export const SchoolSelector = (props) => {
   const { allowSelect, currentSchoolID, currentSchoolName, allowedSchools, fetchDataForDashboard } = props;
@@ -31,14 +34,18 @@ export const SchoolSelector = (props) => {
     setAnchorEl(null);
   };
 
+  const navigate = useNavigate();
+
   const handleItemSelect = (schoolID) => () => {
     if (currentSchoolID !== schoolID) {
       localStorage.setItem(LocalStorage.schoolID, schoolID)
       setSchoolID(schoolID);
       fetchDataForDashboard(schoolID);
+      navigate(`${UniqueRoutes.dashboard}/${schoolID}`)
     }
     handleClose();
   };
+
 
   return (
     <>
