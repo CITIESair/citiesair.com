@@ -106,6 +106,7 @@ export default function NavBar(props) {
       to={UniqueRoutes.nyuad}
       icon={<BarChartIcon />}
       analyticsOriginID="navbar"
+      school_id="nyuad"
     />
   );
   const blogNavLink = (
@@ -127,6 +128,7 @@ export default function NavBar(props) {
         setNavbar([homeNavLink, blogNavLink, reservedAreaMenu]);
         break;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, user])
 
   return (

@@ -1,7 +1,7 @@
 import { useEffect, useContext, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { Button, Box, Grid, Stack, Typography, Container, Card, CardContent, CardMedia, CardActionArea, Divider, Tooltip } from '@mui/material';
+import { Button, Box, Stack, Typography, Container, Divider } from '@mui/material';
 import { LinkContext } from '../../ContextProviders/LinkContext';
 
 import UppercaseTitle from '../../Components/UppercaseTitle';
@@ -80,7 +80,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
                     Tracking.Events.internalNavigation,
                     {
                       destination_id: UniqueRoutes.nyuad,
-                      destination_label: UniqueRoutes.nyuad,
+                      destination_school_id: "nyuad",
                       origin_id: UniqueRoutes.home
                     }
                   );

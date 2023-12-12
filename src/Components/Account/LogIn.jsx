@@ -13,7 +13,7 @@ export default function LogIn() {
 
   useEffect(() => {
     if (user.checkedAuthentication === true && user.authenticated === true) {
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
     }
   }, [user]);
 
@@ -58,7 +58,7 @@ export default function LogIn() {
               username: data.username,
             });
           })
-          navigate("/dashboard");
+          navigate("/dashboard", { replace: true });
         }
         else {
           throw new Error(`Error authenticating`);

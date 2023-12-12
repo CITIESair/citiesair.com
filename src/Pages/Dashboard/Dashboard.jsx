@@ -15,6 +15,7 @@ import { UniqueRoutes } from "../../Utils/RoutesUtils";
 
 const Dashboard = ({ themePreference, temperatureUnitPreference }) => {
   const { school_id_param } = useParams();
+  const navigate = useNavigate();
 
   // Update the page's title based on school_id_param
   useEffect(() => {
@@ -29,7 +30,6 @@ const Dashboard = ({ themePreference, temperatureUnitPreference }) => {
   }, []);
 
   const { user } = useContext(UserContext);
-  const navigate = useNavigate();
 
   const emptySchoolMetadata = {};
   const [schoolMetadata, setSchoolMetadata] = useState(emptySchoolMetadata);
@@ -73,7 +73,7 @@ const Dashboard = ({ themePreference, temperatureUnitPreference }) => {
           fetchDataForDashboard(school_id);
         }
 
-        navigate(school_id); // navigate to the correct url: /dashboard/:school_id_param
+        navigate(school_id, { replace: true }); // navigate to the correct url: /dashboard/:school_id_param
       }
 
       // If there is school_id_param, check if school_id_param is in the allowedSchools

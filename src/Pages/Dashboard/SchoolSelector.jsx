@@ -11,6 +11,8 @@ import PlaceIcon from '@mui/icons-material/Place';
 import { LocalStorage } from "../../Utils/LocalStorage";
 import { UniqueRoutes } from "../../Utils/RoutesUtils";
 
+import * as Tracking from '../../Utils/Tracking';
+
 export const SchoolSelector = (props) => {
   const { allowSelect, currentSchoolID, currentSchoolName, allowedSchools, fetchDataForDashboard } = props;
 
@@ -41,6 +43,14 @@ export const SchoolSelector = (props) => {
       localStorage.setItem(LocalStorage.schoolID, schoolID)
       setSchoolID(schoolID);
       fetchDataForDashboard(schoolID);
+
+      Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
+        {
+          origin_school: currentSchoolID,
+          destination_school_id: schoolID,
+          origin_id: 'school_selector'
+        });
+
       navigate(`${UniqueRoutes.dashboard}/${schoolID}`)
     }
     handleClose();

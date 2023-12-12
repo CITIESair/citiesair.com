@@ -42,7 +42,7 @@ export const scrollToSection = (scrollToSectionID) => {
 
 export default function MenuItemAsNavLink(props) {
   // eslint-disable-next-line max-len
-  const { behavior, to, scrollToSectionID, icon, sx, analyticsOriginID, analyticsDestinationLabel, bindHoverProps, bindFocusProps } = props;
+  const { behavior, to, scrollToSectionID, icon, sx, analyticsOriginID, school_id, analyticsDestinationLabel, bindHoverProps, bindFocusProps } = props;
   let { label } = props;
 
   if (label && typeof label === 'string') label = capitalizePhrase(label);
@@ -62,6 +62,7 @@ export default function MenuItemAsNavLink(props) {
               {
                 destination_id: to,
                 destination_label: newPageLabel,
+                destination_school_id: school_id,
                 origin_id: analyticsOriginID
               }
             );
