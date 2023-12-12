@@ -75,6 +75,16 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
                 variant='contained'
                 sx={{ width: "fit-content", mb: 1 }}
                 to={UniqueRoutes.nyuad}
+                onClick={() => {
+                  Tracking.sendEventAnalytics(
+                    Tracking.Events.internalNavigation,
+                    {
+                      destination_id: UniqueRoutes.nyuad,
+                      destination_label: UniqueRoutes.nyuad,
+                      origin_id: UniqueRoutes.home
+                    }
+                  );
+                }}
               >
                 <BarChartIcon sx={{ fontSize: '0.8rem' }} />&nbsp;NYUAD Dashboard (Public Access)
               </Button>

@@ -4,10 +4,16 @@ import { Box, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import { TemperatureUnits } from '../../Pages/Screen/TemperatureUtils';
 import { LocalStorage } from '../../Utils/LocalStorage';
 
+import * as Tracking from '../../Utils/Tracking';
+
 export default function TemperatureUnitToggle({ passedTemperatureUnit, passedSetTemperatureUnitPreference }) {
   const [temperatureUnit, setTemperatureUnit] = useState(passedTemperatureUnit);
 
   const handleChange = (event, newUnit) => {
+    Tracking.sendEventAnalytics(Tracking.Events.temperatureUnitChange, {
+      old_temperature: temperatureUnit,
+      new_temperature: event.target.value,
+    });
     localStorage.setItem(LocalStorage.temperatureUnit, newUnit);
     setTemperatureUnit(newUnit);
     passedSetTemperatureUnitPreference(newUnit);

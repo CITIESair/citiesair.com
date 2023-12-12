@@ -213,6 +213,14 @@ export default function Header(props) {
                     if (section) {
                       section.scrollIntoView({ behavior: 'smooth' });
                     }
+
+                    Tracking.sendEventAnalytics(
+                      Tracking.Events.internalNavigation,
+                      {
+                        destination_id: jsonData.getInTouch.id,
+                        origin_id: 'header'
+                      }
+                    );
                   }}
                   sx={{ mt: 1, display: 'block' }}
                 >

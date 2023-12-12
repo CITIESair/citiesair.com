@@ -38,8 +38,12 @@ const ExpandableSection = ({ title, content }) => {
 
   const handleAccordionChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : undefined);
-
-    Tracking.sendEventAnalytics(isExpanded ? Tracking.Events.expandSampleData : Tracking.Events.collapseSampleData);
+    Tracking.sendEventAnalytics(
+      isExpanded ? Tracking.Events.expandSection : Tracking.Events.collapseSection,
+      {
+        section: title
+      }
+    );
   };
 
   return (

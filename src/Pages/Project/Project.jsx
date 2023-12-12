@@ -146,12 +146,12 @@ const Project = ({ isNyuad = false, themePreference, schoolMetadata, currentData
                   tooltipTitle="Number of Charts"
                   onClick={() => {
                     scrollToSection(jsonData.charts.id);
-                    // Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
-                    //   {
-                    //     destination_id: jsonData.charts.id,
-                    //     destination_label: jsonData.dashboardData?.toString(),
-                    //     origin_id: 'chip'
-                    //   })
+                    Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
+                      {
+                        destination_id: jsonData.charts.id,
+                        destination_label: jsonData.dashboardData?.toString(),
+                        origin_id: 'chip'
+                      })
                   }}
                 />
               </Grid>
@@ -174,12 +174,12 @@ const Project = ({ isNyuad = false, themePreference, schoolMetadata, currentData
                     tooltipTitle="Number of Comments"
                     onClick={() => {
                       scrollToSection(jsonData.commentSection.id);
-                      // Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
-                      //   {
-                      //     destination_id: jsonData.commentSection.id,
-                      //     destination_label: jsonData.commentSection.toString(),
-                      //     origin_id: 'chip'
-                      //   })
+                      Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
+                        {
+                          destination_id: jsonData.commentSection.id,
+                          destination_label: jsonData.commentSection.toString(),
+                          origin_id: 'chip'
+                        })
                     }}
                   />
                 </Grid>}
