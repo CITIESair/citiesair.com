@@ -18,6 +18,10 @@
             }
         ]
     },
+    "commentSection": {
+        "id": "comments",
+        "content": "<b>What stands out to you?</b> Leave a comment below to share your thoughts on this project and discuss with other.<br><small><i>*Comment as a guest (with your email to receive reply emails) or create an account below.</i></small>"
+    },
     "disclaimer": {
         "id": "disclaimer",
         "content": "<b>DISCLAIMER</b><br/>While intensive efforts have been made to fact-check cited scientific research and ensure maximum accuracy of the measuring instruments, we assume no liability (including liability by reason of negligence) to the users for any loss, damage, cost or expense incurred or arising by reason of any person using or relying on the information and whether caused by reason of any error, negligent act, omission or misrepresentation of the provided data."

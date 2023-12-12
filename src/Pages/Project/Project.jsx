@@ -5,6 +5,7 @@ import { LinkContext } from '../../ContextProviders/LinkContext';
 import parse from 'html-react-parser';
 import ChartControl from '../../Graphs/ChartControl';
 import UppercaseTitle from '../../Components/UppercaseTitle';
+import CommentSection, { PAGE_NAME } from '../../Components/CommentSection';
 import { Box, Typography, Container, Divider, Chip, Grid, Tooltip, Stack, Skeleton } from '@mui/material';
 
 import { useTheme } from '@mui/material/styles';
@@ -19,6 +20,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
 import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import CommentIcon from '@mui/icons-material/Comment';
 
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
 import DatasetDownloadDialog from '../../Components/DatasetDownload/DatasetDownloadDialog';
@@ -38,6 +40,8 @@ import AirQualityExplanation from '../../Utils/AirQualityExplanation';
 import { UserContext } from '../../ContextProviders/UserContext';
 import LoadingAnimation from '../../Components/LoadingAnimation';
 
+import { CommentCountsContext } from '../../ContextProviders/CommentCountsContext';
+
 // Custom Chip component to display metadata
 export const CustomChip = (props) => {
   const { tooltipTitle, label, ...otherProps } = props;
@@ -52,12 +56,35 @@ export const CustomChip = (props) => {
   );
 }
 
-const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, fetchDataForDashboard, temperatureUnitPreference }) => {
+const Project = ({ isNyuad = false, themePreference, schoolMetadata, currentData, dashboardData, fetchDataForDashboard, temperatureUnitPreference }) => {
   const [_, __, ___, setChartsTitlesList] = useContext(LinkContext);
 
   let lastUpdate;
 
   const { user } = useContext(UserContext);
+
+  const [commentCounts, fetchCommentCounts, setCommentCounts] = useContext(CommentCountsContext);
+
+  const [displayCommentSection, setDisplayCommentSection] = useState(false);
+
+  useEffect(() => {
+    if (isNyuad || schoolMetadata?.school_id === 'nyuad') {
+      setDisplayCommentSection(true);
+      return;
+    }
+    setDisplayCommentSection(false);
+  }, [isNyuad, schoolMetadata])
+
+  useEffect(() => {
+    if (!displayCommentSection) return;
+
+    if (commentCounts !== null) return;
+
+    // Fetch comment count for page if it is nyuad
+    fetchCommentCounts().then((data) => {
+      setCommentCounts(data);
+    });
+  }, [displayCommentSection]);
 
   // Update the chart title list for quick navigation
   useEffect(() => {
@@ -85,6 +112,7 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
             <Grid container spacing={1} sx={{ mt: -3, pb: 3 }}>
               <Grid item>
                 <SchoolSelector
+                  allowSelect={isNyuad === true ? false : true}
                   currentSchoolID={schoolMetadata?.school_id}
                   currentSchoolName={schoolMetadata?.name}
                   allowedSchools={user.allowedSchools}
@@ -137,6 +165,24 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
                     tooltipTitle="Last Update" />
                 </Grid>
               }
+
+              {(displayCommentSection === true && commentCounts !== null) &&
+                <Grid item>
+                  <CustomChip
+                    icon={<CommentIcon />}
+                    label={`${commentCounts[PAGE_NAME]} Comment${commentCounts[PAGE_NAME] > 1 ? "s" : ""}`}
+                    tooltipTitle="Number of Comments"
+                    onClick={() => {
+                      scrollToSection(jsonData.commentSection.id);
+                      // Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
+                      //   {
+                      //     destination_id: jsonData.commentSection.id,
+                      //     destination_label: jsonData.commentSection.toString(),
+                      //     origin_id: 'chip'
+                      //   })
+                    }}
+                  />
+                </Grid>}
             </Grid>
 
             <Box textAlign="center" sx={{ mb: 2 }}>
@@ -242,9 +288,14 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
           }
 
         </Box>
-
         <Divider />
-      </Box>
+
+        {displayCommentSection === true &&
+          <FullWidthBox id={jsonData.commentSection.id} sx={{ pt: 3, pb: 4 }}>
+            <CommentSection pageID={PAGE_NAME} />
+          </FullWidthBox>
+        }
+      </Box >
     </>
   );
 };
