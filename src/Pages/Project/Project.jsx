@@ -42,6 +42,8 @@ import LoadingAnimation from '../../Components/LoadingAnimation';
 
 import { CommentCountsContext } from '../../ContextProviders/CommentCountsContext';
 
+import AQImap, { TileOptions } from '../../Components/AQImap';
+
 // Custom Chip component to display metadata
 export const CustomChip = (props) => {
   const { tooltipTitle, label, ...otherProps } = props;
@@ -56,6 +58,8 @@ export const CustomChip = (props) => {
   );
 }
 
+
+
 const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, fetchDataForDashboard, temperatureUnitPreference }) => {
   const [_, __, ___, setChartsTitlesList] = useContext(LinkContext);
 
@@ -66,13 +70,16 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
   const [commentCounts, fetchCommentCounts, setCommentCounts] = useContext(CommentCountsContext);
 
   const [displayCommentSection, setDisplayCommentSection] = useState(false);
+  const [displayMapOfSensors, setDisplayMapOfSensors] = useState(false);
 
   useEffect(() => {
     if (schoolMetadata?.school_id === 'nyuad') {
       setDisplayCommentSection(true);
+      setDisplayMapOfSensors(true);
       return;
     }
     setDisplayCommentSection(false);
+    setDisplayMapOfSensors(false);
   }, [schoolMetadata])
 
   useEffect(() => {
@@ -100,90 +107,120 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
     if (schoolMetadata?.school_id) return `Air Quality | ${schoolMetadata?.school_id}`
   }
 
+  const GridOfMetadataChips = () => {
+    return (
+      <Grid container spacing={1} sx={{ mt: -3, pb: 3 }}>
+        <Grid item>
+          <SchoolSelector
+            currentSchoolID={schoolMetadata?.school_id}
+            currentSchoolName={schoolMetadata?.name}
+            allowedSchools={user.allowedSchools}
+            fetchDataForDashboard={fetchDataForDashboard}
+          />
+        </Grid>
+
+        <Grid item>
+          <CustomChip
+            icon={<PersonIcon />}
+            label={schoolMetadata?.contactPerson}
+            tooltipTitle="Contact Person"
+          />
+        </Grid>
+
+        <Grid item>
+          <CustomChip
+            icon={<EmailIcon />}
+            label={schoolMetadata?.contactEmail}
+            tooltipTitle="Contact Email"
+            component="a"
+            href={`mailto:${schoolMetadata?.contactEmail}`}
+            clickable
+          />
+        </Grid>
+
+        <Grid item>
+          <CustomChip
+            icon={<BarChartIcon />}
+            label={`${dashboardData?.charts?.length || "..."} Chart${dashboardData?.charts?.length !== 1 ? 's' : ''}`}
+            tooltipTitle="Number of Charts"
+            onClick={() => {
+              scrollToSection(jsonData.charts.id);
+              Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
+                {
+                  destination_id: jsonData.charts.id,
+                  destination_label: jsonData.dashboardData?.toString(),
+                  origin_id: 'chip'
+                });
+            }}
+          />
+        </Grid>
+
+        {
+          lastUpdate &&
+          <Grid item>
+            <CustomChip
+              icon={<PublishedWithChangesIcon />}
+              label={`Last update: ${lastUpdate}`}
+              tooltipTitle="Last Update" />
+          </Grid>
+        }
+
+        {(displayCommentSection === true && commentCounts !== null) &&
+          <Grid item>
+            <CustomChip
+              icon={<CommentIcon />}
+              label={`${commentCounts[PAGE_NAME]} Comment${commentCounts[PAGE_NAME] > 1 ? "s" : ""}`}
+              tooltipTitle="Number of Comments"
+              onClick={() => {
+                scrollToSection(jsonData.commentSection.id);
+                Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
+                  {
+                    destination_id: jsonData.commentSection.id,
+                    destination_label: jsonData.commentSection.toString(),
+                    origin_id: 'chip'
+                  })
+              }}
+            />
+          </Grid>}
+      </Grid>
+    )
+  }
+
   return (
     <>
       <Box width="100%">
         <AirQualityIndexLegendQuickGlance themePreference={themePreference} />
 
         <FullWidthBox backgroundColor='customAlternateBackground'>
-          <Container sx={{ pt: 5, pb: 3 }}>
+          <Container sx={{ pt: 5 }}>
             <UppercaseTitle text={getDashboardTitle()} />
-
-            <Grid container spacing={1} sx={{ mt: -3, pb: 3 }}>
-              <Grid item>
-                <SchoolSelector
-                  currentSchoolID={schoolMetadata?.school_id}
-                  currentSchoolName={schoolMetadata?.name}
-                  allowedSchools={user.allowedSchools}
-                  fetchDataForDashboard={fetchDataForDashboard}
-                />
-              </Grid>
-
-              <Grid item>
-                <CustomChip
-                  icon={<PersonIcon />}
-                  label={schoolMetadata?.contactPerson}
-                  tooltipTitle="Contact Person"
-                />
-              </Grid>
-
-              <Grid item>
-                <CustomChip
-                  icon={<EmailIcon />}
-                  label={schoolMetadata?.contactEmail}
-                  tooltipTitle="Contact Email"
-                  component="a"
-                  href={`mailto:${schoolMetadata?.contactEmail}`}
-                  clickable
-                />
-              </Grid>
-
-              <Grid item>
-                <CustomChip
-                  icon={<BarChartIcon />}
-                  label={`${dashboardData?.charts?.length || "..."} Chart${dashboardData?.charts?.length !== 1 ? 's' : ''}`}
-                  tooltipTitle="Number of Charts"
-                  onClick={() => {
-                    scrollToSection(jsonData.charts.id);
-                    Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
-                      {
-                        destination_id: jsonData.charts.id,
-                        destination_label: jsonData.dashboardData?.toString(),
-                        origin_id: 'chip'
-                      });
-                  }}
-                />
-              </Grid>
-
-              {
-                lastUpdate &&
-                <Grid item>
-                  <CustomChip
-                    icon={<PublishedWithChangesIcon />}
-                    label={`Last update: ${lastUpdate}`}
-                    tooltipTitle="Last Update" />
-                </Grid>
-              }
-
-              {(displayCommentSection === true && commentCounts !== null) &&
-                <Grid item>
-                  <CustomChip
-                    icon={<CommentIcon />}
-                    label={`${commentCounts[PAGE_NAME]} Comment${commentCounts[PAGE_NAME] > 1 ? "s" : ""}`}
-                    tooltipTitle="Number of Comments"
-                    onClick={() => {
-                      scrollToSection(jsonData.commentSection.id);
-                      Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
-                        {
-                          destination_id: jsonData.commentSection.id,
-                          destination_label: jsonData.commentSection.toString(),
-                          origin_id: 'chip'
-                        })
-                    }}
-                  />
-                </Grid>}
-            </Grid>
-
+            <GridOfMetadataChips />
+          </Container>
+        </FullWidthBox>
+        {displayMapOfSensors === true &&
+          (
+            <FullWidthBox>
+              <AQImap
+                tileOption={TileOptions.nyuad}
+                themePreference={themePreference}
+                temperatureUnitPreference={temperatureUnitPreference}
+                placeholderText={"Map of CITIESair air quality sensors on NYUAD campus."}
+                centerCoordinates={[24.5237, 54.43449]}
+                maxBounds={[
+                  [24.52038, 54.42612],
+                  [24.52808, 54.44079]
+                ]}
+                defaultZoom={17}
+                minZoom={17}
+                maxZoom={19}
+                displayMinimap={false}
+                rawMapData={currentData}
+              />
+            </FullWidthBox>
+          )
+        }
+        <FullWidthBox backgroundColor='customAlternateBackground'>
+          <Container sx={{ pt: 3, pb: 3 }}>
             <Box textAlign="center" sx={{ mb: 2 }}>
               <CurrentAQIGrid
                 currentSensorsData={currentData}
@@ -191,6 +228,7 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
                 temperatureUnitPreference={temperatureUnitPreference}
               />
             </Box>
+
             <Typography
               component="div"
               variant="body1"
@@ -247,7 +285,6 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
                 </>
               )}
             />
-
           </Container>
         </FullWidthBox>
 

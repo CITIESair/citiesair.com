@@ -1,5 +1,5 @@
 // React components
-import { React, useState, useMemo, lazy, Suspense, useContext } from 'react';
+import { React, useState, useMemo, lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 
 // MUI components
@@ -20,7 +20,6 @@ import LoadingAnimation from './Components/LoadingAnimation';
 import LogIn from './Components/Account/LogIn';
 
 // Contexts
-import { UserContext } from './ContextProviders/UserContext';
 import { TemperatureUnits } from './Pages/Screen/TemperatureUtils';
 import { LocalStorage } from './Utils/LocalStorage';
 import { UniqueRoutes } from './Utils/RoutesUtils';

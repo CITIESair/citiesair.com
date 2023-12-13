@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useMemo } from 'react';
+import React, { useState, createContext, useMemo } from 'react';
 import { fetchDataFromURL } from '../Components/DatasetDownload/DatasetFetcher';
 import { WEBSITE_ID, AIR_QUALITY_PAGE_ID } from '../Components/CommentSection';
 

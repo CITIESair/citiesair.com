@@ -16,7 +16,7 @@ import * as Tracking from '../../Utils/Tracking';
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
 
-import Map from './Map';
+import AQImap, { TileOptions } from '../../Components/AQImap';
 
 import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
 import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
@@ -41,18 +41,26 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
     setChartsTitlesList([]);
   }, [setCurrentPage, setChartsTitlesList]);
 
-  // Fetch public NYUAD sensors data
+  // Fetch public NYUAD sensors data and public map data
   const [nyuadCurrentSensorData, setNyuadCurrentSensorData] = useState({});
+  const [rawMapData, setRawMapData] = useState();
 
   useEffect(() => {
-    const url = getApiUrl({ endpoint: EndPoints.current, school_id: 'nyuad' });
-
-    fetchAndProcessCurrentSensorsData(url)
+    const nyuadUrl = getApiUrl({ endpoint: EndPoints.current, school_id: 'nyuad' });
+    fetchAndProcessCurrentSensorsData(nyuadUrl)
       .then((data) => {
         setNyuadCurrentSensorData(data)
       })
       .catch((error) => console.log(error));
+
+    const mapUrl = getApiUrl({ endpoint: EndPoints.map });
+    fetchAndProcessCurrentSensorsData(mapUrl)
+      .then((data) => {
+        setRawMapData(data)
+      })
+      .catch((error) => console.log(error));
   }, []);
+
 
   return (
     <Box width="100%">
@@ -105,7 +113,18 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
             })}
           </Typography>
         </Container>
-        <Map themePreference={themePreference} temperatureUnitPreference={temperatureUnitPreference} />
+        <AQImap
+          tileOption={TileOptions.default}
+          themePreference={themePreference}
+          temperatureUnitPreference={temperatureUnitPreference}
+          placeholderText={"Map of CITIESair public outdoor air quality stations in Abu Dhabi."}
+          centerCoordinates={[24.46, 54.52]}
+          maxBounds={[
+            [22.608292, 51.105185],
+            [26.407575, 56.456571],
+          ]}
+          rawMapData={rawMapData}
+        />
 
       </FullWidthBox>
 

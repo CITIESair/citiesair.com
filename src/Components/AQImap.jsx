@@ -2,31 +2,28 @@
 /* eslint-disable */
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Box, Typography, Stack, Link } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import { MapContainer, TileLayer, Marker, Popup, useMap, AttributionControl, useMapEvent, Rectangle, CircleMarker } from 'react-leaflet';
+import { useMediaQuery, useTheme } from '@mui/material';
+import { MapContainer, TileLayer, Marker, Popup, useMap, AttributionControl, useMapEvent, Rectangle, CircleMarker, Tooltip } from 'react-leaflet';
 import { useEventHandlers } from '@react-leaflet/core';
 import L from 'leaflet';
 
 import LaunchIcon from '@mui/icons-material/Launch';
 
-import IQAir_Logo from '../../IQAir_logo.svg';
+import IQAir_Logo from '../IQAir_logo.svg';
 
-import { SensorStatus, calculateSensorStatus, getFormattedElapsedTimeFromNow } from '../Screen/ScreenUtils';
+import { SensorStatus, calculateSensorStatus, getFormattedElapsedTimeFromNow } from '../Pages/Screen/ScreenUtils';
 
-import { fetchDataFromURL } from '../../Components/DatasetDownload/DatasetFetcher';
+import { getFormattedTemperature, TemperatureUnits } from '../Pages/Screen/TemperatureUtils';
 
-import { getFormattedTemperature, TemperatureUnits } from '../Screen/TemperatureUtils';
-
-import AQIdatabase from '../../Utils/AirQualityIndexHelper';
-import convertToAQI from '../../Utils/AirQualityIndexCalculator';
+import AQIdatabase from '../Utils/AirQualityIndexHelper';
+import convertToAQI from '../Utils/AirQualityIndexCalculator';
 
 import ThermostatIcon from '@mui/icons-material/Thermostat';
 import WaterDropIcon from '@mui/icons-material/WaterDrop';
-import ThemePreferences from '../../Themes/ThemePreferences';
+import ThemePreferences from '../Themes/ThemePreferences';
 
 import { styled } from '@mui/material/styles';
-import CustomThemes from '../../Themes/CustomThemes';
-import { EndPoints, getApiUrl } from '../../Utils/ApiUtils';
+import CustomThemes from '../Themes/CustomThemes';
 
 const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
     '& .leaflet-popup-tip-container': {
@@ -34,17 +31,31 @@ const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
     }
 }));
 
-
-function MapPlaceholder() {
+const MapPlaceholder = ({ placeholderText }) => {
     return (
         <p>
-            Map of CITIESair stations in Abu Dhabi
+            {placeholderText}
             <noscript>You need to enable JavaScript to see this map.</noscript>
         </p>
     )
 }
+export const TileOptions = {
+    default: 'default',
+    nyuad: 'nyuad'
+};
 
-const getTileUrl = ({ themePreference, isMiniMap }) => {
+const Tiles = {
+    default: {
+        light: 'jawg-light',
+        dark: 'jawg-dark'
+    },
+    nyuad: {
+        light: 'b6b5a641-4123-4535-b8e7-3b6711fd430b',
+        dark: '407650b3-59a3-49fe-8c1c-bedcd4a8e6b5'
+    }
+}
+
+const getTileUrl = ({ tileOption, themePreference, isMiniMap }) => {
     let tileTheme;
     switch (themePreference) {
         case ThemePreferences.dark:
@@ -54,7 +65,7 @@ const getTileUrl = ({ themePreference, isMiniMap }) => {
             tileTheme = isMiniMap ? 'dark' : 'light';
             break
     }
-    return `https://{s}.tile.jawg.io/jawg-${tileTheme}/{z}/{x}/{y}{r}.png?access-token={accessToken}`;
+    return `https://{s}.tile.jawg.io/${Tiles[tileOption][tileTheme]}/{z}/{x}/{y}{r}.png?access-token={accessToken}`;
 }
 const getMiniMapBoundOptions = ({ themePreference }) => {
     switch (themePreference) {
@@ -72,15 +83,7 @@ const getMiniMapBoundOptions = ({ themePreference }) => {
 }
 const tileAttribution = '<a href="https://leafletjs.com/" target="_blank"><b>Leaflet</b></a> | <a href="https://jawg.io" target="_blank">&copy; <b>Jawg</b>Maps</a> <a href="https://www.openstreetmap.org/copyright">&copy; OpenStreetMap</a> contributors';
 const tileAccessToken = 'N4ppJQTC3M3uFOAsXTbVu6456x1MQnQTYityzGPvAkVB3pS27NMwJ4b3AfebMfjY';
-const centerCoordinate = [24.46, 54.52];
-const maxBounds = [
-    [22.608292, 51.105185], // [Southwest corner coordinates]
-    [26.407575, 56.456571], // [Northeast corner coordinates]
-];
 
-const MIN_ZOOM = 8;
-const MAX_ZOOM = 12;
-const DEFAULT_ZOOM = 10;
 const POSITION_CLASSES = {
     bottomleft: 'leaflet-bottom leaflet-left',
     bottomright: 'leaflet-bottom leaflet-right',
@@ -88,54 +91,79 @@ const POSITION_CLASSES = {
     topright: 'leaflet-top leaflet-right',
 }
 
-const Map = ({ themePreference, temperatureUnitPreference }) => {
+export const TypeOfAQImap = {
+    publicOutdoorStations: 'publicOutdoorStations',
+    nyuadSensors: 'nyuadSensors'
+}
+
+const AQImap = (props) => {
+    const {
+        tileOption,
+        themePreference,
+        temperatureUnitPreference,
+        placeholderText,
+        centerCoordinates,
+        maxBounds,
+        minZoom = 8,
+        maxZoom = 12,
+        defaultZoom = 10,
+        displayMinimap = true,
+        rawMapData
+    } = props;
+
+    const disableZoomParameters = {
+        doubleClickZoom: false,
+        attributionControl: false,
+        zoomControl: false
+    }
+
     const [mapData, setMapData] = useState({});
     const theme = useTheme();
-
-    const url = getApiUrl({ endpoint: EndPoints.map });
+    const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     useEffect(() => {
-        fetchDataFromURL(url, 'json').then((data => {
-            Object.entries(data).map(([_, location]) => {
-                // Calculate if the sensor is currently active or not
-                const now = new Date();
-                const currentTimestamp = new Date(location.current?.timestamp);
-                const lastSeenInHours = Math.round((now - currentTimestamp) / 1000 / 3600);
-                if (location.current) {
-                    location.current.lastSeenInHours = lastSeenInHours;
-                    location.current.sensor_status = calculateSensorStatus(lastSeenInHours);
-                }
+        if (!Array.isArray(rawMapData) || rawMapData.length === 0) return;
 
-                // Calculate AQI from raw measurements
-                if (location.current?.["pm2.5"]) {
-                    const aqiObject = convertToAQI(location.current["pm2.5"]);
-                    if (aqiObject) {
-                        const aqiCategory = AQIdatabase[aqiObject.aqi_category_index];
-                        location.current.aqi = aqiObject.aqi;
-                        location.current.category = aqiCategory.category;
+        const transformedData = rawMapData.map(location => {
+            // Calculate if the sensor is currently active or not
+            const now = new Date();
+            const currentTimestamp = new Date(location.current?.timestamp);
+            const lastSeenInHours = Math.round((now - currentTimestamp) / 1000 / 3600);
+            if (location.current) {
+                location.current.lastSeenInHours = lastSeenInHours;
+                location.current.sensor_status = calculateSensorStatus(lastSeenInHours);
+            }
 
-                        if (location.current.sensor_status === SensorStatus.active) {
-                            location.current.color = aqiCategory.lightThemeColor;
-                        }
-                        else {
-                            location.current.color = CustomThemes.universal.palette.inactiveSensor;
-                        }
+            // Calculate AQI from raw measurements
+            if (location.current?.["pm2.5"]) {
+                const aqiObject = convertToAQI(location.current["pm2.5"]);
+                if (aqiObject) {
+                    const aqiCategory = AQIdatabase[aqiObject.aqi_category_index];
+                    location.current.aqi = aqiObject.aqi;
+                    location.current.category = aqiCategory.category;
+
+                    if (location.current.sensor_status === SensorStatus.active) {
+                        location.current.color = aqiCategory.lightThemeColor;
+                    } else {
+                        location.current.color = CustomThemes.universal.palette.inactiveSensor;
                     }
                 }
+            }
 
-                // Create the marker icon on the map
-                location.markerIcon = new L.DivIcon({
-                    className: 'aqi-marker-icon',
-                    html: `<div onmouseover="this.style.opacity=1;" onmouseleave="this.style.opacity=0.75;" style="width: 2.25rem; height: 2.25rem; background-color: ${location.current.color}; border-radius: 50%; border: solid 2px; display: flex; justify-content: center; align-items: center; font-size: 1rem; font-weight: 500; color: ${themePreference === ThemePreferences.light ? 'black' : 'white'}; opacity: 0.75; :hover: {opacity: 1}">${location.current.aqi || '--'}</div>`
-
-                });
+            // Create the marker icon on the map
+            location.markerIcon = new L.DivIcon({
+                className: 'aqi-marker-icon',
+                html: `<div onmouseover="this.style.opacity=1;" onmouseleave="this.style.opacity=0.75;" style="width: 40px; height: 40px; background-color: ${location.current.color}; border-radius: 50%; border: solid 2px; display: flex; justify-content: center; align-items: center; font-size: 1rem; font-weight: 500; color: ${themePreference === ThemePreferences.light ? 'black' : 'white'}; opacity: 0.75; :hover: {opacity: 1}">${location.current.aqi || '--'}</div>`
             });
-            setMapData(data);
-        }));
 
-    }, []);
+            return location;
+        });
 
-    function MinimapBounds({ parentMap, zoom }) {
+        setMapData(transformedData);
+    }, [rawMapData]);
+
+
+    const MinimapBounds = ({ parentMap, zoom }) => {
         const minimap = useMap()
 
         // Clicking a point on the minimap sets the parent's map center
@@ -170,9 +198,9 @@ const Map = ({ themePreference, temperatureUnitPreference }) => {
         );
     }
 
-    function MinimapControl({ position, zoom, mapData }) {
+    const MinimapControl = ({ position, zoom, mapData }) => {
         const parentMap = useMap()
-        const mapZoom = zoom || MIN_ZOOM - 2;
+        const mapZoom = zoom || minZoom - 2;
 
         // Memoize the minimap so it's not affected by position changes
         const minimap = useMemo(
@@ -181,14 +209,13 @@ const Map = ({ themePreference, temperatureUnitPreference }) => {
                     style={{ height: "20vh", width: "30vw", maxWidth: "250px", maxHeight: "200px" }}
                     center={parentMap.getCenter()}
                     zoom={mapZoom}
-                    dragging={false}
-                    doubleClickZoom={false}
                     scrollWheelZoom={false}
+                    dragging={false}
+                    {...disableZoomParameters}
                     attributionControl={false}
-                    zoomControl={false}
                 >
                     <TileLayer
-                        url={getTileUrl({ themePreference, isMiniMap: true })}
+                        url={getTileUrl({ tileOption, themePreference, isMiniMap: true })}
                         accessToken={tileAccessToken}
                     />
                     {
@@ -226,26 +253,37 @@ const Map = ({ themePreference, temperatureUnitPreference }) => {
         <Box sx={{
             height: "50vh",
             [theme.breakpoints.down('md')]: {
-                height: '70vh',
+                height: '60vh',
             },
             '& .leaflet-container': { height: "100%", width: "100%" },
-            '& .leaflet-control-attribution': { fontSize: '0.5rem' }
+            '& .leaflet-control-attribution': { fontSize: '0.5rem' },
+            '& .leaflet-tooltip': {
+                backgroundColor: 'transparent !important',
+                border: 'unset',
+                boxShadow: 'unset',
+                color: theme.palette.text.primary,
+                fontWeight: 500,
+                fontSize: '0.9rem'
+            },
+            '& .leaflet-tooltip-bottom:before': {
+                borderBottomColor: 'transparent !important',
+            }
         }}>
             <MapContainer
-                center={centerCoordinate}
-                zoom={DEFAULT_ZOOM}
+                center={centerCoordinates}
+                zoom={defaultZoom}
                 maxBounds={maxBounds}
                 scrollWheelZoom={false}
-                placeholder={<MapPlaceholder />}
+                placeholder={<MapPlaceholder placeholderText={placeholderText} />}
                 attributionControl={false}
             >
-                <MinimapControl position="bottomleft" mapData={mapData} />
+                {displayMinimap === true && <MinimapControl position="bottomleft" mapData={mapData} />}
 
                 <TileLayer
                     attribution={tileAttribution}
-                    url={getTileUrl({ themePreference })}
-                    minZoom={MIN_ZOOM}
-                    maxZoom={MAX_ZOOM}
+                    url={getTileUrl({ tileOption, themePreference })}
+                    minZoom={minZoom}
+                    maxZoom={maxZoom}
                     bounds={maxBounds}
                     accessToken={tileAccessToken}
                 />
@@ -257,49 +295,77 @@ const Map = ({ themePreference, temperatureUnitPreference }) => {
                             position={[location.sensor?.coordinates?.latitude, location.sensor?.coordinates?.longitude]}
                             icon={location.markerIcon}
                         >
+                            <Tooltip
+                                permanent={tileOption === TileOptions.nyuad ? true : false}
+                                direction="bottom"
+                                offset={[15, -40]}
+                            >
+                                {location.sensor?.location_long}
+                            </Tooltip>
+
                             <StyledLeafletPopup>
-                                <Stack direction="row" spacing={3}>
-                                    <Link
-                                        variant="body1"
-                                        fontWeight={500}
-                                        href={location.sensor?.public_iqAir_station_link}
-                                        target='_blank'
-                                        rel="noopener noreferrer"
-                                        color={`${theme.palette.primary.main}!important`}
-                                        underline="hover"
-                                    >
-                                        {location.sensor?.public_iqAir_station_name}
-                                        &nbsp;
-                                        <sup>
-                                            <LaunchIcon fontSize='0.8rem' />
-                                        </sup>
-                                    </Link>
-                                    <Box>
-                                        <img src={IQAir_Logo} />
-                                    </Box>
-                                </Stack>
+                                {
+                                    location.sensor?.public_iqAir_station_link ?
+                                        <Stack direction="row" spacing={smallScreen ? 1 : 3}>
+                                            <Link
+                                                variant={smallScreen ? 'body2' : 'body1'}
+                                                fontWeight={500}
+                                                href={location.sensor.public_iqAir_station_link}
+                                                target='_blank'
+                                                rel="noopener noreferrer"
+                                                color={`${theme.palette.primary.main}!important`}
+                                                underline="hover"
+                                            >
+                                                {location.sensor?.location_long}
+                                                &nbsp;
+                                                <sup>
+                                                    <LaunchIcon fontSize='0.8rem' />
+                                                </sup>
+                                            </Link>
+                                            <Box sx={{
+                                                '& img': {
+                                                    height: smallScreen ? "50%" : 'unset'
+                                                }
+                                            }}>
+                                                <img src={IQAir_Logo} />
+                                            </Box>
+                                        </Stack>
+                                        :
+                                        <Typography
+                                            variant={smallScreen ? 'body2' : 'body1'}
+                                            fontWeight="500"
+                                            sx={{
+                                                margin: '0!important',
+                                                marginBottom: smallScreen === false && '0.25rem !important'
+                                            }}>
+                                            {location.sensor?.location_long}
+                                        </Typography>
+                                }
+
 
                                 <Box sx={{ '& *': { color: location.current?.color } }}>
-                                    <Typography variant="h3" fontWeight="500" lineHeight={0.9}>
+                                    <Typography variant={smallScreen ? 'h4' : 'h3'} fontWeight="500" lineHeight={0.9}>
                                         {location.current?.aqi || '--'}
                                         <Typography variant='caption' fontWeight="500">(US AQI)</Typography>
                                     </Typography>
 
-                                    <Typography variant="body1" component="span" fontWeight="500">
+                                    <Typography variant={smallScreen ? 'body2' : 'body1'} component="span" fontWeight="500">
                                         {location.current?.category || '--'}
                                     </Typography>
                                 </Box>
 
                                 <Typography
                                     variant="caption"
-                                    sx={{ display: 'block', fontWeight: 500 }}
+                                    sx={{ display: 'block' }}
                                     gutterBottom
                                 >
-                                    PM2.5: {location.current?.["pm2.5"] || '--'}µg/m<sup>3</sup>
+                                    <Typography variant='caption' fontWeight="500">PM2.5:</Typography>
+                                    &nbsp;
+                                    {location.current?.["pm2.5"] || '--'}µg/m<sup>3</sup>
                                 </Typography>
                                 <Typography
                                     variant="caption"
-                                    sx={{ display: 'block', fontWeight: 500 }}
+                                    sx={{ display: 'block' }}
                                     gutterBottom
                                 >
                                     <ThermostatIcon sx={{ fontSize: '1rem', verticalAlign: 'sub' }} />
@@ -316,11 +382,11 @@ const Map = ({ themePreference, temperatureUnitPreference }) => {
                                 <Typography variant="caption" sx={{ display: 'block', fontWeight: 500 }}>
 
                                 </Typography>
-                                <Box>
+                                <Box sx={{ mt: 1 }}>
                                     <Typography variant='caption' sx={{ mt: 0 }}>
                                         <Typography variant='caption' fontWeight="500">Last update:</Typography>
                                         {location.current?.timestamp
-                                            ? ` ${getFormattedElapsedTimeFromNow(location.current.timestamp)} ago (${new Date(location.current.timestamp).toLocaleString()})`
+                                            ? ` ${getFormattedElapsedTimeFromNow(location.current.timestamp)} ago`
                                             : '--'}
                                     </Typography>
                                     <br />
@@ -344,4 +410,4 @@ const Map = ({ themePreference, temperatureUnitPreference }) => {
     )
 }
 
-export default Map;
+export default AQImap;
