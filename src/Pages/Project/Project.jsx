@@ -187,152 +187,151 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
   }
 
   return (
-    <>
-      <Box width="100%">
-        <AirQualityIndexLegendQuickGlance themePreference={themePreference} />
+    <Box width="100%">
+      <AirQualityIndexLegendQuickGlance themePreference={themePreference} />
 
-        <FullWidthBox backgroundColor='customAlternateBackground'>
-          <Container sx={{ pt: 5 }}>
-            <UppercaseTitle text={getDashboardTitle()} />
-            <GridOfMetadataChips />
-          </Container>
-        </FullWidthBox>
-        {displayMapOfSensors === true &&
-          (
-            <FullWidthBox>
-              <AQImap
-                tileOption={TileOptions.nyuad}
-                themePreference={themePreference}
-                temperatureUnitPreference={temperatureUnitPreference}
-                placeholderText={"Map of CITIESair air quality sensors on NYUAD campus."}
-                centerCoordinates={[24.5237, 54.43449]}
-                maxBounds={[
-                  [24.52038, 54.42612],
-                  [24.52808, 54.44079]
-                ]}
-                defaultZoom={17}
-                minZoom={17}
-                maxZoom={19}
-                displayMinimap={false}
-                rawMapData={currentData}
-              />
-            </FullWidthBox>
-          )
-        }
-        <FullWidthBox backgroundColor='customAlternateBackground'>
-          <Container sx={{ pt: 3, pb: 3 }}>
-            <Box textAlign="center" sx={{ mb: 2 }}>
-              <CurrentAQIGrid
-                currentSensorsData={currentData}
-                isScreen={false}
-                temperatureUnitPreference={temperatureUnitPreference}
-              />
-            </Box>
-
-            <Typography
-              component="div"
-              variant="body1"
-              color="text.secondary"
-              sx={{
-                textAlign: 'justify', pb: 2, mb: 0, "& table *": {
-                  color: `${theme.palette.text.secondary}`
-                }
-              }}
-              gutterBottom
-            >
-              {
-                dashboardData?.description ?
-                  parse(dashboardData?.description || '', {
-                    replace: replacePlainHTMLWithMuiComponents,
-                  })
-                  :
-                  Array.from({ length: 3 }).map((_, index) => (
-                    <Skeleton key={index} variant='text' />
-                  ))
-              }
-            </Typography>
-            <Stack direction="row" spacing={2}>
-              <ScreenDialog schoolID={schoolMetadata?.school_id} screens={schoolMetadata?.screens} />
-
-              {/* <DatasetDownloadDialog project={project} /> */}
-
-            </Stack>
-            <ExpandableSection
-              title={AirQualityExplanation.title}
-              content={(
-                <>
-                  <AirQualityIndexTable themePreference={themePreference} />
-                  <Typography
-                    component="div"
-                    variant="body1"
-                    color="text.secondary"
-                    sx={{ mt: 2 }}
-                  >
-                    {parse(AirQualityExplanation.subtitle, {
-                      replace: replacePlainHTMLWithMuiComponents,
-                    })}
-                  </Typography>
-                  <ExpandableSection
-                    title={"Reference"}
-                    content={(
-                      <Typography variant="caption" color="text.secondary">
-                        {parse(AirQualityExplanation.reference, {
-                          replace: replacePlainHTMLWithMuiComponents,
-                        })}
-                      </Typography>
-                    )}
-                  />
-                </>
-              )}
+      <FullWidthBox backgroundColor='customAlternateBackground'>
+        <Container sx={{ pt: 5 }}>
+          <UppercaseTitle text={getDashboardTitle()} />
+          <GridOfMetadataChips />
+        </Container>
+      </FullWidthBox>
+      {displayMapOfSensors === true &&
+        (
+          <FullWidthBox id="map">
+            <AQImap
+              tileOption={TileOptions.nyuad}
+              themePreference={themePreference}
+              temperatureUnitPreference={temperatureUnitPreference}
+              placeholderText={"Map of CITIESair air quality sensors on NYUAD campus."}
+              centerCoordinates={[24.5237, 54.43449]}
+              maxBounds={[
+                [24.52038, 54.42612],
+                [24.52808, 54.44079]
+              ]}
+              defaultZoom={17}
+              minZoom={17}
+              maxZoom={19}
+              displayMinimap={false}
+              displayLocationTitle={true}
+              rawMapData={currentData}
             />
-          </Container>
-        </FullWidthBox>
-
-        <Box id={jsonData.charts.id}>
-          {
-            dashboardData?.charts ?
-              dashboardData?.charts?.map((element, index) => (
-                <FullWidthBox
-                  key={index}
-                  backgroundColor={
-                    index % 2 != 0 && 'customAlternateBackground'
-                  }
-                >
-                  <Container
-                    sx={{ pt: 4, pb: 4 }}
-                    height="auto"
-                    className={themePreference === ThemePreferences.dark ? 'dark' : ''}
-                    id={`chart-${index + 1}`}
-                  >
-                    <Typography variant="h6" color="text.primary">
-                      {index + 1}. {element.title}
-                    </Typography>
-
-                    <ChartControl
-                      generalChartSubtitle={element.subtitle}
-                      generalChartReference={element.reference}
-                      chartData={{
-                        chartIndex: index,
-                        ...element,
-                      }}
-                    />
-                  </Container>
-                </FullWidthBox>
-              ))
-              :
-              <LoadingAnimation optionalText="Loading Dashboard" />
-          }
-
-        </Box>
-        <Divider />
-
-        {displayCommentSection === true &&
-          <FullWidthBox id={jsonData.commentSection.id} sx={{ pt: 3, pb: 4 }}>
-            <CommentSection pageID={PAGE_NAME} />
           </FullWidthBox>
+        )
+      }
+      <FullWidthBox backgroundColor='customAlternateBackground'>
+        <Container sx={{ pt: 3, pb: 3 }}>
+          <Box textAlign="center" sx={{ mb: 2 }}>
+            <CurrentAQIGrid
+              currentSensorsData={currentData}
+              isScreen={false}
+              temperatureUnitPreference={temperatureUnitPreference}
+            />
+          </Box>
+
+          <Typography
+            component="div"
+            variant="body1"
+            color="text.secondary"
+            sx={{
+              textAlign: 'justify', pb: 2, mb: 0, "& table *": {
+                color: `${theme.palette.text.secondary}`
+              }
+            }}
+            gutterBottom
+          >
+            {
+              dashboardData?.description ?
+                parse(dashboardData?.description || '', {
+                  replace: replacePlainHTMLWithMuiComponents,
+                })
+                :
+                Array.from({ length: 3 }).map((_, index) => (
+                  <Skeleton key={index} variant='text' />
+                ))
+            }
+          </Typography>
+          <Stack direction="row" spacing={2}>
+            <ScreenDialog schoolID={schoolMetadata?.school_id} screens={schoolMetadata?.screens} />
+
+            {/* <DatasetDownloadDialog project={project} /> */}
+
+          </Stack>
+          <ExpandableSection
+            title={AirQualityExplanation.title}
+            content={(
+              <>
+                <AirQualityIndexTable themePreference={themePreference} />
+                <Typography
+                  component="div"
+                  variant="body1"
+                  color="text.secondary"
+                  sx={{ mt: 2 }}
+                >
+                  {parse(AirQualityExplanation.subtitle, {
+                    replace: replacePlainHTMLWithMuiComponents,
+                  })}
+                </Typography>
+                <ExpandableSection
+                  title={"Reference"}
+                  content={(
+                    <Typography variant="caption" color="text.secondary">
+                      {parse(AirQualityExplanation.reference, {
+                        replace: replacePlainHTMLWithMuiComponents,
+                      })}
+                    </Typography>
+                  )}
+                />
+              </>
+            )}
+          />
+        </Container>
+      </FullWidthBox>
+
+      <Box id={jsonData.charts.id}>
+        {
+          dashboardData?.charts ?
+            dashboardData?.charts?.map((element, index) => (
+              <FullWidthBox
+                key={index}
+                backgroundColor={
+                  index % 2 != 0 && 'customAlternateBackground'
+                }
+              >
+                <Container
+                  sx={{ pt: 4, pb: 4 }}
+                  height="auto"
+                  className={themePreference === ThemePreferences.dark ? 'dark' : ''}
+                  id={`chart-${index + 1}`}
+                >
+                  <Typography variant="h6" color="text.primary">
+                    {index + 1}. {element.title}
+                  </Typography>
+
+                  <ChartControl
+                    generalChartSubtitle={element.subtitle}
+                    generalChartReference={element.reference}
+                    chartData={{
+                      chartIndex: index,
+                      ...element,
+                    }}
+                  />
+                </Container>
+              </FullWidthBox>
+            ))
+            :
+            <LoadingAnimation optionalText="Loading Dashboard" />
         }
-      </Box >
-    </>
+
+      </Box>
+      <Divider />
+
+      {displayCommentSection === true &&
+        <FullWidthBox id={jsonData.commentSection.id} sx={{ pt: 3, pb: 4 }}>
+          <CommentSection pageID={PAGE_NAME} />
+        </FullWidthBox>
+      }
+    </Box >
   );
 };
 

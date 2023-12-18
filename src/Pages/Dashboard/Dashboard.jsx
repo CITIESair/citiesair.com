@@ -110,8 +110,8 @@ const Dashboard = ({ themePreference, temperatureUnitPreference }) => {
       fetchAndProcessCurrentSensorsData(currentUrl)
     ])
 
-    const schoolMetadata = dashboardData[0]
-    const currentData = dashboardData[1]
+    const schoolMetadata = dashboardData[0];
+    const currentData = dashboardData[1];
     setSchoolMetadata(schoolMetadata);
     setCurrentData(currentData);
 

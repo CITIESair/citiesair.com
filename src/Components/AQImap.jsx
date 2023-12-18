@@ -100,15 +100,19 @@ const AQImap = (props) => {
     const {
         tileOption,
         themePreference,
-        temperatureUnitPreference,
+        temperatureUnitPreference = TemperatureUnits.celsius,
         placeholderText,
         centerCoordinates,
         maxBounds,
         minZoom = 8,
         maxZoom = 12,
         defaultZoom = 10,
+        disableZoom = false,
         displayMinimap = true,
-        rawMapData
+        fullSizeMap = false,
+        showAttribution = true,
+        displayLocationTitle = false,
+        rawMapData,
     } = props;
 
     const disableZoomParameters = {
@@ -251,17 +255,20 @@ const AQImap = (props) => {
 
     return (
         <Box sx={{
-            height: "50vh",
-            [theme.breakpoints.down('md')]: {
-                height: '60vh',
-            },
+            ...(fullSizeMap ? { height: '100%' } : {
+                height: "50vh",
+                [theme.breakpoints.down('md')]: {
+                    height: '60vh',
+                },
+            }),
             '& .leaflet-container': { height: "100%", width: "100%" },
-            '& .leaflet-control-attribution': { fontSize: '0.5rem' },
+            '& .leaflet-control-attribution': {
+                ...(showAttribution ? { fontSize: '0.5rem' } : { display: 'none' }),
+            },
             '& .leaflet-tooltip': {
                 backgroundColor: 'transparent !important',
                 border: 'unset',
                 boxShadow: 'unset',
-                color: theme.palette.text.primary,
                 fontWeight: 500,
                 fontSize: '0.9rem'
             },
@@ -276,6 +283,7 @@ const AQImap = (props) => {
                 scrollWheelZoom={false}
                 placeholder={<MapPlaceholder placeholderText={placeholderText} />}
                 attributionControl={false}
+                {...(disableZoom ? disableZoomParameters : {})}
             >
                 {displayMinimap === true && <MinimapControl position="bottomleft" mapData={mapData} />}
 
@@ -295,13 +303,16 @@ const AQImap = (props) => {
                             position={[location.sensor?.coordinates?.latitude, location.sensor?.coordinates?.longitude]}
                             icon={location.markerIcon}
                         >
-                            <Tooltip
-                                permanent={tileOption === TileOptions.nyuad ? true : false}
-                                direction="bottom"
-                                offset={[15, -40]}
-                            >
-                                {location.sensor?.location_long}
-                            </Tooltip>
+                            {
+                                displayLocationTitle === true &&
+                                <Tooltip
+                                    permanent={tileOption === TileOptions.nyuad ? true : false}
+                                    direction="bottom"
+                                    offset={[15, -40]}
+                                >
+                                    {location.sensor?.location_long}
+                                </Tooltip>
+                            }
 
                             <StyledLeafletPopup>
                                 {

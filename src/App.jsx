@@ -15,9 +15,9 @@ import ScrollToTop from './Components/ScrollToTop';
 import Header from './Components/Header/Header';
 import Footer from './Components/Footer/Footer';
 import FourOhFour from './Pages/404';
-import DeviceOrientationNotification from './Components/SnackBarNotifications';
 import LoadingAnimation from './Components/LoadingAnimation';
 import LogIn from './Components/Account/LogIn';
+import NYUADmap from './Components/NYUADmap';
 
 // Contexts
 import { TemperatureUnits } from './Pages/Screen/TemperatureUtils';
@@ -83,7 +83,6 @@ function App() {
             backgroundColor: 'customBackground',
           }}
         >
-          <DeviceOrientationNotification />
           <Suspense fallback={<LoadingAnimation optionalText="Loading Dashboard" />}>
             <Routes>
               <Route
@@ -129,6 +128,11 @@ function App() {
               <Route
                 path={UniqueRoutes.anyScreen}
                 element={<Screen temperatureUnitPreference={temperatureUnitPreference} title="CITIESair | Screen" />}
+              />
+
+              <Route
+                path={UniqueRoutes.nyuadMap}
+                element={<NYUADmap />}
               />
 
               <Route path={UniqueRoutes[404]} element={<FourOhFour title="Page Not Found | CITIESair" />} />
