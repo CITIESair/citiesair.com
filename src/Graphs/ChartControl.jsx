@@ -192,7 +192,7 @@ function ChartControl(props) {
   const getSubtitles = () => {
     let text = generalChartSubtitle || '';
     if (chartData.subcharts && chartData.subcharts[currentTab]?.subchartSubtitle) {
-      text += '<br/><br/>'
+      text += '<br/>'
       text += chartData.subcharts[currentTab].subchartSubtitle;
     }
     return text;

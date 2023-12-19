@@ -42,7 +42,6 @@ export const SchoolSelector = (props) => {
     if (currentSchoolID !== schoolID) {
       localStorage.setItem(LocalStorage.schoolID, schoolID)
       setSchoolID(schoolID);
-      fetchDataForDashboard(schoolID);
 
       Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
         {

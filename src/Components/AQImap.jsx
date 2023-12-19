@@ -268,6 +268,7 @@ const AQImap = (props) => {
             '& .leaflet-tooltip': {
                 backgroundColor: 'transparent !important',
                 border: 'unset',
+                color: theme.palette.text.primary,
                 boxShadow: 'unset',
                 fontWeight: 500,
                 fontSize: '0.9rem'
