@@ -85,7 +85,7 @@ const Screen = ({ title, temperatureUnitPreference }) => {
     // Create an interval that fetch new data every 5 minute
     const fetchInterval = 5 * 60 * 1000; // 5min
     const intervalId = setInterval(() => {
-      fetchAndProcessCurrentSensorsData(apiUrl)
+      fetchAndProcessCurrentSensorsData(url)
         .then((data) => {
           setData(data)
         })
