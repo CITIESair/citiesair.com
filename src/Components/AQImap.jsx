@@ -157,12 +157,11 @@ const AQImap = (props) => {
             // Create the marker icon on the map
             location.markerIcon = new L.DivIcon({
                 className: 'aqi-marker-icon',
-                html: `<div onmouseover="this.style.opacity=1;" onmouseleave="this.style.opacity=0.75;" style="width: 40px; height: 40px; background-color: ${location.current.color}; border-radius: 50%; border: solid 2px; display: flex; justify-content: center; align-items: center; font-size: 1rem; font-weight: 500; color: ${themePreference === ThemePreferences.light ? 'black' : 'white'}; opacity: 0.75; :hover: {opacity: 1}">${location.current.aqi || '--'}</div>`
+                html: `<div onmouseover="this.style.opacity=1;" onmouseleave="this.style.opacity=0.75;" style="width: 40px; height: 40px; background-color: ${location.current.color}; border-radius: 50%; border: solid 2px; display: flex; justify-content: center; align-items: center; font-size: 1rem; font-weight: 500; color: ${themePreference === ThemePreferences.light ? 'black' : 'white'}; opacity: 0.75; :hover: {opacity: 1}">${displayAqiValue(location)}</div>`
             });
 
             return location;
         });
-
         setMapData(transformedData);
     }, [rawMapData]);
 
@@ -251,6 +250,24 @@ const AQImap = (props) => {
                 <div className="leaflet-control leaflet-bar">{minimap}</div>
             </div>
         )
+    }
+
+    const displayAqiValue = (location) => {
+        const emptyValue = "--";
+        if (!location.current) return emptyValue;
+        if (!location.current.aqi) return emptyValue;
+        if (location.current.sensor_status === SensorStatus.offline) return emptyValue;
+
+        return location.current.aqi;
+    };
+
+    const displayAqiCategory = (location) => {
+        const emptyValue = "--";
+        if (!location.current) return emptyValue;
+        if (!location.current.aqi) return emptyValue;
+        if (location.current.sensor_status === SensorStatus.offline) return emptyValue;
+
+        return location.current.category;
     }
 
     return (
@@ -357,12 +374,12 @@ const AQImap = (props) => {
 
                                 <Box sx={{ '& *': { color: location.current?.color } }}>
                                     <Typography variant={smallScreen ? 'h4' : 'h3'} fontWeight="500" lineHeight={0.9}>
-                                        {location.current?.aqi || '--'}
+                                        {displayAqiValue(location)}
                                         <Typography variant='caption' fontWeight="500">(US AQI)</Typography>
                                     </Typography>
 
                                     <Typography variant={smallScreen ? 'body2' : 'body1'} component="span" fontWeight="500">
-                                        {location.current?.category || '--'}
+                                        {displayAqiCategory(location)}
                                     </Typography>
                                 </Box>
 
