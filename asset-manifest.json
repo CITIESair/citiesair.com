@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.ccadb9c5.css",
-    "main.js": "/static/js/main.8c8be146.js",
+    "main.js": "/static/js/main.8c281997.js",
     "static/js/871.e37b8a86.chunk.js": "/static/js/871.e37b8a86.chunk.js",
     "static/js/125.6499e9de.chunk.js": "/static/js/125.6499e9de.chunk.js",
     "static/js/538.23392510.chunk.js": "/static/js/538.23392510.chunk.js",
@@ -14,7 +14,7 @@
     "index.html": "/index.html",
     "static/media/IQAir_logo.svg": "/static/media/IQAir_logo.6664e0a790249b05f736fb791effaaf3.svg",
     "main.ccadb9c5.css.map": "/static/css/main.ccadb9c5.css.map",
-    "main.8c8be146.js.map": "/static/js/main.8c8be146.js.map",
+    "main.8c281997.js.map": "/static/js/main.8c281997.js.map",
     "871.e37b8a86.chunk.js.map": "/static/js/871.e37b8a86.chunk.js.map",
     "125.6499e9de.chunk.js.map": "/static/js/125.6499e9de.chunk.js.map",
     "538.23392510.chunk.js.map": "/static/js/538.23392510.chunk.js.map",
@@ -26,6 +26,6 @@
   },
   "entrypoints": [
     "static/css/main.ccadb9c5.css",
-    "static/js/main.8c8be146.js"
+    "static/js/main.8c281997.js"
   ]
 }
