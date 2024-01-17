@@ -43,6 +43,7 @@ import LoadingAnimation from '../../Components/LoadingAnimation';
 import { CommentCountsContext } from '../../ContextProviders/CommentCountsContext';
 
 import AQImap, { TileOptions } from '../../Components/AQImap';
+import { RawDatasetType } from '../../Utils/ApiUtils';
 
 // Custom Chip component to display metadata
 export const CustomChip = (props) => {
@@ -72,6 +73,8 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
   const [displayCommentSection, setDisplayCommentSection] = useState(false);
   const [displayMapOfSensors, setDisplayMapOfSensors] = useState(false);
 
+  const [listOfSensors, setListOfSensors] = useState({});
+
   useEffect(() => {
     if (schoolMetadata?.school_id === 'nyuad') {
       setDisplayCommentSection(true);
@@ -100,6 +103,35 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
     const chartsTitles = dashboardData?.charts.map((element, index) => ({ chartTitle: element.title, chartID: `chart-${index + 1}` }));
     setChartsTitlesList(chartsTitles);
   }, [dashboardData]);
+
+  // Update the list of sensor locations of this school for dataset download button
+  useEffect(() => {
+    if (!currentData) return;
+
+    const sensors = currentData
+      .filter(item => item && item.sensor)  // Filter out null or undefined items and sensors
+      .reduce((acc, item) => {
+        // Use location_short as the key for each sensor
+        const key = item.sensor.location_short;
+        acc[key] = {
+          location_type: item.sensor.location_type,
+          location_short: item.sensor.location_short,
+          location_long: item.sensor.location_long,
+          last_seen: item.sensor.last_seen.split('T')[0],
+          rawDatasets: Object.keys(RawDatasetType).reduce((datasetAcc, datasetKey) => {
+            datasetAcc[RawDatasetType[datasetKey]] = {
+              sample: null,
+              full: null
+            };
+            return datasetAcc;
+          }, {})
+        };
+        return acc;
+      }, {});
+
+    setListOfSensors(sensors);
+
+  }, [currentData]);
 
   const theme = useTheme();
 
@@ -251,12 +283,18 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
                 ))
             }
           </Typography>
+
           <Stack direction="row" spacing={2}>
-            <ScreenDialog schoolID={schoolMetadata?.school_id} screens={schoolMetadata?.screens} />
-
-            {/* <DatasetDownloadDialog project={project} /> */}
-
+            <ScreenDialog
+              schoolID={schoolMetadata?.school_id}
+              screens={schoolMetadata?.screens}
+            />
+            <DatasetDownloadDialog
+              schoolID={schoolMetadata?.school_id}
+              initialSensorList={listOfSensors}
+            />
           </Stack>
+
           <ExpandableSection
             title={AirQualityExplanation.title}
             content={(

@@ -7,27 +7,37 @@ import parse from 'html-react-parser';
 const apiDomain = 'https://api.citiesair.com';
 
 export const EndPoints = {
-  me: `${apiDomain}/me`,
-  current: `${apiDomain}/current`,
-  schoolmetadata: `${apiDomain}/schoolmetadata`,
-  chartdata: `${apiDomain}/chartdata`,
-  screen: `${apiDomain}/screen`,
-  login: `${apiDomain}/login`,
-  logout: `${apiDomain}/logout`,
-  map: `${apiDomain}/map_public_outdoors_stations`
+  me: "me",
+  current: "current",
+  raw: "raw",
+  schoolmetadata: "schoolmetadata",
+  chartdata: "chartdata",
+  screen: "screen",
+  login: "login",
+  logout: "logout",
+  map: "map_public_outdoors_stations"
+}
+
+export const RawDatasetType = {
+  daily: "daily",
+  hourly: "hourly"
 }
 
 export const getApiUrl = ({ endpoint, school_id }) => {
-  if ([EndPoints.current, EndPoints.schoolmetadata, EndPoints.chartdata].includes(endpoint)) return `${endpoint}/${school_id}`;
+  if ([EndPoints.current, EndPoints.schoolmetadata, EndPoints.chartdata].includes(endpoint)) return `${apiDomain}/${endpoint}/${school_id}`;
   else if (endpoint === EndPoints.screen) {
     const currentUrl = window.location.href;
     const regex = /\/screen\/(.+)/;
     const match = currentUrl.match(regex);
 
-    if (match && match.length > 1) return `${endpoint}/${match[1]}`
+    if (match && match.length > 1) return `${apiDomain}/${endpoint}/${match[1]}`
     else return;
   }
-  else return endpoint
+  else return `${apiDomain}/${endpoint}`;
+}
+
+export const getRawDatasetUrl = ({ school_id, sensor_location_short, datasetType, isSample }) => {
+  return `${apiDomain}/${EndPoints.raw}/${school_id}/${sensor_location_short}/${datasetType}?isSample=${isSample === true ? true : false}`;
 }
 
 export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {

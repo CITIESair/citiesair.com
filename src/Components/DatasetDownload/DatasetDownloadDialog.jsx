@@ -1,30 +1,26 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useState, useEffect, useContext } from 'react';
-import { Container, Avatar, Modal, Tooltip, Box, Link, Typography, Stack, Select, FormControl, MenuItem, Grid, Chip, Dialog, Button, DialogActions, DialogContent, useMediaQuery, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Box, Link, Typography, Stack, Select, FormControl, MenuItem, Grid, Chip, Dialog, Button, DialogActions, DialogContent, useMediaQuery, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-
-import { RawDatasetsMetadataContext } from '../../ContextProviders/RawDatasetsMetadataContext';
 
 import DownloadIcon from '@mui/icons-material/Download';
 import DataObjectIcon from '@mui/icons-material/DataObject';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import EventIcon from '@mui/icons-material/Event';
-import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
 
 import * as Tracking from '../../Utils/Tracking';
 import { fetchDataFromURL } from './DatasetFetcher';
-import DatasetCalendar from './DatasetCalendar';
+import { RawDatasetType, getRawDatasetUrl } from '../../Utils/ApiUtils';
 
 export default function DatasetDownloadDialog(props) {
-  const { project } = props;
-  const rawDatasetsMetadata = useContext(RawDatasetsMetadataContext);
-  const [datasets, setDatasets] = useState();
+  const { schoolID, initialSensorList } = props;
 
+  const [sensorsDatasets, updateSensorsDatasets] = useState(initialSensorList);
+
+  // Update initialSensorList once if sensorsDatasets is an empty object
   useEffect(() => {
-    if (!project || !rawDatasetsMetadata) return;
-    setDatasets(rawDatasetsMetadata[project?.id]); // get all the dataset(s) of this project
-  }, [project, rawDatasetsMetadata]);
+    updateSensorsDatasets(initialSensorList);
+  }, [initialSensorList]);
 
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -33,28 +29,12 @@ export default function DatasetDownloadDialog(props) {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  function getOwnerString(owners) {
-    if (!owners || owners.length === 0) {
-      return 'the relevant owners';
-    } else if (owners.length === 1) {
-      return owners[0];
-    } else if (owners.length === 2) {
-      return owners.join(' and ');
-    } else {
-      const lastOwner = owners.pop();
-      const oxfordCommaOwners = owners.join(', ');
-      return `${oxfordCommaOwners}, and ${lastOwner}`;
-    }
-  }
-
   return (
     <>
       <Button
         onClick={() => {
           handleOpen();
-          Tracking.sendEventAnalytics(Tracking.Events.rawDatasetButtonClicked, {
-            project_id: project.id
-          });
+          Tracking.sendEventAnalytics(Tracking.Events.rawDatasetButtonClicked);
         }}
         variant="contained"
       >
@@ -86,16 +66,21 @@ export default function DatasetDownloadDialog(props) {
           alignItems: 'start',
           height: '100%'
         }}>
-          <Chip label={project.title} size="small" sx={{ mb: 1 }} />
+          <Chip label={schoolID ? `School: ${schoolID.toUpperCase()}` : "No School"} size="small" sx={{ mb: 1 }} />
           <Typography variant="h6" >
             Preview and download raw dataset(s)
           </Typography>
 
-          <DatasetSelectorAndPreviewer datasets={datasets} smallScreen={smallScreen} project={project} />
+          <DatasetSelectorAndPreviewer
+            sensorsDatasets={sensorsDatasets}
+            updateSensorsDatasets={updateSensorsDatasets}
+            smallScreen={smallScreen}
+            schoolID={schoolID}
+          />
           {
-            datasets &&
+            sensorsDatasets &&
             <Typography variant="caption" sx={{ my: 3, fontStyle: 'italic' }} >
-              This dataset is provided by the CITIES Dashboard with the support of {getOwnerString(project.owners)}. Should you intend to utilize this dataset for your project, research, or publication, we kindly request that you notify us at <Link href='mailto:nyuad.cities@nyu.edu'>nyuad.cities@nyu.edu</Link> to discuss citation requirements.
+              These datasets are provided by CITIESair from sensors operated by CITIESair. Should you intend to utilize them for your project, research, or publication, we kindly request that you notify us at <Link href='mailto:nyuad.cities@nyu.edu'>nyuad.cities@nyu.edu</Link> to discuss citation requirements.
             </Typography>
           }
         </DialogContent>
@@ -105,38 +90,55 @@ export default function DatasetDownloadDialog(props) {
 }
 
 const DatasetSelectorAndPreviewer = (props) => {
-  const { datasets, smallScreen, project } = props;
+  const { sensorsDatasets, updateSensorsDatasets, smallScreen, schoolID } = props;
   const [previewingDataset, setPreviewingDataset] = useState();
-  const [previewingDatasetId, setPreviewingDatasetId] = useState();
 
-  // Preview the first version of the first dataset initially
+  // Preview the hourly type of the first sensor initially
   useEffect(() => {
-    if (datasets?.length > 0) {
-      setPreviewingDataset(datasets[0]?.versions[0]);
-      setPreviewingDatasetId(datasets[0]?.id);
-      fetchDataFromURL(datasets[0]?.versions[0]?.rawLink, 'csv').then((data) => {
-        setPreviewingDataset({ ...datasets[0]?.versions[0], fetchedDataset: data });
+    if (Object.keys(sensorsDatasets).length > 0 && !previewingDataset) {
+      const firstSensor = Object.keys(sensorsDatasets)[0];
+      const initialDatasetType = RawDatasetType.hourly;
+
+      setPreviewingDataset({
+        sensor: firstSensor,
+        datasetType: initialDatasetType
       });
+
+      const url = getRawDatasetUrl({
+        school_id: schoolID,
+        sensor_location_short: firstSensor,
+        datasetType: initialDatasetType,
+        isSample: true
+      });
+
+      fetchDataFromURL(url, 'csv')
+        .then((data) => {
+          const tmp = { ...sensorsDatasets };
+          tmp[firstSensor].rawDatasets[initialDatasetType].sample = data;
+          updateSensorsDatasets(tmp);
+        })
+        .catch((error) => console.log(error));
     }
-  }, [datasets]);
+  }, [sensorsDatasets]);
 
   return (
     <Grid container justifyContent="center" alignItems="start" spacing={3}>
       <Grid item sm={12} md={6}>
         <DatasetsTable
-          datasets={datasets}
+          schoolID={schoolID}
+          sensorsDatasets={sensorsDatasets}
+          updateSensorsDatasets={updateSensorsDatasets}
           smallScreen={smallScreen}
           previewingDataset={previewingDataset}
           setPreviewingDataset={setPreviewingDataset}
-          previewingDatasetId={previewingDatasetId}
-          setPreviewingDatasetId={setPreviewingDatasetId}
         />
       </Grid>
       <Grid item sm={12} md={6} maxWidth={smallScreen ? '100%' : 'unset'} sx={{ mt: 1 }}>
         <PreviewDataset
+          sensorsDatasets={sensorsDatasets}
+          updateSensorsDatasets={updateSensorsDatasets}
           previewingDataset={previewingDataset}
-          previewingDatasetId={previewingDatasetId}
-          project={project}
+          schoolID={schoolID}
           smallScreen={smallScreen}
         />
       </Grid>
@@ -145,7 +147,7 @@ const DatasetSelectorAndPreviewer = (props) => {
 };
 
 const DatasetsTable = (props) => {
-  const { datasets, smallScreen, previewingDataset, setPreviewingDataset, previewingDatasetId, setPreviewingDatasetId } = props;
+  const { schoolID, sensorsDatasets, smallScreen, previewingDataset, setPreviewingDataset, updateSensorsDatasets } = props;
   return (
     <Table
       size="small"
@@ -159,23 +161,24 @@ const DatasetsTable = (props) => {
       <TableHead>
         <TableRow>
           <TableCell sx={{ pl: 1 }}>
-            Dataset
+            Sensor Location
           </TableCell>
-          <TableCell sx={{ width: smallScreen ? '9.5rem' : '11rem' }}>Version</TableCell>
-          <TableCell sx={{ width: smallScreen ? '5rem' : '6rem' }}>
-            Size
+          <TableCell sx={{ width: smallScreen ? '9.5rem' : '11rem' }}>
+            Dataset Type
           </TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
-        {datasets?.map((dataset) => (
+        {Object.keys(sensorsDatasets).map((location_short) => (
           <Dataset
+            schoolID={schoolID}
             smallScreen={smallScreen}
-            dataset={dataset}
+            sensor={location_short}
+            sensorsDatasets={sensorsDatasets}
             previewingDataset={previewingDataset}
             setPreviewingDataset={setPreviewingDataset}
-            isPreviewing={dataset.id === previewingDatasetId}
-            setPreviewingDatasetId={setPreviewingDatasetId}
+            isPreviewing={location_short === previewingDataset?.sensor}
+            updateSensorsDatasets={updateSensorsDatasets}
           />
         ))}
       </TableBody>
@@ -184,193 +187,90 @@ const DatasetsTable = (props) => {
 }
 
 const Dataset = (props) => {
-  const { smallScreen, dataset, setPreviewingDataset, isPreviewing, previewingDatasetId, setPreviewingDatasetId } = props;
+  const { schoolID, sensorsDatasets, sensor, previewingDataset, setPreviewingDataset, isPreviewing, updateSensorsDatasets } = props;
 
-  const [fetchedDatasets, setFetchedDatasets] = useState({});
-  const NUM_RECENT_VERSIONS = 3;
+  const [selectedDatasetType, setSelectedDatasetType] = useState(RawDatasetType.hourly);
 
-  const latestVersionOfThisDataset = dataset?.versions[0] || {};
-  const [showCalendar, setShowCalendar] = useState(false);
-  const [selectedVersionOfThisDataset, setSelectedVersionOfThisDataset] = useState(latestVersionOfThisDataset);
-
-  // only show NUM_RECENT_VERSIONS rows in Dropdown
-  const visibleVersions = dataset?.versions.slice(0, NUM_RECENT_VERSIONS);
-  // if currently selected version is not in first NUM_RECENT_VERSION rows,
-  // add it to the list
-  if (!visibleVersions.find((version) => version == selectedVersionOfThisDataset)) {
-    visibleVersions.push({ ...selectedVersionOfThisDataset, isOlderVersion: true });
-  }
-
-  // only show Calendar option if there are more than NUM_RECENT_VERSIONS versions
-  const shouldShowCalendar = dataset?.versions.length > NUM_RECENT_VERSIONS;
-
-  const handleVersionChange = (event) => {
+  const handleDatasetTypeChange = (event) => {
     const selectedVal = event.target.value;
-    if (selectedVal === 'Calendar') {
-      setShowCalendar(true);
-      return;
-    }
-    // Loop through the array (allVersionsOfThisDataset) to find the one with the selected version
-    const selectedVersion = dataset?.versions.find(aDatasetVersion => {
-      return aDatasetVersion.version === selectedVal;
-    });
-    setSelectedVersionOfThisDataset(selectedVersion);
-    setPreviewingDatasetId(dataset.id);
-    setPreviewingDataset(selectedVersion);
 
-    fetchThisDataset(selectedVersion);
+    setSelectedDatasetType(selectedVal);
+    setPreviewingDataset({
+      datasetType: selectedVal,
+      sensor: sensor
+    });
+
+    fetchThisDataset(selectedVal);
   };
 
-  const handleCalendarChange = (event) => {
-    // close calendar after selecting
-    setShowCalendar(false)
-    if (event === 'close') { // click outside of card
-      return
-    }
-
-    handleVersionChange({ target: { value: event } });
-  }
-
-  const fetchThisDataset = (selectedVersion) => {
+  const fetchThisDataset = (datasetType) => {
     // If this dataset version hasn't been fetched yet,
     // fetch it and append it into the object fetchedDatasets
-    if (!fetchedDatasets[selectedVersion.version]) {
-      fetchDataFromURL(selectedVersion.rawLink, 'csv').then((data) => {
-        const selectedVersionWithFetchedDataset = { ...selectedVersion, fetchedDataset: data };
-        setPreviewingDataset(selectedVersionWithFetchedDataset);
-        setFetchedDatasets({
-          ...fetchedDatasets,
-          [selectedVersionWithFetchedDataset.version]: selectedVersionWithFetchedDataset
-        });
+    if (!sensorsDatasets[sensor].rawDatasets[datasetType].sample) {
+      const url = getRawDatasetUrl({
+        school_id: schoolID,
+        sensor_location_short: sensorsDatasets[sensor].location_short,
+        datasetType: datasetType,
+        isSample: true
       });
-    }
-    // If it has been fetched before, simply get it from memory 
-    else {
-      setPreviewingDataset(fetchedDatasets[selectedVersion.version]);
+
+      fetchDataFromURL(url, 'csv').then((data) => {
+        const tmp = { ...sensorsDatasets };
+        tmp[sensor].rawDatasets[datasetType].sample = data;
+        updateSensorsDatasets(tmp);
+      });
     }
   }
 
-  const setThisDatasetToPreview = () => {
-    if (previewingDatasetId !== dataset.id) {
-      setPreviewingDatasetId(dataset.id);
-      setPreviewingDataset(selectedVersionOfThisDataset);
-      fetchThisDataset(selectedVersionOfThisDataset);
+  const setThisSensorToPreview = () => {
+    if (previewingDataset?.sensor !== sensor) {
+      setPreviewingDataset({
+        datasetType: selectedDatasetType,
+        sensor: sensor
+      });
+      fetchThisDataset(selectedDatasetType);
     }
   }
 
   const theme = useTheme();
 
-  const formatFileSize = (sizeInBytes) => {
-    if (!sizeInBytes) return;
-
-    if (sizeInBytes < 1024 * 1024) {
-      return (sizeInBytes / 1024).toFixed(1) + " KB";
-    } else {
-      return (sizeInBytes / (1024 * 1024)).toFixed(1) + " MB";
-    }
-  }
-
   return (
     <>
-      <TableRow key={dataset.id}>
+      <TableRow key={sensor}>
         <TableCell
           sx={{
             pl: 1,
             cursor: 'pointer',
             background: isPreviewing && theme.palette.background.NYUpurpleLight
           }}
-          onClick={setThisDatasetToPreview}>
-          {selectedVersionOfThisDataset?.name}
+          onClick={setThisSensorToPreview}>
+          {sensorsDatasets[sensor].location_long}
         </TableCell>
 
-        <TableCell sx={{ position: 'relative', background: isPreviewing && theme.palette.background.NYUpurpleLight }}>
-          {showCalendar &&
-            (smallScreen ? <Modal
-              open={showCalendar}
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-            >
-              <DatasetCalendar
-                onChange={handleCalendarChange}
-                smallScreen={smallScreen}
-                versions={dataset?.versions}
-              />
-            </Modal>
-              : <DatasetCalendar
-                onChange={handleCalendarChange}
-                versions={dataset?.versions}
-              />)}
+        <TableCell
+          sx={{
+            position: 'relative',
+            background: isPreviewing && theme.palette.background.NYUpurpleLight
+          }}>
           <FormControl size="small">
             <Select
-              value={selectedVersionOfThisDataset?.version}
-              onClick={() => {
-                if (dataset.versions.length <= 1) setThisDatasetToPreview();
-              }}
-              onChange={handleVersionChange}
+              value={selectedDatasetType}
+              onChange={handleDatasetTypeChange}
               variant="standard"
               MenuProps={{ disablePortal: true }}
             >
-              {visibleVersions.map((aDatasetVersion, index) => (
+              {Object.keys(sensorsDatasets[sensor].rawDatasets).map((datasetType, index) => (
                 <MenuItem
-                  key={aDatasetVersion.version}
-                  value={aDatasetVersion.version}
-                  sx={[
-                    (index === visibleVersions.length - 1) && {
-                      mb: -0.75
-                    },
-                    aDatasetVersion.isOlderVersion && {
-                      marginTop: '1rem',
-                      '&::before': {
-                        content: '""',
-                        borderTop: `2px dotted ${theme.palette.text.secondary}`,
-                        width: '1rem',
-                        height: '1rem',
-                        position: 'absolute',
-                        top: 0,
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)'
-                      }
-                    }
-                  ]}
+                  key={index}
+                  value={datasetType}
                 >
                   <Stack direction="row" alignItems="center">
-                    {aDatasetVersion.version}
-                    { /* 'LATEST' chip for latest version */}
-                    {aDatasetVersion === latestVersionOfThisDataset &&
-                      <Tooltip title="Latest version" enterDelay={0} leaveDelay={200}>
-                        <Avatar sx={{
-                          ml: 0.5,
-                          width: '1rem',
-                          height: '1rem',
-                          background: theme.palette.success.main
-                        }}>
-                          <PublishedWithChangesIcon sx={{ width: '0.8rem', height: '0.8rem' }} />
-                        </Avatar>
-                      </Tooltip>
-                    }
+                    {datasetType.charAt(0).toUpperCase() + datasetType.slice(1).toLowerCase()}
                   </Stack>
                 </MenuItem>
               ))}
-
-              {shouldShowCalendar && <MenuItem
-                key="Calendar"
-                value="Calendar"
-                sx={{ pt: 1, mt: 1, mb: -0.75, borderTop: '0.5px solid' }}
-              >
-                <Stack direction="row" alignItems="center">
-                  Older Versions
-                  <EventIcon fontSize='small' sx={{ ml: 0.5 }} />
-                </Stack>
-              </MenuItem>
-              }
             </Select>
           </FormControl>
-        </TableCell>
-        <TableCell sx={{ background: isPreviewing && theme.palette.background.NYUpurpleLight }}>
-          {formatFileSize(selectedVersionOfThisDataset?.sizeInBytes)}
         </TableCell>
       </TableRow >
     </>
@@ -378,15 +278,41 @@ const Dataset = (props) => {
 }
 
 const PreviewDataset = (props) => {
-  const { previewingDataset, previewingDatasetId, project, smallScreen } = props;
-  const downloadDatasetName = `[${project.id}] ${previewingDataset?.name}-${previewingDataset?.version}.csv`;
+  const { sensorsDatasets, updateSensorsDatasets, previewingDataset, schoolID, smallScreen } = props;
+  const downloadDatasetName = `${schoolID}-${previewingDataset?.sensor}-${previewingDataset?.datasetType}.csv`;
 
   const theme = useTheme();
 
   const downloadPreviewingDataset = () => {
-    if (!previewingDataset?.fetchedDataset) return;
+    if (!previewingDataset) return;
 
-    const blob = new Blob([previewingDataset?.fetchedDataset], { type: 'application/octet-stream' }); // create a Blob with the raw data
+    const fetchedDataset = sensorsDatasets[previewingDataset.sensor].rawDatasets[RawDatasetType.hourly].full;
+
+    // Fetch the full dataset if it has not been fetched before
+    if (!fetchedDataset) {
+      const url = getRawDatasetUrl({
+        school_id: schoolID,
+        sensor_location_short: previewingDataset.sensor,
+        datasetType: previewingDataset.datasetType,
+        isSample: false
+      });
+
+      fetchDataFromURL(url, 'csv').then((data) => {
+        const tmp = { ...sensorsDatasets };
+        tmp[previewingDataset.sensor].rawDatasets[previewingDataset.datasetType].full = data;
+        updateSensorsDatasets(tmp);
+
+        convertCSVforDownload(data);
+      });
+    }
+    else {
+      convertCSVforDownload(fetchedDataset);
+    }
+
+  };
+
+  const convertCSVforDownload = (dataset) => {
+    const blob = new Blob([dataset], { type: 'application/octet-stream' }); // create a Blob with the raw data
     const url = URL.createObjectURL(blob); // create a download link for the Blob
     const downloadLink = document.createElement('a');
     downloadLink.href = url;
@@ -395,55 +321,33 @@ const PreviewDataset = (props) => {
     downloadLink.click(); // simulate a click on the download link
     URL.revokeObjectURL(url); // clean up by revoking the object URL
     document.body.removeChild(downloadLink);
-  };
+  }
 
   const [formattedData, setFormattedData] = useState('');
-  const [rowIndices, setRowIndices] = useState('');
-  const numFirstLastRowsToPreview = 5;
+  const [rowNumber, setRowNumber] = useState('');
 
   useEffect(() => {
-    if (!previewingDataset?.fetchedDataset) return;
+    if (!previewingDataset) return;
 
-    const csvData = previewingDataset?.fetchedDataset;
+    const csvData = sensorsDatasets[previewingDataset.sensor].rawDatasets[RawDatasetType.hourly].sample;
+    if (!csvData) return;
+
     const lines = csvData.split('\n');
-    const numRows = lines.length;
 
-    if (numRows <= numFirstLastRowsToPreview * 2) {
-      setFormattedData(csvData);
-      setRowIndices(Array.from({ length: numRows }, (_, index) => index + 1).join('\n')); // +1 because rowNumber starts at 1 while index starts at 0
-    } else {
+    const headers = lines[0].split(',');
+    const rows = lines.slice(1);
 
-      const firstRows = lines.slice(0, numFirstLastRowsToPreview);
-      const lastRows = lines.slice(numRows - numFirstLastRowsToPreview);
+    setRowNumber([
+      "",
+      ...rows.map(row => row.split(',')[0])
+    ].join('\n'));
 
-      const numOfHiddenRows = numRows - 2 * numFirstLastRowsToPreview;
+    setFormattedData([
+      headers.slice(1).join(','), // Keep the headers for the rest of the columns
+      ...rows.map(row => row.split(',').slice(1).join(',')) // Remove the first column from each row
+    ].join('\n'));
 
-      const middleRow = [`... [${numOfHiddenRows} rows hidden] ...`];
-
-      setFormattedData(firstRows.concat(middleRow).concat(lastRows).join('\n'));
-      setRowIndices(
-        Array.from({
-          length: numFirstLastRowsToPreview * 2 + 1 // +1 to account for the middleRow
-        },
-          (_, index) => {
-            const rowIndex = index + 1; // +1 because rowNumber starts at 1 while index starts at 0
-            // Indices for the first rows
-            if (rowIndex < numFirstLastRowsToPreview + 1) {
-              return rowIndex;
-            }
-            // No index for the middle row
-            else if (rowIndex == numFirstLastRowsToPreview + 1) {
-              return '';
-            }
-            // Indices for the last rows
-            else {
-              return numOfHiddenRows + rowIndex - 1;
-            }
-          })
-          .join('\n'));
-    }
-
-  }, [previewingDataset]);
+  }, [previewingDataset, sensorsDatasets]);
 
   return (
     <Stack spacing={1}>
@@ -451,7 +355,7 @@ const PreviewDataset = (props) => {
         <Stack direction="row">
           <Typography variant='body2' gutterBottom fontWeight={500}>
             {previewingDataset ?
-              `Previewing: ${previewingDataset.name} (${previewingDataset?.version})`
+              `Previewing: ${previewingDataset?.sensor} (${previewingDataset?.datasetType})`
               : 'Not previewing any dataset'}
           </Typography>
         </Stack>
@@ -473,7 +377,7 @@ const PreviewDataset = (props) => {
         >
           <Stack direction="row" sx={{ fontSize: smallScreen ? '0.625rem !important' : '0.8rem !important' }}>
             <Box sx={{ mr: 2, userSelect: 'none' }}>
-              {rowIndices}
+              {rowNumber}
             </Box>
             <Box>
               {formattedData}
@@ -494,10 +398,8 @@ const PreviewDataset = (props) => {
           onClick={() => {
             downloadPreviewingDataset();
             Tracking.sendEventAnalytics(Tracking.Events.rawDatasetDownloaded, {
-              project_id: project.id,
-              dataset_id: previewingDatasetId,
-              dataset_name: previewingDataset.name,
-              dataset_version: previewingDataset.version
+              dataset_type: previewingDataset?.datasetType,
+              sensor: previewingDataset?.sensor
             });
           }}
           disabled={!previewingDataset}

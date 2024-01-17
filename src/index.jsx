@@ -6,7 +6,6 @@ import App from './App';
 import { UserProvider } from './ContextProviders/UserContext';
 import { GoogleProvider } from './ContextProviders/GoogleContext';
 import { LinkProvider } from './ContextProviders/LinkContext';
-import { RawDatasetsMetadataProvider } from './ContextProviders/RawDatasetsMetadataContext';
 import { CommentCountsProvider } from './ContextProviders/CommentCountsContext';
 
 ReactDOM.render(
@@ -14,11 +13,9 @@ ReactDOM.render(
     <UserProvider>
       <GoogleProvider>
         <CommentCountsProvider>
-          <RawDatasetsMetadataProvider>
-            <LinkProvider>
-              <App />
-            </LinkProvider>
-          </RawDatasetsMetadataProvider>
+          <LinkProvider>
+            <App />
+          </LinkProvider>
         </CommentCountsProvider>
       </GoogleProvider>
     </UserProvider>
