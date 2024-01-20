@@ -11,6 +11,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import * as Tracking from '../../Utils/Tracking';
 import { fetchDataFromURL } from './DatasetFetcher';
 import { RawDatasetType, getRawDatasetUrl } from '../../Utils/ApiUtils';
+import LoadingAnimation from '../LoadingAnimation';
 
 export default function DatasetDownloadDialog(props) {
   const { schoolID, initialSensorList } = props;
@@ -111,7 +112,7 @@ const DatasetSelectorAndPreviewer = (props) => {
         isSample: true
       });
 
-      fetchDataFromURL(url, 'csv')
+      fetchDataFromURL({ url, extension: 'csv', needsAuthorization: true })
         .then((data) => {
           const tmp = { ...sensorsDatasets };
           tmp[firstSensor].rawDatasets[initialDatasetType].sample = data;
@@ -193,13 +194,8 @@ const Dataset = (props) => {
 
   const handleDatasetTypeChange = (event) => {
     const selectedVal = event.target.value;
-
     setSelectedDatasetType(selectedVal);
-    setPreviewingDataset({
-      datasetType: selectedVal,
-      sensor: sensor
-    });
-
+    setPreviewingDataset({ datasetType: selectedVal, sensor });
     fetchThisDataset(selectedVal);
   };
 
@@ -214,11 +210,12 @@ const Dataset = (props) => {
         isSample: true
       });
 
-      fetchDataFromURL(url, 'csv').then((data) => {
-        const tmp = { ...sensorsDatasets };
-        tmp[sensor].rawDatasets[datasetType].sample = data;
-        updateSensorsDatasets(tmp);
-      });
+      fetchDataFromURL({ url, extension: 'csv', needsAuthorization: true })
+        .then((data) => {
+          const tmp = { ...sensorsDatasets };
+          tmp[sensor].rawDatasets[datasetType].sample = data;
+          updateSensorsDatasets(tmp);
+        });
     }
   }
 
@@ -279,9 +276,11 @@ const Dataset = (props) => {
 
 const PreviewDataset = (props) => {
   const { sensorsDatasets, updateSensorsDatasets, previewingDataset, schoolID, smallScreen } = props;
-  const downloadDatasetName = `${schoolID}-${previewingDataset?.sensor}-${previewingDataset?.datasetType}.csv`;
-
   const theme = useTheme();
+
+  const [previewingDatasetName, setPreviewingDatasetName] = useState("Not previewing any dataset");
+  const [csvFileName, setCsvFileName] = useState("No dataset");
+  const [isDatasetLoading, setIsDatasetLoading] = useState(false);
 
   const downloadPreviewingDataset = () => {
     if (!previewingDataset) return;
@@ -297,7 +296,7 @@ const PreviewDataset = (props) => {
         isSample: false
       });
 
-      fetchDataFromURL(url, 'csv').then((data) => {
+      fetchDataFromURL({ url, extension: 'csv', needsAuthorization: true }).then((data) => {
         const tmp = { ...sensorsDatasets };
         tmp[previewingDataset.sensor].rawDatasets[previewingDataset.datasetType].full = data;
         updateSensorsDatasets(tmp);
@@ -316,7 +315,7 @@ const PreviewDataset = (props) => {
     const url = URL.createObjectURL(blob); // create a download link for the Blob
     const downloadLink = document.createElement('a');
     downloadLink.href = url;
-    downloadLink.download = downloadDatasetName;
+    downloadLink.download = csvFileName;
     document.body.appendChild(downloadLink);
     downloadLink.click(); // simulate a click on the download link
     URL.revokeObjectURL(url); // clean up by revoking the object URL
@@ -327,10 +326,25 @@ const PreviewDataset = (props) => {
   const [rowNumber, setRowNumber] = useState('');
 
   useEffect(() => {
+    // If no dataset is chosen to be previewed, early return
     if (!previewingDataset) return;
 
-    const csvData = sensorsDatasets[previewingDataset.sensor].rawDatasets[RawDatasetType.hourly].sample;
-    if (!csvData) return;
+    // Update previewing dataset name regardless if the dataset preview has finished loading
+    setPreviewingDatasetName(`Previewing: ${previewingDataset.sensor} (${previewingDataset.datasetType})`);
+
+    // Get the raw dataset
+    const csvData = sensorsDatasets[previewingDataset.sensor].rawDatasets[previewingDataset.datasetType].sample;
+
+    // If it is empty, then it hasn't been loaded yet
+    if (!csvData) {
+      setRowNumber(null);
+      setFormattedData(null);
+      setCsvFileName("Loading...");
+      setIsDatasetLoading(true);
+      return;
+    };
+
+    if (isDatasetLoading) setIsDatasetLoading(false);
 
     const lines = csvData.split('\n');
 
@@ -347,6 +361,19 @@ const PreviewDataset = (props) => {
       ...rows.map(row => row.split(',').slice(1).join(',')) // Remove the first column from each row
     ].join('\n'));
 
+    // Get the second column of the last row and extract the date part to set the csv's file name
+    let dateString;
+    if (rows.length > 0) {
+      const lastRow = rows[rows.length - 1];
+      const columns = lastRow.split(',');
+      if (columns.length >= 2) {
+        const dateTimeString = columns[1]; // Get the second column
+        dateString = dateTimeString.split('T')[0]; // Extract the date part
+      }
+    }
+
+    const csvFileName = `${schoolID}-${previewingDataset.sensor}-${previewingDataset.datasetType}-${dateString}.csv`;
+    setCsvFileName(csvFileName);
   }, [previewingDataset, sensorsDatasets]);
 
   return (
@@ -354,9 +381,7 @@ const PreviewDataset = (props) => {
       <Box sx={{ '& *': { fontFamily: "monospace !important" } }}>
         <Stack direction="row">
           <Typography variant='body2' gutterBottom fontWeight={500}>
-            {previewingDataset ?
-              `Previewing: ${previewingDataset?.sensor} (${previewingDataset?.datasetType})`
-              : 'Not previewing any dataset'}
+            {previewingDatasetName}
           </Typography>
         </Stack>
 
@@ -370,18 +395,28 @@ const PreviewDataset = (props) => {
             pt: 1.5,
             borderRadius: theme.spacing(1),
             borderTopLeftRadius: 0,
-            minHeight: "5rem",
+            height: smallScreen ? '11.8rem' : '14rem',
             width: smallScreen ? '100%' : 'unset',
             marginTop: 0
           }}
         >
-          <Stack direction="row" sx={{ fontSize: smallScreen ? '0.625rem !important' : '0.8rem !important' }}>
-            <Box sx={{ mr: 2, userSelect: 'none' }}>
-              {rowNumber}
-            </Box>
-            <Box>
-              {formattedData}
-            </Box>
+          <Stack
+            direction="row"
+            sx={{ fontSize: smallScreen ? '0.625rem !important' : '0.8rem !important' }}
+          >
+            {
+              formattedData ?
+                <>
+                  <Box sx={{ mr: 2, userSelect: 'none' }}>
+                    {rowNumber}
+                  </Box>
+                  <Box>
+                    {formattedData}
+                  </Box>
+                </>
+                :
+                <LoadingAnimation optionalText="Loading" />
+            }
           </Stack>
         </Box>
       </Box>
@@ -402,10 +437,10 @@ const PreviewDataset = (props) => {
               sensor: previewingDataset?.sensor
             });
           }}
-          disabled={!previewingDataset}
+          disabled={isDatasetLoading}
         >
           <DownloadIcon sx={{ fontSize: '1.25rem', mr: 0.5 }} />
-          {previewingDataset ? downloadDatasetName : "No dataset available to download"}
+          {csvFileName}
         </Button>
       </Box>
     </Stack >
