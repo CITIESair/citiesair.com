@@ -15,7 +15,7 @@ export function CommentCountsProvider({ children }) {
   const fetchCommentCounts = async () => {
     const commentCountsForAllPages = {};
     try {
-      const jsonData = await fetchDataFromURL(hyvorTalkApiUrl, 'json');
+      const jsonData = await fetchDataFromURL({ url: hyvorTalkApiUrl, extension: 'json' });
       jsonData.data.forEach((item) => {
         commentCountsForAllPages[item.page_identifier] = item.comments_count;
       });

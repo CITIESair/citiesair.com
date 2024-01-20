@@ -14,7 +14,7 @@ export function UserProvider({ children }) {
 
   useEffect(() => {
     const url = getApiUrl({ endpoint: EndPoints.me });
-    fetchDataFromURL(url, 'json', true)
+    fetchDataFromURL({ url, extension: 'json', needsAuthorization: true })
       .then((data) => {
         if (data.username) {
           setUser({

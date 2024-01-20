@@ -1,6 +1,6 @@
 // disable eslint for this file
 /* eslint-disable */
-export const fetchDataFromURL = async (url, extension, needsAuthorization) => {
+export const fetchDataFromURL = async ({ url, extension, needsAuthorization }) => {
   try {
     const dotIndex = url.lastIndexOf('.');
     if (dotIndex === -1) {

@@ -42,7 +42,7 @@ export const getRawDatasetUrl = ({ school_id, sensor_location_short, datasetType
 
 export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {
   try {
-    const data = await fetchDataFromURL(apiUrl, 'json', true);
+    const data = await fetchDataFromURL({ url: apiUrl, extension: 'json', needsAuthorization: true });
 
     if (!data) {
       throw new Error('Returned data is empty');

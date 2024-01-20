@@ -106,7 +106,7 @@ const Dashboard = ({ themePreference, temperatureUnitPreference }) => {
     });
 
     const dashboardData = await Promise.all([
-      fetchDataFromURL(schoolMetadataUrl, 'json', true),
+      fetchDataFromURL({ url: schoolMetadataUrl, extension: 'json', needsAuthorization: true }),
       fetchAndProcessCurrentSensorsData(currentUrl)
     ])
 
@@ -115,7 +115,7 @@ const Dashboard = ({ themePreference, temperatureUnitPreference }) => {
     setSchoolMetadata(schoolMetadata);
     setCurrentData(currentData);
 
-    fetchDataFromURL(chartDataUrl, 'json', true)
+    fetchDataFromURL({ url: chartDataUrl, extension: 'json', needsAuthorization: true })
       .then(data => {
         setChartDataForDashboard(data);
       })
