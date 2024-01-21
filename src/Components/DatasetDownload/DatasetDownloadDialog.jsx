@@ -18,6 +18,8 @@ export default function DatasetDownloadDialog(props) {
 
   const [sensorsDatasets, updateSensorsDatasets] = useState(initialSensorList);
 
+  const [previewingDataset, setPreviewingDataset] = useState("placeholder");
+
   // Update initialSensorList once if sensorsDatasets is an empty object
   useEffect(() => {
     updateSensorsDatasets(initialSensorList);
@@ -27,8 +29,14 @@ export default function DatasetDownloadDialog(props) {
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleOpen = () => {
+    setPreviewingDataset(null);
+    setOpen(true);
+  }
+  const handleClose = () => {
+    updateSensorsDatasets(initialSensorList);
+    setOpen(false);
+  }
 
   return (
     <>
@@ -75,6 +83,8 @@ export default function DatasetDownloadDialog(props) {
           <DatasetSelectorAndPreviewer
             sensorsDatasets={sensorsDatasets}
             updateSensorsDatasets={updateSensorsDatasets}
+            previewingDataset={previewingDataset}
+            setPreviewingDataset={setPreviewingDataset}
             smallScreen={smallScreen}
             schoolID={schoolID}
           />
@@ -91,8 +101,7 @@ export default function DatasetDownloadDialog(props) {
 }
 
 const DatasetSelectorAndPreviewer = (props) => {
-  const { sensorsDatasets, updateSensorsDatasets, smallScreen, schoolID } = props;
-  const [previewingDataset, setPreviewingDataset] = useState();
+  const { sensorsDatasets, updateSensorsDatasets, previewingDataset, setPreviewingDataset, smallScreen, schoolID } = props;
 
   // Preview the hourly type of the first sensor initially
   useEffect(() => {
@@ -104,6 +113,9 @@ const DatasetSelectorAndPreviewer = (props) => {
         sensor: firstSensor,
         datasetType: initialDatasetType
       });
+
+      // If this dataset has been fetched before, early return
+      if (sensorsDatasets[firstSensor].rawDatasets[initialDatasetType].sample) return;
 
       const url = getRawDatasetUrl({
         school_id: schoolID,
@@ -120,7 +132,7 @@ const DatasetSelectorAndPreviewer = (props) => {
         })
         .catch((error) => console.log(error));
     }
-  }, [sensorsDatasets]);
+  }, [sensorsDatasets, previewingDataset]);
 
   return (
     <Grid container justifyContent="center" alignItems="start" spacing={3}>
@@ -333,7 +345,7 @@ const PreviewDataset = (props) => {
     setPreviewingDatasetName(`Previewing: ${previewingDataset.sensor} (${previewingDataset.datasetType})`);
 
     // Get the raw dataset
-    const csvData = sensorsDatasets[previewingDataset.sensor].rawDatasets[previewingDataset.datasetType].sample;
+    const csvData = sensorsDatasets[previewingDataset.sensor]?.rawDatasets[previewingDataset.datasetType]?.sample;
 
     // If it is empty, then it hasn't been loaded yet
     if (!csvData) {
