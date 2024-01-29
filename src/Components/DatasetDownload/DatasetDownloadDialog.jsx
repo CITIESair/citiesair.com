@@ -301,7 +301,7 @@ const PreviewDataset = (props) => {
   const downloadPreviewingDataset = () => {
     if (!previewingDataset) return;
 
-    const fetchedDataset = sensorsDatasets[previewingDataset.sensor].rawDatasets[RawDatasetType.hourly].full;
+    const fetchedDataset = sensorsDatasets[previewingDataset.sensor].rawDatasets[previewingDataset.datasetType].full;
 
     // Fetch the full dataset if it has not been fetched before
     if (!fetchedDataset) {
