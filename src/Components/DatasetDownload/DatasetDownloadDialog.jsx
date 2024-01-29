@@ -204,6 +204,10 @@ const Dataset = (props) => {
 
   const [selectedDatasetType, setSelectedDatasetType] = useState(RawDatasetType.hourly);
 
+  useEffect(() => {
+    if (selectedDatasetType !== RawDatasetType.hourly) setSelectedDatasetType(RawDatasetType.hourly);
+  }, [schoolID])
+
   const handleDatasetTypeChange = (event) => {
     const selectedVal = event.target.value;
     setSelectedDatasetType(selectedVal);
@@ -268,7 +272,7 @@ const Dataset = (props) => {
               variant="standard"
               MenuProps={{ disablePortal: true }}
             >
-              {Object.keys(sensorsDatasets[sensor].rawDatasets).map((datasetType, index) => (
+              {Object.keys(sensorsDatasets[sensor].rawDatasets).reverse().map((datasetType, index) => (
                 <MenuItem
                   key={index}
                   value={datasetType}
