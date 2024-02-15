@@ -120,7 +120,7 @@ export default function SubChart(props) {
         minWidth="700px"
         minHeight={isPortrait ? '200px' : calendarHeight + 'px'}
         height={calendarHeight + 'px'}
-        maxHeight={isPortrait && '400px'}
+        maxHeight={isPortrait && '550px'}
       >
         {calendarData ?
           <CalendarChart
