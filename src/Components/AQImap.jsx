@@ -108,17 +108,25 @@ const AQImap = (props) => {
         maxZoom = 12,
         defaultZoom = 10,
         disableZoom = false,
+        disableInteraction = false,
         displayMinimap = true,
         fullSizeMap = false,
         showAttribution = true,
+        showInstruction = false,
         displayLocationTitle = false,
         rawMapData,
+        markerSizeInRem = 1
     } = props;
 
     const disableZoomParameters = {
         doubleClickZoom: false,
         attributionControl: false,
         zoomControl: false
+    }
+
+    const disableInteractionParameters = {
+        dragging: false,
+        tap: false
     }
 
     const [mapData, setMapData] = useState({});
@@ -157,7 +165,7 @@ const AQImap = (props) => {
             // Create the marker icon on the map
             location.markerIcon = new L.DivIcon({
                 className: 'aqi-marker-icon',
-                html: `<div onmouseover="this.style.opacity=1;" onmouseleave="this.style.opacity=0.75;" style="width: 40px; height: 40px; background-color: ${location.current.color}; border-radius: 50%; border: solid 2px; display: flex; justify-content: center; align-items: center; font-size: 1rem; font-weight: 500; color: ${themePreference === ThemePreferences.light ? 'black' : 'white'}; opacity: 0.75; :hover: {opacity: 1}">${displayAqiValue(location)}</div>`
+                html: `<div ${disableInteraction === false && 'onmouseover="this.style.opacity=1;" onmouseleave="this.style.opacity=0.75;"'} style="width: ${2 * markerSizeInRem}rem; height: ${2 * markerSizeInRem}rem; background-color: ${location.current.color}; border-radius: 50%; border: solid ${markerSizeInRem / 8}rem; display: flex; justify-content: center; align-items: center; font-size: ${markerSizeInRem}rem; font-weight: 600; color: ${themePreference === ThemePreferences.light ? 'black' : 'white'}; opacity: 0.75; :hover: {opacity: 1}">${displayAqiValue(location)}</div>`
             });
 
             return location;
@@ -213,7 +221,7 @@ const AQImap = (props) => {
                     center={parentMap.getCenter()}
                     zoom={mapZoom}
                     scrollWheelZoom={false}
-                    dragging={false}
+                    {...disableInteractionParameters}
                     {...disableZoomParameters}
                     attributionControl={false}
                 >
@@ -302,6 +310,7 @@ const AQImap = (props) => {
                 placeholder={<MapPlaceholder placeholderText={placeholderText} />}
                 attributionControl={false}
                 {...(disableZoom ? disableZoomParameters : {})}
+                {...(disableInteraction ? disableInteractionParameters : {})}
             >
                 {displayMinimap === true && <MinimapControl position="bottomleft" mapData={mapData} />}
 
@@ -332,109 +341,129 @@ const AQImap = (props) => {
                                 </Tooltip>
                             }
 
-                            <StyledLeafletPopup>
-                                {
-                                    location.sensor?.public_iqAir_station_link ?
-                                        <Stack direction="row" spacing={smallScreen ? 1 : 3}>
-                                            <Link
-                                                variant={smallScreen ? 'body2' : 'body1'}
-                                                fontWeight={500}
-                                                href={location.sensor.public_iqAir_station_link}
-                                                target='_blank'
-                                                rel="noopener noreferrer"
-                                                color={`${theme.palette.primary.main}!important`}
-                                                underline="hover"
-                                            >
-                                                {location.sensor?.location_long}
-                                                &nbsp;
-                                                <sup>
-                                                    <LaunchIcon fontSize='0.8rem' />
-                                                </sup>
-                                            </Link>
-                                            <Box sx={{
-                                                '& img': {
-                                                    height: smallScreen ? "50%" : 'unset'
-                                                }
-                                            }}>
-                                                <img src={IQAir_Logo} />
-                                            </Box>
-                                        </Stack>
-                                        :
-                                        <Typography
-                                            variant={smallScreen ? 'body2' : 'body1'}
-                                            fontWeight="500"
-                                            sx={{
-                                                margin: '0!important',
-                                                marginBottom: smallScreen === false && '0.25rem !important'
-                                            }}>
-                                            {location.sensor?.location_long}
-                                        </Typography>
-                                }
-
-
-                                <Box sx={{ '& *': { color: location.current?.color } }}>
-                                    <Typography variant={smallScreen ? 'h4' : 'h3'} fontWeight="500" lineHeight={0.9}>
-                                        {displayAqiValue(location)}
-                                        <Typography variant='caption' fontWeight="500">(US AQI)</Typography>
-                                    </Typography>
-
-                                    <Typography variant={smallScreen ? 'body2' : 'body1'} component="span" fontWeight="500">
-                                        {displayAqiCategory(location)}
-                                    </Typography>
-                                </Box>
-
-                                <Typography
-                                    variant="caption"
-                                    sx={{ display: 'block' }}
-                                    gutterBottom
-                                >
-                                    <Typography variant='caption' fontWeight="500">PM2.5:</Typography>
-                                    &nbsp;
-                                    {location.current?.["pm2.5"] || '--'}µg/m<sup>3</sup>
-                                </Typography>
-                                <Typography
-                                    variant="caption"
-                                    sx={{ display: 'block' }}
-                                    gutterBottom
-                                >
-                                    <ThermostatIcon sx={{ fontSize: '1rem', verticalAlign: 'sub' }} />
+                            {
+                                disableInteraction === false &&
+                                <StyledLeafletPopup>
                                     {
-                                        getFormattedTemperature({
-                                            rawTemp: location.current?.temperature,
-                                            currentUnit: TemperatureUnits.celsius,
-                                            returnUnit: temperatureUnitPreference
-                                        })}
-                                    &nbsp;&nbsp;-&nbsp;&nbsp;
-                                    <WaterDropIcon sx={{ fontSize: '1rem', verticalAlign: 'sub' }} />
-                                    {location.current?.rel_humidity ? Math.round(location.current?.rel_humidity) : "--"}%
-                                </Typography>
-                                <Typography variant="caption" sx={{ display: 'block', fontWeight: 500 }}>
+                                        location.sensor?.public_iqAir_station_link ?
+                                            <Stack direction="row" spacing={smallScreen ? 1 : 3}>
+                                                <Link
+                                                    variant={smallScreen ? 'body2' : 'body1'}
+                                                    fontWeight={500}
+                                                    href={location.sensor.public_iqAir_station_link}
+                                                    target='_blank'
+                                                    rel="noopener noreferrer"
+                                                    color={`${theme.palette.primary.main}!important`}
+                                                    underline="hover"
+                                                >
+                                                    {location.sensor?.location_long}
+                                                    &nbsp;
+                                                    <sup>
+                                                        <LaunchIcon fontSize='0.8rem' />
+                                                    </sup>
+                                                </Link>
+                                                <Box sx={{
+                                                    '& img': {
+                                                        height: smallScreen ? "50%" : 'unset'
+                                                    }
+                                                }}>
+                                                    <img src={IQAir_Logo} />
+                                                </Box>
+                                            </Stack>
+                                            :
+                                            <Typography
+                                                variant={smallScreen ? 'body2' : 'body1'}
+                                                fontWeight="500"
+                                                sx={{
+                                                    margin: '0!important',
+                                                    marginBottom: smallScreen === false && '0.25rem !important'
+                                                }}>
+                                                {location.sensor?.location_long}
+                                            </Typography>
+                                    }
 
-                                </Typography>
-                                <Box sx={{ mt: 1 }}>
-                                    <Typography variant='caption' sx={{ mt: 0 }}>
-                                        <Typography variant='caption' fontWeight="500">Last update:</Typography>
-                                        {location.current?.timestamp
-                                            ? ` ${getFormattedElapsedTimeFromNow(location.current.timestamp)} ago`
-                                            : '--'}
-                                    </Typography>
-                                    <br />
+
+                                    <Box sx={{ '& *': { color: location.current?.color } }}>
+                                        <Typography variant={smallScreen ? 'h4' : 'h3'} fontWeight="500" lineHeight={0.9}>
+                                            {displayAqiValue(location)}
+                                            <Typography variant='caption' fontWeight="500">(US AQI)</Typography>
+                                        </Typography>
+
+                                        <Typography variant={smallScreen ? 'body2' : 'body1'} component="span" fontWeight="500">
+                                            {displayAqiCategory(location)}
+                                        </Typography>
+                                    </Box>
+
                                     <Typography
                                         variant="caption"
-                                        textTransform="capitalize"
+                                        sx={{ display: 'block' }}
+                                        gutterBottom
                                     >
-                                        <Typography variant='caption' fontWeight="500">Status:</Typography>
+                                        <Typography variant='caption' fontWeight="500">PM2.5:</Typography>
                                         &nbsp;
-                                        {location.current?.sensor_status}
+                                        {location.current?.["pm2.5"] || '--'}µg/m<sup>3</sup>
                                     </Typography>
-                                </Box>
-                            </StyledLeafletPopup>
+                                    <Typography
+                                        variant="caption"
+                                        sx={{ display: 'block' }}
+                                        gutterBottom
+                                    >
+                                        <ThermostatIcon sx={{ fontSize: '1rem', verticalAlign: 'sub' }} />
+                                        {
+                                            getFormattedTemperature({
+                                                rawTemp: location.current?.temperature,
+                                                currentUnit: TemperatureUnits.celsius,
+                                                returnUnit: temperatureUnitPreference
+                                            })}
+                                        &nbsp;&nbsp;-&nbsp;&nbsp;
+                                        <WaterDropIcon sx={{ fontSize: '1rem', verticalAlign: 'sub' }} />
+                                        {location.current?.rel_humidity ? Math.round(location.current?.rel_humidity) : "--"}%
+                                    </Typography>
+                                    <Typography variant="caption" sx={{ display: 'block', fontWeight: 500 }}>
+
+                                    </Typography>
+                                    <Box sx={{ mt: 1 }}>
+                                        <Typography variant='caption' sx={{ mt: 0 }}>
+                                            <Typography variant='caption' fontWeight="500">Last update:</Typography>
+                                            {location.current?.timestamp
+                                                ? ` ${getFormattedElapsedTimeFromNow(location.current.timestamp)} ago`
+                                                : '--'}
+                                        </Typography>
+                                        <br />
+                                        <Typography
+                                            variant="caption"
+                                            textTransform="capitalize"
+                                        >
+                                            <Typography variant='caption' fontWeight="500">Status:</Typography>
+                                            &nbsp;
+                                            {location.current?.sensor_status}
+                                        </Typography>
+                                    </Box>
+                                </StyledLeafletPopup>
+                            }
+
                         </Marker>
 
                     ))
                 }
 
             </MapContainer>
+            {
+                showInstruction === true &&
+                <Typography
+                    variant="caption"
+                    position="relative"
+                    display="block"
+                    zIndex={999999}
+                    textAlign="center"
+                    width="100%"
+                    margin="auto"
+                    mt={-3}
+                >
+                    <i>Click on each location for more information</i>
+                </Typography>
+            }
+
         </Box>
     )
 }

@@ -116,7 +116,7 @@ const AQIdatabase = [
     lightThemeColor: CustomThemes.light.palette.chart.optionsColors.aqi[5],
     darkThemeColor: CustomThemes.dark.palette.chart.optionsColors.aqi[5],
     aqiUS: {
-      low: 300,
+      low: 301,
       high: 500
     },
     rawPM2_5: {

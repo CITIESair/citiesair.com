@@ -17,12 +17,13 @@ import Footer from './Components/Footer/Footer';
 import FourOhFour from './Pages/404';
 import LoadingAnimation from './Components/LoadingAnimation';
 import LogIn from './Components/Account/LogIn';
-import NYUADmap from './Components/NYUADmap';
+import NYUADmap from './Pages/Embeds/NYUADmap';
 
 // Contexts
 import { TemperatureUnits } from './Pages/Screen/TemperatureUtils';
 import { LocalStorage } from './Utils/LocalStorage';
 import { UniqueRoutes } from './Utils/RoutesUtils';
+import NYUADbanner from './Pages/Embeds/NYUADbanner';
 
 // Lazy load pages
 const Home = lazy(() => import('./Pages/Home/Home'));
@@ -133,6 +134,11 @@ function App() {
               <Route
                 path={UniqueRoutes.nyuadMap}
                 element={<NYUADmap />}
+              />
+
+              <Route
+                path={UniqueRoutes.nyuadBanner}
+                element={<NYUADbanner />}
               />
 
               <Route path={UniqueRoutes[404]} element={<FourOhFour title="Page Not Found | CITIESair" />} />

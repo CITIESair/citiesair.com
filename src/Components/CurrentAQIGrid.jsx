@@ -13,7 +13,16 @@ import AQIdatabase from '../Utils/AirQualityIndexHelper';
 import CustomThemes from '../Themes/CustomThemes';
 
 const CurrentAQIGrid = (props) => {
-  const { currentSensorsData, temperatureUnitPreference, isScreen = true } = props;
+  const {
+    currentSensorsData,
+    temperatureUnitPreference = TemperatureUnits.celsius,
+    isScreen = true,
+    showWeather = true,
+    showHeatIndex = true,
+    showLastUpdate = true,
+    useLocationShort = false,
+    roundTemperature = false
+  } = props;
 
   const getGridItemSize = (numOfItems) => {
     return {
@@ -45,7 +54,6 @@ const CurrentAQIGrid = (props) => {
     >
       {
         currentSensorsData ?
-
           (Object.entries(currentSensorsData).map(([key, sensorData], index) => (
             <Grid
               item
@@ -57,8 +65,12 @@ const CurrentAQIGrid = (props) => {
               }
             >
               <Box sx={{ '& *': { color: sensorData.current?.color } }}>
-                <Typography variant={isScreen ? "h4" : 'h5'} fontWeight="500" className='condensedFont'>
-                  {sensorData.sensor?.location_long || sensorData.sensor?.location_short || 'No Location Name'}
+                <Typography variant={isScreen ? "h4" : 'h5'} fontWeight="500" className='condensedFont' textTransform="capitalize">
+                  {returnLocationName({
+                    useLocationShort,
+                    location_short: sensorData.sensor?.location_short,
+                    location_long: sensorData.sensor?.location_long
+                  })}
                 </Typography>
                 <Typography variant={isScreen ? "h1" : 'h2'} fontWeight="500" lineHeight={isScreen ? 0.8 : 0.9}>
                   {sensorData.current?.aqi || '--'}
@@ -78,33 +90,17 @@ const CurrentAQIGrid = (props) => {
                       : 'text.secondary'
                 }, mt: isScreen ? 2 : 1
               }} className='condensedFont'>
-                <Typography variant={isScreen ? "h6" : 'body1'}>
-                  <ThermostatIcon />
-                  {
-                    getFormattedTemperature({
-                      rawTemp: sensorData.current?.temperature,
-                      currentUnit: TemperatureUnits.celsius,
-                      returnUnit: temperatureUnitPreference
-                    })
-                  }
-                  &nbsp;&nbsp;-&nbsp;
-                  <WaterDropIcon sx={{ transform: 'scaleX(0.9)' }} />
-                  {sensorData.current?.rel_humidity ? Math.round(sensorData.current?.rel_humidity) : "--"}%
-                </Typography>
                 {
-                  // Show heat index for selected location types
-                  ['outdoors', 'indoors_gym'].includes(sensorData.sensor?.location_type) &&
-                  <Typography variant={isScreen ? "body1" : 'body2'} sx={{ fontWeight: '300 !important' }}>
-                    {calculateHeatIndex({
-                      rawTemp: sensorData.current?.temperature,
-                      currentUnit: TemperatureUnits.celsius,
-                      rel_humidity: sensorData.current?.rel_humidity,
-                      returnUnit: temperatureUnitPreference
-                    })}
-                  </Typography>
+                  showWeather && returnWeather({ isScreen, sensorData, temperatureUnitPreference, roundTemperature })
                 }
                 {
-                  displayLastUpdateAndSensorStatus({ sensorData, isScreen })
+                  // Show heat index for selected location types
+                  showHeatIndex &&
+                  ['outdoors', 'indoors_gym'].includes(sensorData.sensor?.location_type) &&
+                  returnHeatIndex({ isScreen, sensorData, temperatureUnitPreference })
+                }
+                {
+                  showLastUpdate && returnLastUpdateAndSensorStatus({ sensorData, isScreen })
                 }
               </Box>
 
@@ -133,7 +129,67 @@ const CurrentAQIGrid = (props) => {
   );
 };
 
-const displayLastUpdateAndSensorStatus = ({ sensorData, isScreen }) => {
+export const SimpleCurrentAQIlist = (props) => {
+  const {
+    currentSensorsData,
+    useLocationShort = false
+  } = props;
+
+  return (
+    <Grid
+      container
+      justifyContent="center"
+      sx={{
+        '& .condensedFont': {
+          fontFamily: 'IBM Plex Sans Condensed, sans-serif !important',
+          '& *': {
+            fontFamily: 'IBM Plex Sans Condensed, sans-serif !important'
+          }
+        }
+      }}
+    >
+      {
+        currentSensorsData ?
+          (Object.entries(currentSensorsData).map(([key, sensorData], index) => (
+            <Grid
+              item
+              key={key}
+              xs={6}
+              sx={
+                sensorData.current?.sensor_status !== SensorStatus.active &&
+                { '& *': { color: `${CustomThemes.universal.palette.inactiveSensor}` } }
+              }
+              display="block"
+            >
+              <Typography display="inline" variant='body2' fontWeight="500" className='condensedFont' textTransform="capitalize">
+                {returnLocationName({
+                  useLocationShort,
+                  location_short: sensorData.sensor?.location_short,
+                  location_long: sensorData.sensor?.location_long
+                })}
+                :
+                &nbsp;
+              </Typography>
+              <Typography display="inline" variant='body2' color={sensorData.current?.color}>
+                {`${sensorData.current?.aqi} (${sensorData.current?.category})` || '--'}
+              </Typography>
+            </Grid>
+          ))
+          )
+          :
+          (
+            <Stack direction="column" alignItems="center" justifyContent="center">
+              {[...Array(3)].map((_, index) => (
+                <Skeleton key={index} variant='text' sx={{ width: '80%', fontSize: '1rem' }} />
+              ))}
+            </Stack>
+          )
+      }
+    </Grid>
+  );
+}
+
+const returnLastUpdateAndSensorStatus = ({ sensorData, isScreen }) => {
   if (isScreen && sensorData.current.sensor_status === SensorStatus.active) return null;
   else
     return (
@@ -164,6 +220,41 @@ const displayLastUpdateAndSensorStatus = ({ sensorData, isScreen }) => {
           : '--'}
       </Typography>
     )
+}
+
+const returnWeather = ({ isScreen, sensorData, temperatureUnitPreference, roundTemperature }) => {
+  return (
+    <Typography variant={isScreen ? "h6" : 'body1'}>
+      <ThermostatIcon />
+      {
+        getFormattedTemperature({
+          rawTemp: roundTemperature ? Math.round(sensorData.current?.temperature) : sensorData.current?.temperature,
+          currentUnit: TemperatureUnits.celsius,
+          returnUnit: temperatureUnitPreference
+        })
+      }
+      &nbsp;&nbsp;-&nbsp;
+      <WaterDropIcon sx={{ transform: 'scaleX(0.9)' }} />
+      {sensorData.current?.rel_humidity ? Math.round(sensorData.current?.rel_humidity) : "--"}%
+    </Typography>
+  )
+}
+
+const returnHeatIndex = ({ isScreen, sensorData, temperatureUnitPreference }) => {
+  return (
+    <Typography variant={isScreen ? "body1" : 'body2'} sx={{ fontWeight: '300 !important' }}>
+      {calculateHeatIndex({
+        rawTemp: sensorData.current?.temperature,
+        currentUnit: TemperatureUnits.celsius,
+        rel_humidity: sensorData.current?.rel_humidity,
+        returnUnit: temperatureUnitPreference
+      })}
+    </Typography>
+  )
+}
+
+const returnLocationName = ({ useLocationShort, location_short, location_long }) => {
+  return useLocationShort ? (location_short || 'N/A') : (location_long || 'No Location Name');
 }
 
 export default CurrentAQIGrid;

@@ -2,11 +2,11 @@
 /* eslint-disable */
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import FullWidthBox from './FullWidthBox';
-import * as Tracking from '../Utils/Tracking';
-import AQImap, { TileOptions } from './AQImap';
-import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../Utils/ApiUtils';
-import ThemePreferences from '../Themes/ThemePreferences';
+import FullWidthBox from '../../Components/FullWidthBox';
+import * as Tracking from '../../Utils/Tracking';
+import AQImap, { TileOptions } from '../../Components/AQImap';
+import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
+import ThemePreferences from '../../Themes/ThemePreferences';
 
 const NYUADmap = () => {
   const location = useLocation();
