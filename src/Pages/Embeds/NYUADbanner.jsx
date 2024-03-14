@@ -7,7 +7,7 @@ import { useMediaQuery } from '@mui/material';
 
 import FullWidthBox from '../../Components/FullWidthBox';
 import * as Tracking from '../../Utils/Tracking';
-import AQImap, { TileOptions } from '../../Components/AQImap';
+import AQImap, { LocationTitle, TileOptions } from '../../Components/AQImap';
 import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
 import ThemePreferences from '../../Themes/ThemePreferences';
 import CurrentAQIGrid, { SimpleCurrentAQIlist } from '../../Components/CurrentAQIGrid';
@@ -101,6 +101,7 @@ const NYUADbanner = () => {
             disableInteraction={isSmallScreen}
             showInstruction={!isSmallScreen}
             displayMinimap={false}
+            locationTitle={LocationTitle.short}
             fullSizeMap={true}
             showAttribution={false}
             rawMapData={nyuadCurrentData}
@@ -113,7 +114,6 @@ const NYUADbanner = () => {
               position="absolute"
               top={0}
               zIndex={999999}
-              width="100%"
               sx={{ mx: 1.5, my: 0.5 }}
             >
               NYUAD Air Quality
@@ -173,53 +173,42 @@ const NYUADbanner = () => {
             flex={1}
           >
             {AQIdatabase.map((element, index) => (
-              <Tooltip
-                title={element.category}
-                slotProps={{
-                  popper: {
-                    modifiers: [
-                      { name: 'offset', options: { offset: [0, -14] } }
-                    ],
-                  },
-                }}
+              <Stack
+                direction={isSmallScreen ? "row-reverse" : "column"}
+                width={isSmallScreen ? "auto" : "15%"}
+                justifyContent={isSmallScreen && "flex-end"}
+                alignItems={isSmallScreen && "flex-end"}
+                spacing={0.5}
+                flex={1}
               >
-                <Stack
-                  direction={isSmallScreen ? "row-reverse" : "column"}
-                  width={isSmallScreen ? "auto" : "15%"}
-                  justifyContent={isSmallScreen && "flex-end"}
-                  alignItems={isSmallScreen && "flex-end"}
-                  spacing={0.5}
-                  flex={1}
+                <Typography
+                  variant="caption"
+                  fontWeight={500}
+                  lineHeight={1}
                 >
+                  <small>{element.aqiUS.low === 301 ? '300+' : Math.round(element.aqiUS.low / 50) * 50}</small>
+                </Typography>
+                <Box
+                  backgroundColor={element.lightThemeColor}
+                  width={isSmallScreen ? "0.35rem" : "100%"}
+                  height={isSmallScreen ? "100%" : "0.5rem"}
+                />
+                {(isSmallScreen === false && isWidget === false) &&
                   <Typography
                     variant="caption"
-                    fontWeight={500}
-                    lineHeight={1}
+                    lineHeight={0.9}
+                    sx={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      display: "-webkit-box",
+                      WebkitBoxOrient: "vertical",
+                      WebkitLineClamp: 2
+                    }}
                   >
-                    <small>{element.aqiUS.low === 301 ? '300+' : Math.round(element.aqiUS.low / 50) * 50}</small>
+                    <small>{element.category}</small>
                   </Typography>
-                  <Box
-                    backgroundColor={element.lightThemeColor}
-                    width={isSmallScreen ? "0.35rem" : "100%"}
-                    height={isSmallScreen ? "100%" : "0.5rem"}
-                  />
-                  {(isSmallScreen === false && isWidget === false) &&
-                    <Typography
-                      variant="caption"
-                      lineHeight={0.9}
-                      sx={{
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        display: "-webkit-box",
-                        WebkitBoxOrient: "vertical",
-                        WebkitLineClamp: 2
-                      }}
-                    >
-                      <small>{element.category}</small>
-                    </Typography>
-                  }
-                </Stack>
-              </Tooltip>
+                }
+              </Stack>
             ))}
           </Stack>
         </Grid>

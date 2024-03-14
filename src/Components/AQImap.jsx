@@ -96,6 +96,11 @@ export const TypeOfAQImap = {
     nyuadSensors: 'nyuadSensors'
 }
 
+export const LocationTitle = {
+    short: 'short',
+    long: 'long'
+}
+
 const AQImap = (props) => {
     const {
         tileOption,
@@ -113,7 +118,7 @@ const AQImap = (props) => {
         fullSizeMap = false,
         showAttribution = true,
         showInstruction = false,
-        displayLocationTitle = false,
+        locationTitle,
         rawMapData,
         markerSizeInRem = 1
     } = props;
@@ -296,7 +301,8 @@ const AQImap = (props) => {
                 color: theme.palette.text.primary,
                 boxShadow: 'unset',
                 fontWeight: 500,
-                fontSize: '0.9rem'
+                fontSize: locationTitle === LocationTitle.short ? '0.7rem' : '0.9rem',
+                textTransform: 'capitalize'
             },
             '& .leaflet-tooltip-bottom:before': {
                 borderBottomColor: 'transparent !important',
@@ -331,13 +337,15 @@ const AQImap = (props) => {
                             icon={location.markerIcon}
                         >
                             {
-                                displayLocationTitle === true &&
+                                locationTitle &&
                                 <Tooltip
                                     permanent={tileOption === TileOptions.nyuad ? true : false}
                                     direction="bottom"
-                                    offset={[15, -40]}
+                                    offset={locationTitle === LocationTitle.short ?
+                                        [7.5, -35] : [15, -40]}
                                 >
-                                    {location.sensor?.location_long}
+                                    {locationTitle === LocationTitle.short ?
+                                        location.sensor?.location_short : location.sensor?.location_long}
                                 </Tooltip>
                             }
 

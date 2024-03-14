@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import FullWidthBox from '../../Components/FullWidthBox';
 import * as Tracking from '../../Utils/Tracking';
-import AQImap, { TileOptions } from '../../Components/AQImap';
+import AQImap, { LocationTitle, TileOptions } from '../../Components/AQImap';
 import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
 import ThemePreferences from '../../Themes/ThemePreferences';
 
@@ -45,6 +45,7 @@ const NYUADmap = () => {
         fullSizeMap={true}
         showAttribution={false}
         rawMapData={nyuadCurrentData}
+        locationTitle={LocationTitle.long}
       />
     </FullWidthBox>
   );
