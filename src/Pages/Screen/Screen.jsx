@@ -1,7 +1,7 @@
 // disable eslint for this file
 /* eslint-disable */
 import { useState, useEffect, useContext } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { UserContext } from '../../ContextProviders/UserContext';
 
 import { Box, Grid, Typography, Stack, List, ListItem, ListItemText } from '@mui/material';
@@ -9,7 +9,6 @@ import { Box, Grid, Typography, Stack, List, ListItem, ListItemText } from '@mui
 import CITIESlogoLinkToHome from '../../Components/Header/CITIESlogoLinkToHome';
 
 import { SensorStatus, getDomainName, getUrlAfterScreen } from './ScreenUtils';
-import { TemperatureUnits } from "./TemperatureUtils";
 
 import RecentHistoricalGraph from './RecentHistoricalGraph';
 
@@ -21,16 +20,14 @@ import QRCode from "react-qr-code";
 
 import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
 import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
+import { UniqueRoutes } from '../../Utils/RoutesUtils';
 
 const Screen = ({ title, temperatureUnitPreference }) => {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (user.checkedAuthentication === true && user.authenticated === false) {
-  //     navigate('/login');
-  //   }
-  // }, [user])
+  const location = useLocation();
+  const locationPath = location.pathname;
 
   // Update the page's title
   useEffect(() => {
@@ -67,36 +64,45 @@ const Screen = ({ title, temperatureUnitPreference }) => {
     };
   }, []);
 
-  // Fetch air quality data from database
+  // Fetch air quality data from database, depends on the state of 'user' object
   useEffect(() => {
-    const url = getApiUrl({ endpoint: EndPoints.screen });
-    if (!url) return;
+    // Only attempt to fetch data if the user has been authenticated
+    if (user.checkedAuthentication === false) return;
 
-    fetchAndProcessCurrentSensorsData(url)
-      .then((data) => {
-        setData(data)
-      })
-      .catch((error) => {
-        console.log(error);
-        // Check if the error indicates that authentication is required
-        navigate('/login');
-      });
+    if (user.authenticated === true) {
+      console.log(user)
+      // Do nothing if the data has been fetched before
+      if (Object.keys(data).length != 0) return;
 
-    // Create an interval that fetch new data every 5 minute
-    const fetchInterval = 5 * 60 * 1000; // 5min
-    const intervalId = setInterval(() => {
+      const url = getApiUrl({ endpoint: EndPoints.screen });
+      if (!url) return;
+
       fetchAndProcessCurrentSensorsData(url)
         .then((data) => {
           setData(data)
         })
-        .catch((error) => console.log(error))
-    },
-      fetchInterval);
-    // Clean up the interval when the component unmounts
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
+        .catch((error) => {
+          console.log(error);
+        });
+
+      // Create an interval that fetch new data every 5 minute
+      const fetchInterval = 5 * 60 * 1000; // 5min
+      const intervalId = setInterval(() => {
+        fetchAndProcessCurrentSensorsData(url)
+          .then((data) => {
+            setData(data)
+          })
+          .catch((error) => console.log(error))
+      },
+        fetchInterval);
+      // Clean up the interval when the component unmounts
+      return () => {
+        clearInterval(intervalId);
+      };
+    } else {
+      navigate(`${UniqueRoutes.login}?${UniqueRoutes.redirectQuery}=${locationPath}`);
+    }
+  }, [user]);
 
   const AirQualityComparison = () => {
     // Only display air quality comparison if every sensor is currently active

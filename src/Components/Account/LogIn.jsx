@@ -1,19 +1,20 @@
 // disable eslint for this file
 /* eslint-disable */
 import { useState, useContext, useEffect } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper, useMediaQuery, Alert } from "@mui/material";
 
 import { UserContext } from '../../ContextProviders/UserContext';
 import { EndPoints, getApiUrl } from '../../Utils/ApiUtils';
+import { UniqueRoutes } from '../../Utils/RoutesUtils';
 
 export default function LogIn() {
   const { user, setUser } = useContext(UserContext);
 
   useEffect(() => {
     if (user.checkedAuthentication === true && user.authenticated === true) {
-      navigate('/dashboard', { replace: true });
+      handleSuccessfulLogin()
     }
   }, [user]);
 
@@ -28,6 +29,15 @@ export default function LogIn() {
   const prefabErrorMessage = 'Incorrect school ID or access code. Please try again or contact CITIESair if you think there is a mistake.';
 
   const navigate = useNavigate();
+
+  // After login succeeds, navigate to /dashboard if no redirectTo string query is detected
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const redirectTo = queryParams.get(UniqueRoutes.redirectQuery)?.toLowerCase() || UniqueRoutes.dashboard;
+
+  const handleSuccessfulLogin = () => {
+    navigate(redirectTo, { replace: true });
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -58,7 +68,7 @@ export default function LogIn() {
               username: data.username,
             });
           })
-          navigate("/dashboard", { replace: true });
+          handleSuccessfulLogin();
         }
         else {
           throw new Error(`Error authenticating`);
