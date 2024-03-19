@@ -132,7 +132,8 @@ const CurrentAQIGrid = (props) => {
 export const SimpleCurrentAQIlist = (props) => {
   const {
     currentSensorsData,
-    useLocationShort = false
+    useLocationShort = false,
+    smallFont = true
   } = props;
 
   return (
@@ -161,7 +162,17 @@ export const SimpleCurrentAQIlist = (props) => {
               }
               display="block"
             >
-              <Typography display="inline" variant='body2' fontWeight="500" className='condensedFont' textTransform="capitalize">
+              <Typography
+                color="text.secondary"
+                display="block"
+                variant={smallFont ? 'caption' : 'body2'}
+                fontWeight="500"
+                className='condensedFont'
+                textTransform="capitalize"
+                textOverflow="ellipsis"
+                overflow="hidden"
+                noWrap
+              >
                 {returnLocationName({
                   useLocationShort,
                   location_short: sensorData.sensor?.location_short,
@@ -169,9 +180,9 @@ export const SimpleCurrentAQIlist = (props) => {
                 })}
                 :
                 &nbsp;
-              </Typography>
-              <Typography display="inline" variant='body2' color={sensorData.current?.color}>
-                {`${sensorData.current?.aqi} (${sensorData.current?.category})` || '--'}
+                <Box component="span" color={sensorData.current?.color}>
+                  {`${sensorData.current?.aqi} (${sensorData.current?.category})` || '--'}
+                </Box>
               </Typography>
             </Grid>
           ))

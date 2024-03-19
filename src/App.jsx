@@ -138,7 +138,7 @@ function App() {
 
               <Route
                 path={UniqueRoutes.nyuadBanner}
-                element={<NYUADbanner />}
+                element={<NYUADbanner isOnBannerPage={true} />}
               />
 
               <Route path={UniqueRoutes[404]} element={<FourOhFour title="Page Not Found | CITIESair" />} />
