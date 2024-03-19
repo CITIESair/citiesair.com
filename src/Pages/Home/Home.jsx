@@ -1,7 +1,7 @@
 import { useEffect, useContext, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { Button, Box, Stack, Typography, Container, Divider } from '@mui/material';
+import { Button, Box, Grid, Typography, Container, Divider } from '@mui/material';
 import { LinkContext } from '../../ContextProviders/LinkContext';
 
 import UppercaseTitle from '../../Components/UppercaseTitle';
@@ -24,6 +24,18 @@ import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../U
 import BarChartIcon from '@mui/icons-material/BarChart';
 import GetInTouch from './GetInTouch';
 import { UniqueRoutes } from '../../Utils/RoutesUtils';
+import { SensorStatus } from '../Screen/ScreenUtils';
+
+const displayNyuadSensorCounts = (nyuadSensorCounts) => {
+  if (nyuadSensorCounts.active && nyuadSensorCounts.total) {
+    return (
+      <Typography variant='body2' color="text.secondary">
+        <b>NYUAD sensors status: </b>{nyuadSensorCounts.active} active out of {nyuadSensorCounts.total}
+      </Typography>
+    );
+  }
+  else return null;
+}
 
 function Home({ themePreference, temperatureUnitPreference, title }) {
   // Update the page's title
@@ -43,13 +55,28 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
 
   // Fetch public NYUAD sensors data and public map data
   const [nyuadCurrentSensorData, setNyuadCurrentSensorData] = useState({});
+  const [nyuadSensorCounts, setNyuadSensorCounts] = useState({
+    active: null,
+    total: null
+  });
   const [rawMapData, setRawMapData] = useState();
 
   useEffect(() => {
     const nyuadUrl = getApiUrl({ endpoint: EndPoints.current, school_id: 'nyuad' });
     fetchAndProcessCurrentSensorsData(nyuadUrl)
       .then((data) => {
-        setNyuadCurrentSensorData(data)
+        // Only display 3 sensors in the homepage
+        const selectedSensorData = data.slice(0, 3);
+        setNyuadCurrentSensorData(selectedSensorData);
+
+        // Count the number of active sensors at NYUAD to display it
+        const activeSensorCount = data.reduce((count, obj) => {
+          return obj?.current?.sensor_status === SensorStatus.active ? count + 1 : count;
+        }, 0);
+        setNyuadSensorCounts({
+          active: activeSensorCount,
+          total: data.length
+        });
       })
       .catch((error) => console.log(error));
 
@@ -71,36 +98,47 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
             PM2.5 (Particulate Matter Smaller Than 2.5 Micrometer)
           </Typography>
 
-          <Stack spacing={2} alignItems="center" textAlign="center">
-            <CurrentAQIGrid
-              currentSensorsData={nyuadCurrentSensorData}
-              isScreen={false}
-              temperatureUnitPreference={temperatureUnitPreference}
-            />
-            <Stack width="fit-content" alignItems="center" margin="auto">
-              <Button
-                component={RouterLink}
-                variant='contained'
-                sx={{ width: "fit-content", mb: 1 }}
-                to={UniqueRoutes.nyuad}
-                onClick={() => {
-                  Tracking.sendEventAnalytics(
-                    Tracking.Events.internalNavigation,
-                    {
-                      destination_id: UniqueRoutes.nyuad,
-                      destination_school_id: "nyuad",
-                      origin_id: UniqueRoutes.home
-                    }
-                  );
-                }}
-              >
-                <BarChartIcon sx={{ fontSize: '0.8rem' }} />&nbsp;NYUAD Dashboard (Public Access)
-              </Button>
-              <Typography variant="caption" color="text.secondary">
-                See detailed analysis of historical air quality data at NYUAD
-              </Typography>
-            </Stack>
-          </Stack>
+          <Grid container spacing={2} justifyContent="center" textAlign="center">
+            <Grid item xs={12} lg={10}>
+              <CurrentAQIGrid
+                currentSensorsData={nyuadCurrentSensorData}
+                isScreen={false}
+                temperatureUnitPreference={temperatureUnitPreference}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              {displayNyuadSensorCounts(nyuadSensorCounts)}
+            </Grid>
+
+            <Grid item container xs={12}>
+              <Grid item xs={12}>
+                <Button
+                  component={RouterLink}
+                  variant='contained'
+                  sx={{ width: "fit-content", mb: 1 }}
+                  to={UniqueRoutes.nyuad}
+                  onClick={() => {
+                    Tracking.sendEventAnalytics(
+                      Tracking.Events.internalNavigation,
+                      {
+                        destination_id: UniqueRoutes.nyuad,
+                        destination_school_id: "nyuad",
+                        origin_id: UniqueRoutes.home
+                      }
+                    );
+                  }}
+                >
+                  <BarChartIcon sx={{ fontSize: '0.8rem' }} />&nbsp;NYUAD Dashboard (Public Access)
+                </Button>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="caption" color="text.secondary">
+                  See detailed analysis of historical air quality data at NYUAD
+                </Typography>
+              </Grid>
+            </Grid>
+          </Grid>
         </Container>
       </FullWidthBox>
 

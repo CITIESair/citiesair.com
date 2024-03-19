@@ -236,17 +236,18 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
               themePreference={themePreference}
               temperatureUnitPreference={temperatureUnitPreference}
               placeholderText={"Map of CITIESair air quality sensors on NYUAD campus."}
-              centerCoordinates={[24.5237, 54.43449]}
+              centerCoordinates={[24.524, 54.43449]}
               maxBounds={[
                 [24.52038, 54.42612],
                 [24.52808, 54.44079]
               ]}
               defaultZoom={17}
               minZoom={17}
-              maxZoom={19}
+              maxZoom={18}
               displayMinimap={false}
-              locationTitle={LocationTitle.long}
+              locationTitle={LocationTitle.short}
               rawMapData={currentData}
+              markerSizeInRem={0.8}
             />
           </FullWidthBox>
         )
