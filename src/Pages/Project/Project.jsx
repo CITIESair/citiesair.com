@@ -44,6 +44,7 @@ import { CommentCountsContext } from '../../ContextProviders/CommentCountsContex
 
 import AQImap, { LocationTitle, TileOptions } from '../../Components/AQImap';
 import { RawDatasetType } from '../../Utils/ApiUtils';
+import NYUADbanner from '../Embeds/NYUADbanner';
 
 // Custom Chip component to display metadata
 export const CustomChip = (props) => {
@@ -230,37 +231,25 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
       </FullWidthBox>
       {displayMapOfSensors === true &&
         (
-          <FullWidthBox id="map">
-            <AQImap
-              tileOption={TileOptions.nyuad}
-              themePreference={themePreference}
-              temperatureUnitPreference={temperatureUnitPreference}
-              placeholderText={"Map of CITIESair air quality sensors on NYUAD campus."}
-              centerCoordinates={[24.524, 54.43449]}
-              maxBounds={[
-                [24.52038, 54.42612],
-                [24.52808, 54.44079]
-              ]}
-              defaultZoom={17}
-              minZoom={17}
-              maxZoom={18}
-              displayMinimap={false}
-              locationTitle={LocationTitle.short}
-              rawMapData={currentData}
-              markerSizeInRem={0.8}
-            />
-          </FullWidthBox>
+          <NYUADbanner
+            initialNyuadCurrentData={currentData}
+            isOnBannerPage={false}
+            themePreference={themePreference}
+            minMapHeight={"250px"}
+          />
         )
       }
       <FullWidthBox backgroundColor='customAlternateBackground'>
         <Container sx={{ pt: 3, pb: 3 }}>
-          <Box textAlign="center" sx={{ mb: 2 }}>
-            <CurrentAQIGrid
-              currentSensorsData={currentData}
-              isScreen={false}
-              temperatureUnitPreference={temperatureUnitPreference}
-            />
-          </Box>
+          {displayMapOfSensors === false &&
+            (<Box textAlign="center" sx={{ mb: 2 }}>
+              <CurrentAQIGrid
+                currentSensorsData={currentData}
+                isScreen={false}
+                temperatureUnitPreference={temperatureUnitPreference}
+              />
+            </Box>)
+          }
 
           <Typography
             component="div"

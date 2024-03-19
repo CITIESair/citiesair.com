@@ -466,6 +466,7 @@ const AQImap = (props) => {
                     textAlign="center"
                     width="100%"
                     margin="auto"
+                    color={themePreference !== ThemePreferences.light && "text.secondary"}
                     mt={-3}
                 >
                     <i>Click on each location for more information</i>
