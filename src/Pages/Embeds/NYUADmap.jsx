@@ -45,7 +45,8 @@ const NYUADmap = () => {
         fullSizeMap={true}
         showAttribution={false}
         rawMapData={nyuadCurrentData}
-        locationTitle={LocationTitle.long}
+        locationTitle={LocationTitle.short}
+        markerSizeInRem={0.7}
       />
     </FullWidthBox>
   );

@@ -42,7 +42,7 @@ import LoadingAnimation from '../../Components/LoadingAnimation';
 
 import { CommentCountsContext } from '../../ContextProviders/CommentCountsContext';
 
-import AQImap, { TileOptions } from '../../Components/AQImap';
+import AQImap, { LocationTitle, TileOptions } from '../../Components/AQImap';
 import { RawDatasetType } from '../../Utils/ApiUtils';
 
 // Custom Chip component to display metadata
@@ -245,7 +245,7 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
               minZoom={17}
               maxZoom={19}
               displayMinimap={false}
-              displayLocationTitle={true}
+              locationTitle={LocationTitle.long}
               rawMapData={currentData}
             />
           </FullWidthBox>
