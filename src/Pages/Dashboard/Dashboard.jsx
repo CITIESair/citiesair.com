@@ -86,34 +86,39 @@ const Dashboard = ({ themePreference, temperatureUnitPreference }) => {
   }, [user, school_id_param]);
 
   const fetchDataForDashboard = async (school_id) => {
-    const schoolMetadataUrl = getApiUrl({
-      endpoint: EndPoints.schoolmetadata,
-      school_id: school_id
-    });
+    try {
 
-    setSchoolMetadata(emptySchoolMetadata);
-    setCurrentData(emptyCurrentData);
-    setChartDataForDashboard({ ...chartDataForDashboard, charts: null });
+      const schoolMetadataUrl = getApiUrl({
+        endpoint: EndPoints.schoolmetadata,
+        school_id: school_id
+      });
 
-    const currentUrl = getApiUrl({
-      endpoint: EndPoints.current,
-      school_id: school_id
-    });
+      setSchoolMetadata(emptySchoolMetadata);
+      setCurrentData(emptyCurrentData);
+      setChartDataForDashboard({ ...chartDataForDashboard, charts: null });
+
+      const currentUrl = getApiUrl({
+        endpoint: EndPoints.current,
+        school_id: school_id
+      });
+
+      const dashboardData = await Promise.all([
+        fetchDataFromURL({ url: schoolMetadataUrl, extension: 'json', needsAuthorization: true }),
+        fetchAndProcessCurrentSensorsData(currentUrl)
+      ])
+
+      const schoolMetadata = dashboardData[0];
+      const currentData = dashboardData[1];
+      setSchoolMetadata(schoolMetadata);
+      setCurrentData(currentData);
+    } catch (error) {
+      console.log(error);
+    }
 
     const chartDataUrl = getApiUrl({
       endpoint: EndPoints.chartdata,
       school_id: school_id
     });
-
-    const dashboardData = await Promise.all([
-      fetchDataFromURL({ url: schoolMetadataUrl, extension: 'json', needsAuthorization: true }),
-      fetchAndProcessCurrentSensorsData(currentUrl)
-    ])
-
-    const schoolMetadata = dashboardData[0];
-    const currentData = dashboardData[1];
-    setSchoolMetadata(schoolMetadata);
-    setCurrentData(currentData);
 
     fetchDataFromURL({ url: chartDataUrl, extension: 'json', needsAuthorization: true })
       .then(data => {

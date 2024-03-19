@@ -286,7 +286,7 @@ const AQImap = (props) => {
     return (
         <Box sx={{
             ...(fullSizeMap ? { height: '100%' } : {
-                height: "50vh",
+                height: "55vh",
                 [theme.breakpoints.down('md')]: {
                     height: '60vh',
                 },
@@ -301,7 +301,7 @@ const AQImap = (props) => {
                 color: theme.palette.text.primary,
                 boxShadow: 'unset',
                 fontWeight: 500,
-                fontSize: locationTitle === LocationTitle.short ? '0.7rem' : '0.9rem',
+                fontSize: locationTitle === LocationTitle.short ? `0.7rem` : `0.9rem`,
                 textTransform: 'capitalize'
             },
             '& .leaflet-tooltip-bottom:before': {

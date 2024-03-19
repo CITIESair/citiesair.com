@@ -160,9 +160,6 @@ const NYUADbanner = () => {
 
           <Grid item xs={12}>
             <SimpleCurrentAQIlist currentSensorsData={otherIndoorLocations} useLocationShort={(isSmallScreen && isWidget)} />
-            <SimpleCurrentAQIlist currentSensorsData={otherIndoorLocations} useLocationShort={(isSmallScreen && isWidget)} />
-            <SimpleCurrentAQIlist currentSensorsData={otherIndoorLocations} useLocationShort={(isSmallScreen && isWidget)} />
-            <SimpleCurrentAQIlist currentSensorsData={otherIndoorLocations} useLocationShort={(isSmallScreen && isWidget)} />
           </Grid>
         </Grid>
 
