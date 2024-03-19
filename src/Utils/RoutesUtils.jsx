@@ -8,5 +8,6 @@ export const UniqueRoutes = {
   home: '/',
   anyScreen: '/screen/*',
   404: '/404',
-  blogSubdomain: 'https://blog.citiesair.com'
+  blogSubdomain: 'https://blog.citiesair.com',
+  redirectQuery: 'redirectTo'
 }
