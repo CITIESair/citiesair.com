@@ -96,11 +96,14 @@ export default function SeriesSelector(props) {
 
   return (
     <Stack spacing={1} direction="row" alignItems="center">
-      <FormControl sx={{
-        [theme.breakpoints.down('sm')]: { width: '100%' },
-        minWidth: '200px',
-        '& .MuiInputBase-root': { mt: 1, borderRadius: theme.spacing(1) }
-      }} size="small">
+      <FormControl
+        sx={{
+          [theme.breakpoints.down('sm')]: { width: '100%' },
+          minWidth: '200px',
+          '& .MuiInputBase-root': { mt: 1, borderRadius: theme.spacing(1) }
+        }}
+        size="small"
+      >
         <Select
           labelId={`${selectorID}-label`}
           id={selectorID}

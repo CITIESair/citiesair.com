@@ -18,6 +18,7 @@ import LoadingAnimation from '../../Components/LoadingAnimation';
 import ChartSubstituteComponentLoader from '../ChartSubstituteComponents/ChartSubstituteComponentLoader';
 
 import { CalendarChart, getCalendarChartMargin, yearSpacing } from './NivoCalendarChart';
+import CustomDateRangePicker from '../../Components/CustomDateRangePicker';
 
 export default function SubChart(props) {
   // Props
@@ -511,6 +512,14 @@ export default function SubChart(props) {
           onSeriesSelection={handleSeriesSelection}
         />
       )}
+
+      {/* Conditionally display the date range picker here */}
+      <Box mt={1.5}>
+        <CustomDateRangePicker
+        />
+      </Box>
+
+
 
       {/* Display chart here */}
       {renderChart()}
