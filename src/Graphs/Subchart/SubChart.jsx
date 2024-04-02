@@ -514,7 +514,7 @@ export default function SubChart(props) {
       )}
 
       {/* Conditionally display the date range picker here */}
-      <Box mt={1.5}>
+      <Box mt={1.5} height="2rem">
         <CustomDateRangePicker
         />
       </Box>
