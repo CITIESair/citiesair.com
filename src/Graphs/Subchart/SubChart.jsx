@@ -18,7 +18,8 @@ import LoadingAnimation from '../../Components/LoadingAnimation';
 import ChartSubstituteComponentLoader from '../ChartSubstituteComponents/ChartSubstituteComponentLoader';
 
 import { CalendarChart, getCalendarChartMargin, yearSpacing } from './NivoCalendarChart';
-import CustomDateRangePicker from '../../Components/CustomDateRangePicker';
+
+import CustomDateRangePicker from '../../Components/DateRangePicker/CustomDateRangePicker'
 
 export default function SubChart(props) {
   // Props
