@@ -97,6 +97,7 @@ const Dashboard = ({ themePreference, temperatureUnitPreference }) => {
       setCurrentData(emptyCurrentData);
       setChartDataForDashboard({ ...chartDataForDashboard, charts: null });
 
+      console.log(chartDataForDashboard)
       const currentUrl = getApiUrl({
         endpoint: EndPoints.current,
         school_id: school_id

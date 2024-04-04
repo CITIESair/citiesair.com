@@ -3,7 +3,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { LinkContext } from '../../ContextProviders/LinkContext';
 import parse from 'html-react-parser';
-import ChartControl from '../../Graphs/ChartControl';
+import ChartComponentWrapper from '../../Graphs/ChartComponentWrapper';
 import UppercaseTitle from '../../Components/UppercaseTitle';
 import CommentSection, { PAGE_NAME } from '../../Components/CommentSection';
 import { Box, Typography, Container, Divider, Chip, Grid, Tooltip, Stack, Skeleton } from '@mui/material';
@@ -336,7 +336,7 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
                     {index + 1}. {element.title}
                   </Typography>
 
-                  <ChartControl
+                  <ChartComponentWrapper
                     generalChartSubtitle={element.subtitle}
                     generalChartReference={element.reference}
                     chartData={{

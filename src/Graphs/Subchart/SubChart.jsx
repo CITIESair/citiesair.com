@@ -520,8 +520,6 @@ export default function SubChart(props) {
         />
       </Box>
 
-
-
       {/* Display chart here */}
       {renderChart()}
     </GoogleChartStyleWrapper>

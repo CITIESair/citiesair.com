@@ -4,8 +4,7 @@ import { Box, Tabs, Tab, useMediaQuery, Typography } from '@mui/material/';
 
 import SubChart from './Subchart/SubChart';
 
-import CollapsibleSubtitle from './../Components/CollapsibleSubtitle';
-import { index } from 'd3';
+import CollapsibleSubtitle from '../Components/CollapsibleSubtitle';
 
 const debounceMilliseconds = 100;
 
@@ -50,7 +49,7 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
 }));
 
 // eslint-disable-next-line max-len
-function ChartControl(props) {
+function ChartComponentWrapper(props) {
   const {
     generalChartSubtitle,
     generalChartReference,
@@ -228,4 +227,4 @@ function ChartControl(props) {
   );
 }
 
-export default ChartControl;
+export default ChartComponentWrapper;
