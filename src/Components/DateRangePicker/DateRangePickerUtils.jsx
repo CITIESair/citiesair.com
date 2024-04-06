@@ -5,31 +5,31 @@ import { Paper } from '@mui/material';
 
 import { addDays, endOfDay, startOfDay } from "date-fns";
 
-export const returnCustomStaticRanges = (minDate) => {
+export const returnCustomStaticRanges = ({ minDate, smallScreen }) => {
   return [
     {
-      label: "Last 14 Days",
+      label: smallScreen ? "Last 14d" : "Last 14 Days",
       range: () => ({
         startDate: startOfDay(addDays(new Date(), -14)),
         endDate: endOfDay(new Date())
       })
     },
     {
-      label: "Last 30 Days",
+      label: smallScreen ? "Last 30d" : "Last 30 Days",
       range: () => ({
         startDate: startOfDay(addDays(new Date(), -30)),
         endDate: endOfDay(new Date())
       })
     },
     {
-      label: "Last 90 Days",
+      label: smallScreen ? "Last 90d" : "Last 90 Days",
       range: () => ({
         startDate: startOfDay(addDays(new Date(), -90)),
         endDate: endOfDay(new Date())
       })
     },
     {
-      label: "Last 365 Days",
+      label: smallScreen ? "Last 365d" : "Last 365 Days",
       range: () => ({
         startDate: startOfDay(addDays(new Date(), -365)),
         endDate: endOfDay(new Date())
@@ -116,13 +116,14 @@ export const StyledDateRangePicker = styled(Paper)(({ theme, showPickerPanel, sm
   },
   '& .rdrStaticRangeLabel': {
     color: theme.palette.text.secondary,
-    padding: `${smallScreen ? `${theme.spacing(0.5)} ${theme.spacing(1)}` : `${theme.spacing(1)} ${theme.spacing(2)}`}`
+    padding: `${smallScreen ? `0 ${theme.spacing(1)}` : `${theme.spacing(1)} ${theme.spacing(2)}`}`
   },
   '& .rdrDefinedRangesWrapper': {
     borderRight: 'none',
     borderLeft: `1px solid`,
     borderColor: smallScreen ? "transparent" : theme.palette.action.disabled,
-    width: '100%'
+    width: '100%',
+    minWidth: smallScreen === false && "9rem"
   },
   '& .rdrMonthAndYearWrapper > button': {
     background: theme.palette.customBackground.toString()

@@ -23,6 +23,8 @@ import CITIESlogoLinkToHome from './CITIESlogoLinkToHome';
 import TemperatureUnitToggle from './TemperatureUnitToggle';
 import { UniqueRoutes } from '../../Utils/RoutesUtils';
 
+import { useTheme } from '@mui/material';
+
 export const showInMobile = (defaultDisplay) => ({ display: { xs: (defaultDisplay || 'block'), lg: 'none' } });
 export const showInDesktop = (defaultDisplay) => ({ display: { xs: 'none', lg: (defaultDisplay || 'block') } });
 
@@ -39,7 +41,7 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
   boxSizing: 'border-box',
   '& .MuiPaper-root': {
     height: 'auto',
-    borderRadius: '0.5rem',
+    borderRadius: theme.shape.borderRadius,
     margin: theme.spacing(2)
   }
 }));
@@ -61,6 +63,8 @@ export default function Header() {
     setMobileOpen((prevState) => !prevState);
   };
 
+  const theme = useTheme();
+
   return (
     <>
       {/* Hidable navbar */}
@@ -76,7 +80,7 @@ export default function Header() {
                     height: `${(toolBarHeightInRem * 4) / 3}rem`,
                     mt: `${toolBarHeightInRem}rem`,
                     opacity: triggerHideAppBar ? 0 : 1,
-                    borderRadius: '0.5rem',
+                    borderRadius: theme.shape.borderRadius,
                     transition: '0.2s ease-in-out',
                     '&:hover': { transform: 'scale(1.1)' },
                     mr: 2

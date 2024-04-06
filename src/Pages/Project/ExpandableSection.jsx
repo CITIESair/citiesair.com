@@ -7,8 +7,8 @@ import MuiAccordion from '@mui/material/Accordion';
 import MuiAccordionSummary from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import { Box, Typography, Tooltip } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import InfoIcon from '@mui/icons-material/Info';
 import * as Tracking from '../../Utils/Tracking';
 
 const StyledAccordion = styled(MuiAccordion)(({ theme, expanded }) => ({
@@ -33,6 +33,11 @@ const StyledAccordionSummary = styled(MuiAccordionSummary)(({ theme, expanded })
   },
 }));
 
+const TooltipText = {
+  expand: "Click to expand section",
+  collapse: "Click to collapse section"
+}
+
 const ExpandableSection = ({ title, content }) => {
   const [expanded, setExpanded] = useState(undefined);
 
@@ -53,10 +58,11 @@ const ExpandableSection = ({ title, content }) => {
         onChange={handleAccordionChange("panel1")}
         transitionDuration={0}
       >
-        <StyledAccordionSummary expanded={expanded} expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
-          <Tooltip title={expanded ? "Click to collapse" : "Click to expand"} enterDelay={0} leaveDelay={200}>
-            <Typography component="a" variant="body2">
+        <StyledAccordionSummary expanded={expanded} expandIcon={<ArrowDropDownIcon />} aria-controls="panel1a-content" id="panel1a-header">
+          <Tooltip title={expanded ? TooltipText.collapse : TooltipText.expand} enterDelay={0} leaveDelay={200}>
+            <Typography component="a" variant="body1">
               {title}
+              <InfoIcon sx={{ fontSize: "1rem", marginLeft: "0.25rem" }} />
             </Typography>
           </Tooltip>
         </StyledAccordionSummary>

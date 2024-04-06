@@ -104,6 +104,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
                 currentSensorsData={nyuadCurrentSensorData}
                 isScreen={false}
                 temperatureUnitPreference={temperatureUnitPreference}
+                firstSensorOwnLine={true}
               />
             </Grid>
 

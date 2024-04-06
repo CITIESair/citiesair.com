@@ -105,6 +105,9 @@ const NYUADbanner = (props) => {
           height="100%"
           minHeight={minMapHeight}
           sx={{
+            '& .leaflet-container': {
+              borderRadius: theme.shape.borderRadius
+            },
             '& .leaflet-marker-icon': {
               cursor: (isSmallScreen && isOnBannerPage) && "default"
             },
@@ -175,7 +178,7 @@ const NYUADbanner = (props) => {
               showHeatIndex={false}
               showLastUpdate={!isWidget}
               useLocationShort={true}
-              roundTemperature={true}
+              roundTemperature={isOnBannerPage && true}
             />
           </Grid>
 
@@ -290,7 +293,7 @@ const NYUADbanner = (props) => {
           <GoIcon />
         </Box>
       </Link> */}
-    </Grid>
+    </Grid >
 
   );
 };

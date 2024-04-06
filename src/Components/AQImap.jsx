@@ -462,7 +462,7 @@ const AQImap = (props) => {
                     variant="caption"
                     position="relative"
                     display="block"
-                    zIndex={999999}
+                    zIndex={1000}
                     textAlign="center"
                     width="100%"
                     margin="auto"

@@ -14,7 +14,7 @@ import { LocalStorage } from '../../Utils/LocalStorage';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
-  borderRadius: '0.5rem',
+  borderRadius: theme.shape.borderRadius,
   background: theme.palette.background.paper,
   '& .MuiFormLabel-root, .MuiInputBase-root .MuiTypography-root, svg': {
     fontSize: '0.75rem',
@@ -24,7 +24,7 @@ const StyledFormControl = styled(FormControl)(({ theme }) => ({
     verticalAlign: 'middle',
   },
   '& .MuiInputBase-root': {
-    borderRadius: '0.5rem',
+    borderRadius: theme.shape.borderRadius,
     '&:before,:hover,:after': {
       borderBottom: 'none !important',
     },

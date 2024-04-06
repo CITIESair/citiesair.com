@@ -16,7 +16,7 @@ const GoogleChartStyleWrapper = styled(Box)(({ theme, isPortrait }) => ({
     fontSize: `${isPortrait ? 9 : 12}px`,
     color: theme.palette.chart.tooltip.text,
     background: theme.palette.chart.tooltip.background,
-    borderRadius: theme.spacing(1 / 2),
+    borderRadius: theme.shape.borderRadius,
     '& ul': {
       margin: '0 !important',
       '& li': {
@@ -66,7 +66,7 @@ const GoogleChartStyleWrapper = styled(Box)(({ theme, isPortrait }) => ({
         paddingRight: theme.spacing(2),
         border: 'solid',
         borderWidth: '0.5px',
-        borderRadius: theme.spacing(0.5),
+        borderRadius: theme.shape.borderRadius,
         borderColor: theme.palette.text.secondary,
 
         '& .goog-menu-button-caption': {

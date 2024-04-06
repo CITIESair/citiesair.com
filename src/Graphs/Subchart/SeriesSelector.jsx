@@ -81,17 +81,19 @@ export default function SeriesSelector(props) {
   };
 
   const renderedLabel = (selected) => {
+    const returnNumSeriesDisplayed = () => {
+      return `${selected.length}/${items.length} series displayed`;
+    };
+
     return (
       <Stack direction="row" alignItems="center" spacing={0.5}>
         <VisibilityIcon fontSize="1.5rem" sx={{ color: theme.palette.text.secondary }} />
         <Typography variant="caption" color="text.secondary">
-          { /* show # of series selected if multiSelect. show cur selected serie if singleSelect */}
-          {allowMultiple ? `${selected.length} series displayed${selectAll ? ` (all)` : ""}`
-            : selected
-          }
+          {/* show # of series selected if multiSelect. show cur selected serie if singleSelect */}
+          {allowMultiple ? returnNumSeriesDisplayed() : selected}
         </Typography>
       </Stack>
-    )
+    );
   };
 
   return (
@@ -100,7 +102,7 @@ export default function SeriesSelector(props) {
         sx={{
           [theme.breakpoints.down('sm')]: { width: '100%' },
           minWidth: '200px',
-          '& .MuiInputBase-root': { mt: 1, borderRadius: theme.spacing(1) }
+          '& .MuiInputBase-root': { mt: 1, borderRadius: theme.shape.borderRadius }
         }}
         size="small"
       >

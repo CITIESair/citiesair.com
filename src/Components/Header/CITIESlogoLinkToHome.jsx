@@ -2,8 +2,11 @@ import { Link } from 'react-router-dom';
 import { Tooltip } from '@mui/material';
 import * as Tracking from '../../Utils/Tracking';
 import citiesLogo from '../../cities-logo.png';
+import { useTheme } from '@mui/material';
 
 function CITIESlogoLinkToHome() {
+  const theme = useTheme();
+
   return (
     <Tooltip title="Home">
       <Link
@@ -21,7 +24,7 @@ function CITIESlogoLinkToHome() {
       >
         <img
           style={{
-            height: '100%', width: 'auto', borderRadius: '0.5rem'
+            height: '100%', width: 'auto', borderRadius: theme.shape.borderRadius
           }}
           src={citiesLogo}
           title="CITIESair Logo"

@@ -433,7 +433,7 @@ const PreviewDataset = (props) => {
             backgroundColor: theme.palette.customBackground,
             p: 2,
             pt: 1.5,
-            borderRadius: theme.spacing(1),
+            borderRadius: theme.shape.borderRadius,
             borderTopLeftRadius: 0,
             height: smallScreen ? '11.8rem' : '14rem',
             width: smallScreen ? '100%' : 'unset',

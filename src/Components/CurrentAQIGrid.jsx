@@ -21,12 +21,14 @@ const CurrentAQIGrid = (props) => {
     showHeatIndex = true,
     showLastUpdate = true,
     useLocationShort = false,
-    roundTemperature = false
+    roundTemperature = false,
+    firstSensorOwnLine = false
   } = props;
 
-  const getGridItemSize = (numOfItems) => {
+  const getGridItemSize = ({ itemIndex, numOfItems }) => {
+
     return {
-      xs: Math.max(12 / numOfItems, 6),
+      xs: (itemIndex === 0 && firstSensorOwnLine) ? 12 : Math.max(12 / numOfItems, 6),
       sm: Math.max(12 / numOfItems, 4),
       lg: isScreen ? (12 / numOfItems) : Math.min(5, Math.max(12 / numOfItems, 2))
     }
@@ -58,7 +60,11 @@ const CurrentAQIGrid = (props) => {
             <Grid
               item
               key={key}
-              {...getGridItemSize(Object.keys(currentSensorsData).length)}
+              {...getGridItemSize({
+                itemIndex: index,
+                numOfItems: Object.keys(currentSensorsData).length
+              }
+              )}
               sx={
                 sensorData.current?.sensor_status !== SensorStatus.active &&
                 { '& *': { color: `${CustomThemes.universal.palette.inactiveSensor}` } }

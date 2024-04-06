@@ -1,10 +1,10 @@
 // disable eslint for this file
 /* eslint-disable */
 
-import { useContext, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { Menu, MenuItem, MenuList } from "@mui/material";
+import { Box, Menu, MenuItem, MenuList } from "@mui/material";
 import { CustomChip } from "../Project/Project";
 
 import PlaceIcon from '@mui/icons-material/Place';
@@ -15,6 +15,9 @@ import * as Tracking from '../../Utils/Tracking';
 
 import { DashboardContext } from "../../ContextProviders/DashboardContext";
 import { UserContext } from "../../ContextProviders/UserContext";
+
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 export const SchoolSelector = () => {
   const { currentSchoolID, schoolMetadata } = useContext(DashboardContext);
@@ -61,12 +64,29 @@ export const SchoolSelector = () => {
     handleClose();
   };
 
+  const returnChipLabel = () => {
+    return (
+      <Box sx={{
+        '& svg': {
+          fontSize: "1rem", verticalAlign: "sub", marginLeft: "0.25rem"
+        }
+      }
+      }>
+        {schoolMetadata?.name || "N/A"}
+        {Boolean(anchorEl) ? (
+          <ArrowDropUpIcon />
+        ) : (
+          <ArrowDropDownIcon />
+        )}
+      </Box>
+    );
+  };
 
   return (
     <>
       <CustomChip
         icon={<PlaceIcon />}
-        label={schoolMetadata?.name || "N/A"}
+        label={returnChipLabel()}
         tooltipTitle={"Click to Select School"}
         clickable
         onClick={handleClick}
