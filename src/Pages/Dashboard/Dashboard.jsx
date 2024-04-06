@@ -8,12 +8,13 @@ import { fetchDataFromURL } from "../../Components/DatasetDownload/DatasetFetche
 import Project from "../Project/Project";
 import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from "../../Utils/ApiUtils";
 import { LinkContext } from "../../ContextProviders/LinkContext";
+import { DashboardContext } from "../../ContextProviders/DashboardContext";
 
 import { UserContext } from "../../ContextProviders/UserContext";
 import { LocalStorage } from "../../Utils/LocalStorage";
 import { UniqueRoutes } from "../../Utils/RoutesUtils";
 
-const Dashboard = ({ themePreference, temperatureUnitPreference }) => {
+const Dashboard = () => {
   const { school_id_param } = useParams();
   const navigate = useNavigate();
 
@@ -24,24 +25,24 @@ const Dashboard = ({ themePreference, temperatureUnitPreference }) => {
     document.title = `CITIESair | ${school_id_param.toUpperCase()}`;
   }, [school_id_param]);
 
+  // Update current page type
   const [_, setCurrentPage, __, ___] = useContext(LinkContext);
   useEffect(() => {
     setCurrentPage(UniqueRoutes.dashboard);
   }, []);
 
+  const {
+    currentSchoolID, setCurrentSchoolID,
+    schoolMetadata, setSchoolMetadata,
+    current, setCurrent,
+    chartData, setChartData } = useContext(DashboardContext);
   const { user } = useContext(UserContext);
-
-  const emptySchoolMetadata = {};
-  const [schoolMetadata, setSchoolMetadata] = useState(emptySchoolMetadata);
-  const emptyCurrentData = null;
-  const [currentData, setCurrentData] = useState(emptyCurrentData);
-  const emptyChartDataForDashboard = {};
-  const [chartDataForDashboard, setChartDataForDashboard] = useState(emptyChartDataForDashboard);
 
   useEffect(() => {
     // NYUAD is public --> skip authentication and just fetch data
     if (school_id_param === "nyuad") {
       fetchDataForDashboard('nyuad');
+      setCurrentSchoolID('nyuad');
       return;
     };
 
@@ -62,22 +63,19 @@ const Dashboard = ({ themePreference, temperatureUnitPreference }) => {
         // If not existed yet, then just get the first school in the list
         else {
           school_id = allowedSchools[0].school_id;
-          localStorage.setItem(LocalStorage.schoolID, school_id)
-        }
-
-        // If there is no schoolMetadata or currentData or chartData, then fetch them
-        if (Object.keys(schoolMetadata).length === 0 ||
-          !currentData ||
-          Object.keys(chartDataForDashboard).length === 0
-        ) {
-          fetchDataForDashboard(school_id);
+          setCurrentSchoolID(school_id);
+          localStorage.setItem(LocalStorage.schoolID, school_id);
         }
 
         navigate(school_id, { replace: true }); // navigate to the correct url: /dashboard/:school_id_param
+
+        // If there is no schoolMetadata or current or chartData, then fetch them
+        if (!(!schoolMetadata && !current && !chartData)) fetchDataForDashboard(school_id);
       }
 
       // If there is school_id_param, check if school_id_param is in the allowedSchools
       if (allowedSchools.map((school) => school.school_id).includes(school_id_param)) {
+        setCurrentSchoolID(school_id_param);
         fetchDataForDashboard(school_id_param);
         localStorage.setItem(LocalStorage.schoolID, school_id_param);
         return;
@@ -87,61 +85,51 @@ const Dashboard = ({ themePreference, temperatureUnitPreference }) => {
 
   const fetchDataForDashboard = async (school_id) => {
     try {
+      setSchoolMetadata();
+      setCurrent();
+      setChartData({ ...chartData, charts: null });
 
-      const schoolMetadataUrl = getApiUrl({
-        endpoint: EndPoints.schoolmetadata,
-        school_id: school_id
-      });
-
-      setSchoolMetadata(emptySchoolMetadata);
-      setCurrentData(emptyCurrentData);
-      setChartDataForDashboard({ ...chartDataForDashboard, charts: null });
-
-      console.log(chartDataForDashboard)
-      const currentUrl = getApiUrl({
-        endpoint: EndPoints.current,
-        school_id: school_id
-      });
-
-      const dashboardData = await Promise.all([
-        fetchDataFromURL({ url: schoolMetadataUrl, extension: 'json', needsAuthorization: true }),
-        fetchAndProcessCurrentSensorsData(currentUrl)
+      const response = await Promise.all([
+        fetchDataFromURL({
+          url: getApiUrl({
+            endpoint: EndPoints.schoolmetadata,
+            school_id: school_id
+          }),
+          extension: 'json',
+          needsAuthorization: true
+        }),
+        fetchAndProcessCurrentSensorsData(getApiUrl({
+          endpoint: EndPoints.current,
+          school_id: school_id
+        }))
       ])
 
-      const schoolMetadata = dashboardData[0];
-      const currentData = dashboardData[1];
-      setSchoolMetadata(schoolMetadata);
-      setCurrentData(currentData);
+      setSchoolMetadata(response[0]);
+      setCurrent(response[1]);
+
     } catch (error) {
       console.log(error);
     }
 
-    const chartDataUrl = getApiUrl({
-      endpoint: EndPoints.chartdata,
-      school_id: school_id
-    });
-
-    fetchDataFromURL({ url: chartDataUrl, extension: 'json', needsAuthorization: true })
+    fetchDataFromURL({
+      url: getApiUrl({
+        endpoint: EndPoints.chartdata,
+        school_id: school_id
+      }),
+      extension: 'json',
+      needsAuthorization: true
+    })
       .then(data => {
-        setChartDataForDashboard(data);
+        setChartData(data);
       })
       .catch((error) => {
         console.log(error);
       })
-
-
   }
 
   return (
     <>
-      <Project
-        themePreference={themePreference}
-        schoolMetadata={schoolMetadata}
-        currentData={currentData}
-        dashboardData={chartDataForDashboard}
-        fetchDataForDashboard={fetchDataForDashboard}
-        temperatureUnitPreference={temperatureUnitPreference}
-      />
+      <Project />
     </>
   )
 };

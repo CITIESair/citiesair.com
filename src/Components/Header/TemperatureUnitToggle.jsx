@@ -1,29 +1,28 @@
-import { useState } from 'react';
+import { useContext } from 'react';
 import { Box, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
-
-import { TemperatureUnits } from '../../Pages/Screen/TemperatureUtils';
 import { LocalStorage } from '../../Utils/LocalStorage';
+import { TemperatureUnits } from '../../Pages/Screen/TemperatureUtils';
 
 import * as Tracking from '../../Utils/Tracking';
+import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 
-export default function TemperatureUnitToggle({ passedTemperatureUnit, passedSetTemperatureUnitPreference }) {
-  const [temperatureUnit, setTemperatureUnit] = useState(passedTemperatureUnit);
+export default function TemperatureUnitToggle() {
+  const { temperatureUnitPreference, setTemperatureUnitPreference } = useContext(PreferenceContext);
 
   const handleChange = (event, newUnit) => {
     Tracking.sendEventAnalytics(Tracking.Events.temperatureUnitChange, {
-      old_temperature: temperatureUnit,
+      old_temperature: temperatureUnitPreference,
       new_temperature: event.target.value,
     });
-    localStorage.setItem(LocalStorage.temperatureUnit, newUnit);
-    setTemperatureUnit(newUnit);
-    passedSetTemperatureUnitPreference(newUnit);
+    localStorage.setItem(LocalStorage.temperatureUnit, temperatureUnitPreference);
+    setTemperatureUnitPreference(newUnit);
   };
 
   return (
     <Box>
       <Typography variant="caption" display="block" color="text.secondary">TEMPERATURE UNIT</Typography>
       <ToggleButtonGroup
-        value={temperatureUnit}
+        value={temperatureUnitPreference}
         exclusive
         onChange={handleChange}
         aria-label="temperature unit toggle"
@@ -32,7 +31,7 @@ export default function TemperatureUnitToggle({ passedTemperatureUnit, passedSet
         <ToggleButton sx={{ px: "0.75rem" }} value={TemperatureUnits.celsius} aria-label={TemperatureUnits.celsius}>
           °{TemperatureUnits.celsius}
         </ToggleButton>
-        <ToggleButton sx={{ px: "0.75rem" }} value={TemperatureUnits.fahrenheit} aria-label={TemperatureUnits.celsius}>
+        <ToggleButton sx={{ px: "0.75rem" }} value={TemperatureUnits.fahrenheit} aria-label={TemperatureUnits.fahrenheit}>
           °{TemperatureUnits.fahrenheit}
         </ToggleButton>
       </ToggleButtonGroup>

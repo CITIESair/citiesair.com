@@ -62,7 +62,7 @@ export default function AirQualityIndexLegendQuickGlance(props) {
               <Typography sx={{ mx: 2, mt: 1 }} color="text.disabled" variant="body1" fontWeight={500}>
                 AQI at quick glance
               </Typography>
-              <AirQualityIndexTable isTiny hideAQIDescription themePreference />
+              <AirQualityIndexTable isTiny hideAQIDescription />
             </Paper>
           </Fade>
         )}

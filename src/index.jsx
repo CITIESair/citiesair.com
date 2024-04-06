@@ -6,17 +6,17 @@ import App from './App';
 import { UserProvider } from './ContextProviders/UserContext';
 import { GoogleProvider } from './ContextProviders/GoogleContext';
 import { LinkProvider } from './ContextProviders/LinkContext';
-import { CommentCountsProvider } from './ContextProviders/CommentCountsContext';
+import { PreferenceProvider } from './ContextProviders/PreferenceContext';
 
 ReactDOM.render(
   <React.StrictMode>
     <UserProvider>
       <GoogleProvider>
-        <CommentCountsProvider>
-          <LinkProvider>
+        <LinkProvider>
+          <PreferenceProvider>
             <App />
-          </LinkProvider>
-        </CommentCountsProvider>
+          </PreferenceProvider>
+        </LinkProvider>
       </GoogleProvider>
     </UserProvider>
   </React.StrictMode>,

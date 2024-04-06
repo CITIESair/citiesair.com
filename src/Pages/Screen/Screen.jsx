@@ -21,8 +21,11 @@ import QRCode from "react-qr-code";
 import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
 import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
 import { UniqueRoutes } from '../../Utils/RoutesUtils';
+import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 
-const Screen = ({ title, temperatureUnitPreference }) => {
+const Screen = ({ title }) => {
+  const { temperatureUnitPreference } = useContext(PreferenceContext);
+
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
@@ -70,7 +73,6 @@ const Screen = ({ title, temperatureUnitPreference }) => {
     if (user.checkedAuthentication === false) return;
 
     if (user.authenticated === true) {
-      console.log(user)
       // Do nothing if the data has been fetched before
       if (Object.keys(data).length != 0) return;
 

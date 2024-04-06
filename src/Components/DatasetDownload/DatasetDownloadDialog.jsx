@@ -1,6 +1,6 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Box, Link, Typography, Stack, Select, FormControl, MenuItem, Grid, Chip, Dialog, Button, DialogActions, DialogContent, useMediaQuery, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
@@ -13,17 +13,42 @@ import { fetchDataFromURL } from './DatasetFetcher';
 import { RawDatasetType, getRawDatasetUrl } from '../../Utils/ApiUtils';
 import LoadingAnimation from '../LoadingAnimation';
 
-export default function DatasetDownloadDialog(props) {
-  const { schoolID, initialSensorList } = props;
+import { DashboardContext } from '../../ContextProviders/DashboardContext';
 
-  const [sensorsDatasets, updateSensorsDatasets] = useState(initialSensorList);
+export default function DatasetDownloadDialog(props) {
+  const { currentSchoolID, current } = useContext(DashboardContext);
+
+  const [sensorsDatasets, updateSensorsDatasets] = useState({});
 
   const [previewingDataset, setPreviewingDataset] = useState("placeholder");
 
-  // Update initialSensorList once if sensorsDatasets is an empty object
+  // Construct the structure of sensorsDatasets based on current data
   useEffect(() => {
-    updateSensorsDatasets(initialSensorList);
-  }, [initialSensorList]);
+    if (!current) return;
+
+    const sensorsDatasets = current
+      .filter(item => item && item.sensor)  // Filter out null or undefined items and sensors
+      .reduce((acc, item) => {
+        // Use location_short as the key for each sensor
+        const key = item.sensor.location_short;
+        acc[key] = {
+          location_type: item.sensor.location_type,
+          location_short: item.sensor.location_short,
+          location_long: item.sensor.location_long,
+          last_seen: item.sensor.last_seen.split('T')[0],
+          rawDatasets: Object.keys(RawDatasetType).reduce((datasetAcc, datasetKey) => {
+            datasetAcc[RawDatasetType[datasetKey]] = {
+              sample: null,
+              full: null
+            };
+            return datasetAcc;
+          }, {})
+        };
+        return acc;
+      }, {});
+
+    updateSensorsDatasets(sensorsDatasets);
+  }, [current]);
 
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -34,7 +59,6 @@ export default function DatasetDownloadDialog(props) {
     setOpen(true);
   }
   const handleClose = () => {
-    updateSensorsDatasets(initialSensorList);
     setOpen(false);
   }
 
@@ -57,10 +81,11 @@ export default function DatasetDownloadDialog(props) {
         fullWidth
         fullScreen={smallScreen}
         keepMounted
+        zIndex={10000}
       >
         {(
           smallScreen &&
-          <DialogActions justifyContent="flex-start">
+          <DialogActions sx={{ justifyContent: "start" }}>
             <Button autoFocus onClick={handleClose}>
               <ChevronLeftIcon sx={{ fontSize: '1rem' }} />Back
             </Button>
@@ -72,11 +97,10 @@ export default function DatasetDownloadDialog(props) {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          alignItems: 'start',
-          height: '100%'
+          alignItems: 'start'
         }}>
-          <Chip label={schoolID ? `School: ${schoolID.toUpperCase()}` : "No School"} size="small" sx={{ mb: 1 }} />
-          <Typography variant="h6" >
+          <Chip label={currentSchoolID ? `School: ${currentSchoolID.toUpperCase()}` : "No School"} size="small" sx={{ mb: 1 }} />
+          <Typography variant="h6" zIndex="10000" sx={{ mb: 1 }}>
             Preview and download raw dataset(s)
           </Typography>
 
@@ -86,7 +110,7 @@ export default function DatasetDownloadDialog(props) {
             previewingDataset={previewingDataset}
             setPreviewingDataset={setPreviewingDataset}
             smallScreen={smallScreen}
-            schoolID={schoolID}
+            schoolID={currentSchoolID}
           />
           {
             sensorsDatasets &&
@@ -135,7 +159,7 @@ const DatasetSelectorAndPreviewer = (props) => {
   }, [sensorsDatasets, previewingDataset]);
 
   return (
-    <Grid container justifyContent="center" alignItems="start" spacing={3}>
+    <Grid container justifyContent="center" alignItems="start" spacing={smallScreen ? 1 : 2} sx={{ mt: 0 }} overflow="scroll">
       <Grid item sm={12} md={6}>
         <DatasetsTable
           schoolID={schoolID}
@@ -182,7 +206,7 @@ const DatasetsTable = (props) => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {Object.keys(sensorsDatasets).map((location_short) => (
+        {sensorsDatasets && Object.keys(sensorsDatasets).map((location_short) => (
           <Dataset
             schoolID={schoolID}
             smallScreen={smallScreen}

@@ -1,22 +1,37 @@
 // disable eslint for this file
 /* eslint-disable */
-import { Button, Box } from "@mui/material";
+import { useContext } from "react";
+import { Button } from "@mui/material";
 import { Link } from 'react-router-dom';
 import TvIcon from '@mui/icons-material/Tv';
 import HoverMenu from 'material-ui-popup-state/HoverMenu';
 import PopupState, { bindHover, bindFocus, bindMenu } from 'material-ui-popup-state';
 import MenuItemAsNavLink from "./Header/MenuItemAsNavLink";
 import NavLinkBehavior from "./Header/NavLinkBehavior";
+import { DashboardContext } from "../ContextProviders/DashboardContext";
 
-const ScreenDialog = ({ schoolID, screens }) => {
+const ScreenDialog = () => {
+  const { currentSchoolID, schoolMetadata } = useContext(DashboardContext);
+
+  if (!schoolMetadata) return;
+  const screens = schoolMetadata.screens;
+
   if (!Array.isArray(screens)) return null;
 
-  if (screens.length <= 1) return <LinkButtonToScreen url={`/screen/${schoolID}`} />
-  else return <DialogToScreen schoolID={schoolID} screens={screens} />
-};
-
-const DialogToScreen = ({ schoolID, screens }) => {
-  return (
+  // If there is only 1 screen, display a button linked to that screen
+  if (screens.length <= 1) {
+    return (
+      <Button
+        variant="contained"
+        component={Link}
+        to={`/screen/${currentSchoolID}`}
+      >
+        <TvIcon sx={{ fontSize: '1rem' }} />&nbsp;TV Screen
+      </Button>
+    )
+  }
+  // If there are more than 1 screens to choose from, display a popup dropdown menu
+  else return (
     <PopupState variant="popover" popupId="tv-screens-list">
       {(popupState) => (
         <>
@@ -38,7 +53,7 @@ const DialogToScreen = ({ schoolID, screens }) => {
                 <MenuItemAsNavLink
                   key={index}
                   behavior={NavLinkBehavior.toNewPage}
-                  to={`/screen/${schoolID}/${screen.screen_name}`}
+                  to={`/screen/${currentSchoolID}/${screen.screen_name}`}
                   label={screen.location_long}
                   sx={{ fontSize: '0.8rem' }}
                 />
@@ -48,18 +63,6 @@ const DialogToScreen = ({ schoolID, screens }) => {
       )}
     </PopupState>
   )
-}
-
-const LinkButtonToScreen = ({ url }) => {
-  return (
-    <Button
-      variant="contained"
-      component={Link}
-      to={url}
-    >
-      <TvIcon sx={{ fontSize: '1rem' }} />&nbsp;TV Screen
-    </Button>
-  )
-}
+};
 
 export default ScreenDialog;

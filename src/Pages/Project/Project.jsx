@@ -37,14 +37,14 @@ import { SchoolSelector } from "../Dashboard/SchoolSelector";
 import AirQualityIndexTable from '../../Graphs/ChartSubstituteComponents/AirQualityIndexTable';
 import ExpandableSection from './ExpandableSection';
 import AirQualityExplanation from '../../Utils/AirQualityExplanation';
-import { UserContext } from '../../ContextProviders/UserContext';
 import LoadingAnimation from '../../Components/LoadingAnimation';
 
 import { CommentCountsContext } from '../../ContextProviders/CommentCountsContext';
 
-import AQImap, { LocationTitle, TileOptions } from '../../Components/AQImap';
-import { RawDatasetType } from '../../Utils/ApiUtils';
 import NYUADbanner from '../Embeds/NYUADbanner';
+
+import { DashboardContext } from '../../ContextProviders/DashboardContext';
+import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 
 // Custom Chip component to display metadata
 export const CustomChip = (props) => {
@@ -60,79 +60,43 @@ export const CustomChip = (props) => {
   );
 }
 
-
-
-const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, fetchDataForDashboard, temperatureUnitPreference }) => {
+const Project = () => {
   const [_, __, ___, setChartsTitlesList] = useContext(LinkContext);
 
-  let lastUpdate;
+  const { schoolMetadata, current, chartData } = useContext(DashboardContext);
 
-  const { user } = useContext(UserContext);
+  let lastUpdate;
 
   const [commentCounts, fetchCommentCounts, setCommentCounts] = useContext(CommentCountsContext);
 
   const [displayCommentSection, setDisplayCommentSection] = useState(false);
   const [displayMapOfSensors, setDisplayMapOfSensors] = useState(false);
 
-  const [listOfSensors, setListOfSensors] = useState({});
+  const { themePreference, temperatureUnitPreference } = useContext(PreferenceContext);
 
+  // If NYUAD, display comment section and map of sensors
   useEffect(() => {
-    if (schoolMetadata?.school_id === 'nyuad') {
-      setDisplayCommentSection(true);
-      setDisplayMapOfSensors(true);
-      return;
+    if (!schoolMetadata) return;
+
+    const isNYUAD = schoolMetadata.school_id === 'nyuad';
+    setDisplayCommentSection(isNYUAD);
+    setDisplayMapOfSensors(isNYUAD);
+
+    // Fetch comment count for NYUAD
+    if (isNYUAD && !commentCounts) {
+      fetchCommentCounts().then((data) => {
+        setCommentCounts(data);
+      });
     }
-    setDisplayCommentSection(false);
-    setDisplayMapOfSensors(false);
   }, [schoolMetadata])
-
-  useEffect(() => {
-    if (!displayCommentSection) return;
-
-    if (commentCounts !== null) return;
-
-    // Fetch comment count for page if it is nyuad
-    fetchCommentCounts().then((data) => {
-      setCommentCounts(data);
-    });
-  }, [displayCommentSection]);
 
   // Update the chart title list for quick navigation
   useEffect(() => {
-    if (!dashboardData?.charts) return;
+    if (!chartData?.charts) return;
 
-    const chartsTitles = dashboardData?.charts.map((element, index) => ({ chartTitle: element.title, chartID: `chart-${index + 1}` }));
+    const chartsTitles = chartData?.charts.map((element, index) => ({ chartTitle: element.title, chartID: `chart-${index + 1}` }));
     setChartsTitlesList(chartsTitles);
-  }, [dashboardData]);
-
-  // Update the list of sensor locations of this school for dataset download button
-  useEffect(() => {
-    if (!currentData) return;
-
-    const sensors = currentData
-      .filter(item => item && item.sensor)  // Filter out null or undefined items and sensors
-      .reduce((acc, item) => {
-        // Use location_short as the key for each sensor
-        const key = item.sensor.location_short;
-        acc[key] = {
-          location_type: item.sensor.location_type,
-          location_short: item.sensor.location_short,
-          location_long: item.sensor.location_long,
-          last_seen: item.sensor.last_seen.split('T')[0],
-          rawDatasets: Object.keys(RawDatasetType).reduce((datasetAcc, datasetKey) => {
-            datasetAcc[RawDatasetType[datasetKey]] = {
-              sample: null,
-              full: null
-            };
-            return datasetAcc;
-          }, {})
-        };
-        return acc;
-      }, {});
-
-    setListOfSensors(sensors);
-
-  }, [currentData]);
+  }, [chartData]);
 
   const theme = useTheme();
 
@@ -140,16 +104,81 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
     if (schoolMetadata?.school_id) return `Air Quality | ${schoolMetadata?.school_id}`
   }
 
+  const displayProjectDescription = () => {
+    const description = chartData.description;
+
+    if (description) return (
+      <Typography
+        component="div"
+        variant="body1"
+        color="text.secondary"
+        sx={{
+          textAlign: 'justify', pb: 2, mb: 0, "& table *": {
+            color: `${theme.palette.text.secondary}`
+          }
+        }}
+        gutterBottom
+      >
+        {
+          parse(description || '', {
+            replace: replacePlainHTMLWithMuiComponents,
+          })
+        }
+      </Typography>
+    )
+    else {
+      return (
+        Array.from({ length: 3 }).map((_, index) => (
+          <Skeleton key={index} variant='text' />
+        ))
+      )
+    }
+  };
+
+  const displayCharts = () => {
+    if (chartData) {
+      return (
+        chartData?.charts?.map((element, index) => (
+          <FullWidthBox
+            key={index}
+            backgroundColor={
+              index % 2 != 0 && 'customAlternateBackground'
+            }
+          >
+            <Container
+              sx={{ pt: 4, pb: 4 }}
+              height="auto"
+              className={themePreference === ThemePreferences.dark ? 'dark' : ''}
+              id={`chart-${index + 1}`}
+            >
+              <Typography variant="h6" color="text.primary">
+                {index + 1}. {element.title}
+              </Typography>
+
+              <ChartComponentWrapper
+                generalChartSubtitle={element.subtitle}
+                generalChartReference={element.reference}
+                chartData={{
+                  chartIndex: index,
+                  ...element,
+                }}
+              />
+            </Container>
+          </FullWidthBox>
+        ))
+      )
+    } else {
+      return (
+        <LoadingAnimation optionalText="Loading Dashboard" />
+      )
+    }
+  }
+
   const GridOfMetadataChips = () => {
     return (
       <Grid container spacing={1} sx={{ mt: -3, pb: 3 }}>
         <Grid item>
-          <SchoolSelector
-            currentSchoolID={schoolMetadata?.school_id}
-            currentSchoolName={schoolMetadata?.name}
-            allowedSchools={user.allowedSchools}
-            fetchDataForDashboard={fetchDataForDashboard}
-          />
+          <SchoolSelector />
         </Grid>
 
         <Grid item>
@@ -174,14 +203,14 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
         <Grid item>
           <CustomChip
             icon={<BarChartIcon />}
-            label={`${dashboardData?.charts?.length || "..."} Chart${dashboardData?.charts?.length !== 1 ? 's' : ''}`}
+            label={`${chartData?.charts?.length || "..."} Chart${chartData?.charts?.length !== 1 ? 's' : ''}`}
             tooltipTitle="Number of Charts"
             onClick={() => {
               scrollToSection(jsonData.charts.id);
               Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
                 {
                   destination_id: jsonData.charts.id,
-                  destination_label: jsonData.dashboardData?.toString(),
+                  destination_label: jsonData.chartData?.toString(),
                   origin_id: 'chip'
                 });
             }}
@@ -221,7 +250,7 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
 
   return (
     <Box width="100%">
-      <AirQualityIndexLegendQuickGlance themePreference={themePreference} />
+      <AirQualityIndexLegendQuickGlance />
 
       <FullWidthBox backgroundColor='customAlternateBackground'>
         <Container sx={{ pt: 5 }}>
@@ -232,7 +261,7 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
       {displayMapOfSensors === true &&
         (
           <NYUADbanner
-            initialNyuadCurrentData={currentData}
+            initialNyuadCurrentData={current}
             isOnBannerPage={false}
             themePreference={themePreference}
             minMapHeight={"250px"}
@@ -244,45 +273,18 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
           {displayMapOfSensors === false &&
             (<Box textAlign="center" sx={{ mb: 2 }}>
               <CurrentAQIGrid
-                currentSensorsData={currentData}
+                currentSensorsData={current}
                 isScreen={false}
                 temperatureUnitPreference={temperatureUnitPreference}
               />
             </Box>)
           }
 
-          <Typography
-            component="div"
-            variant="body1"
-            color="text.secondary"
-            sx={{
-              textAlign: 'justify', pb: 2, mb: 0, "& table *": {
-                color: `${theme.palette.text.secondary}`
-              }
-            }}
-            gutterBottom
-          >
-            {
-              dashboardData?.description ?
-                parse(dashboardData?.description || '', {
-                  replace: replacePlainHTMLWithMuiComponents,
-                })
-                :
-                Array.from({ length: 3 }).map((_, index) => (
-                  <Skeleton key={index} variant='text' />
-                ))
-            }
-          </Typography>
+          {chartData && displayProjectDescription()}
 
           <Stack direction="row" spacing={2}>
-            <ScreenDialog
-              schoolID={schoolMetadata?.school_id}
-              screens={schoolMetadata?.screens}
-            />
-            <DatasetDownloadDialog
-              schoolID={schoolMetadata?.school_id}
-              initialSensorList={listOfSensors}
-            />
+            <ScreenDialog />
+            <DatasetDownloadDialog />
           </Stack>
 
           <ExpandableSection
@@ -317,40 +319,7 @@ const Project = ({ themePreference, schoolMetadata, currentData, dashboardData, 
       </FullWidthBox>
 
       <Box id={jsonData.charts.id}>
-        {
-          dashboardData?.charts ?
-            dashboardData?.charts?.map((element, index) => (
-              <FullWidthBox
-                key={index}
-                backgroundColor={
-                  index % 2 != 0 && 'customAlternateBackground'
-                }
-              >
-                <Container
-                  sx={{ pt: 4, pb: 4 }}
-                  height="auto"
-                  className={themePreference === ThemePreferences.dark ? 'dark' : ''}
-                  id={`chart-${index + 1}`}
-                >
-                  <Typography variant="h6" color="text.primary">
-                    {index + 1}. {element.title}
-                  </Typography>
-
-                  <ChartComponentWrapper
-                    generalChartSubtitle={element.subtitle}
-                    generalChartReference={element.reference}
-                    chartData={{
-                      chartIndex: index,
-                      ...element,
-                    }}
-                  />
-                </Container>
-              </FullWidthBox>
-            ))
-            :
-            <LoadingAnimation optionalText="Loading Dashboard" />
-        }
-
+        {displayCharts(chartData)}
       </Box>
       <Divider />
 

@@ -44,9 +44,7 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
   }
 }));
 
-export default function Header(props) {
-  const { setThemePreference, temperatureUnitPreference, setTemperatureUnitPreference } = props;
-
+export default function Header() {
   // eslint-disable-next-line no-unused-vars
   const [currentPage, _, chartsTitlesList, __] = useContext(LinkContext);
 
@@ -156,8 +154,8 @@ export default function Header(props) {
                 <Typography variant="h6" color="text.secondary" fontWeight="medium" >
                   Page Settings
                 </Typography>
-                <ThemeSelector isFullWidth setThemePreference={setThemePreference} />
-                <TemperatureUnitToggle passedTemperatureUnit={temperatureUnitPreference} passedSetTemperatureUnitPreference={setTemperatureUnitPreference} />
+                <ThemeSelector isFullWidth />
+                <TemperatureUnitToggle />
               </Stack>
 
             </Container>

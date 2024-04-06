@@ -4,6 +4,8 @@ import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
 import ChartComponentWrapper from '../ChartComponentWrapper';
 import AQIdatabase from '../../Utils/AirQualityIndexHelper';
 import ThemePreferences from '../../Themes/ThemePreferences';
+import { useContext } from 'react';
+import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 
 export const StyledTable = styled(Table)(({ theme, isTiny }) => ({
   minWidth: isTiny || 700,
@@ -22,7 +24,9 @@ export const StyledTable = styled(Table)(({ theme, isTiny }) => ({
 }));
 
 function AirQualityIndexTable(props) {
-  const { isTiny, hideAQIDescription, themePreference } = props;
+  const { themePreference } = useContext(PreferenceContext);
+
+  const { isTiny, hideAQIDescription } = props;
 
   const renderAQIchart = ({ shouldRender }) => {
     let aqiChart = null;

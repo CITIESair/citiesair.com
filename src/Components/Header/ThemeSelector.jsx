@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import { MenuItem, Typography } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
@@ -11,6 +11,7 @@ import ThemePreferences from '../../Themes/ThemePreferences';
 
 import * as Tracking from '../../Utils/Tracking';
 import { LocalStorage } from '../../Utils/LocalStorage';
+import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
   borderRadius: '0.5rem',
@@ -50,7 +51,9 @@ const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   },
 }));
 
-export default function ThemeSelector({ isFullWidth, setThemePreference }) {
+export default function ThemeSelector({ isFullWidth }) {
+  const { setThemePreference } = useContext(PreferenceContext);
+
   const [themeValue, setThemeValue] = useState(localStorage.getItem(LocalStorage.theme) || ThemePreferences.system);
 
   const handleChange = (event) => {

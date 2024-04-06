@@ -1,7 +1,7 @@
 // disable eslint for this file
 /* eslint-disable */
 
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { Menu, MenuItem, MenuList } from "@mui/material";
@@ -13,18 +13,24 @@ import { UniqueRoutes } from "../../Utils/RoutesUtils";
 
 import * as Tracking from '../../Utils/Tracking';
 
-export const SchoolSelector = (props) => {
-  const { allowSelect, currentSchoolID, currentSchoolName, allowedSchools, fetchDataForDashboard } = props;
+import { DashboardContext } from "../../ContextProviders/DashboardContext";
+import { UserContext } from "../../ContextProviders/UserContext";
 
-  if (allowSelect === false || !Array.isArray(allowedSchools) || allowedSchools.length <= 1)
+export const SchoolSelector = () => {
+  const { currentSchoolID, schoolMetadata } = useContext(DashboardContext);
+  const { user } = useContext(UserContext);
+
+  // If there is only one school, return a Chip displaying the name of that school
+  if (!Array.isArray(user.allowedSchools) || user.allowedSchools.length <= 1)
     return (
       <CustomChip
         icon={<PlaceIcon />}
-        label={currentSchoolName}
+        label={schoolMetadata?.name || "N/A"}
         tooltipTitle={"School"}
       />
     );
 
+  // Else, display a drop down menu that allows choosing between different schools
   const [schoolID, setSchoolID] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -60,7 +66,7 @@ export const SchoolSelector = (props) => {
     <>
       <CustomChip
         icon={<PlaceIcon />}
-        label={currentSchoolName}
+        label={schoolMetadata?.name || "N/A"}
         tooltipTitle={"Click to Select School"}
         clickable
         onClick={handleClick}
@@ -77,7 +83,7 @@ export const SchoolSelector = (props) => {
         }}
       >
         <MenuList dense>
-          {allowedSchools.map((school, index) => (
+          {user.allowedSchools.map((school, index) => (
             <MenuItem
               key={index}
               onClick={handleItemSelect(school.school_id)}

@@ -1,5 +1,5 @@
 // React components
-import { React, useState, useMemo, lazy, Suspense } from 'react';
+import { React, useMemo, lazy, Suspense, useContext } from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 
 // MUI components
@@ -19,11 +19,12 @@ import LoadingAnimation from './Components/LoadingAnimation';
 import LogIn from './Components/Account/LogIn';
 import NYUADmap from './Pages/Embeds/NYUADmap';
 
-// Contexts
-import { TemperatureUnits } from './Pages/Screen/TemperatureUtils';
-import { LocalStorage } from './Utils/LocalStorage';
 import { UniqueRoutes } from './Utils/RoutesUtils';
 import NYUADbanner from './Pages/Embeds/NYUADbanner';
+
+import { DashboardProvider } from './ContextProviders/DashboardContext';
+import { CommentCountsProvider } from './ContextProviders/CommentCountsContext';
+import { PreferenceContext } from './ContextProviders/PreferenceContext';
 
 // Lazy load pages
 const Home = lazy(() => import('./Pages/Home/Home'));
@@ -49,17 +50,7 @@ const getDesignTokens = (themePreference) => ({
 });
 
 function App() {
-  // Set theme preference state based on localStorage or system preference
-  const [themePreference, setThemePreference] = useState(
-    localStorage.getItem(LocalStorage.theme)
-    || (window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? ThemePreferences.dark : ThemePreferences.light)
-  );
-  // Set temperature unit preference state based on localStorage
-  const [temperatureUnitPreference, setTemperatureUnitPreference] = useState(
-    localStorage.getItem(LocalStorage.temperatureUnit)
-    || TemperatureUnits.celsius
-  );
+  const { themePreference } = useContext(PreferenceContext);
 
   // Create theme using getDesignTokens
   const theme = useMemo(
@@ -90,8 +81,8 @@ function App() {
                 path={UniqueRoutes.home}
                 element={
                   <Box>
-                    <Header setThemePreference={setThemePreference} temperatureUnitPreference={temperatureUnitPreference} setTemperatureUnitPreference={setTemperatureUnitPreference} />
-                    <Home themePreference={themePreference} temperatureUnitPreference={temperatureUnitPreference} title="CITIESair" />
+                    <Header />
+                    <Home title="CITIESair" />
                     <Footer />
                   </Box>
                 }
@@ -101,7 +92,7 @@ function App() {
                 path={UniqueRoutes.login}
                 element={
                   <Box>
-                    <Header setThemePreference={setThemePreference} temperatureUnitPreference={temperatureUnitPreference} setTemperatureUnitPreference={setTemperatureUnitPreference} />
+                    <Header />
                     <LogIn />
                     <Footer />
                   </Box>
@@ -116,8 +107,12 @@ function App() {
                     path={path}
                     element={
                       <Box>
-                        <Header setThemePreference={setThemePreference} temperatureUnitPreference={temperatureUnitPreference} setTemperatureUnitPreference={setTemperatureUnitPreference} />
-                        <Dashboard themePreference={themePreference} temperatureUnitPreference={temperatureUnitPreference} />
+                        <Header />
+                        <DashboardProvider>
+                          <CommentCountsProvider>
+                            <Dashboard />
+                          </CommentCountsProvider>
+                        </DashboardProvider>
                         <Footer />
                       </Box>
                     }
@@ -128,7 +123,7 @@ function App() {
 
               <Route
                 path={UniqueRoutes.anyScreen}
-                element={<Screen temperatureUnitPreference={temperatureUnitPreference} title="CITIESair | Screen" />}
+                element={<Screen title="CITIESair | Screen" />}
               />
 
               <Route

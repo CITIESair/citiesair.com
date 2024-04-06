@@ -236,17 +236,31 @@ export default function SubChart(props) {
 
       // Set the visibility of data column, 
       if (col.role === 'data') {
-        // initially, all data columns are selected if multiple series are selectable
-        if (seriesSelector?.allowMultiple) {
-          col.selected = true;
-        } else {
-          // else for single serie selector, only first data column is selected
-          if (dataSeriesIndex === 0) {
+        // If defaultSeriesToDisplayInitially is presented
+        // then, only show these series
+        if (seriesSelector.defaultSeriesToDisplayInitially) {
+          if (seriesSelector.defaultSeriesToDisplayInitially.includes(index)) {
             col.selected = true;
-          } else {
+          }
+          else {
             col.selected = false;
           }
         }
+        // If no defaultSeriesToDisplayInitially is presented
+        else {
+          // then, all data columns are selected if multiple series are selectable
+          if (seriesSelector.allowMultiple) {
+            col.selected = true;
+          } else {
+            // else for single serie selector, only first data column is selected
+            if (dataSeriesIndex === 0) {
+              col.selected = true;
+            } else {
+              col.selected = false;
+            }
+          }
+        }
+
         col.seriesIndex = dataSeriesIndex;
         dataSeriesIndex++;
       }
@@ -484,6 +498,7 @@ export default function SubChart(props) {
   }
 
   const onChartReady = () => {
+    console.log(chartData.id);
     if (!isFirstRender) return;
     // Hide the circleProgress when chart finishes rendering the first time
     setIsFirstRender(false);

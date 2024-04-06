@@ -1,16 +1,16 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Box, Grid, Link, Typography, Stack, Tooltip } from '@mui/material/';
 import { useLocation } from 'react-router-dom';
 import { useMediaQuery, useTheme } from '@mui/material';
 
-import * as Tracking from '../../Utils/Tracking';
 import AQImap, { LocationTitle, TileOptions } from '../../Components/AQImap';
 import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
-import ThemePreferences from '../../Themes/ThemePreferences';
 import CurrentAQIGrid, { SimpleCurrentAQIlist } from '../../Components/CurrentAQIGrid';
 import AQIdatabase from '../../Utils/AirQualityIndexHelper';
+import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
+import ThemePreferences from '../../Themes/ThemePreferences';
 
 const Host = {
   "students-portal": {
@@ -24,16 +24,17 @@ const Host = {
 }
 
 const NYUADbanner = (props) => {
+  const { themePreference } = useContext(PreferenceContext);
+
   const {
     initialNyuadCurrentData = null,
     isOnBannerPage = true,
-    themePreference = ThemePreferences.light,
     minMapHeight = "190px"
   } = props;
 
   const theme = useTheme();
 
-  const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('md'));
+  const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
 
   const getCenterCoordinates = () => {
     if (isOnBannerPage) {
@@ -99,7 +100,7 @@ const NYUADbanner = (props) => {
 
   return (
     <Grid container overflow="hidden" flex={1}>
-      <Grid item xs={12} md={6}>
+      <Grid item xs={12} sm={6}>
         <Box
           height="100%"
           minHeight={minMapHeight}
@@ -153,7 +154,7 @@ const NYUADbanner = (props) => {
       <Grid
         container
         item
-        xs={12} md={6}
+        xs={12} sm={6}
         justifyContent="space-around"
       // backgroundColor="customAlternateBackground"
       >
@@ -161,11 +162,11 @@ const NYUADbanner = (props) => {
           container
           item
           xs={9}
-          md={12}
+          sm={12}
           justifyContent="center"
           textAlign="center"
           my={1}
-          spacing={!isOnBannerPage && 1}
+          spacing={isOnBannerPage === false && 1}
         >
           <Grid item xs={12} >
             <CurrentAQIGrid
@@ -197,7 +198,7 @@ const NYUADbanner = (props) => {
           </Grid>
         </Grid>
 
-        <Grid container item xs={1.5} md={11} textAlign="left" my={isSmallScreen ? 2 : 1}>
+        <Grid container item xs={1.5} sm={11} textAlign="left" my={isSmallScreen ? 2 : 1}>
           <Stack
             direction={isSmallScreen ? "column-reverse" : "row"}
             justifyContent="center"
