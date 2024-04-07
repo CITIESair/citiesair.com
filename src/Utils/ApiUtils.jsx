@@ -12,6 +12,7 @@ export const EndPoints = {
   raw: "raw",
   schoolmetadata: "schoolmetadata",
   chartdata: "chartdata",
+  historicalChart: "historicalChart",
   screen: "screen",
   login: "login",
   logout: "logout",
@@ -23,8 +24,19 @@ export const RawDatasetType = {
   hourly: "hourly"
 }
 
-export const getApiUrl = ({ endpoint, school_id }) => {
+export const getApiUrl = ({
+  endpoint,
+  school_id,
+  aggregationType = null,
+  startDate = null,
+  endDate = null
+}) => {
   if ([EndPoints.current, EndPoints.schoolmetadata, EndPoints.chartdata].includes(endpoint)) return `${apiDomain}/${endpoint}/${school_id}`;
+  else if (endpoint === EndPoints.historicalChart) {
+    if (!(aggregationType && startDate & endDate)) return;
+
+    return `${apiDomain}/${endpoint}/${school_id}?aggregationType=${aggregationType}&startDate=${startDate}&endDate=${endDate}&`;
+  }
   else if (endpoint === EndPoints.screen) {
     const currentUrl = window.location.href;
     const regex = /\/screen\/(.+)/;

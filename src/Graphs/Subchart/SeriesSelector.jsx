@@ -102,7 +102,7 @@ export default function SeriesSelector(props) {
         sx={{
           [theme.breakpoints.down('sm')]: { width: '100%' },
           minWidth: '200px',
-          '& .MuiInputBase-root': { mt: 1, borderRadius: theme.shape.borderRadius }
+          '& .MuiInputBase-root': { mt: 1, borderRadius: `${theme.shape.borderRadius}px` }
         }}
         size="small"
       >

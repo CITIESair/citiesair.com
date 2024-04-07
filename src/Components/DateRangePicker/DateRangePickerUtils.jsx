@@ -4,45 +4,50 @@ import { styled } from '@mui/material/styles';
 import { Paper } from '@mui/material';
 
 import { addDays, endOfDay, startOfDay } from "date-fns";
+import AggregationType from './AggregationType';
 
-export const returnCustomStaticRanges = ({ minDate, smallScreen }) => {
-  return [
+export const returnCustomStaticRanges = ({ today, minDateOfDataset, smallScreen, aggregationType }) => {
+  const hourlyReturn = [
     {
       label: smallScreen ? "Last 14d" : "Last 14 Days",
       range: () => ({
-        startDate: startOfDay(addDays(new Date(), -14)),
-        endDate: endOfDay(new Date())
+        startDate: startOfDay(addDays(today, -14)),
+        endDate: endOfDay(today)
       })
     },
     {
       label: smallScreen ? "Last 30d" : "Last 30 Days",
       range: () => ({
-        startDate: startOfDay(addDays(new Date(), -30)),
-        endDate: endOfDay(new Date())
-      })
-    },
-    {
-      label: smallScreen ? "Last 90d" : "Last 90 Days",
-      range: () => ({
-        startDate: startOfDay(addDays(new Date(), -90)),
-        endDate: endOfDay(new Date())
-      })
-    },
-    {
-      label: smallScreen ? "Last 365d" : "Last 365 Days",
-      range: () => ({
-        startDate: startOfDay(addDays(new Date(), -365)),
-        endDate: endOfDay(new Date())
-      })
-    },
-    {
-      label: "All Time",
-      range: () => ({
-        startDate: minDate,
-        endDate: endOfDay(new Date())
+        startDate: startOfDay(addDays(today, -30)),
+        endDate: endOfDay(today)
       })
     }
   ];
+
+  const dailyReturn = [{
+    label: smallScreen ? "Last 90d" : "Last 90 Days",
+    range: () => ({
+      startDate: startOfDay(addDays(today, -90)),
+      endDate: endOfDay(today)
+    })
+  },
+  {
+    label: smallScreen ? "Last 365d" : "Last 365 Days",
+    range: () => ({
+      startDate: startOfDay(addDays(today, -365)),
+      endDate: endOfDay(today)
+    })
+  },
+  {
+    label: "All Time",
+    range: () => ({
+      startDate: minDateOfDataset,
+      endDate: endOfDay(today)
+    })
+  }
+  ];
+
+  return (aggregationType === AggregationType.hourly) ? hourlyReturn : [...hourlyReturn, ...dailyReturn];
 };
 
 export const StyledDateRangePicker = styled(Paper)(({ theme, showPickerPanel, smallScreen }) => ({
@@ -50,7 +55,7 @@ export const StyledDateRangePicker = styled(Paper)(({ theme, showPickerPanel, sm
   zIndex: showPickerPanel === true && 10000,
   padding: showPickerPanel ? theme.spacing(1) : 0,
   margin: smallScreen === false && (showPickerPanel ? theme.spacing(-1) : 0),
-  width: 'fit-content',
+  width: smallScreen ? '100%' : 'fit-content',
   maxWidth: '100%',
   background: showPickerPanel ? theme.palette.customAlternateBackground : 'transparent',
   boxShadow: showPickerPanel === false && 'none',
@@ -61,7 +66,7 @@ export const StyledDateRangePicker = styled(Paper)(({ theme, showPickerPanel, sm
     background: 'transparent'
   },
   '& .rdrDateInput': {
-    borderRadius: theme.spacing(1),
+    borderRadius: theme.shape.borderRadius,
     boxShadow: 'none'
   },
   '& .rdrDateDisplayItemActive': {
@@ -72,7 +77,7 @@ export const StyledDateRangePicker = styled(Paper)(({ theme, showPickerPanel, sm
   },
   '& .rdrDateDisplayItem': {
     margin: 0,
-    borderRadius: showPickerPanel ? theme.spacing(1) : 0,
+    borderRadius: showPickerPanel ? theme.shape.borderRadius : 0,
     "&:hover:not(.rdrDateDisplayItemActive)": {
       border: showPickerPanel ? `1px solid ${theme.palette.action.disabled}` : "none"
     }
@@ -94,20 +99,21 @@ export const StyledDateRangePicker = styled(Paper)(({ theme, showPickerPanel, sm
   },
   '&  .rdrInfiniteMonths': {
     visibility: showPickerPanel === false && 'hidden',
-    width: "80vw !important",
+    width: "100% !important",
     maxWidth: "675px",
     margin: "auto"
   },
   '& .rdrDateDisplayWrapper': {
     minWidth: '18rem',
     width: 'fit-content',
-    borderRadius: theme.spacing(1),
+    borderRadius: theme.shape.borderRadius,
     border: showPickerPanel ? "none" : `1px solid ${theme.palette.action.disabled}`,
     "&:hover": {
       border: showPickerPanel ? "none" : `1px solid ${theme.palette.text.primary}`,
     }
   },
   '& .rdrDateRangePickerWrapper': {
+    width: '100%',
     flexDirection: smallScreen ? 'column-reverse' : 'row-reverse',
     gap: smallScreen ? '0.5rem' : '1rem'
   },
@@ -116,7 +122,8 @@ export const StyledDateRangePicker = styled(Paper)(({ theme, showPickerPanel, sm
   },
   '& .rdrStaticRangeLabel': {
     color: theme.palette.text.secondary,
-    padding: `${smallScreen ? `0 ${theme.spacing(1)}` : `${theme.spacing(1)} ${theme.spacing(2)}`}`
+    borderRadius: theme.shape.borderRadius,
+    padding: `${smallScreen ? `${theme.spacing(0.5)} ${theme.spacing(1)}` : `${theme.spacing(1)} ${theme.spacing(2)}`}`
   },
   '& .rdrDefinedRangesWrapper': {
     borderRight: 'none',
@@ -171,10 +178,10 @@ export const StyledDateRangePicker = styled(Paper)(({ theme, showPickerPanel, sm
     borderTopLeftRadius: '2rem',
     borderBottomLeftRadius: '2rem'
   },
-  '& .rdrStartEdge, .rdrDayStartOfWeek .rdrInRange, .rdrDayStartOfMonth .rdrInRange': {
+  '& .rdrStartEdge, .rdrDayStartOfWeek .rdrInRange, .rdrDayStartOfMonth .rdrInRange, .rdrDayStartOfMonth .rdrEndEdge, .rdrDayStartOfWeek .rdrEndEdge': {
     left: 0
   },
-  '& .rdrEndEdge, .rdrDayEndOfWeek .rdrInRange, .rdrDayEndOfMonth .rdrInRange': {
+  '& .rdrEndEdge, .rdrDayEndOfWeek .rdrInRange, .rdrDayEndOfMonth .rdrInRange, .rdrDayEndOfWeek .rdrStartEdge': {
     right: 0
   },
   '& .rdrSelected, .rdrInRange, .rdrStartEdge, .rdrEndEdge': {
@@ -213,6 +220,6 @@ export const StyledDateRangePicker = styled(Paper)(({ theme, showPickerPanel, sm
     background: theme.palette.secondary.main,
     width: "0.25rem",
     height: "0.25rem",
-    borderRadius: "1rem"
+    borderRadius: "50%"
   }
 }));

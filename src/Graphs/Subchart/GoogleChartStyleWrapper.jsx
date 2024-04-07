@@ -108,7 +108,7 @@ const GoogleChartStyleWrapper = styled(Box)(({ theme, isPortrait }) => ({
     '& .google-visualization-controls-slider-thumb': {
       background: theme.palette.primary.main,
       border: 'unset',
-      borderRadius: '4px'
+      borderRadius: theme.shape.borderRadius
     }
   },
 

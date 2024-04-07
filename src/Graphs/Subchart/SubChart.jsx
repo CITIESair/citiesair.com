@@ -42,6 +42,8 @@ export default function SubChart(props) {
   const [dashboardWrapper, setDashboardWrapper] = useState();
   const [controlWrapper, setControlWrapper] = useState();
 
+  const [previousChartData, setPreviousChartData] = useState();
+
   // Get the current theme
   const theme = useTheme();
 
@@ -408,8 +410,9 @@ export default function SubChart(props) {
   // Call this function to fetch the data and draw the initial chart
   useEffect(() => {
     if (google && chartData) {
-      // Not applicable for Calendar chart
-      if (chartData.chartType === "Calendar") return;
+      // Do not draw again if deep comparison between current chartData and previousChartData is true
+      if (JSON.stringify(chartData) === JSON.stringify(previousChartData)) return;
+      setPreviousChartData(chartData);
 
       // Get and set the dataArray 
       const dataArray = chartData.dataArray
