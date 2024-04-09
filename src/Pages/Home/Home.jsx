@@ -43,9 +43,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
     document.title = title;
   }, [title]);
 
-  // useState for home page data
-  // eslint-disable-next-line no-unused-vars
-  const [_, setCurrentPage, __, setChartsTitlesList] = useContext(LinkContext);
+  const { setCurrentPage, setChartsTitlesList } = useContext(LinkContext);
 
   // set underline link to home
   useEffect(() => {

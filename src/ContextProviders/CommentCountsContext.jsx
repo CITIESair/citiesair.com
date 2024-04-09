@@ -27,7 +27,7 @@ export function CommentCountsProvider({ children }) {
   };
 
   // Memoize the value to be provided to avoid unnecessary re-renders
-  const providerValue = useMemo(() => [commentCounts, fetchCommentCounts, setCommentCounts], [commentCounts]);
+  const providerValue = useMemo(() => ({ commentCounts, fetchCommentCounts, setCommentCounts }), [commentCounts]);
 
   // return context provider
   return (

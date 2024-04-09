@@ -47,8 +47,7 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
 }));
 
 export default function Header() {
-  // eslint-disable-next-line no-unused-vars
-  const [currentPage, _, chartsTitlesList, __] = useContext(LinkContext);
+  const { currentPage, chartsTitlesList } = useContext(LinkContext);
 
   // trigger for hiding/showing the AppBar
   const triggerHideAppBar = useScrollTrigger({

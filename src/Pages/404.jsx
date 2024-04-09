@@ -10,7 +10,7 @@ export default function FourOhFour({ title }) {
     document.title = title;
   }, [title]);
 
-  const [_, setCurrentPage] = useContext(LinkContext);
+  const { setCurrentPage } = useContext(LinkContext);
 
   // set underline link to 404 (to undo any other underlined links)
   useEffect(() => {

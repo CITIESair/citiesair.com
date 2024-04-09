@@ -26,7 +26,7 @@ const Dashboard = () => {
   }, [school_id_param]);
 
   // Update current page type
-  const [_, setCurrentPage, __, ___] = useContext(LinkContext);
+  const { setCurrentPage } = useContext(LinkContext);
   useEffect(() => {
     setCurrentPage(UniqueRoutes.dashboard);
   }, []);

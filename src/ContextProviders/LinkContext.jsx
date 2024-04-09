@@ -12,7 +12,7 @@ export function LinkProvider({ children }) {
 
   // Memoize the value to be provided to avoid unnecessary re-renders
   // eslint-disable-next-line max-len
-  const providerValue = useMemo(() => [currentPage, setCurrentPage, chartsTitlesList, setChartsTitlesList], [currentPage, chartsTitlesList]);
+  const providerValue = useMemo(() => ({ currentPage, setCurrentPage, chartsTitlesList, setChartsTitlesList }), [currentPage, chartsTitlesList]);
 
   return (
     <LinkContext.Provider value={providerValue}>

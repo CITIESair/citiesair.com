@@ -34,7 +34,7 @@ export default function SubChart(props) {
   const className = chartData.customClassName ? `${chartData.chartType} ${chartData.customClassName}` : chartData.chartType;
 
   // Use GoogleContext for loading and manipulating the Google Charts
-  const [google, _] = useContext(GoogleContext);
+  const google = useContext(GoogleContext);
 
   // States of the Google Charts
   const [dataTable, setDataTable] = useState();

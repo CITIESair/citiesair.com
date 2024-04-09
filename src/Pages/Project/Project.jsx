@@ -61,18 +61,15 @@ export const CustomChip = (props) => {
 }
 
 const Project = () => {
-  const [_, __, ___, setChartsTitlesList] = useContext(LinkContext);
-
-  const { schoolMetadata, current, chartData } = useContext(DashboardContext);
-
   let lastUpdate;
 
-  const [commentCounts, fetchCommentCounts, setCommentCounts] = useContext(CommentCountsContext);
+  const { setChartsTitlesList } = useContext(LinkContext);
+  const { commentCounts, fetchCommentCounts, setCommentCounts } = useContext(CommentCountsContext);
+  const { schoolMetadata, current, chartData } = useContext(DashboardContext);
+  const { themePreference, temperatureUnitPreference } = useContext(PreferenceContext);
 
   const [displayCommentSection, setDisplayCommentSection] = useState(false);
   const [displayMapOfSensors, setDisplayMapOfSensors] = useState(false);
-
-  const { themePreference, temperatureUnitPreference } = useContext(PreferenceContext);
 
   // If NYUAD, display comment section and map of sensors
   useEffect(() => {
