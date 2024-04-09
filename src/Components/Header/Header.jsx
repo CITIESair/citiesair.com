@@ -13,9 +13,6 @@ import FullWidthBox from '../FullWidthBox';
 
 import ThemeSelector from './ThemeSelector';
 import NavBar from './NavBar';
-import SpeedDialButton from './SpeedDialButton';
-
-// import images
 
 import jsonData from '../../section_data.json';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
@@ -232,9 +229,6 @@ export default function Header() {
           )
         )
       }
-
-      <SpeedDialButton chartsTitlesList={chartsTitlesList} topAnchorID={jsonData.topAnchor.id} />
-
     </>
   );
 }

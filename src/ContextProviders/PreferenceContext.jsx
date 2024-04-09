@@ -1,9 +1,9 @@
 // disable eslint for this file
 /* eslint-disable */
 
-import { useState, useEffect, createContext, useMemo } from 'react';
+import { useState, createContext, useMemo } from 'react';
 import ThemePreferences from '../Themes/ThemePreferences';
-import { TemperatureUnits } from '../Pages/Screen/TemperatureUtils';
+import { TemperatureUnits } from '../Utils/AirQuality/TemperatureUtils';
 import { LocalStorage } from '../Utils/LocalStorage';
 
 export const PreferenceContext = createContext();

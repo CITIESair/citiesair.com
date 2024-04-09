@@ -1,14 +1,14 @@
 // disable eslint for this file
 /* eslint-disable */
 import { useState, useEffect, useContext } from 'react';
-import { Box, Grid, Link, Typography, Stack, Tooltip } from '@mui/material/';
+import { Box, Grid, Typography, Stack, Tooltip } from '@mui/material/';
 import { useLocation } from 'react-router-dom';
 import { useMediaQuery, useTheme } from '@mui/material';
 
-import AQImap, { LocationTitle, TileOptions } from '../../Components/AQImap';
+import AQImap, { LocationTitle, TileOptions } from '../../Components/AirQuality/AQImap';
 import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
-import CurrentAQIGrid, { SimpleCurrentAQIlist } from '../../Components/CurrentAQIGrid';
-import AQIdatabase from '../../Utils/AirQualityIndexHelper';
+import CurrentAQIGrid, { SimpleCurrentAQIlist } from '../../Components/AirQuality/CurrentAQIGrid';
+import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import ThemePreferences from '../../Themes/ThemePreferences';
 

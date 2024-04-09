@@ -5,21 +5,21 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Box, Menu, MenuItem, MenuList } from "@mui/material";
-import { CustomChip } from "../Project/Project";
+import { CustomChip } from "../Pages/Project";
 
 import PlaceIcon from '@mui/icons-material/Place';
-import { LocalStorage } from "../../Utils/LocalStorage";
-import { UniqueRoutes } from "../../Utils/RoutesUtils";
+import { LocalStorage } from "../Utils/LocalStorage";
+import { UniqueRoutes } from "../Utils/RoutesUtils";
 
-import * as Tracking from '../../Utils/Tracking';
+import * as Tracking from '../Utils/Tracking';
 
-import { DashboardContext } from "../../ContextProviders/DashboardContext";
-import { UserContext } from "../../ContextProviders/UserContext";
+import { DashboardContext } from "../ContextProviders/DashboardContext";
+import { UserContext } from "../ContextProviders/UserContext";
 
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
-export const SchoolSelector = () => {
+const SchoolSelector = () => {
   const { currentSchoolID, schoolMetadata } = useContext(DashboardContext);
   const { user } = useContext(UserContext);
 
@@ -117,3 +117,4 @@ export const SchoolSelector = () => {
   );
 };
 
+export default SchoolSelector;

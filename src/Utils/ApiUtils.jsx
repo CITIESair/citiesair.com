@@ -1,7 +1,8 @@
 import { fetchDataFromURL } from "../Components/DatasetDownload/DatasetFetcher";
-import { calculateSensorStatus, SensorStatus } from "../Pages/Screen/ScreenUtils";
-import convertToAQI from "./AirQualityIndexCalculator";
-import AQIdatabase from "./AirQualityIndexHelper";
+import { calculateSensorStatus } from "../Components/AirQuality/AirQualityScreen/ScreenUtils";
+import { SensorStatus } from "../Components/AirQuality/SensorStatus";
+import convertToAQI from "./AirQuality/AirQualityIndexCalculator";
+import AQIdatabase from "./AirQuality/AirQualityIndexHelper";
 import parse from 'html-react-parser';
 
 const apiDomain = 'https://api.citiesair.com';

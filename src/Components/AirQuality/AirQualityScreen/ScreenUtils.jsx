@@ -1,3 +1,5 @@
+import { SensorStatus, SensorStatusCriteria } from "../SensorStatus"
+
 // ---------- Calculate time difference and return appropriate format
 export const getFormattedElapsedTimeFromNow = (dateString) => {
   const inputDate = new Date(dateString);
@@ -21,37 +23,6 @@ export const getFormattedElapsedTimeFromNow = (dateString) => {
     return `${seconds}s`;
   }
 }
-
-// ---------- Sensor status
-export const SensorStatus = {
-  active: "active",
-  temporaryOffline: "temporaryOffline",
-  offline: "offline"
-};
-
-const SensorStatusCriteria = [
-  {
-    name: SensorStatus.active,
-    cutoffInHours: {
-      low: 0,
-      high: 2
-    }
-  },
-  {
-    name: SensorStatus.temporaryOffline,
-    cutoffInHours: {
-      low: 3,
-      high: 6
-    }
-  },
-  {
-    name: SensorStatus.offline,
-    cutoffInHours: {
-      low: 7,
-      high: Infinity
-    }
-  }
-];
 
 export const calculateSensorStatus = (lastSeenInHours) => {
   for (let i = 0; i < SensorStatusCriteria.length; i++) {

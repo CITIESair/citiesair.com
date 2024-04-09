@@ -27,3 +27,5 @@ export function FadeInButtonForSpeedDial(props) {
     </Fade>
   );
 }
+
+export default FadeInButtonForSpeedDial;

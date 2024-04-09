@@ -11,13 +11,13 @@ import ThemePreferences from './Themes/ThemePreferences';
 import CustomThemes from './Themes/CustomThemes';
 
 // UI components
-import ScrollToTop from './Components/ScrollToTop';
 import Header from './Components/Header/Header';
-import Footer from './Components/Footer/Footer';
+import Footer from './Components/Footer';
 import FourOhFour from './Pages/404';
 import LoadingAnimation from './Components/LoadingAnimation';
 import LogIn from './Components/Account/LogIn';
 import NYUADmap from './Pages/Embeds/NYUADmap';
+import SpeedDialButton from './Components/SpeedDial/SpeedDialButton';
 
 import { UniqueRoutes } from './Utils/RoutesUtils';
 import NYUADbanner from './Pages/Embeds/NYUADbanner';
@@ -25,11 +25,14 @@ import NYUADbanner from './Pages/Embeds/NYUADbanner';
 import { DashboardProvider } from './ContextProviders/DashboardContext';
 import { CommentCountsProvider } from './ContextProviders/CommentCountsContext';
 import { PreferenceContext } from './ContextProviders/PreferenceContext';
+import { LinkContext } from './ContextProviders/LinkContext';
+
+import jsonData from './section_data.json';
 
 // Lazy load pages
 const Home = lazy(() => import('./Pages/Home/Home'));
-const Dashboard = lazy(() => import('./Pages/Dashboard/Dashboard'));
-const Screen = lazy(() => import('./Pages/Screen/Screen'));
+const Dashboard = lazy(() => import('./Pages/Dashboard'));
+const Screen = lazy(() => import('./Pages/Screen'));
 
 // Create theme design tokens based on theme preference
 const getDesignTokens = (themePreference) => ({
@@ -51,6 +54,7 @@ const getDesignTokens = (themePreference) => ({
 
 function App() {
   const { themePreference } = useContext(PreferenceContext);
+  const { chartsTitlesList } = useContext(LinkContext);
 
   // Create theme using getDesignTokens
   const theme = useMemo(
@@ -65,7 +69,6 @@ function App() {
   return (
     <BrowserRouter basename="/">
       <ThemeProvider theme={theme}>
-        <ScrollToTop />
         <Box
           sx={{
             display: 'flex',
@@ -75,6 +78,8 @@ function App() {
             backgroundColor: 'customBackground',
           }}
         >
+          <SpeedDialButton chartsTitlesList={chartsTitlesList} topAnchorID={jsonData.topAnchor.id} />
+
           <Suspense fallback={<LoadingAnimation optionalText="Loading Dashboard" />}>
             <Routes>
               <Route

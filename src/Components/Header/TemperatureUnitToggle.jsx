@@ -1,8 +1,7 @@
 import { useContext } from 'react';
 import { Box, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { LocalStorage } from '../../Utils/LocalStorage';
-import { TemperatureUnits } from '../../Pages/Screen/TemperatureUtils';
-
+import { TemperatureUnits } from '../../Utils/AirQuality/TemperatureUtils';
 import * as Tracking from '../../Utils/Tracking';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 

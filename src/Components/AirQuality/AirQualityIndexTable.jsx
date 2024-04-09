@@ -1,8 +1,8 @@
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, styled } from '@mui/material';
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
-import ChartComponentWrapper from '../ChartComponentWrapper';
-import AQIdatabase from '../../Utils/AirQualityIndexHelper';
+import ChartComponentWrapper from '../../Graphs/ChartComponentWrapper';
+import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
 import ThemePreferences from '../../Themes/ThemePreferences';
 import { useContext } from 'react';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';

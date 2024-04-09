@@ -7,28 +7,20 @@ import { GoogleContext } from '../../ContextProviders/GoogleContext';
 import { Box, Stack } from '@mui/material/';
 
 import { useTheme } from '@mui/material/styles';
-import SeriesSelector from './SeriesSelector';
-
+import SeriesSelector from './SubchartUtils/SeriesSelector';
 import { generateRandomID, returnGenericOptions, returnCalendarChartOptions, returnChartControlUI, ChartControlType, addTouchEventListenerForChartControl, getDateRangeForCalendarChart, getValueRangeForCalendarChart } from '../GoogleChartHelper';
 
-import GoogleChartStyleWrapper from './GoogleChartStyleWrapper';
+import GoogleChartStyleWrapper from './SubchartUtils/GoogleChartStyleWrapper';
 
 import LoadingAnimation from '../../Components/LoadingAnimation';
 
-import ChartSubstituteComponentLoader from '../ChartSubstituteComponents/ChartSubstituteComponentLoader';
-
-import { CalendarChart, getCalendarChartMargin, yearSpacing } from './NivoCalendarChart';
+import { CalendarChart, getCalendarChartMargin, yearSpacing } from './NivoCharts/NivoCalendarChart'
 
 import CustomDateRangePicker from '../../Components/DateRangePicker/CustomDateRangePicker'
 
 export default function SubChart(props) {
   // Props
   const { chartData, subchartIndex, windowSize, isPortrait, isHomepage, height, maxHeight } = props;
-  // Early return if this doesn't contain a normal Google Chart but a chartSubstituteComponent
-  const chartSubstituteComponentName = chartData.subcharts?.[subchartIndex].chartSubstituteComponentName;
-  if (chartSubstituteComponentName) {
-    return <ChartSubstituteComponentLoader chartSubstituteComponentName={chartSubstituteComponentName} />;
-  }
 
   // Formulate the className
   const className = chartData.customClassName ? `${chartData.chartType} ${chartData.customClassName}` : chartData.chartType;

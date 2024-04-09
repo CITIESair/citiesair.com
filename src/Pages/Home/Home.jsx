@@ -16,15 +16,15 @@ import * as Tracking from '../../Utils/Tracking';
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
 
-import AQImap, { TileOptions } from '../../Components/AQImap';
+import AQImap, { TileOptions } from '../../Components/AirQuality/AQImap';
 
-import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
+import CurrentAQIGrid from '../../Components/AirQuality/CurrentAQIGrid';
 import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
 
 import BarChartIcon from '@mui/icons-material/BarChart';
 import GetInTouch from './GetInTouch';
 import { UniqueRoutes } from '../../Utils/RoutesUtils';
-import { SensorStatus } from '../Screen/ScreenUtils';
+import { SensorStatus } from "../../Components/AirQuality/SensorStatus";
 
 const displayNyuadSensorCounts = (nyuadSensorCounts) => {
   if (nyuadSensorCounts.active && nyuadSensorCounts.total) {

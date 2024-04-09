@@ -5,12 +5,13 @@ import ThermostatIcon from '@mui/icons-material/Thermostat';
 import WaterDropIcon from '@mui/icons-material/WaterDrop';
 import ErrorIcon from '@mui/icons-material/Error';
 
-import { returnSensorStatus, SensorStatus, getFormattedElapsedTimeFromNow } from '../Pages/Screen/ScreenUtils';
-import { TemperatureUnits, getFormattedTemperature, calculateHeatIndex } from "../Pages/Screen/TemperatureUtils";
+import { returnSensorStatus, getFormattedElapsedTimeFromNow } from './AirQualityScreen/ScreenUtils';
+import { SensorStatus } from "./SensorStatus";
+import { TemperatureUnits, getFormattedTemperature, calculateHeatIndex } from "../../Utils/AirQuality/TemperatureUtils";
 
-import AQIdatabase from '../Utils/AirQualityIndexHelper';
+import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
 
-import CustomThemes from '../Themes/CustomThemes';
+import CustomThemes from '../../Themes/CustomThemes';
 
 const CurrentAQIGrid = (props) => {
   const {

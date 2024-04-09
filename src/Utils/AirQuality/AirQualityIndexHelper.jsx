@@ -1,4 +1,4 @@
-import CustomThemes from '../Themes/CustomThemes';
+import CustomThemes from '../../Themes/CustomThemes';
 
 const AQIdatabase = [
   {

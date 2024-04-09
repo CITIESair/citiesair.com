@@ -9,21 +9,22 @@ import L from 'leaflet';
 
 import LaunchIcon from '@mui/icons-material/Launch';
 
-import IQAir_Logo from '../IQAir_logo.svg';
+import IQAir_Logo from '../../IQAir_logo.svg';
 
-import { SensorStatus, calculateSensorStatus, getFormattedElapsedTimeFromNow } from '../Pages/Screen/ScreenUtils';
+import { calculateSensorStatus, getFormattedElapsedTimeFromNow } from './AirQualityScreen/ScreenUtils';
+import { SensorStatus } from "./SensorStatus";
 
-import { getFormattedTemperature, TemperatureUnits } from '../Pages/Screen/TemperatureUtils';
+import { getFormattedTemperature, TemperatureUnits } from '../../Utils/AirQuality/TemperatureUtils';
 
-import AQIdatabase from '../Utils/AirQualityIndexHelper';
-import convertToAQI from '../Utils/AirQualityIndexCalculator';
+import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
+import convertToAQI from '../../Utils/AirQuality/AirQualityIndexCalculator';
 
 import ThermostatIcon from '@mui/icons-material/Thermostat';
 import WaterDropIcon from '@mui/icons-material/WaterDrop';
-import ThemePreferences from '../Themes/ThemePreferences';
+import ThemePreferences from '../../Themes/ThemePreferences';
 
 import { styled } from '@mui/material/styles';
-import CustomThemes from '../Themes/CustomThemes';
+import CustomThemes from '../../Themes/CustomThemes';
 
 const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
     '& .leaflet-popup-tip-container': {

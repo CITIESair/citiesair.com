@@ -1,18 +1,18 @@
 // disable eslint for this file
 /* eslint-disable */
 
-import { useState, useEffect, useContext } from "react";
+import { useEffect, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { fetchDataFromURL } from "../../Components/DatasetDownload/DatasetFetcher";
-import Project from "../Project/Project";
-import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from "../../Utils/ApiUtils";
-import { LinkContext } from "../../ContextProviders/LinkContext";
-import { DashboardContext } from "../../ContextProviders/DashboardContext";
+import { fetchDataFromURL } from "../Components/DatasetDownload/DatasetFetcher";
+import Project from "./Project";
+import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from "../Utils/ApiUtils";
+import { LinkContext } from "../ContextProviders/LinkContext";
+import { DashboardContext } from "../ContextProviders/DashboardContext";
 
-import { UserContext } from "../../ContextProviders/UserContext";
-import { LocalStorage } from "../../Utils/LocalStorage";
-import { UniqueRoutes } from "../../Utils/RoutesUtils";
+import { UserContext } from "../ContextProviders/UserContext";
+import { LocalStorage } from "../Utils/LocalStorage";
+import { UniqueRoutes } from "../Utils/RoutesUtils";
 
 const Dashboard = () => {
   const { school_id_param } = useParams();

@@ -6,9 +6,9 @@ import { Link } from 'react-router-dom';
 import TvIcon from '@mui/icons-material/Tv';
 import HoverMenu from 'material-ui-popup-state/HoverMenu';
 import PopupState, { bindHover, bindFocus, bindMenu } from 'material-ui-popup-state';
-import MenuItemAsNavLink from "./Header/MenuItemAsNavLink";
-import NavLinkBehavior from "./Header/NavLinkBehavior";
-import { DashboardContext } from "../ContextProviders/DashboardContext";
+import MenuItemAsNavLink from "../../Header/MenuItemAsNavLink";
+import NavLinkBehavior from "../../Header/NavLinkBehavior";
+import { DashboardContext } from "../../../ContextProviders/DashboardContext";
 
 const ScreenDialog = () => {
   const { currentSchoolID, schoolMetadata } = useContext(DashboardContext);

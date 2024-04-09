@@ -1,20 +1,20 @@
 // disable eslint for this file
 /* eslint-disable */
 import { useState, useEffect, useContext } from 'react';
-import { LinkContext } from '../../ContextProviders/LinkContext';
+import { LinkContext } from '../ContextProviders/LinkContext';
 import parse from 'html-react-parser';
-import ChartComponentWrapper from '../../Graphs/ChartComponentWrapper';
-import UppercaseTitle from '../../Components/UppercaseTitle';
-import CommentSection, { PAGE_NAME } from '../../Components/CommentSection';
+import ChartComponentWrapper from '../Graphs/ChartComponentWrapper';
+import UppercaseTitle from '../Components/UppercaseTitle';
+import CommentSection, { PAGE_NAME } from '../Components/CommentSection';
 import { Box, Typography, Container, Divider, Chip, Grid, Tooltip, Stack, Skeleton } from '@mui/material';
 
 import { useTheme } from '@mui/material/styles';
 
-import ThemePreferences from '../../Themes/ThemePreferences';
+import ThemePreferences from '../Themes/ThemePreferences';
 
-import AirQualityIndexLegendQuickGlance from '../../Components/AirQualityHelper';
+import AirQualityIndexLegendQuickGlance from '../Components/AirQuality/AirQualityIndexLegendQuickGlance';
 
-import jsonData from '../../section_data.json';
+import jsonData from '../section_data.json';
 
 import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
@@ -22,29 +22,29 @@ import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import CommentIcon from '@mui/icons-material/Comment';
 
-import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
-import DatasetDownloadDialog from '../../Components/DatasetDownload/DatasetDownloadDialog';
-import ScreenDialog from '../../Components/ScreenDialog';
+import { replacePlainHTMLWithMuiComponents } from '../Utils/Utils';
+import DatasetDownloadDialog from '../Components/DatasetDownload/DatasetDownloadDialog';
+import ScreenDialog from '../Components/AirQuality/AirQualityScreen/ScreenDialog';
 
-import { scrollToSection } from '../../Components/Header/MenuItemAsNavLink';
-import FullWidthBox from '../../Components/FullWidthBox';
+import { scrollToSection } from '../Components/Header/MenuItemAsNavLink';
+import FullWidthBox from '../Components/FullWidthBox';
 
-import * as Tracking from '../../Utils/Tracking';
+import * as Tracking from '../Utils/Tracking';
 
-import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
-import { SchoolSelector } from "../Dashboard/SchoolSelector";
+import CurrentAQIGrid from '../Components/AirQuality/CurrentAQIGrid';
+import SchoolSelector from '../Components/SchoolSelector';
 
-import AirQualityIndexTable from '../../Graphs/ChartSubstituteComponents/AirQualityIndexTable';
-import ExpandableSection from './ExpandableSection';
-import AirQualityExplanation from '../../Utils/AirQualityExplanation';
-import LoadingAnimation from '../../Components/LoadingAnimation';
+import AirQualityIndexTable from '../Components/AirQuality/AirQualityIndexTable';
+import ExpandableSection from '../Components/ExpandableSection';
+import AirQualityExplanation from '../Utils/AirQuality/AirQualityExplanation';
+import LoadingAnimation from '../Components/LoadingAnimation';
 
-import { CommentCountsContext } from '../../ContextProviders/CommentCountsContext';
+import { CommentCountsContext } from '../ContextProviders/CommentCountsContext';
 
-import NYUADbanner from '../Embeds/NYUADbanner';
+import NYUADbanner from './Embeds/NYUADbanner';
 
-import { DashboardContext } from '../../ContextProviders/DashboardContext';
-import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
+import { DashboardContext } from '../ContextProviders/DashboardContext';
+import { PreferenceContext } from '../ContextProviders/PreferenceContext';
 
 // Custom Chip component to display metadata
 export const CustomChip = (props) => {

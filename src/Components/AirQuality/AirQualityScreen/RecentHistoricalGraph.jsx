@@ -3,21 +3,19 @@
 import { useRef, useEffect, useState } from 'react';
 import * as d3 from 'd3';
 
-import convertToAQI from '../../Utils/AirQualityIndexCalculator';
-import AQIdatabase from '../../Utils/AirQualityIndexHelper';
-import { SensorStatus } from './ScreenUtils';
+import convertToAQI from '../../../Utils/AirQuality/AirQualityIndexCalculator';
+import AQIdatabase from '../../../Utils/AirQuality/AirQualityIndexHelper';
+import { SensorStatus } from '../SensorStatus';
 import { Box } from '@mui/material';
 
 import { capitalizeFirstCharacter, areDOMOverlapped } from './ScreenUtils';
 
-import CustomThemes from '../../Themes/CustomThemes';
+import CustomThemes from '../../../Themes/CustomThemes';
 
 const numberOfHoursForHistoricalData = 6;
 
 const RecentHistoricalGraph = (props) => {
   const { data } = props;
-
-  const [firstDraw, setFirstDraw] = useState(true);
 
   const graphContainer = useRef();
   const layerBackground = useRef();

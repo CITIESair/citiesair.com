@@ -1,7 +1,7 @@
 import { Typography, Container, Box, Stack } from '@mui/material';
 import { Facebook, LinkedIn, Twitter } from '@mui/icons-material/';
 import { AiFillInstagram } from 'react-icons/ai';
-import CustomLink from '../CustomLink';
+import CustomLink from './CustomLink';
 
 function getYear() {
   const d = new Date();

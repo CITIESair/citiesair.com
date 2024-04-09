@@ -2,26 +2,27 @@
 /* eslint-disable */
 import { useState, useEffect, useContext } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
-import { UserContext } from '../../ContextProviders/UserContext';
+import { UserContext } from '../ContextProviders/UserContext';
 
 import { Box, Grid, Typography, Stack, List, ListItem, ListItemText } from '@mui/material';
 
-import CITIESlogoLinkToHome from '../../Components/Header/CITIESlogoLinkToHome';
+import CITIESlogoLinkToHome from '../Components/Header/CITIESlogoLinkToHome';
 
-import { SensorStatus, getDomainName, getUrlAfterScreen } from './ScreenUtils';
+import { SensorStatus } from '../Components/AirQuality/SensorStatus';
+import { getDomainName, getUrlAfterScreen } from '../Components/AirQuality/AirQualityScreen/ScreenUtils';
 
-import RecentHistoricalGraph from './RecentHistoricalGraph';
+import RecentHistoricalGraph from '../Components/AirQuality/AirQualityScreen/RecentHistoricalGraph';
 
-import AQIdatabase from '../../Utils/AirQualityIndexHelper';
+import AQIdatabase from '../Utils/AirQuality/AirQualityIndexHelper';
 
-import CustomThemes from '../../Themes/CustomThemes';
+import CustomThemes from '../Themes/CustomThemes';
 
 import QRCode from "react-qr-code";
 
-import CurrentAQIGrid from '../../Components/CurrentAQIGrid';
-import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
-import { UniqueRoutes } from '../../Utils/RoutesUtils';
-import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
+import CurrentAQIGrid from '../Components/AirQuality/CurrentAQIGrid';
+import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../Utils/ApiUtils';
+import { UniqueRoutes } from '../Utils/RoutesUtils';
+import { PreferenceContext } from '../ContextProviders/PreferenceContext';
 
 const Screen = ({ title }) => {
   const { temperatureUnitPreference } = useContext(PreferenceContext);

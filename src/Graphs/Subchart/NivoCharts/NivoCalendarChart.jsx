@@ -5,7 +5,7 @@ import { useTheme } from '@mui/material/styles';
 import { Box, Chip } from '@mui/material';
 
 import parse from 'html-react-parser';
-import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
+import { replacePlainHTMLWithMuiComponents } from '../../../Utils/Utils';
 
 export const yearSpacing = 40;
 
@@ -75,6 +75,7 @@ export const CalendarChart = (props) => {
                     text: {
                         fill: theme.palette.text.secondary,
                     },
+                    fontSize: '0.75rem',
                     tooltip: {
                         container: {
                             background: theme.palette.mode === 'dark' ? '#2b2b2b' : '#fff',
@@ -169,7 +170,7 @@ const GradientBox = ({ valueRange, colors, isPortrait }) => {
         position: 'sticky',
         width: 'fit-content',
         marginTop: '1rem',
-        left: (isPortrait ? '58%' : '74%'),
+        left: (isPortrait ? 'calc(80dvw - 7rem)' : 'calc(80% + 1rem)'),
     }
 
     const gradientStyle = {

@@ -3,10 +3,10 @@ import { isMobile } from 'react-device-detect';
 
 import { Fab, Fade, Popper, Paper, Typography, Stack } from '@mui/material';
 import AirIcon from '@mui/icons-material/Air';
-import { FadeInButtonForSpeedDial } from './Header/FadeInButtonForSpeedDial';
+import { FadeInButtonForSpeedDial } from '../SpeedDial/FadeInButtonForSpeedDial';
 
-import * as Tracking from '../Utils/Tracking';
-import AirQualityIndexTable from '../Graphs/ChartSubstituteComponents/AirQualityIndexTable';
+import * as Tracking from '../../Utils/Tracking';
+import AirQualityIndexTable from './AirQualityIndexTable';
 
 export default function AirQualityIndexLegendQuickGlance(props) {
   // Mechanism for opening and closing the Quick Glance on hover

@@ -2,8 +2,7 @@ import { Stack, Typography, Paper } from '@mui/material';
 
 import parse from 'html-react-parser';
 import UppercaseTitle from '../../Components/UppercaseTitle';
-import ExpandableSection from '../Project/ExpandableSection';
-
+import ExpandableSection from '../../Components/ExpandableSection';
 import jsonData from '../../section_data.json';
 import { replacePlainHTMLWithMuiComponents, capitalizePhrase } from '../../Utils/Utils';
 
