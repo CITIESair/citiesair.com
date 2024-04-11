@@ -11,7 +11,12 @@ const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 
 export default function SeriesSelector(props) {
-  const { items: itemsFromChart, selectorID, allowMultiple, onSeriesSelection } = props;
+  const { items: itemsFromChart,
+    selectorID,
+    allowMultiple,
+    onSeriesSelection,
+    displayChip = true
+  } = props;
 
   const theme = useTheme();
 
@@ -102,7 +107,7 @@ export default function SeriesSelector(props) {
         sx={{
           [theme.breakpoints.down('sm')]: { width: '100%' },
           minWidth: '200px',
-          '& .MuiInputBase-root': { mt: 1, borderRadius: `${theme.shape.borderRadius}px` }
+          '& .MuiInputBase-root': { borderRadius: `${theme.shape.borderRadius}px` }
         }}
         size="small"
       >
@@ -180,7 +185,7 @@ export default function SeriesSelector(props) {
           },
         }}
       >
-        {items.filter(item => item.selected).map((item) => (
+        {displayChip && items.filter(item => item.selected).map((item) => (
           <Grid item key={item.label}>
             <Chip
               label={<Typography variant='caption'>{item.label}</Typography>}

@@ -347,13 +347,14 @@ const sample = {
   }
 };
 
-const CustomDateRangePicker = () => {
+const CustomDateRangePicker = (props) => {
+  const { passedMinDateOfDataset } = props;
   const { currentSchoolID, chartData, setChartData } = useContext(DashboardContext);
   const [aggregationType, setAggregationType] = useState(AggregationType.hourly);
 
   // Get the minimum date available for the date range picker
   const today = new Date();
-  const [minDateOfDataset, setMinDateOfDataset] = useState(new Date(2021, 1, 1));
+  const [minDateOfDataset, setMinDateOfDataset] = useState(passedMinDateOfDataset);
 
   const [isValidRange, setIsValidRange] = useState(true);
 

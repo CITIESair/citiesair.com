@@ -174,6 +174,14 @@ export default function SubChart(props) {
   // Properties for selecting (showing or hiding) the serie(s)
   const seriesSelector = options.seriesSelector || false;
 
+  // Properties for date-range-picker
+  // const dateRangePicker = options.dateRangePicker || false;
+  const dateRangePicker = (chartData.id === 1) && true;
+  const dateRangePickerProperties = {
+    minDate: new Date(2021, 1, 1),
+
+  }
+
   // Set new options prop and re-render the chart if theme or isPortrait changes
   useEffect(() => {
     if (seriesSelector) handleSeriesSelection(dataColumns); // this function set new options, too
@@ -493,10 +501,38 @@ export default function SubChart(props) {
   }
 
   const onChartReady = () => {
-    console.log(chartData.id);
     if (!isFirstRender) return;
     // Hide the circleProgress when chart finishes rendering the first time
     setIsFirstRender(false);
+  };
+
+  const showAuxiliaryControls = () => {
+    if (!isFirstRender) {
+      return (
+        <Stack sx={{
+          flexDirection: { sm: "column", md: "row" }
+        }}
+          mt={1} spacing={1}>
+          {seriesSelector &&
+            <SeriesSelector
+              items={dataColumns}
+              allowMultiple={seriesSelector.allowMultiple}
+              selectorID={`${chartData.title}-selector`}
+              onSeriesSelection={handleSeriesSelection}
+              displayChip={false}
+            />}
+          {dateRangePicker === true &&
+            <Box position="relative">
+              <CustomDateRangePicker
+                passedMinDateOfDataset={dateRangePickerProperties.minDate}
+              />
+            </Box>
+          }
+        </Stack>
+      );
+    } else {
+      return null;
+    }
   };
 
   return (
@@ -514,21 +550,7 @@ export default function SubChart(props) {
         </Box>
       )}
 
-      {/* Conditionally display seriesSelector here */}
-      {(seriesSelector && !isFirstRender) && (
-        <SeriesSelector
-          items={dataColumns}
-          allowMultiple={seriesSelector.allowMultiple}
-          selectorID={`${chartData.title}-selector`}
-          onSeriesSelection={handleSeriesSelection}
-        />
-      )}
-
-      {/* Conditionally display the date range picker here */}
-      <Box mt={1.5} height="2rem">
-        <CustomDateRangePicker
-        />
-      </Box>
+      {showAuxiliaryControls()}
 
       {/* Display chart here */}
       {renderChart()}
