@@ -178,14 +178,14 @@ export default function SeriesSelector(props) {
       </FormControl>
 
       {/* Display only selected items in the Grids, and only in landscape mode and if multiSelect is true*/}
-      {allowMultiple && <Grid container spacing={1}
+      {(displayChip && allowMultiple) && <Grid container spacing={1}
         sx={{
           [theme.breakpoints.down('sm')]: {
             display: 'none'
           },
         }}
       >
-        {displayChip && items.filter(item => item.selected).map((item) => (
+        {items.filter(item => item.selected).map((item) => (
           <Grid item key={item.label}>
             <Chip
               label={<Typography variant='caption'>{item.label}</Typography>}

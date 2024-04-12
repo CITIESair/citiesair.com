@@ -4,7 +4,7 @@ import { useState, useEffect, useContext, useMemo } from 'react';
 
 import { GoogleContext } from '../../ContextProviders/GoogleContext';
 
-import { Box, Stack } from '@mui/material/';
+import { Box, Stack, Grid } from '@mui/material/';
 
 import { useTheme } from '@mui/material/styles';
 import SeriesSelector from './SubchartUtils/SeriesSelector';
@@ -509,26 +509,43 @@ export default function SubChart(props) {
   const showAuxiliaryControls = () => {
     if (!isFirstRender) {
       return (
-        <Stack sx={{
-          flexDirection: { sm: "column", md: "row" }
-        }}
-          mt={1} spacing={1}>
+        <Grid
+          container
+          mt={1}
+          sx={{
+            gap: 2,
+            [theme.breakpoints.down('sm')]: { gap: 1 }
+          }}
+        >
           {seriesSelector &&
-            <SeriesSelector
-              items={dataColumns}
-              allowMultiple={seriesSelector.allowMultiple}
-              selectorID={`${chartData.title}-selector`}
-              onSeriesSelection={handleSeriesSelection}
-              displayChip={false}
-            />}
-          {dateRangePicker === true &&
-            <Box position="relative">
-              <CustomDateRangePicker
-                passedMinDateOfDataset={dateRangePickerProperties.minDate}
+            <Grid item
+              sx={{
+                [theme.breakpoints.down('sm')]: { width: '100%' }
+              }}
+            >
+              <SeriesSelector
+                items={dataColumns}
+                allowMultiple={seriesSelector.allowMultiple}
+                selectorID={`${chartData.title}-selector`}
+                onSeriesSelection={handleSeriesSelection}
+                displayChip={false}
               />
-            </Box>
+            </Grid>
           }
-        </Stack>
+          {
+            dateRangePicker === true &&
+            <Grid item
+              sx={{
+                height: "2rem",
+                width: { [theme.breakpoints.down('sm')]: { width: '100%' } }
+              }} >
+              <CustomDateRangePicker
+                passedMinDateOfDataset={dateRangePickerProperties.minDate
+                }
+              />
+            </Grid>
+          }
+        </Grid >
       );
     } else {
       return null;

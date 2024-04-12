@@ -6,17 +6,17 @@ import { Paper } from '@mui/material';
 import { addDays, endOfDay, startOfDay } from "date-fns";
 import AggregationType from './AggregationType';
 
-export const returnCustomStaticRanges = ({ today, minDateOfDataset, smallScreen, aggregationType }) => {
+export const returnCustomStaticRanges = ({ today, minDateOfDataset, aggregationType }) => {
   const hourlyReturn = [
     {
-      label: smallScreen ? "Last 14d" : "Last 14 Days",
+      label: "Last 14d",
       range: () => ({
         startDate: startOfDay(addDays(today, -14)),
         endDate: endOfDay(today)
       })
     },
     {
-      label: smallScreen ? "Last 30d" : "Last 30 Days",
+      label: "Last 30d",
       range: () => ({
         startDate: startOfDay(addDays(today, -30)),
         endDate: endOfDay(today)
@@ -25,14 +25,14 @@ export const returnCustomStaticRanges = ({ today, minDateOfDataset, smallScreen,
   ];
 
   const dailyReturn = [{
-    label: smallScreen ? "Last 90d" : "Last 90 Days",
+    label: "Last 90d",
     range: () => ({
       startDate: startOfDay(addDays(today, -90)),
       endDate: endOfDay(today)
     })
   },
   {
-    label: smallScreen ? "Last 365d" : "Last 365 Days",
+    label: "Last 365d",
     range: () => ({
       startDate: startOfDay(addDays(today, -365)),
       endDate: endOfDay(today)
@@ -51,12 +51,10 @@ export const returnCustomStaticRanges = ({ today, minDateOfDataset, smallScreen,
 };
 
 export const StyledDateRangePicker = styled(Paper)(({ theme, showPickerPanel, smallScreen }) => ({
-  // position: 'absolute',
-  // maxHeight: '2rem',
-  zIndex: showPickerPanel === true && 10000,
+  zIndex: showPickerPanel === true && 1000,
+  position: "relative",
   padding: showPickerPanel ? theme.spacing(1) : 0,
-  margin: smallScreen === false && (showPickerPanel ? theme.spacing(-1) : 0),
-  width: smallScreen ? '100%' : 'fit-content',
+  margin: (showPickerPanel && !smallScreen) ? theme.spacing(-1) : 0,
   maxWidth: '100%',
   background: showPickerPanel ? theme.palette.customAlternateBackground : 'transparent',
   boxShadow: showPickerPanel === false && 'none',
@@ -75,6 +73,7 @@ export const StyledDateRangePicker = styled(Paper)(({ theme, showPickerPanel, sm
   },
   '& .rdrDateDisplay': {
     margin: 0,
+    minWidth: "20rem"
   },
   '& .rdrDateDisplayItem': {
     margin: 0,
@@ -93,7 +92,11 @@ export const StyledDateRangePicker = styled(Paper)(({ theme, showPickerPanel, sm
     borderRight: showPickerPanel === false && `1px solid ${theme.palette.action.disabled} !important`
   },
   '& .rdrMonthAndYearWrapper, .rdrInputRanges': {
-    display: 'none !important'
+    display: showPickerPanel === false && 'none !important',
+    padding: 0
+  },
+  '& .rdrMonthName': {
+    display: 'none',
   },
   '& .rdrDefinedRangesWrapper, .rdrMonths': {
     display: showPickerPanel === false && 'none'
@@ -106,7 +109,6 @@ export const StyledDateRangePicker = styled(Paper)(({ theme, showPickerPanel, sm
   },
   '& .rdrDateDisplayWrapper': {
     minWidth: '18rem',
-    width: 'fit-content',
     borderRadius: theme.shape.borderRadius,
     border: showPickerPanel ? "none" : `1px solid ${theme.palette.action.disabled}`,
     "&:hover": {
@@ -115,38 +117,47 @@ export const StyledDateRangePicker = styled(Paper)(({ theme, showPickerPanel, sm
   },
   '& .rdrDateRangePickerWrapper': {
     width: '100%',
-    flexDirection: smallScreen ? 'column-reverse' : 'row-reverse',
-    gap: smallScreen ? '0.5rem' : '1rem'
+    flexDirection: 'column-reverse'
   },
   '& .rdrStaticRanges': {
-    flexDirection: smallScreen ? 'row' : 'column',
+    flexDirection: 'row',
+    minWidth: '21rem'
   },
   '& .rdrStaticRangeLabel': {
     color: theme.palette.text.secondary,
     borderRadius: theme.shape.borderRadius,
-    padding: `${smallScreen ? `${theme.spacing(0.5)} ${theme.spacing(1)}` : `${theme.spacing(1)} ${theme.spacing(2)}`}`
+    padding: `${theme.spacing(0.5)} ${theme.spacing(1)}`
   },
   '& .rdrDefinedRangesWrapper': {
-    borderRight: 'none',
-    borderLeft: `1px solid`,
-    borderColor: smallScreen ? "transparent" : theme.palette.action.disabled,
-    width: '100%',
-    minWidth: smallScreen === false && "9rem"
+    border: 'none',
+    width: '100%'
   },
-  '& .rdrMonthAndYearWrapper > button': {
-    background: theme.palette.customBackground.toString()
+  '& .rdrNextPrevButton': {
+    background: theme.palette.primary.main,
+    borderRadius: theme.shape.borderRadius,
+    opacity: 1,
+    '&:hover': {
+      opacity: 0.5,
+      background: theme.palette.primary.main
+    }
+  },
+  '& .rdrNextPrevButton > i': {
+    color: "white"
   },
   '& .rdrNextButton > i': {
-    borderColor: `transparent transparent transparent ${theme.palette.primary}`
+    borderColor: `transparent transparent transparent white`
   },
   '& .rdrPprevButton > i': {
-    borderColor: `transparent ${theme.palette.primary} transparent transparent`
+    borderColor: `transparent white transparent transparent`
   },
   '& .rdrStaticRange': {
-    borderColor: smallScreen ? "transparent" : theme.palette.action.disabled
+    border: 'none'
   },
-  '& .rdrStaticRangeSelected > .rdrStaticRangeLabel': {
-    color: theme.palette.primary
+  '& .rdrStaticRangeSelected > .rdrStaticRangeLabel, .rdrMonthAndYearPickers': {
+    color: theme.palette.primary.main
+  },
+  '& .rdrMonthAndYearPickers': {
+    fontSize: '1rem'
   },
   '& .rdrStaticRange:hover .rdrStaticRangeLabel, .rdrStaticRange:focus .rdrStaticRangeLabel': {
     background: theme.palette.customBackground.toString()

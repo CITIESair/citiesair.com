@@ -1,6 +1,6 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useContext } from 'react';
 import { Box, Typography, Stack, Link } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { MapContainer, TileLayer, Marker, Popup, useMap, AttributionControl, useMapEvent, Rectangle, CircleMarker, Tooltip } from 'react-leaflet';
@@ -25,6 +25,7 @@ import ThemePreferences from '../../Themes/ThemePreferences';
 
 import { styled } from '@mui/material/styles';
 import CustomThemes from '../../Themes/CustomThemes';
+import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 
 const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
     '& .leaflet-popup-tip-container': {
@@ -103,9 +104,10 @@ export const LocationTitle = {
 }
 
 const AQImap = (props) => {
+    const { themePreference } = useContext(PreferenceContext);
+
     const {
         tileOption,
-        themePreference,
         temperatureUnitPreference = TemperatureUnits.celsius,
         placeholderText,
         centerCoordinates,

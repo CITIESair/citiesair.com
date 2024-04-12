@@ -9,12 +9,12 @@ export default function AggregationTypeToggle({ aggregationType, setAggregationT
 
   return (
     <Stack
-      direction={smallScreen ? "row" : "column"}
-      alignItems={smallScreen ? "center" : "start"}
-      spacing={smallScreen === true && 1}
+      direction="row"
+      alignItems="center"
+      spacing={1}
     >
       <Typography variant="caption" display="block" color="text.secondary">
-        AVERAGE
+        DATA AVERAGE
       </Typography>
 
       <ToggleButtonGroup

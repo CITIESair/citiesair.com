@@ -359,12 +359,12 @@ const CustomDateRangePicker = (props) => {
   const [isValidRange, setIsValidRange] = useState(true);
 
   const theme = useTheme();
-  const smallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
 
   // Keep track of the date range being selected by the user
   const [selectedRange, setSelectedRange] = useState([
-    { ...returnCustomStaticRanges({ today, minDateOfDataset, smallScreen })[0].range(), key: 'selection' } // Initialize with the range of the first static range
+    { ...returnCustomStaticRanges({ today, minDateOfDataset })[0].range(), key: 'selection' } // Initialize with the range of the first static range
   ]);
 
   const [chartUrl, setChartUrl] = useState();
@@ -486,14 +486,14 @@ const CustomDateRangePicker = (props) => {
       elevation={8}
       onClick={() => setShowPickerPanel(true)}
     >
-      <Stack direction={"column"} alignItems={"end"} spacing={smallScreen === true && 1}>
+      <Stack direction={"column"} spacing={1}>
         <DateRangePicker
           ranges={selectedRange}
           onChange={handleSelect}
           staticRanges={
             createStaticRanges(
               returnCustomStaticRanges({
-                today, minDateOfDataset, smallScreen, aggregationType
+                today, minDateOfDataset, aggregationType
               })
             )
           }
@@ -501,11 +501,8 @@ const CustomDateRangePicker = (props) => {
           rangeColors={[theme.palette.primary.main, theme.palette.secondary.main, theme.palette.text.secondary]}
           minDate={minDateOfDataset}
           maxDate={today}
-          months={smallScreen ? 1 : 2}
+          months={1}
           showMonthAndYearPickers={false}
-          scroll={{
-            enabled: true
-          }}
           direction={"horizontal"}
           fixedHeight={true}
           preventSnapRefocus={true}
@@ -513,6 +510,7 @@ const CustomDateRangePicker = (props) => {
           startDatePlaceholder="Start Date"
           endDatePlaceholder="End Date"
           editableDateInputs={true}
+          showMonthArrow={true}
         />
 
         {showPickerPanel && (
@@ -521,9 +519,6 @@ const CustomDateRangePicker = (props) => {
             alignItems="end"
             width="100%"
             spacing={1}
-            sx={{
-              marginTop: smallScreen === false && "-3rem"
-            }}
           >
             <AggregationTypeToggle
               aggregationType={aggregationType}
@@ -540,8 +535,8 @@ const CustomDateRangePicker = (props) => {
                 disabled={!isValidRange}
                 onClick={handleApplyButtonClick}
                 sx={{
-                  zIndex: 100000,
-                  transform: smallScreen === true && "translateY(-1px)"
+                  zIndex: 1005,
+                  transform: "translateY(-1px)"
                 }}
               >
                 {renderApplyButtonLabel()}
@@ -577,7 +572,7 @@ const displayErrorMessage = () => {
         }
       }}
     >
-      HOURLY data is limited to max 30 days
+      HOURLY data is limited to max 30d
     </Alert>
   )
 }
