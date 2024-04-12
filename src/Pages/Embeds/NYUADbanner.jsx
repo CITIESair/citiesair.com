@@ -106,7 +106,7 @@ const NYUADbanner = (props) => {
           minHeight={minMapHeight}
           sx={{
             '& .leaflet-container': {
-              borderRadius: theme.shape.borderRadius
+              borderRadius: isSmallScreen === false && theme.shape.borderRadius
             },
             '& .leaflet-marker-icon': {
               cursor: (isSmallScreen && isOnBannerPage) && "default"
