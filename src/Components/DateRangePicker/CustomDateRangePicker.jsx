@@ -15,7 +15,12 @@ import AggregationTypeToggle from './AggregationTypeToggle';
 import AggregationType from './AggregationType';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
 
-import { differenceInDays } from 'date-fns';
+import { differenceInDays, isSameDay } from 'date-fns';
+
+const InvalidRangeMessages = {
+  tooLong: "HOURLY data is limited to max 30d",
+  sameDay: "Start and end dates must be different"
+}
 
 const sample = {
   "id": 1,
@@ -356,7 +361,7 @@ const CustomDateRangePicker = (props) => {
   const today = new Date();
   const [minDateOfDataset, setMinDateOfDataset] = useState(passedMinDateOfDataset);
 
-  const [isValidRange, setIsValidRange] = useState(true);
+  const [invalidRangeMessage, setInvalidRangeMessage] = useState();
 
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -390,15 +395,25 @@ const CustomDateRangePicker = (props) => {
   }, [paperRef]);
 
   const checkValidRange = (selectedRange) => {
+    const { startDate, endDate } = selectedRange;
+
+    // Start date and end date can't be the same date
+    if (isSameDay(startDate, endDate)) {
+      setInvalidRangeMessage(InvalidRangeMessages.sameDay);
+      return;
+    }
+    else {
+      setInvalidRangeMessage(null);
+    }
+
     // Restrict the selection to only 30 days if aggregationType is hourly
     if (aggregationType === AggregationType.hourly) {
-      const { startDate, endDate } = selectedRange;
       const diff = differenceInDays(endDate, startDate);
-      setIsValidRange(diff <= 30);
+      setInvalidRangeMessage((diff > 30) ? InvalidRangeMessages.tooLong : null);
     }
     // No restriction for daily aggregationType
     else {
-      if (isValidRange === false) setIsValidRange(!isValidRange);
+      if (invalidRangeMessage !== null) setInvalidRangeMessage(null);
     }
   }
 
@@ -417,7 +432,7 @@ const CustomDateRangePicker = (props) => {
   // Send query request to backend when APPLY button is clicked
   // Check if a new date range is selected as well
   const handleApplyButtonClick = (event) => {
-    if (!isValidRange) return;
+    if (!invalidRangeMessage) return;
 
     event.stopPropagation(); // Prevents Paper onClick from firing
 
@@ -527,12 +542,12 @@ const CustomDateRangePicker = (props) => {
             />
             <Stack direction="row" spacing={1}>
               {
-                isValidRange === false && displayErrorMessage()
+                invalidRangeMessage && displayErrorMessage(invalidRangeMessage)
               }
               <Button
                 variant="contained"
                 size="small"
-                disabled={!isValidRange}
+                disabled={invalidRangeMessage === null ? false : true}
                 onClick={handleApplyButtonClick}
                 sx={{
                   zIndex: 1005,
@@ -553,7 +568,7 @@ const CustomDateRangePicker = (props) => {
   );
 };
 
-const displayErrorMessage = () => {
+const displayErrorMessage = (invalidRangeMessage) => {
   return (
     <Alert
       severity="error"
@@ -572,7 +587,7 @@ const displayErrorMessage = () => {
         }
       }}
     >
-      HOURLY data is limited to max 30d
+      {invalidRangeMessage}
     </Alert>
   )
 }
