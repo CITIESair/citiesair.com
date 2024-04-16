@@ -4,7 +4,9 @@ import AggregationType from './AggregationType';
 
 export default function AggregationTypeToggle({ aggregationType, setAggregationType, smallScreen }) {
   const handleChange = (event, newType) => {
-    setAggregationType(newType);
+    if (newType !== null) {
+      setAggregationType(newType);
+    }
   };
 
   return (
