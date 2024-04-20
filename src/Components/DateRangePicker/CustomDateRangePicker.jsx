@@ -24,13 +24,12 @@ const InvalidRangeMessages = {
 }
 
 const CustomDateRangePicker = (props) => {
-  const { passedMinDateOfDataset } = props;
+  const { minDateOfDataset } = props;
+
   const { currentSchoolID, chartData, setChartData } = useContext(DashboardContext);
   const [aggregationType, setAggregationType] = useState(AggregationType.hourly);
 
-  // Get the minimum date available for the date range picker
   const today = new Date();
-  const [minDateOfDataset, setMinDateOfDataset] = useState(passedMinDateOfDataset);
 
   const [invalidRangeMessage, setInvalidRangeMessage] = useState();
 
@@ -119,13 +118,7 @@ const CustomDateRangePicker = (props) => {
       setIsFetchingData(true);
 
       fetchDataFromURL({
-        url: getApiUrl({
-          endpoint: EndPoints.historicalAQI,
-          school_id: currentSchoolID,
-          aggregationType: aggregationType,
-          startDate: selectedRange[0].startDate, // only one range can be selected at a time --> [0]
-          endDate: selectedRange[0].endDate
-        }),
+        url: newUrl,
         extension: 'json',
         needsAuthorization: true
       })
