@@ -191,6 +191,7 @@ export const returnGenericOptions = (props) => {
     title: options.vAxis?.title ?? '',
     viewWindow: {
       min: options.vAxis?.viewWindow?.min ?? 0,
+      max: options.vAxis?.viewWindow?.max ?? null,
     },
   };
   options.hAxis = {
@@ -375,14 +376,14 @@ export const returnChartControlUI = (props) => {
       },
       chartOptions: {
         ...mainChartOptions,
-        ...chartControl.options?.ui?.chartOptions,
         hAxis: {
-          ...chartControl.options?.ui?.chartOptions?.hAxis,
+          ...mainChartOptions.hAxis,
           textPosition: 'out',
-          textStyle: { color: theme.palette.chart.axisText, fontSize: returnResponsiveFontSizeInPixels({ isPortrait, isSmaller: true }) }
+          textStyle: { color: theme.palette.chart.axisText, fontSize: returnResponsiveFontSizeInPixels({ isPortrait, isSmaller: true }) },
+          title: null
         },
         vAxis: {
-          ...chartControl.options?.ui?.chartOptions?.vAxis,
+          ...mainChartOptions.vAxis,
           title: null
         },
         annotations: hideAnnotations,
