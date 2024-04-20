@@ -175,12 +175,7 @@ export default function SubChart(props) {
   const seriesSelector = options.seriesSelector || false;
 
   // Properties for date-range-picker
-  // const dateRangePicker = options.dateRangePicker || false;
-  const dateRangePicker = (chartData.id === 1) && true;
-  const dateRangePickerProperties = {
-    minDate: new Date(2021, 1, 1),
-
-  }
+  const dateRangePicker = options.dateRangePicker || null;
 
   // Set new options prop and re-render the chart if theme or isPortrait changes
   useEffect(() => {
@@ -533,16 +528,13 @@ export default function SubChart(props) {
             </Grid>
           }
           {
-            dateRangePicker === true &&
+            dateRangePicker &&
             <Grid item
               sx={{
                 height: "2rem",
                 width: { [theme.breakpoints.down('sm')]: { width: '100%' } }
               }} >
-              <CustomDateRangePicker
-                passedMinDateOfDataset={dateRangePickerProperties.minDate
-                }
-              />
+              <CustomDateRangePicker minDateOfDataset={new Date(dateRangePicker.minDate)} />
             </Grid>
           }
         </Grid >

@@ -390,6 +390,7 @@ export const returnChartControlUI = (props) => {
       }
     };
   }
+
   return chartControlUI;
 }
 
