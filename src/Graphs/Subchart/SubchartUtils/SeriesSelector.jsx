@@ -29,11 +29,11 @@ export default function SeriesSelector(props) {
       }
     },
     anchorOrigin: {
-      vertical: -6,
+      vertical: "bottom",
       horizontal: "left"
     },
     transformOrigin: {
-      vertical: "bottom",
+      vertical: "top",
       horizontal: "left"
     },
     getContentAnchorEl: null
