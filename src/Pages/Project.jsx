@@ -45,6 +45,7 @@ import NYUADbanner from './Embeds/NYUADbanner';
 
 import { DashboardContext } from '../ContextProviders/DashboardContext';
 import { PreferenceContext } from '../ContextProviders/PreferenceContext';
+import LoadMoreChartsButton from '../Components/LoadMoreChartsButton';
 
 // Custom Chip component to display metadata
 export const CustomChip = (props) => {
