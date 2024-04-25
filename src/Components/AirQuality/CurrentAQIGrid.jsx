@@ -82,9 +82,20 @@ const CurrentAQIGrid = (props) => {
                 <Typography variant={isScreen ? "h1" : 'h2'} fontWeight="500" lineHeight={isScreen ? 0.8 : 0.9}>
                   {sensorData.current?.aqi || '--'}
                 </Typography>
-                <Typography variant={isScreen ? "h4" : 'h5'} fontWeight="500" className='condensedFont'>
+                <Typography
+                  variant={isScreen ? "h4" : 'h5'}
+                  fontWeight="500"
+                  className='condensedFont'
+                  style={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                  }}
+                >
                   {sensorData.current?.category || '--'}
                 </Typography>
+
               </Box>
 
               <Box sx={{
