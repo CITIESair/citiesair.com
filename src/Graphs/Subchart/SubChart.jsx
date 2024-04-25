@@ -179,7 +179,7 @@ export default function SubChart(props) {
 
   // Set new options prop and re-render the chart if theme or isPortrait changes
   useEffect(() => {
-    if (seriesSelector) handleSeriesSelection(dataColumns); // this function set new options, too
+    if (seriesSelector) handleSeriesSelection({ newDataColumns: dataColumns }); // this function set new options, too
     else {
       chartWrapper?.setOptions({
         ...options,
@@ -200,7 +200,7 @@ export default function SubChart(props) {
     if (!dataColumns) return;
     if (seriesSelector && seriesSelector.method == "setViewColumn") {
       setInitialColumnsColors({ dataColumns: dataColumns });
-      handleSeriesSelection(dataColumns);
+      handleSeriesSelection({ newDataColumns: dataColumns });
     }
   }, [theme]);
 
@@ -276,7 +276,7 @@ export default function SubChart(props) {
     if (seriesSelector.method === "setViewColumn") setInitialColumnsColors({ dataColumns: dataColumns });
 
     setDataColumns(dataColumns);
-    return dataColumns;
+    return { initAllInitialColumns: allInitialColumns, initDataColumns: dataColumns };
   };
 
   const setInitialColumnsColors = ({ dataColumns }) => {
@@ -299,8 +299,8 @@ export default function SubChart(props) {
     return { min: vAxisMin, max: vAxisMax };
   }
 
-  const handleSeriesSelection = (newDataColumns, _chartWrapper = chartWrapper) => {
-    if (!allInitialColumns) return;
+  const handleSeriesSelection = ({ newDataColumns, _allInitialColumns = allInitialColumns, _chartWrapper = chartWrapper }) => {
+    if (!_allInitialColumns) return;
 
     setDataColumns(newDataColumns);
 
@@ -331,9 +331,9 @@ export default function SubChart(props) {
           newViewColumns.push(dataColumn);
           // Find this dataColumn's supporting columns (whose role !== 'data')
           // A dataColumn has its supporting columns (can be many) follow it immediately
-          for (let i = dataColumn.indexInAllInitialColumns + 1; i < allInitialColumns.length; i++) {
-            if (allInitialColumns[i].role !== 'data') {
-              newViewColumns.push(allInitialColumns[i]);
+          for (let i = dataColumn.indexIn_ + 1; i < _allInitialColumns.length; i++) {
+            if (_allInitialColumns[i].role !== 'data') {
+              newViewColumns.push(_allInitialColumns[i]);
             }
             // If this loop encounter the next dataColumn, break the loop, all supporting columns for this dataColumn have been discovered
             else {
@@ -466,8 +466,13 @@ export default function SubChart(props) {
 
       // Run the seriesSelector for the first time
       if (seriesSelector) {
-        const initColumns = getInitialColumns({ chartWrapper: thisChartWrapper, dataTable: thisDataTable, seriesSelector: seriesSelector });
-        handleSeriesSelection(initColumns, thisChartWrapper);
+        const { initAllInitialColumns, initDataColumns } = getInitialColumns({ chartWrapper: thisChartWrapper, dataTable: thisDataTable, seriesSelector: seriesSelector });
+
+        handleSeriesSelection({
+          _allInitialColumns: initAllInitialColumns,
+          newDataColumns: initDataColumns,
+          _chartWrapper: thisChartWrapper
+        });
       }
     }
   }, [google, chartData]);
@@ -521,6 +526,7 @@ export default function SubChart(props) {
               <SeriesSelector
                 items={dataColumns}
                 allowMultiple={seriesSelector.allowMultiple}
+                seriesLabel={seriesSelector.seriesLabel}
                 selectorID={`${chartData.title}-selector`}
                 onSeriesSelection={handleSeriesSelection}
                 displayChip={false}

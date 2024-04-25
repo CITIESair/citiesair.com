@@ -14,6 +14,7 @@ export default function SeriesSelector(props) {
   const { items: itemsFromChart,
     selectorID,
     allowMultiple,
+    seriesLabel,
     onSeriesSelection,
     displayChip = true
   } = props;
@@ -63,7 +64,7 @@ export default function SeriesSelector(props) {
     // (to make sure there's always at least 1 item being selected)
     if (value.includes(SELECT_ALL)) {
       const updatedItems = items.map((item, index) => ({ ...item, selected: index == 0 ? true : !selectAll }));
-      onSeriesSelection(updatedItems);
+      onSeriesSelection({ newDataColumns: updatedItems });
       setSelectAll(!selectAll);
     }
     // Else, if an ordinary item is selected/de-selected:
@@ -73,7 +74,7 @@ export default function SeriesSelector(props) {
         ...item,
         selected: selectedItems.some(selectedItem => selectedItem.label === item.label)
       }));
-      onSeriesSelection(updatedItems);
+      onSeriesSelection({ newDataColumns: updatedItems });
       setSelectAll(false);
     }
   };
@@ -82,12 +83,12 @@ export default function SeriesSelector(props) {
     const updatedItems = items.map(existingItem =>
       existingItem.label === item.label ? { ...existingItem, selected: !existingItem.selected } : existingItem
     );
-    onSeriesSelection(updatedItems);
+    onSeriesSelection({ newDataColumns: updatedItems });
   };
 
   const renderedLabel = (selected) => {
     const returnNumSeriesDisplayed = () => {
-      return `${selected.length}/${items.length} series displayed`;
+      return `${selected.length}/${items.length} ${seriesLabel || ""} displayed`;
     };
 
     return (

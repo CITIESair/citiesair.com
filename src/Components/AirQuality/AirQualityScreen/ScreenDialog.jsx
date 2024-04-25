@@ -1,11 +1,9 @@
 // disable eslint for this file
 /* eslint-disable */
 import { useState, useContext } from "react";
-import { Button, Menu, MenuItem } from "@mui/material";
+import { Button, Menu } from "@mui/material";
 import { Link } from 'react-router-dom';
 import TvIcon from '@mui/icons-material/Tv';
-import HoverMenu from 'material-ui-popup-state/HoverMenu';
-import PopupState, { bindHover, bindFocus, bindMenu } from 'material-ui-popup-state';
 import MenuItemAsNavLink from "../../Header/MenuItemAsNavLink";
 import NavLinkBehavior from "../../Header/NavLinkBehavior";
 import { DashboardContext } from "../../../ContextProviders/DashboardContext";
