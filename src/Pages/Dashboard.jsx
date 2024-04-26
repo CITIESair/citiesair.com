@@ -2,7 +2,7 @@
 /* eslint-disable */
 
 import { useEffect, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { fetchDataFromURL } from "../Components/DatasetDownload/DatasetFetcher";
 import Project from "./Project";
@@ -17,6 +17,9 @@ import { UniqueRoutes } from "../Utils/RoutesUtils";
 const Dashboard = () => {
   const { school_id_param } = useParams();
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const locationPath = location.pathname;
 
   // Update the page's title based on school_id_param
   useEffect(() => {
@@ -47,7 +50,7 @@ const Dashboard = () => {
     };
 
     if (user.checkedAuthentication === true && user.authenticated === false) {
-      navigate('/login');
+      navigate(`${UniqueRoutes.login}?${UniqueRoutes.redirectQuery}=${locationPath}`);
     }
 
     const allowedSchools = user.allowedSchools;

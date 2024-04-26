@@ -192,6 +192,7 @@ export const returnGenericOptions = (props) => {
     viewWindow: {
       min: options.vAxis?.viewWindow?.min ?? 0,
       max: options.vAxis?.viewWindow?.max ?? null,
+      max: options.vAxis?.viewWindow?.max ?? null,
     },
   };
   options.hAxis = {
@@ -379,7 +380,8 @@ export const returnChartControlUI = (props) => {
         hAxis: {
           ...mainChartOptions.hAxis,
           textPosition: 'out',
-          textStyle: { color: theme.palette.chart.axisText, fontSize: returnResponsiveFontSizeInPixels({ isPortrait, isSmaller: true }) }
+          textStyle: { color: theme.palette.chart.axisText, fontSize: returnResponsiveFontSizeInPixels({ isPortrait, isSmaller: true }) },
+          title: null
         },
         vAxis: {
           ...mainChartOptions.vAxis,
@@ -390,7 +392,6 @@ export const returnChartControlUI = (props) => {
       }
     };
   }
-  console.log(chartControlUI);
   return chartControlUI;
 }
 
