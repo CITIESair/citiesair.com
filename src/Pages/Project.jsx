@@ -103,7 +103,7 @@ const Project = () => {
   }
 
   const displayProjectDescription = () => {
-    const description = chartData.description;
+    const description = schoolMetadata?.description;
 
     if (description) return (
       <Typography
