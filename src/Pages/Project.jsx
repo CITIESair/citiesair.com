@@ -66,7 +66,7 @@ const Project = () => {
 
   const { setChartsTitlesList } = useContext(LinkContext);
   const { commentCounts, fetchCommentCounts, setCommentCounts } = useContext(CommentCountsContext);
-  const { schoolMetadata, current, chartData } = useContext(DashboardContext);
+  const { schoolMetadata, current, allChartsData, loadMoreCharts } = useContext(DashboardContext);
   const { themePreference, temperatureUnitPreference } = useContext(PreferenceContext);
 
   const [displayCommentSection, setDisplayCommentSection] = useState(false);
@@ -90,11 +90,11 @@ const Project = () => {
 
   // Update the chart title list for quick navigation
   useEffect(() => {
-    if (!chartData?.charts) return;
+    if (!allChartsData?.charts) return;
 
-    const chartsTitles = chartData?.charts.map((element, index) => ({ chartTitle: element.title, chartID: `chart-${index + 1}` }));
+    const chartsTitles = allChartsData?.charts.map((element, index) => ({ chartTitle: element.title, chartID: `chart-${index + 1}` }));
     setChartsTitlesList(chartsTitles);
-  }, [chartData]);
+  }, [allChartsData]);
 
   const theme = useTheme();
 
@@ -103,9 +103,7 @@ const Project = () => {
   }
 
   const displayProjectDescription = () => {
-    const description = chartData.description;
-
-    if (description) return (
+    if (schoolMetadata) return (
       <Typography
         component="div"
         variant="body1"
@@ -118,7 +116,7 @@ const Project = () => {
         gutterBottom
       >
         {
-          parse(description || '', {
+          parse(schoolMetadata.description || '', {
             replace: replacePlainHTMLWithMuiComponents,
           })
         }
@@ -134,41 +132,57 @@ const Project = () => {
   };
 
   const displayCharts = () => {
-    if (chartData) {
+    // Display if there are at least one chart
+    if (Object.keys(allChartsData).length > 0) {
       return (
-        chartData?.charts?.map((element, index) => (
-          <FullWidthBox
-            key={index}
-            backgroundColor={
-              index % 2 != 0 && 'customAlternateBackground'
-            }
-          >
-            <Container
-              sx={{ pt: 4, pb: 4 }}
-              height="auto"
-              className={themePreference === ThemePreferences.dark ? 'dark' : ''}
-              id={`chart-${index + 1}`}
+        <>
+          {Object.keys(allChartsData).map((chartID, index) => (
+            <FullWidthBox
+              key={chartID}
+              backgroundColor={index % 2 !== 0 ? 'customAlternateBackground' : ''}
             >
-              <Typography variant="h6" color="text.primary">
-                {index + 1}. {element.title}
-              </Typography>
+              <Container
+                sx={{ pt: 4, pb: 4 }}
+                height="auto"
+                className={themePreference === ThemePreferences.dark ? 'dark' : ''}
+                id={`chart-${index + 1}`}
+              >
+                <Typography variant="h6" color="text.primary">
+                  {index + 1}. {allChartsData[chartID].title}
+                </Typography>
 
-              <ChartComponentWrapper
-                generalChartSubtitle={element.subtitle}
-                generalChartReference={element.reference}
-                chartData={{
-                  chartIndex: index,
-                  ...element,
-                }}
-              />
-            </Container>
-          </FullWidthBox>
-        ))
-      )
+                <ChartComponentWrapper
+                  generalChartSubtitle={allChartsData[chartID].subtitle}
+                  generalChartReference={allChartsData[chartID].reference}
+                  chartData={{
+                    chartIndex: index,
+                    ...allChartsData[chartID],
+                  }}
+                />
+
+                {
+                  // Optionally display the button to load more charts at the bottom of the last chart
+                  // (if not already fetched every chart)
+                  displayLoadMoreButton(index === Object.keys(allChartsData).length - 1)
+                }
+              </Container>
+            </FullWidthBox>
+          ))}
+
+        </>
+      );
     } else {
-      return (
-        <LoadingAnimation optionalText="Loading Dashboard" />
-      )
+      // Else display loading animation
+      return <LoadingAnimation optionalText="Loading Visualizations" />;
+    }
+  };
+
+  const displayLoadMoreButton = (isLastChartInList) => {
+    if (isLastChartInList === true && loadMoreCharts === false) {
+      return <LoadMoreChartsButton />;
+    }
+    else {
+      return null;
     }
   }
 
@@ -201,7 +215,7 @@ const Project = () => {
         <Grid item>
           <CustomChip
             icon={<BarChartIcon />}
-            label={`${chartData?.charts?.length || "..."} Chart${chartData?.charts?.length !== 1 ? 's' : ''}`}
+            label={`${Object.keys(allChartsData).length || "..."} Chart${Object.keys(allChartsData).length !== 1 ? 's' : ''}`}
             tooltipTitle="Number of Charts"
             onClick={() => {
               scrollToSection(jsonData.charts.id);
@@ -278,7 +292,7 @@ const Project = () => {
             </Box>)
           }
 
-          {chartData && displayProjectDescription()}
+          {displayProjectDescription()}
 
           <Stack direction="row" spacing={2}>
             <ScreenDialog />
@@ -317,7 +331,7 @@ const Project = () => {
       </FullWidthBox>
 
       <Box id={jsonData.charts.id}>
-        {displayCharts(chartData)}
+        {displayCharts(allChartsData)}
       </Box>
       <Divider />
 

@@ -10,7 +10,7 @@ import { CircularProgress, useMediaQuery, useTheme } from '@mui/material';
 import { Alert, Button, Stack } from '@mui/material';
 
 import { StyledDateRangePicker, returnCustomStaticRanges } from './DateRangePickerUtils';
-import { EndPoints, getApiUrl } from '../../Utils/ApiUtils';
+import { ChartEndpoints, getHistoricalChartApiUrl } from '../../Utils/ApiUtils';
 import AggregationTypeToggle from './AggregationTypeToggle';
 import AggregationType from './AggregationType';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
@@ -26,7 +26,7 @@ const InvalidRangeMessages = {
 const CustomDateRangePicker = (props) => {
   const { minDateOfDataset } = props;
 
-  const { currentSchoolID, chartData, setChartData } = useContext(DashboardContext);
+  const { currentSchoolID, setIndividualChartData } = useContext(DashboardContext);
   const [aggregationType, setAggregationType] = useState(AggregationType.hourly);
 
   const today = new Date();
@@ -106,8 +106,8 @@ const CustomDateRangePicker = (props) => {
 
     event.stopPropagation(); // Prevents Paper onClick from firing
 
-    const newUrl = getApiUrl({
-      endpoint: EndPoints.historicalAQI,
+    const newUrl = getHistoricalChartApiUrl({
+      endpoint: ChartEndpoints.historical,
       school_id: currentSchoolID,
       aggregationType: aggregationType,
       startDate: format(selectedRange[0].startDate, 'yyyy-MM-dd'), // only one range can be selected at a time --> [0]
@@ -123,13 +123,7 @@ const CustomDateRangePicker = (props) => {
         needsAuthorization: true
       })
         .then((data) => {
-          const charts = [...chartData.charts];
-          charts[0] = data; // replace historical chart's data with the new one
-          setChartData({
-            ...chartData,
-            charts: charts
-          });
-
+          setIndividualChartData(ChartEndpoints.historical, data);
           setChartUrl(newUrl);
           setIsFetchingData(false);
           setShowPickerPanel(false);

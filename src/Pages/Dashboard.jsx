@@ -6,13 +6,25 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { fetchDataFromURL } from "../Components/DatasetDownload/DatasetFetcher";
 import Project from "./Project";
-import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from "../Utils/ApiUtils";
+import { ChartEndpoints, GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiUtils";
 import { LinkContext } from "../ContextProviders/LinkContext";
 import { DashboardContext } from "../ContextProviders/DashboardContext";
 
 import { UserContext } from "../ContextProviders/UserContext";
 import { LocalStorage } from "../Utils/LocalStorage";
 import { UniqueRoutes } from "../Utils/RoutesUtils";
+
+const initialCharts = [
+  ChartEndpoints.historical,
+  ChartEndpoints.dailyAverageAllTime
+];
+
+const restOfCharts = [
+  ChartEndpoints.percentageByMonth,
+  ChartEndpoints.yearlyAverageByDoW,
+  ChartEndpoints.hourlyAverageByMonth,
+  ChartEndpoints.correlationDailyAverage
+];
 
 const Dashboard = () => {
   const { school_id_param } = useParams();
@@ -38,13 +50,15 @@ const Dashboard = () => {
     currentSchoolID, setCurrentSchoolID,
     schoolMetadata, setSchoolMetadata,
     current, setCurrent,
-    chartData, setChartData } = useContext(DashboardContext);
+    allChartsData, setIndividualChartData,
+    loadMoreCharts
+  } = useContext(DashboardContext);
   const { user } = useContext(UserContext);
 
   useEffect(() => {
     // NYUAD is public --> skip authentication and just fetch data
     if (school_id_param === "nyuad") {
-      fetchDataForDashboard('nyuad');
+      fetchInitialDataForDashboard('nyuad');
       setCurrentSchoolID('nyuad');
       return;
     };
@@ -73,36 +87,35 @@ const Dashboard = () => {
         navigate(school_id, { replace: true }); // navigate to the correct url: /dashboard/:school_id_param
 
         // If there is no schoolMetadata or current or chartData, then fetch them
-        if (!(!schoolMetadata && !current && !chartData)) fetchDataForDashboard(school_id);
+        if (!(!schoolMetadata && !current && !allChartsData)) fetchInitialDataForDashboard(school_id);
       }
 
       // If there is school_id_param, check if school_id_param is in the allowedSchools
       if (allowedSchools.map((school) => school.school_id).includes(school_id_param)) {
         setCurrentSchoolID(school_id_param);
-        fetchDataForDashboard(school_id_param);
+        fetchInitialDataForDashboard(school_id_param);
         localStorage.setItem(LocalStorage.schoolID, school_id_param);
         return;
       }
     }
   }, [user, school_id_param]);
 
-  const fetchDataForDashboard = async (school_id) => {
+  const fetchInitialDataForDashboard = async (school_id) => {
     try {
       setSchoolMetadata();
       setCurrent();
-      setChartData({ ...chartData, charts: null });
 
       const response = await Promise.all([
         fetchDataFromURL({
           url: getApiUrl({
-            endpoint: EndPoints.schoolmetadata,
+            endpoint: GeneralEndpoints.schoolmetadata,
             school_id: school_id
           }),
           extension: 'json',
           needsAuthorization: true
         }),
         fetchAndProcessCurrentSensorsData(getApiUrl({
-          endpoint: EndPoints.current,
+          endpoint: GeneralEndpoints.current,
           school_id: school_id
         }))
       ])
@@ -114,21 +127,46 @@ const Dashboard = () => {
       console.log(error);
     }
 
-    fetchDataFromURL({
-      url: getApiUrl({
-        endpoint: EndPoints.chartdata,
-        school_id: school_id
-      }),
-      extension: 'json',
-      needsAuthorization: true
-    })
-      .then(data => {
-        setChartData(data);
+    const chartsToFetch = loadMoreCharts ? initialCharts.concat(restOfCharts) : initialCharts;
+    chartsToFetch.forEach((endpoint) => {
+      fetchDataFromURL({
+        url: getHistoricalChartApiUrl({
+          endpoint: ChartEndpoints.historical,
+          school_id: school_id
+        }),
+        extension: 'json',
+        needsAuthorization: true
       })
-      .catch((error) => {
-        console.log(error);
-      })
+        .then(data => {
+          setIndividualChartData(endpoint, data);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+    });
   }
+
+  useEffect(() => {
+    if (loadMoreCharts === true) {
+      restOfCharts.forEach((endpoint) => {
+        fetchDataFromURL({
+          url: getHistoricalChartApiUrl({
+            endpoint: ChartEndpoints.historical,
+            school_id: currentSchoolID
+          }),
+          extension: 'json',
+          needsAuthorization: true
+        })
+          .then(data => {
+            setIndividualChartData(endpoint, data);
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+      });
+    }
+
+  }, [loadMoreCharts]);
 
   return (
     <>

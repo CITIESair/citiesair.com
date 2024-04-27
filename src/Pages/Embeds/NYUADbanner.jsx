@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom';
 import { useMediaQuery, useTheme } from '@mui/material';
 
 import AQImap, { LocationTitle, TileOptions } from '../../Components/AirQuality/AQImap';
-import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
+import { GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
 import CurrentAQIGrid, { SimpleCurrentAQIlist } from '../../Components/AirQuality/CurrentAQIGrid';
 import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
@@ -60,7 +60,7 @@ const NYUADbanner = (props) => {
   // const [isHovered, setIsHovered] = useState(false);
 
   const url = getApiUrl({
-    endpoint: EndPoints.current,
+    endpoint: GeneralEndpoints.current,
     school_id: 'nyuad'
   });
 

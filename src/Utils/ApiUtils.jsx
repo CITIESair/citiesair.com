@@ -4,20 +4,29 @@ import { SensorStatus } from "../Components/AirQuality/SensorStatus";
 import convertToAQI from "./AirQuality/AirQualityIndexCalculator";
 import AQIdatabase from "./AirQuality/AirQualityIndexHelper";
 import parse from 'html-react-parser';
+import AggregationType from "../Components/DateRangePicker/AggregationType";
 
 const apiDomain = 'https://api.citiesair.com';
 
-export const EndPoints = {
+export const GeneralEndpoints = {
   me: "me",
   current: "current",
   raw: "raw",
   schoolmetadata: "schoolmetadata",
   chartdata: "chartdata",
-  historicalAQI: "historicalAQI",
   screen: "screen",
   login: "login",
   logout: "logout",
   map: "map_public_outdoors_stations"
+}
+
+export const ChartEndpoints = {
+  historical: "historicalAQI",
+  dailyAverageAllTime: "dailyAverageAllTime",
+  percentageByMonth: "percentageByMonth",
+  yearlyAverageByDoW: "yearlyAverageByDoW",
+  hourlyAverageByMonth: "hourlyAverageByMonth",
+  correlationDailyAverage: "correlationDailyAverage"
 }
 
 export const RawDatasetType = {
@@ -27,22 +36,13 @@ export const RawDatasetType = {
 
 export const getApiUrl = ({
   endpoint,
-  school_id,
-  aggregationType = null,
-  startDate = null,
-  endDate = null
+  school_id
 }) => {
-  if ([EndPoints.current, EndPoints.schoolmetadata, EndPoints.chartdata].includes(endpoint)) {
+  if ([GeneralEndpoints.current, GeneralEndpoints.schoolmetadata, GeneralEndpoints.chartdata].includes(endpoint)) {
     return `${apiDomain}/${endpoint}/${school_id}`;
   }
 
-  else if (endpoint === EndPoints.historicalAQI) {
-    if (!(aggregationType && startDate && endDate)) return;
-
-    return `${apiDomain}/${endpoint}/${school_id}?aggregationType=${aggregationType}&startDate=${startDate}&endDate=${endDate}`;
-  }
-
-  else if (endpoint === EndPoints.screen) {
+  else if (endpoint === GeneralEndpoints.screen) {
     const currentUrl = window.location.href;
     const regex = /\/screen\/(.+)/;
     const match = currentUrl.match(regex);
@@ -53,8 +53,26 @@ export const getApiUrl = ({
   else return `${apiDomain}/${endpoint}`;
 }
 
+export const getHistoricalChartApiUrl = ({ endpoint, school_id, aggregationType = AggregationType.hourly, startDate, endDate, dataType }) => {
+  let baseUrl = `${apiDomain}/${endpoint}/${school_id}?dataType=${dataType}&aggregationType=${aggregationType}`;
+
+  if (startDate && endDate) {
+    baseUrl = `${baseUrl}&startDate=${startDate}&endDate=${endDate}`;
+  }
+
+  return baseUrl;
+};
+
+export const getChartApiUrl = ({ endpoint, school_id, dataType }) => {
+  return `${apiDomain}/${endpoint}/${school_id}?dataType=${dataType}`;
+}
+
+export const getCorrelationChartApiUrl = ({ endpoint, school_id, dataType, sensorX, sensorY }) => {
+  return `${apiDomain}/${endpoint}/${school_id}?dataType=${dataType}sensorX=${sensorX}sensorY=${sensorY}`;
+}
+
 export const getRawDatasetUrl = ({ school_id, sensor_location_short, datasetType, isSample }) => {
-  return `${apiDomain}/${EndPoints.raw}/${school_id}/${sensor_location_short}/${datasetType}?isSample=${isSample === true ? true : false}`;
+  return `${apiDomain}/${GeneralEndpoints.raw}/${school_id}/${sensor_location_short}/${datasetType}?isSample=${isSample === true ? true : false}`;
 }
 
 export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {

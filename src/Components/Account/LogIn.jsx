@@ -6,7 +6,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper, useMediaQuery, Alert } from "@mui/material";
 
 import { UserContext } from '../../ContextProviders/UserContext';
-import { EndPoints, getApiUrl } from '../../Utils/ApiUtils';
+import { GeneralEndpoints, getApiUrl } from '../../Utils/ApiUtils';
 import { UniqueRoutes } from '../../Utils/RoutesUtils';
 
 export default function LogIn() {
@@ -44,7 +44,7 @@ export default function LogIn() {
 
     setLoading(true);
 
-    const url = getApiUrl({ endpoint: EndPoints.login });
+    const url = getApiUrl({ endpoint: GeneralEndpoints.login });
 
     fetch(url, {
       method: 'POST',
