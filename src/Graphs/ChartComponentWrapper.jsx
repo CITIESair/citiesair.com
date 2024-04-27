@@ -88,6 +88,7 @@ function ChartComponentWrapper(props) {
 
   // Props for tab panels (multiple data visualizations in the same chart area, navigate with tab panels)
   const [currentTab, setCurrentTab] = useState(0); // start with the first tab
+  const [previousTab, setPreviousTab] = useState(0); // keep tracking of previous tab to keep displaying it if the currentTab = -1 (selecting the dropdown menu tab)
   const [dropdownMenuTabIndex, setDropdownMenuTabIndex] = useState(initialDropdownMenuTabIndex);
   const [dropdownMenuCurrentTitle, setDropdownMenuCurrentTitle] = useState();
   const [anchorEl, setAnchorEl] = useState(null); // Define anchorEl state for dropdown menu
@@ -97,6 +98,7 @@ function ChartComponentWrapper(props) {
   // Filter & Calendar charts are not automatically respnsive, so we have to redraw them.
   // redraw other charts when device orientation changes
   useEffect(() => {
+    setPreviousTab(currentTab);
     setCurrentTab(0); // set tab back to 0 if chartData changes (changed school)
 
     let timeoutID = null;
@@ -147,6 +149,7 @@ function ChartComponentWrapper(props) {
   const renderMultipleSubcharts = () => {
     // Handle tab change
     const handleTabChange = (__, newIndex) => {
+      setPreviousTab(currentTab);
       setCurrentTab(newIndex);
 
       if (needsDropdownMenu && newIndex < maxTabsToDisplay && newIndex !== dropdownMenuTabIndex) {
@@ -163,6 +166,8 @@ function ChartComponentWrapper(props) {
 
     // Function to handle selection from dropdown menu
     const handleDropdownMenuSelection = (index) => {
+      setPreviousTab(currentTab);
+
       // Because the original chartData.subcharts array was split in subchartsDataForTabs (length maxTabsToDisplay) and subchartsDataForDropDownMenu (the remaining item), the selected subcharts index is the sum of the length of subchartsDataForTabs array and the index of the selected item from subchartsDataForDropDownMenu
       setCurrentTab(maxTabsToDisplay + index);
 
@@ -189,6 +194,14 @@ function ChartComponentWrapper(props) {
           < ExpandMoreIcon />
         </Stack>
       )
+    }
+
+    const shouldDisplayThisSubchart = (index) => {
+      if (currentTab === initialDropdownMenuTabIndex) {
+        return previousTab === index;
+      } else {
+        return currentTab === index;
+      }
     }
 
     return (
@@ -221,7 +234,16 @@ function ChartComponentWrapper(props) {
             id="submenu"
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
-            onClose={() => setAnchorEl(null)}
+            onClose={() => {
+              // Reset currentTab to the previous valid tab if the user opened the menu (clicked on the drop down menu tab), but didn't select any menu item
+              if (currentTab === initialDropdownMenuTabIndex) {
+                setPreviousTab(currentTab);
+                setCurrentTab(previousTab);
+              };
+
+              // Close the menu
+              setAnchorEl(null);
+            }}
           >
             {/* Render remaining subchart selector in the dropdown menu */}
             {subchartsDataForDropDownMenu.map((_, index) => (
@@ -260,8 +282,8 @@ function ChartComponentWrapper(props) {
               sx={{
                 transition: '0.35s',
                 position: (index === 0) ? '' : 'absolute',
-                opacity: currentTab === index ? '1' : '0',
-                pointerEvents: currentTab === index ? 'auto' : 'none',
+                opacity: shouldDisplayThisSubchart(index) ? '1' : '0',
+                pointerEvents: shouldDisplayThisSubchart(index) ? 'auto' : 'none',
                 top: (index === 0) ? '' : 0,
               }}
             >
