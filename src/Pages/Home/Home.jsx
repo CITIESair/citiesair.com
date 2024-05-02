@@ -25,6 +25,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import GetInTouch from './GetInTouch';
 import { UniqueRoutes } from '../../Utils/RoutesUtils';
 import { SensorStatus } from "../../Components/AirQuality/SensorStatus";
+import AQIexplanation from '../../Components/AirQuality/AQIexplanation';
 
 const displayNyuadSensorCounts = (nyuadSensorCounts) => {
   if (nyuadSensorCounts.active && nyuadSensorCounts.total) {
@@ -138,6 +139,9 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
               </Grid>
             </Grid>
           </Grid>
+
+          <AQIexplanation />
+
         </Container>
       </FullWidthBox>
 

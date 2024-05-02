@@ -34,9 +34,6 @@ import * as Tracking from '../Utils/Tracking';
 import CurrentAQIGrid from '../Components/AirQuality/CurrentAQIGrid';
 import SchoolSelector from '../Components/SchoolSelector';
 
-import AirQualityIndexTable from '../Components/AirQuality/AirQualityIndexTable';
-import ExpandableSection from '../Components/ExpandableSection';
-import AirQualityExplanation from '../Utils/AirQuality/AirQualityExplanation';
 import LoadingAnimation from '../Components/LoadingAnimation';
 
 import { CommentCountsContext } from '../ContextProviders/CommentCountsContext';
@@ -46,6 +43,7 @@ import NYUADbanner from './Embeds/NYUADbanner';
 import { DashboardContext } from '../ContextProviders/DashboardContext';
 import { PreferenceContext } from '../ContextProviders/PreferenceContext';
 import LoadMoreChartsButton from '../Components/LoadMoreChartsButton';
+import AQIexplanation from '../Components/AirQuality/AQIexplanation';
 
 // Custom Chip component to display metadata
 export const CustomChip = (props) => {
@@ -299,34 +297,8 @@ const Project = () => {
             <DatasetDownloadDialog />
           </Stack>
 
-          <ExpandableSection
-            title={AirQualityExplanation.title}
-            content={(
-              <>
-                <AirQualityIndexTable themePreference={themePreference} />
-                <Typography
-                  component="div"
-                  variant="body1"
-                  color="text.secondary"
-                  sx={{ mt: 2 }}
-                >
-                  {parse(AirQualityExplanation.subtitle, {
-                    replace: replacePlainHTMLWithMuiComponents,
-                  })}
-                </Typography>
-                <ExpandableSection
-                  title={"Reference"}
-                  content={(
-                    <Typography variant="caption" color="text.secondary">
-                      {parse(AirQualityExplanation.reference, {
-                        replace: replacePlainHTMLWithMuiComponents,
-                      })}
-                    </Typography>
-                  )}
-                />
-              </>
-            )}
-          />
+          <AQIexplanation />
+
         </Container>
       </FullWidthBox>
 
