@@ -143,6 +143,13 @@ export const SimpleCurrentAQIlist = (props) => {
     smallFont = true
   } = props;
 
+  const displayAQI = ({ aqi, category }) => {
+    if (!aqi) return "--";
+    else {
+      return `${aqi} (${category || '--'})`;
+    }
+  }
+
   return (
     <Grid
       container
@@ -188,7 +195,7 @@ export const SimpleCurrentAQIlist = (props) => {
                 :
                 &nbsp;
                 <Box component="span" color={sensorData.current?.color}>
-                  {`${sensorData.current?.aqi} (${sensorData.current?.category})` || '--'}
+                  {displayAQI({ aqi: sensorData.current?.aqi, category: sensorData.current?.category })}
                 </Box>
               </Typography>
             </Grid>
