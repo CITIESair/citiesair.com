@@ -21,12 +21,12 @@ export const GeneralEndpoints = {
 }
 
 export const ChartEndpoints = {
-  historical: "historicalAQI",
-  dailyAverageAllTime: "dailyAverageAllTime",
-  percentageByMonth: "percentageByMonth",
-  yearlyAverageByDoW: "yearlyAverageByDoW",
-  hourlyAverageByMonth: "hourlyAverageByMonth",
-  correlationDailyAverage: "correlationDailyAverage"
+  historical: "chart/historicalAQI",
+  dailyAverageAllTime: "chart/dailyAverageAllTime",
+  percentageByMonth: "chart/percentageByMonth",
+  yearlyAverageByDoW: "chart/yearlyAverageByDoW",
+  hourlyAverageByMonth: "chart/hourlyAverageByMonth",
+  correlationDailyAverage: "chart/correlationDailyAverage"
 }
 
 export const RawDatasetType = {

@@ -6,7 +6,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { fetchDataFromURL } from "../Components/DatasetDownload/DatasetFetcher";
 import Project from "./Project";
-import { ChartEndpoints, GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiUtils";
+import { ChartEndpoints, GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl, getChartApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiUtils";
 import { LinkContext } from "../ContextProviders/LinkContext";
 import { DashboardContext } from "../ContextProviders/DashboardContext";
 
@@ -131,14 +131,14 @@ const Dashboard = () => {
     chartsToFetch.forEach((endpoint) => {
       fetchDataFromURL({
         url: getHistoricalChartApiUrl({
-          endpoint: ChartEndpoints.historical,
+          endpoint: endpoint,
           school_id: school_id
         }),
         extension: 'json',
         needsAuthorization: true
       })
         .then(data => {
-          setIndividualChartData(endpoint, data);
+          setIndividualChartData(data);
         })
         .catch((error) => {
           console.log(error);
@@ -149,16 +149,18 @@ const Dashboard = () => {
   useEffect(() => {
     if (loadMoreCharts === true) {
       restOfCharts.forEach((endpoint) => {
+        const url = getChartApiUrl({
+          endpoint: endpoint,
+          school_id: currentSchoolID
+        });
+
         fetchDataFromURL({
-          url: getHistoricalChartApiUrl({
-            endpoint: ChartEndpoints.historical,
-            school_id: currentSchoolID
-          }),
+          url: url,
           extension: 'json',
           needsAuthorization: true
         })
           .then(data => {
-            setIndividualChartData(endpoint, data);
+            setIndividualChartData(data);
           })
           .catch((error) => {
             console.log(error);
