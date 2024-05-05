@@ -11,9 +11,7 @@ export function DashboardProvider({ children }) {
   const [currentSchoolID, setCurrentSchoolID] = useState();
   const [loadMoreCharts, setLoadMoreCharts] = useState(false);
 
-  const setIndividualChartData = (chartData) => {
-    const chartID = chartData.id;
-
+  const setIndividualChartData = (chartID, chartData) => {
     setAllChartsData(prevData => ({
       ...prevData,
       [chartID]: chartData

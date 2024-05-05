@@ -145,18 +145,27 @@ const Project = () => {
                 className={themePreference === ThemePreferences.dark ? 'dark' : ''}
                 id={`chart-${index + 1}`}
               >
-                <Typography variant="h6" color="text.primary">
-                  {index + 1}. {allChartsData[chartID].title}
-                </Typography>
+                {
+                  allChartsData[chartID].title ?
+                    <Typography variant="h6" color="text.primary">
+                      {index + 1}. {allChartsData[chartID].title}
+                    </Typography>
+                    : <Skeleton variant='text' sx={{ width: '100%', fontSize: '2rem' }} />
 
-                <ChartComponentWrapper
-                  generalChartSubtitle={allChartsData[chartID].subtitle}
-                  generalChartReference={allChartsData[chartID].reference}
-                  chartData={{
-                    chartIndex: index,
-                    ...allChartsData[chartID],
-                  }}
-                />
+                }
+
+                {
+                  allChartsData[chartID].title ?
+                    <ChartComponentWrapper
+                      generalChartSubtitle={allChartsData[chartID].subtitle}
+                      generalChartReference={allChartsData[chartID].reference}
+                      chartData={{
+                        chartIndex: index,
+                        ...allChartsData[chartID],
+                      }}
+                    />
+                    : <Skeleton variant='rounded' width="100%" height={300} />
+                }
 
                 {
                   // Optionally display the button to load more charts at the bottom of the last chart

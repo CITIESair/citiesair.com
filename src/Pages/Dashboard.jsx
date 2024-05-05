@@ -128,7 +128,9 @@ const Dashboard = () => {
     }
 
     const chartsToFetch = loadMoreCharts ? initialCharts.concat(restOfCharts) : initialCharts;
-    chartsToFetch.forEach((endpoint) => {
+    chartsToFetch.forEach((endpoint, index) => {
+      setIndividualChartData(index, {}); // set empty chartData to create a placeholder for this chart
+
       fetchDataFromURL({
         url: getHistoricalChartApiUrl({
           endpoint: endpoint,
@@ -138,7 +140,7 @@ const Dashboard = () => {
         needsAuthorization: true
       })
         .then(data => {
-          setIndividualChartData(data);
+          setIndividualChartData(index, data);
         })
         .catch((error) => {
           console.log(error);
@@ -148,19 +150,20 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (loadMoreCharts === true) {
-      restOfCharts.forEach((endpoint) => {
-        const url = getChartApiUrl({
-          endpoint: endpoint,
-          school_id: currentSchoolID
-        });
+      restOfCharts.forEach((endpoint, index) => {
+        const chartIndexInPage = initialCharts.length + index;
+        setIndividualChartData(chartIndexInPage, {}); // set empty chartData to create a placeholder for this chart
 
         fetchDataFromURL({
-          url: url,
+          url: getChartApiUrl({
+            endpoint: endpoint,
+            school_id: currentSchoolID
+          }),
           extension: 'json',
           needsAuthorization: true
         })
           .then(data => {
-            setIndividualChartData(data);
+            setIndividualChartData(chartIndexInPage, data);
           })
           .catch((error) => {
             console.log(error);

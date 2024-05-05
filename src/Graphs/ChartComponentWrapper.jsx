@@ -175,7 +175,7 @@ function ChartComponentWrapper(props) {
       setDropdownMenuTabIndex(maxTabsToDisplay + index);
 
       // Set title of the selected item in the dropdown menu to display it
-      setDropdownMenuCurrentTitle(subchartsDataForDropDownMenu[index].subchartTitle);
+      setDropdownMenuCurrentTitle(subchartsDataForDropDownMenu[index].subchartTitleShort);
 
       // Close the dropdown menu after selection
       setAnchorEl(null);
@@ -183,8 +183,8 @@ function ChartComponentWrapper(props) {
 
     const getOtherLocationsLabel = () => {
       return (
-        <Stack direction="row" alignItems="center">
-          <Box flex={{ xs: 0, sm: 0, md: 1, lg: 1, xl: 1 }}>
+        <Stack direction="row" justifyContent="center" alignItems="center">
+          <Box flex={1}>
             Other sensors
             {
               dropdownMenuCurrentTitle && ` (${dropdownMenuCurrentTitle})`

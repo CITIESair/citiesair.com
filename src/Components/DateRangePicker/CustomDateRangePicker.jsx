@@ -123,7 +123,7 @@ const CustomDateRangePicker = (props) => {
         needsAuthorization: true
       })
         .then((data) => {
-          setIndividualChartData(data);
+          setIndividualChartData(0, data); // first chart -> chartIndex = 0
           setChartUrl(newUrl);
           setIsFetchingData(false);
           setShowPickerPanel(false);
