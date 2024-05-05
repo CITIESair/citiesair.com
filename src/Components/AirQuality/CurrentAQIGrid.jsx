@@ -12,11 +12,12 @@ import { TemperatureUnits, getFormattedTemperature, calculateHeatIndex } from ".
 import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
 
 import CustomThemes from '../../Themes/CustomThemes';
+import { useContext } from 'react';
+import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 
 const CurrentAQIGrid = (props) => {
   const {
     currentSensorsData,
-    temperatureUnitPreference = TemperatureUnits.celsius,
     isScreen = true,
     showWeather = true,
     showHeatIndex = true,
@@ -25,6 +26,8 @@ const CurrentAQIGrid = (props) => {
     roundTemperature = false,
     firstSensorOwnLine = false
   } = props;
+
+  const { temperatureUnitPreference } = useContext(PreferenceContext);
 
   const getGridItemSize = ({ itemIndex, numOfItems }) => {
 

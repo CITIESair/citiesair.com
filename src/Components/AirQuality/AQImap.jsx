@@ -104,11 +104,10 @@ export const LocationTitle = {
 }
 
 const AQImap = (props) => {
-    const { themePreference } = useContext(PreferenceContext);
+    const { themePreference, temperatureUnitPreference } = useContext(PreferenceContext);
 
     const {
         tileOption,
-        temperatureUnitPreference = TemperatureUnits.celsius,
         placeholderText,
         centerCoordinates,
         maxBounds,
