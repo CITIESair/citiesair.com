@@ -30,14 +30,24 @@ function AirQualityIndexTable(props) {
 
   const renderAQIchart = ({ shouldRender }) => {
     let aqiChart = null;
+    let ticks = [];
+    const maxValToRender = 400;
 
     if (shouldRender) {
       const dataArray = [['category'], ['US AQI']];
       for (let i = 0; i < AQIdatabase.length; i += 1) {
         dataArray[0].push(AQIdatabase[i].category);
+        let high = AQIdatabase[i].aqiUS.high;
+        let low = AQIdatabase[i].aqiUS.low;
+
+        if (high === Infinity) high = maxValToRender;
+
         dataArray[1].push(
-          Math.ceil((AQIdatabase[i].aqiUS.high - AQIdatabase[i].aqiUS.low) / 50) * 50
+          Math.ceil((high - AQIdatabase[i].aqiUS.low) / 50) * 50
         );
+
+        if (high === maxValToRender) low = { v: low, f: `${low}+` }
+        ticks.push(low);
       }
 
       aqiChart = (
@@ -51,7 +61,7 @@ function AirQualityIndexTable(props) {
                 enableInteractivity: false,
                 legend: { position: 'none' },
                 hAxis: {
-                  ticks: [0, 50, 100, 150, 200, 300, 500]
+                  ticks: ticks
                 },
                 chartArea:
                 {
@@ -70,6 +80,11 @@ function AirQualityIndexTable(props) {
 
     return aqiChart;
   };
+
+  const returnFormattedBreakpoints = (low, high) => {
+    if (high === Infinity) return `${low}+`;
+    else return `${low} - ${high}`;
+  }
 
   return (
     <>
@@ -107,18 +122,10 @@ function AirQualityIndexTable(props) {
                   {element.category}
                 </TableCell>
                 <TableCell align="right">
-                  {element.aqiUS.low}
-                  &nbsp;
-                  -
-                  &nbsp;
-                  {element.aqiUS.high}
+                  {returnFormattedBreakpoints(element.aqiUS.low, element.aqiUS.high)}
                 </TableCell>
                 <TableCell align="right">
-                  {element.rawPM2_5.low}
-                  &nbsp;
-                  -
-                  &nbsp;
-                  {element.rawPM2_5.high}
+                  {returnFormattedBreakpoints(element.rawPM2_5.low, element.rawPM2_5.high)}
                 </TableCell>
                 {!hideAQIDescription && <TableCell align="left">{element.description}</TableCell>}
                 {!hideAQIDescription
@@ -138,7 +145,6 @@ function AirQualityIndexTable(props) {
       </Box>
       {renderAQIchart({ shouldRender: !hideAQIDescription })}
     </>
-
   );
 }
 
