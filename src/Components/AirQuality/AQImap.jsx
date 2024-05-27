@@ -104,11 +104,10 @@ export const LocationTitle = {
 }
 
 const AQImap = (props) => {
-    const { themePreference } = useContext(PreferenceContext);
+    const { themePreference, temperatureUnitPreference } = useContext(PreferenceContext);
 
     const {
         tileOption,
-        temperatureUnitPreference = TemperatureUnits.celsius,
         placeholderText,
         centerCoordinates,
         maxBounds,
@@ -173,7 +172,7 @@ const AQImap = (props) => {
             // Create the marker icon on the map
             location.markerIcon = new L.DivIcon({
                 className: 'aqi-marker-icon',
-                html: `<div ${disableInteraction === false && 'onmouseover="this.style.opacity=1;" onmouseleave="this.style.opacity=0.75;"'} style="width: ${2.25 * markerSizeInRem}rem; height: ${2.25 * markerSizeInRem}rem; background-color: ${location.current.color}; border-radius: 50%; border: solid ${markerSizeInRem / 8}rem; display: flex; justify-content: center; align-items: center; font-size: ${markerSizeInRem}rem; font-weight: 600; color: ${themePreference === ThemePreferences.light ? 'black' : 'white'}; opacity: 0.75; :hover: {opacity: 1}">${displayAqiValue(location)}</div>`
+                html: `<div ${disableInteraction === false && 'onmouseover="this.style.opacity=1;" onmouseleave="this.style.opacity=0.75;"'} style="width: ${2.25 * markerSizeInRem}rem; height: ${2.25 * markerSizeInRem}rem; background-color: ${location.current?.color}; border-radius: 50%; border: solid ${markerSizeInRem / 8}rem; display: flex; justify-content: center; align-items: center; font-size: ${markerSizeInRem}rem; font-weight: 600; color: ${themePreference === ThemePreferences.light ? 'black' : 'white'}; opacity: 0.75; :hover: {opacity: 1}">${displayAqiValue(location)}</div>`
             });
 
             return location;

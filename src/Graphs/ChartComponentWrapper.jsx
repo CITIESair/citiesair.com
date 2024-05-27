@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
-import { Box, Tabs, Tab, useMediaQuery, Typography } from '@mui/material/';
+import { Box, Tabs, Tab, useMediaQuery, Typography, Menu, MenuItem, Stack } from '@mui/material/';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import SubChart from './Subchart/SubChart';
 
 import CollapsibleSubtitle from '../Components/CollapsibleSubtitle';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const debounceMilliseconds = 100;
+
+const maxTabsToDisplay = 3;
+const initialDropdownMenuTabIndex = -1;
 
 const ChartStyleWrapper = styled(Box)(({ theme }) => ({
   // CSS for dark theme only
@@ -41,9 +46,21 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
   },
   '& .MuiTab-root': {
     [theme.breakpoints.down('sm')]: {
-      fontSize: '0.75rem',
-      paddingLeft: theme.spacing(1),
-      paddingRight: theme.spacing(1)
+      fontSize: '0.625rem',
+      padding: theme.spacing(0.5)
+    },
+  },
+  '& .MuiSvgIcon-root ': {
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '0.75rem'
+    }
+  }
+}));
+
+const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
+  '& .MuiBox-root ': {
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '0.75rem'
     },
   }
 }));
@@ -71,12 +88,17 @@ function ChartComponentWrapper(props) {
 
   // Props for tab panels (multiple data visualizations in the same chart area, navigate with tab panels)
   const [currentTab, setCurrentTab] = useState(0); // start with the first tab
+  const [previousTab, setPreviousTab] = useState(0); // keep tracking of previous tab to keep displaying it if the currentTab = -1 (selecting the dropdown menu tab)
+  const [dropdownMenuTabIndex, setDropdownMenuTabIndex] = useState(initialDropdownMenuTabIndex);
+  const [dropdownMenuCurrentTitle, setDropdownMenuCurrentTitle] = useState();
+  const [anchorEl, setAnchorEl] = useState(null); // Define anchorEl state for dropdown menu
 
   // eventListener for window resize
   // redraw "Calendar" charts and charts with a time filter upon window resize.
   // Filter & Calendar charts are not automatically respnsive, so we have to redraw them.
   // redraw other charts when device orientation changes
   useEffect(() => {
+    setPreviousTab(currentTab);
     setCurrentTab(0); // set tab back to 0 if chartData changes (changed school)
 
     let timeoutID = null;
@@ -110,11 +132,6 @@ function ChartComponentWrapper(props) {
     chartMaxHeight = isPortrait ? '800px' : '500px';
   }
 
-  // Handle tab change
-  const handleChange = (__, newValue) => {
-    setCurrentTab(newValue);
-  };
-
   // Function to render only one chart (no subchart --> no tab control)
   const renderOnlyOneChart = () => {
     return (
@@ -130,21 +147,124 @@ function ChartComponentWrapper(props) {
 
   // Function to render multiple subcharts with tab control
   const renderMultipleSubcharts = () => {
+    // Handle tab change
+    const handleTabChange = (__, newIndex) => {
+      setPreviousTab(currentTab);
+      setCurrentTab(newIndex);
+
+      if (needsDropdownMenu && newIndex < maxTabsToDisplay && newIndex !== dropdownMenuTabIndex) {
+        setDropdownMenuCurrentTitle();
+        setDropdownMenuTabIndex(initialDropdownMenuTabIndex);
+      }
+    };
+
+    // Determine if dropdown menu is needed
+    const needsDropdownMenu = chartData.subcharts.length > maxTabsToDisplay + 1; // maxTabsToDisplay = 3 by default, but here +1 for some leeway, some schools have 4 sensors which is still okay. But if > 4, then only display max 3
+
+    const subchartsDataForTabs = needsDropdownMenu ? chartData.subcharts.slice(0, maxTabsToDisplay) : chartData.subcharts;
+    const subchartsDataForDropDownMenu = needsDropdownMenu ? chartData.subcharts.slice(maxTabsToDisplay) : null;
+
+    // Function to handle selection from dropdown menu
+    const handleDropdownMenuSelection = (index) => {
+      setPreviousTab(currentTab);
+
+      // Because the original chartData.subcharts array was split in subchartsDataForTabs (length maxTabsToDisplay) and subchartsDataForDropDownMenu (the remaining item), the selected subcharts index is the sum of the length of subchartsDataForTabs array and the index of the selected item from subchartsDataForDropDownMenu
+      setCurrentTab(maxTabsToDisplay + index);
+
+      // Same index with the one above to keep the dropdown menu tab highlighted  
+      setDropdownMenuTabIndex(maxTabsToDisplay + index);
+
+      // Set title of the selected item in the dropdown menu to display it
+      setDropdownMenuCurrentTitle(subchartsDataForDropDownMenu[index].subchartTitleShort);
+
+      // Close the dropdown menu after selection
+      setAnchorEl(null);
+    };
+
+    const getOtherLocationsLabel = () => {
+      return (
+        <Stack direction="row" justifyContent="center" alignItems="center">
+          <Box flex={1}>
+            Other sensors
+            {
+              dropdownMenuCurrentTitle && ` (${dropdownMenuCurrentTitle})`
+            }
+            &nbsp;
+          </Box>
+          < ExpandMoreIcon />
+        </Stack>
+      )
+    }
+
+    const shouldDisplayThisSubchart = (index) => {
+      if (currentTab === initialDropdownMenuTabIndex) {
+        return previousTab === index;
+      } else {
+        return currentTab === index;
+      }
+    }
+
     return (
       <>
         <StyledTabs
           value={currentTab}
-          onChange={handleChange}
+          onChange={handleTabChange}
           variant={isSmallWidth ? 'fullWidth' : 'standard'}
         >
-          {chartData.subcharts.map((element, index) => (
+          {subchartsDataForTabs.map((_, index) => (
             <Tab
               key={index}
               value={index}
               label={chartData.subcharts[index].subchartTitle}
             />
           ))}
+          {/* Render dropdown menu if needed */}
+          {needsDropdownMenu && (
+            <Tab
+              value={dropdownMenuTabIndex}
+              label={getOtherLocationsLabel()}
+              aria-controls="submenu"
+              aria-haspopup="true"
+              onClick={(event) => setAnchorEl(event.currentTarget)}
+            />
+          )}
         </StyledTabs>
+        {
+          needsDropdownMenu && <Menu
+            id="submenu"
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={() => {
+              // Reset currentTab to the previous valid tab if the user opened the menu (clicked on the drop down menu tab), but didn't select any menu item
+              if (currentTab === initialDropdownMenuTabIndex) {
+                setPreviousTab(currentTab);
+                setCurrentTab(previousTab);
+              };
+
+              // Close the menu
+              setAnchorEl(null);
+            }}
+          >
+            {/* Render remaining subchart selector in the dropdown menu */}
+            {subchartsDataForDropDownMenu.map((_, index) => (
+              <StyledMenuItem
+                key={index}
+                selected={index === currentTab - maxTabsToDisplay}
+                onClick={() => handleDropdownMenuSelection(index)}
+              >
+                <Stack direction="row" alignItems="center" gap={1}>
+                  <Box>
+                    {subchartsDataForDropDownMenu[index].subchartTitle}
+                  </Box>
+                  {
+                    (index === currentTab - maxTabsToDisplay) &&
+                    <VisibilityIcon fontSize="1rem" sx={{ color: 'text.secondary' }} />
+                  }
+                </Stack>
+              </StyledMenuItem>
+            ))}
+          </Menu>
+        }
         <Box
           position="relative"
           sx={{
@@ -162,8 +282,8 @@ function ChartComponentWrapper(props) {
               sx={{
                 transition: '0.35s',
                 position: (index === 0) ? '' : 'absolute',
-                opacity: currentTab === index ? '1' : '0',
-                pointerEvents: currentTab === index ? 'auto' : 'none',
+                opacity: shouldDisplayThisSubchart(index) ? '1' : '0',
+                pointerEvents: shouldDisplayThisSubchart(index) ? 'auto' : 'none',
                 top: (index === 0) ? '' : 0,
               }}
             >

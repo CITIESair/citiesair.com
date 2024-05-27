@@ -12,11 +12,12 @@ import { TemperatureUnits, getFormattedTemperature, calculateHeatIndex } from ".
 import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
 
 import CustomThemes from '../../Themes/CustomThemes';
+import { useContext } from 'react';
+import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 
 const CurrentAQIGrid = (props) => {
   const {
     currentSensorsData,
-    temperatureUnitPreference = TemperatureUnits.celsius,
     isScreen = true,
     showWeather = true,
     showHeatIndex = true,
@@ -25,6 +26,8 @@ const CurrentAQIGrid = (props) => {
     roundTemperature = false,
     firstSensorOwnLine = false
   } = props;
+
+  const { temperatureUnitPreference } = useContext(PreferenceContext);
 
   const getGridItemSize = ({ itemIndex, numOfItems }) => {
 
@@ -82,9 +85,20 @@ const CurrentAQIGrid = (props) => {
                 <Typography variant={isScreen ? "h1" : 'h2'} fontWeight="500" lineHeight={isScreen ? 0.8 : 0.9}>
                   {sensorData.current?.aqi || '--'}
                 </Typography>
-                <Typography variant={isScreen ? "h4" : 'h5'} fontWeight="500" className='condensedFont'>
+                <Typography
+                  variant={isScreen ? "h4" : 'h5'}
+                  fontWeight="500"
+                  className='condensedFont'
+                  style={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                  }}
+                >
                   {sensorData.current?.category || '--'}
                 </Typography>
+
               </Box>
 
               <Box sx={{
@@ -143,6 +157,13 @@ export const SimpleCurrentAQIlist = (props) => {
     smallFont = true
   } = props;
 
+  const displayAQI = ({ aqi, category }) => {
+    if (!aqi) return "--";
+    else {
+      return `${aqi} (${category || '--'})`;
+    }
+  }
+
   return (
     <Grid
       container
@@ -188,7 +209,7 @@ export const SimpleCurrentAQIlist = (props) => {
                 :
                 &nbsp;
                 <Box component="span" color={sensorData.current?.color}>
-                  {`${sensorData.current?.aqi} (${sensorData.current?.category})` || '--'}
+                  {displayAQI({ aqi: sensorData.current?.aqi, category: sensorData.current?.category })}
                 </Box>
               </Typography>
             </Grid>

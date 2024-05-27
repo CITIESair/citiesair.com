@@ -13,7 +13,7 @@ export default function TemperatureUnitToggle() {
       old_temperature: temperatureUnitPreference,
       new_temperature: event.target.value,
     });
-    localStorage.setItem(LocalStorage.temperatureUnit, temperatureUnitPreference);
+    localStorage.setItem(LocalStorage.temperatureUnit, newUnit);
     setTemperatureUnitPreference(newUnit);
   };
 

@@ -20,7 +20,7 @@ const StyledAccordion = styled(MuiAccordion)(({ theme, expanded }) => ({
 }));
 
 const StyledAccordionSummary = styled(MuiAccordionSummary)(({ theme, expanded }) => ({
-  marginTop: expanded ? theme.spacing(3) : 0,
+  marginTop: expanded ? theme.spacing(2) : 0,
   flexDirection: 'row-reverse',
   paddingLeft: expanded ? theme.spacing(1) : 0,
   '& .MuiTypography-root': {
@@ -31,6 +31,10 @@ const StyledAccordionSummary = styled(MuiAccordionSummary)(({ theme, expanded })
       color: theme.palette.primary.main,
     },
   },
+  '& .MuiAccordionSummary-content.Mui-expanded': {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2)
+  }
 }));
 
 const TooltipText = {

@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 import FullWidthBox from '../../Components/FullWidthBox';
 import * as Tracking from '../../Utils/Tracking';
 import AQImap, { LocationTitle, TileOptions } from '../../Components/AirQuality/AQImap';
-import { EndPoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
+import { GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
 import ThemePreferences from '../../Themes/ThemePreferences';
 
 const NYUADmap = () => {
@@ -16,7 +16,7 @@ const NYUADmap = () => {
   const [nyuadCurrentData, setNYUADcurrentData] = useState();
 
   const url = getApiUrl({
-    endpoint: EndPoints.current,
+    endpoint: GeneralEndpoints.current,
     school_id: 'nyuad'
   });
 

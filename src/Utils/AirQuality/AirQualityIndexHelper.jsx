@@ -12,7 +12,7 @@ const AQIdatabase = [
     },
     rawPM2_5: {
       low: 0.0,
-      high: 12.0
+      high: 9.0
     },
     description: 'Air quality is satisfactory, and air pollution poses little or no risk',
     healthSuggestions: {
@@ -33,7 +33,7 @@ const AQIdatabase = [
       high: 100
     },
     rawPM2_5: {
-      low: 12.1,
+      low: 9.1,
       high: 35.4
     },
     description: 'Air quality is acceptable. However, there may be a risk for some people, particularly those who are unusually sensitive to air pollution',
@@ -77,7 +77,7 @@ const AQIdatabase = [
     },
     rawPM2_5: {
       low: 55.5,
-      high: 150.4
+      high: 125.4
     },
     description: 'Some members of the general public may experience health effects; members of sensitive groups may experience more serious health effects',
     healthSuggestions: {
@@ -98,8 +98,8 @@ const AQIdatabase = [
       high: 300
     },
     rawPM2_5: {
-      low: 150.5,
-      high: 250.4
+      low: 125.5,
+      high: 225.4
     },
     description: 'Health alert: The risk of health effects is increased for everyone',
     healthSuggestions: {
@@ -117,11 +117,11 @@ const AQIdatabase = [
     darkThemeColor: CustomThemes.dark.palette.chart.optionsColors.aqi[5],
     aqiUS: {
       low: 301,
-      high: 500
+      high: Infinity
     },
     rawPM2_5: {
-      low: 250.5,
-      high: 550.5
+      low: 225.5,
+      high: Infinity
     },
     description: 'Health warning of emergency conditions: everyone is more likely to be affected',
     healthSuggestions: {
