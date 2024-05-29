@@ -22,8 +22,6 @@ export function PreferenceProvider({ children }) {
     || TemperatureUnits.celsius
   );
 
-  console.log(temperatureUnitPreference)
-
   // eslint-disable-next-line max-len
   const providerValue = useMemo(() => ({
     themePreference, setThemePreference, temperatureUnitPreference, setTemperatureUnitPreference
