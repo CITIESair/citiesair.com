@@ -245,6 +245,12 @@ export const returnGenericOptions = (props) => {
       case 'aqi':
         options.colorAxis = theme.palette.chart.aqiColorAxis;
         break;
+      case 'temperature':
+        options.colorAxis = theme.palette.chart.temperatureColorAxis;
+        break;
+      case 'humidity':
+        options.colorAxis = theme.palette.chart.humidityColorAxis;
+        break;
       default:
         break;
     }

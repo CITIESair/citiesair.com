@@ -23,18 +23,18 @@ const maroon = {
 };
 
 const getAQIPalette = ({ increasingOrder, isDark }) => {
-  const shadeValue = isDark ? darkShade : lightShade;
+  const shade = isDark ? darkShade : lightShade;
   const array = [
-    colors.green[shadeValue],
-    colors.yellow[isDark ? shadeValue + 200 : shadeValue],
-    colors.orange[isDark ? shadeValue : shadeValue - 100],
-    colors.red[shadeValue],
-    colors.purple[shadeValue],
-    maroon[shadeValue]
+    colors.green[shade],
+    colors.yellow[isDark ? shade + 200 : shade],
+    colors.orange[isDark ? shade : shade - 100],
+    colors.red[shade],
+    colors.purple[shade],
+    maroon[shade]
   ];
 
   if (increasingOrder) {
-    const noDataColor = colors.grey[isDark ? shadeValue + 400 : shadeValue - 300];
+    const noDataColor = colors.grey[isDark ? shade + 400 : shade - 300];
     array.push(noDataColor);
   } else {
     array.reverse();
@@ -42,6 +42,69 @@ const getAQIPalette = ({ increasingOrder, isDark }) => {
 
   return array;
 };
+
+const getAqiColorAxis = ({ isDark }) => {
+  const shade = isDark ? darkShade : lightShade;
+  return (
+    {
+      minValue: 0,
+      maxValue: 400,
+      isGradient: false,
+      colors: [
+        colors.green[shade],
+        colors.yellow[shade],
+        colors.orange[shade - 100],
+        colors.red[shade],
+        colors.purple[shade],
+        colors.purple[shade],
+        maroon[shade],
+        maroon[shade]
+      ]
+    }
+  )
+}
+
+const getHumidityColorAxis = ({ isDark }) => {
+  return {
+    minValue: 0,
+    maxValue: 100,
+    isGradient: true,
+    colors: [
+      colors.grey[isDark ? 900 : 200],
+      colors.blue[isDark ? darkShade : lightShade]
+    ]
+  }
+}
+
+const getTemperatureColorAxis = ({ isDark }) => {
+  return {
+    minValue: 0,
+    maxValue: 250,
+    isGradient: true,
+    colors: [
+      {
+        color: colors.lightBlue[isDark ? darkShade : lightShade],
+        stop: 50
+      },
+      {
+        color: colors.green[isDark ? darkShade : lightShade],
+        stop: 100
+      },
+      {
+        color: colors.yellow[isDark ? darkShade : lightShade],
+        stop: 150
+      },
+      {
+        color: colors.red[isDark ? darkShade : lightShade],
+        stop: 200
+      },
+      {
+        color: maroon[isDark ? darkShade : lightShade],
+        stop: 250
+      }
+    ]
+  }
+}
 
 const CustomThemes = {
   dark: {
@@ -72,22 +135,9 @@ const CustomThemes = {
           studentPopulation: ['#aaa', '#666', colors.red[darkShade], colors.amber[darkShade + 100], colors.teal[darkShade]]
         },
         colorAxisFirstColor: colors.grey[darkShadeColorAxis],
-        aqiColorAxis: {
-          minValue: 0,
-          maxValue: 500,
-          colors: [
-            colors.green[darkShade],
-            colors.yellow[darkShade + 200],
-            colors.orange[darkShade],
-            colors.red[darkShade],
-            colors.purple[darkShade],
-            colors.purple[darkShade],
-            maroon[darkShade],
-            maroon[darkShade],
-            maroon[darkShade],
-            maroon[darkShade]
-          ]
-        },
+        humidityColorAxis: getHumidityColorAxis({ isDark: true }),
+        temperatureColorAxis: getTemperatureColorAxis({ isDark: true }),
+        aqiColorAxis: getAqiColorAxis({ isDark: true }),
         axisTitle: colors.grey[darkShade - 100],
         axisText: colors.grey[darkShade],
         gridlines: colors.grey[darkShade + 200],
@@ -125,22 +175,9 @@ const CustomThemes = {
           studentPopulation: [colors.grey[lightShade], '#333333', colors.red[lightShade], colors.amber[lightShade], colors.teal[lightShade]]
         },
         colorAxisFirstColor: colors.common.white,
-        aqiColorAxis: {
-          minValue: 0,
-          maxValue: 500,
-          colors: [
-            colors.green[lightShade],
-            colors.yellow[lightShade],
-            colors.orange[lightShade - 100],
-            colors.red[lightShade],
-            colors.purple[lightShade],
-            colors.purple[lightShade],
-            maroon[lightShade],
-            maroon[lightShade],
-            maroon[lightShade],
-            maroon[lightShade]
-          ]
-        },
+        humidityColorAxis: getHumidityColorAxis({ isDark: false }),
+        temperatureColorAxis: getTemperatureColorAxis({ isDark: false }),
+        aqiColorAxis: getAqiColorAxis({ isDark: false }),
         axisTitle: colors.grey[lightShade + 100],
         axisText: colors.grey[lightShade],
         gridlines: colors.grey[lightShade - 200],
