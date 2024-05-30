@@ -2,7 +2,7 @@
 import { ResponsiveCalendar } from '@nivo/calendar';
 import { useEffect, useRef } from 'react';
 import { useTheme } from '@mui/material/styles';
-import { Box, Chip } from '@mui/material';
+import { Box, Menu, MenuItem, MenuList, Chip } from '@mui/material';
 
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../../Utils/Utils';
@@ -16,8 +16,11 @@ export const getCalendarChartMargin = (isPortrait) => {
 }
 
 export const CalendarChart = (props) => {
-    const { data, dateRange, valueRange, isPortrait, options } = props;
+    const { data, dateRange, valueRange, allowedDataTypes, isPortrait, options } = props;
 
+    // TODO: call api with new data type
+
+    // TODO: update with new data type
     const calendarChartMargin = getCalendarChartMargin(isPortrait);
 
     const theme = useTheme();
@@ -63,9 +66,23 @@ export const CalendarChart = (props) => {
         )
     }
 
+    const showDataTypesMenu = () => {
+      return <MenuList dense>
+        {allowedDataTypes.map((datatype, index) => (
+          <MenuItem
+            key={index}
+          >
+            {datatype}
+          </MenuItem>
+        ))}
+      </MenuList>
+    }
+
+    // TODO: add new dropdown for data type
     return (
         <>
             {options?.legend?.position !== "none" && showLegend()}
+            {showDataTypesMenu()}
             {showLegend()}
             <ResponsiveCalendar
                 data={data}
