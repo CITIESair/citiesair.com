@@ -14,6 +14,14 @@ const AQIdatabase = [
       low: 0.0,
       high: 9.0
     },
+    rawPM10: {
+      low: 0.0,
+      high: 54
+    },
+    rawCO2: {
+      low: 0.0,
+      high: 700
+    },
     description: 'Air quality is satisfactory, and air pollution poses little or no risk',
     healthSuggestions: {
       outdoors: 'Enjoy outdoor activities, the air is great!',
@@ -35,6 +43,14 @@ const AQIdatabase = [
     rawPM2_5: {
       low: 9.1,
       high: 35.4
+    },
+    rawPM10: {
+      low: 55,
+      high: 154
+    },
+    rawCO2: {
+      low: 701,
+      high: 1000
     },
     description: 'Air quality is acceptable. However, there may be a risk for some people, particularly those who are unusually sensitive to air pollution',
     healthSuggestions: {
@@ -58,6 +74,14 @@ const AQIdatabase = [
       low: 35.5,
       high: 55.4
     },
+    rawPM10: {
+      low: 155,
+      high: 254
+    },
+    rawCO2: {
+      low: 1001,
+      high: 1500
+    },
     description: 'Members of sensitive groups may experience health effects. The general public is less likely to be affected',
     healthSuggestions: {
       outdoors: 'Children and individuals with respiratory issues should limit outdoor exertion',
@@ -78,6 +102,14 @@ const AQIdatabase = [
     rawPM2_5: {
       low: 55.5,
       high: 125.4
+    },
+    rawPM10: {
+      low: 255,
+      high: 354
+    },
+    rawCO2: {
+      low: 1501,
+      high: 2000
     },
     description: 'Some members of the general public may experience health effects; members of sensitive groups may experience more serious health effects',
     healthSuggestions: {
@@ -101,6 +133,14 @@ const AQIdatabase = [
       low: 125.5,
       high: 225.4
     },
+    rawPM10: {
+      low: 355,
+      high: 424
+    },
+    rawCO2: {
+      low: 2001,
+      high: 3000
+    },
     description: 'Health alert: The risk of health effects is increased for everyone',
     healthSuggestions: {
       outdoors: 'Avoid outdoor activities at all cost<br>Wear N95 masks when going outside',
@@ -123,6 +163,14 @@ const AQIdatabase = [
       low: 225.5,
       high: Infinity
     },
+    rawPM10: {
+      low: 425,
+      high: Infinity
+    },
+    rawCO2: {
+      low: 3001,
+      high: Infinity
+    },
     description: 'Health warning of emergency conditions: everyone is more likely to be affected',
     healthSuggestions: {
       outdoors: 'Avoid outdoor activities at all cost<br>Wear N95 masks when going outside',
@@ -133,5 +181,48 @@ const AQIdatabase = [
     }
   },
 ];
+
+export const AQIDataTypes = {
+  aqi: {
+    name: "Air Quality Index (US)",
+    name_short: "AQI",
+    unit: ""
+  },
+  pm1: {
+    name: "Particulate matter smaller than 1μm",
+    name_short: "PM1",
+    unit: "μg/m3"
+  },
+  pm2_5: {
+    name: "Particulate matter smaller than 2.5μm",
+    name_short: "PM2.5",
+    unit: "μg/m3"
+  },
+  pm10: {
+    name: "Particulate matter smaller than 10μm",
+    name_short: "PM10",
+    unit: "μg/m3"
+  },
+  co2: {
+    name: "Carbon Dioxide",
+    name_short: "CO2",
+    unit: "PPM"
+  },
+  voc: {
+    name: "Volatile Organic Compounds",
+    name_short: "VOC",
+    unit: ""
+  },
+  temperature: {
+    name: "Temperature",
+    name_short: "T°",
+    unit: "°C"
+  },
+  humidity: {
+    name: "Relative humidity",
+    name_short: "%RH",
+    unit: "%"
+  }
+};
 
 export default AQIdatabase;
