@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback, useContext } from 'react';
 import { Box, Typography, Stack, Link } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
-import { MapContainer, TileLayer, Marker, Popup, useMap, AttributionControl, useMapEvent, Rectangle, CircleMarker, Tooltip } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, AttributionControl, useMapEvent, Rectangle, CircleMarker, Tooltip, ImageOverlay } from 'react-leaflet';
 import { useEventHandlers } from '@react-leaflet/core';
 import L from 'leaflet';
 
@@ -52,22 +52,26 @@ const Tiles = {
         dark: 'jawg-dark'
     },
     nyuad: {
-        light: 'b6b5a641-4123-4535-b8e7-3b6711fd430b',
-        dark: '407650b3-59a3-49fe-8c1c-bedcd4a8e6b5'
+        light: '/images/nyuadMapLight.svg',
+        dark: '/images/nyuadMapDark.svg'
     }
 }
 
 const getTileUrl = ({ tileOption, themePreference, isMiniMap }) => {
     let tileTheme;
+    let svgUrl;
     switch (themePreference) {
         case ThemePreferences.dark:
             tileTheme = isMiniMap ? 'light' : 'dark';
+            if (tileOption === TileOptions.nyuad) svgUrl = Tiles.nyuad.dark;
             break
         default:
             tileTheme = isMiniMap ? 'dark' : 'light';
+            if (tileOption === TileOptions.nyuad) svgUrl = Tiles.nyuad.light;
             break
     }
-    return `https://{s}.tile.jawg.io/${Tiles[tileOption][tileTheme]}/{z}/{x}/{y}{r}.png?access-token={accessToken}`;
+    if (tileOption === TileOptions.nyuad) return svgUrl;
+    else return `https://{s}.tile.jawg.io/${Tiles[tileOption][tileTheme]}/{z}/{x}/{y}{r}.png?access-token={accessToken}`;
 }
 const getMiniMapBoundOptions = ({ themePreference }) => {
     switch (themePreference) {
@@ -103,6 +107,8 @@ export const LocationTitle = {
     long: 'long'
 }
 
+const aqiMarkerIconClass = 'aqi-marker-icons';
+
 const AQImap = (props) => {
     const { themePreference, temperatureUnitPreference } = useContext(PreferenceContext);
 
@@ -114,12 +120,10 @@ const AQImap = (props) => {
         minZoom = 8,
         maxZoom = 12,
         defaultZoom = 10,
-        disableZoom = false,
         disableInteraction = false,
         displayMinimap = true,
         fullSizeMap = false,
         showAttribution = true,
-        showInstruction = false,
         locationTitle,
         rawMapData,
         markerSizeInRem = 1
@@ -139,6 +143,9 @@ const AQImap = (props) => {
     const [mapData, setMapData] = useState({});
     const theme = useTheme();
     const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+    const nyuadMapUrl = '/images/nyuadMapLight.svg'; // Set the path to your image here
+    const nyuadMapBounds = [[24.521723816185933, 54.4313558149772], [24.526096645999797, 54.43779988466673]];
 
     useEffect(() => {
         if (!Array.isArray(rawMapData) || rawMapData.length === 0) return;
@@ -171,8 +178,8 @@ const AQImap = (props) => {
 
             // Create the marker icon on the map
             location.markerIcon = new L.DivIcon({
-                className: 'aqi-marker-icon',
-                html: `<div ${disableInteraction === false && 'onmouseover="this.style.opacity=1;" onmouseleave="this.style.opacity=0.75;"'} style="width: ${2.25 * markerSizeInRem}rem; height: ${2.25 * markerSizeInRem}rem; background-color: ${location.current?.color}; border-radius: 50%; border: solid ${markerSizeInRem / 8}rem; display: flex; justify-content: center; align-items: center; font-size: ${markerSizeInRem}rem; font-weight: 600; color: ${themePreference === ThemePreferences.light ? 'black' : 'white'}; opacity: 0.75; :hover: {opacity: 1}">${displayAqiValue(location)}</div>`
+                className: aqiMarkerIconClass,
+                html: `<div style="background-color: ${location.current?.color}">${displayAqiValue(location)}</div>`
             });
 
             return location;
@@ -228,12 +235,16 @@ const AQImap = (props) => {
                     center={parentMap.getCenter()}
                     zoom={mapZoom}
                     scrollWheelZoom={false}
-                    {...disableInteractionParameters}
-                    {...disableZoomParameters}
+                    {...disableInteractionParameters} // always disable interaction for minimap
+                    {...disableZoomParameters} // always disable zoom for minimap
                     attributionControl={false}
                 >
                     <TileLayer
-                        url={getTileUrl({ tileOption, themePreference, isMiniMap: true })}
+                        attribution={tileAttribution}
+                        url={getTileUrl({ tileOption, themePreference })}
+                        minZoom={minZoom}
+                        maxZoom={maxZoom}
+                        bounds={maxBounds}
                         accessToken={tileAccessToken}
                     />
                     {
@@ -293,21 +304,47 @@ const AQImap = (props) => {
                     height: '60vh',
                 },
             }),
-            '& .leaflet-container': { height: "100%", width: "100%" },
+            '& .leaflet-container': {
+                height: "100%",
+                width: "100%",
+                background: "transparent"
+            },
             '& .leaflet-control-attribution': {
                 ...(showAttribution ? { fontSize: '0.5rem' } : { display: 'none' }),
             },
             '& .leaflet-tooltip': {
-                backgroundColor: 'transparent !important',
                 border: 'unset',
                 color: theme.palette.text.primary,
+                backgroundColor: "transparent !important",
+                opacity: 1,
                 boxShadow: 'unset',
                 fontWeight: 500,
-                fontSize: locationTitle === LocationTitle.short ? `0.7rem` : `0.9rem`,
+                fontSize: `${markerSizeInRem}rem`,
                 textTransform: 'capitalize'
             },
             '& .leaflet-tooltip-bottom:before': {
                 borderBottomColor: 'transparent !important',
+            },
+            '& .leaflet-marker-icon': {
+                cursor: disableInteraction ? 'auto' : 'pointer'
+            },
+            [`& .${aqiMarkerIconClass} > div`]: {
+                width: `${2.25 * markerSizeInRem}rem`,
+                height: `${2.25 * markerSizeInRem}rem`,
+                borderRadius: '50%',
+                border: `solid ${markerSizeInRem / 8}rem`,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                fontSize: `${markerSizeInRem}rem`,
+                fontWeight: 600,
+                color: 'black',
+                transition: "0.15s ease-in-out",
+                ...(disableInteraction === false && {
+                    '&:hover, &:focus': {
+                        transform: "scale(1.2)",
+                    }
+                })
             }
         }}>
             <MapContainer
@@ -317,19 +354,25 @@ const AQImap = (props) => {
                 scrollWheelZoom={false}
                 placeholder={<MapPlaceholder placeholderText={placeholderText} />}
                 attributionControl={false}
-                {...(disableZoom ? disableZoomParameters : {})}
-                {...(disableInteraction ? disableInteractionParameters : {})}
+                {...(disableInteraction ? { ...disableInteractionParameters, ...disableZoomParameters } : {})}
+                minZoom={minZoom}
+                maxZoom={maxZoom}
             >
                 {displayMinimap === true && <MinimapControl position="bottomleft" mapData={mapData} />}
 
-                <TileLayer
-                    attribution={tileAttribution}
-                    url={getTileUrl({ tileOption, themePreference })}
-                    minZoom={minZoom}
-                    maxZoom={maxZoom}
-                    bounds={maxBounds}
-                    accessToken={tileAccessToken}
-                />
+                {tileOption === TileOptions.nyuad ? (
+                    <ImageOverlay
+                        url={getTileUrl({ tileOption, themePreference })}
+                        bounds={nyuadMapBounds}
+                    />
+                ) : (
+                    <TileLayer
+                        attribution={tileAttribution}
+                        url={getTileUrl({ tileOption, themePreference })}
+                        bounds={maxBounds}
+                        accessToken={tileAccessToken}
+                    />
+                )}
                 <AttributionControl position="bottomright" prefix={false} />
                 {
                     Object.entries(mapData).map(([key, location]) => (
@@ -458,23 +501,6 @@ const AQImap = (props) => {
                 }
 
             </MapContainer>
-            {
-                showInstruction === true &&
-                <Typography
-                    variant="caption"
-                    position="relative"
-                    display="block"
-                    zIndex={1000}
-                    textAlign="center"
-                    width="100%"
-                    margin="auto"
-                    color={themePreference !== ThemePreferences.light && "text.secondary"}
-                    mt={-3}
-                >
-                    <i>Click on each location for more information</i>
-                </Typography>
-            }
-
         </Box>
     )
 }

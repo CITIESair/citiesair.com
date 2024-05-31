@@ -2,7 +2,6 @@
 /* eslint-disable */
 import { useState, useEffect, useContext } from 'react';
 import { Box, Grid, Typography, Stack, Tooltip } from '@mui/material/';
-import { useLocation } from 'react-router-dom';
 import { useMediaQuery, useTheme } from '@mui/material';
 
 import AQImap, { LocationTitle, TileOptions } from '../../Components/AirQuality/AQImap';
@@ -12,52 +11,47 @@ import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import ThemePreferences from '../../Themes/ThemePreferences';
 
-const Host = {
-  "students-portal": {
-    name: "Students Portal",
-    detailedPageUrl: "https://students.nyuad.nyu.edu/services/safety-and-awareness/nyuad-air-quality-index/"
-  },
-  "intranet": {
-    name: "Intranet",
-    detailedPageUrl: "https://intranet.nyuad.nyu.edu/administrative-services/operations-and-facilities/campus-maps-facilities/nyuad-air-quality-index/"
-  }
-}
-
 const NYUADbanner = (props) => {
-  const { themePreference } = useContext(PreferenceContext);
+  const { themePreference, setThemePreference } = useContext(PreferenceContext);
 
   const {
     initialNyuadCurrentData = null,
     isOnBannerPage = true,
-    minMapHeight = "190px"
+    minMapHeight = "230px"
   } = props;
 
   const theme = useTheme();
+
+  // Update the themePreference to dark for isOnBannerPage
+  // when the component is mounted and reset it when the component is unmounted
+  useEffect(() => {
+    if (isOnBannerPage) {
+      const previousTheme = themePreference;
+      setThemePreference(ThemePreferences.dark);
+
+      return () => {
+        setThemePreference(previousTheme);
+      };
+    }
+  }, [isOnBannerPage, setThemePreference, themePreference]);
 
   const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
 
   const getCenterCoordinates = () => {
     if (isOnBannerPage) {
-      return [isWidget ? 24.5239 : 24.5235, 54.43449]
+      return [24.5238, 54.43449]
     }
     else {
-      return [24.524, 54.43449]
+      return [24.5238, 54.4341]
     }
   }
 
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const isWidget = queryParams.get('isWidget')?.toLowerCase() === 'true';
-
-  const zoomLevel = isSmallScreen ? 16 : 17;
+  const zoomLevel = isSmallScreen ? 16.25 : (isOnBannerPage ? 16.75 : 17.25);
 
   const [nyuadCurrentData, setNYUADcurrentData] = useState(initialNyuadCurrentData);
   const [outdoorLocations, setOutdoorLocations] = useState();
   const [featuredIndoorLocations, setFeaturedIndoorLocations] = useState();
   const [otherIndoorLocations, setOtherIndoorLocations] = useState();
-
-  // const hostParam = queryParams.get('host') || 'students-portal';
-  // const [isHovered, setIsHovered] = useState(false);
 
   const url = getApiUrl({
     endpoint: GeneralEndpoints.current,
@@ -96,30 +90,25 @@ const NYUADbanner = (props) => {
     setOtherIndoorLocations(otherIndoorLocations);
   }, [nyuadCurrentData]);
 
-  const borderStyle = `solid ${isOnBannerPage ? 'black' : theme.palette.customBackground} ${isOnBannerPage ? '1px' : '1rem'}`
 
   return (
-    <Grid container overflow="hidden" flex={1}>
+    <Grid container overflow="hidden" flex={1} maxWidth="lg" margin="auto">
       <Grid item xs={12} sm={6}>
         <Box
           height="100%"
           minHeight={minMapHeight}
           sx={{
             '& .leaflet-container': {
-              borderRadius: isSmallScreen === false && theme.shape.borderRadius
+              borderRadius: (isSmallScreen === false && isOnBannerPage === false) && theme.shape.borderRadius
             },
             '& .leaflet-marker-icon': {
               cursor: (isSmallScreen && isOnBannerPage) && "default"
-            },
-            ...(
-              isOnBannerPage ?
-                (isSmallScreen ? { borderBottom: borderStyle } : { borderRight: borderStyle })
-                : (isSmallScreen ? {} : { border: borderStyle }))
+            }
           }}
         >
           <AQImap
             tileOption={TileOptions.nyuad}
-            themePreference={isOnBannerPage ? ThemePreferences.light : themePreference}
+            themePreference={isOnBannerPage ? ThemePreferences.dark : themePreference}
             placeholderText={"Map of CITIESair air quality sensors on NYUAD campus."}
             centerCoordinates={getCenterCoordinates()}
             maxBounds={[
@@ -128,29 +117,16 @@ const NYUADbanner = (props) => {
             ]}
             defaultZoom={zoomLevel}
             minZoom={zoomLevel}
-            maxZoom={isOnBannerPage ? zoomLevel : zoomLevel + 1}
-            disableZoom={isOnBannerPage}
-            disableInteraction={(isSmallScreen && isOnBannerPage)}
-            showInstruction={!isSmallScreen}
+            maxZoom={isOnBannerPage ? zoomLevel : Math.round(zoomLevel + 1)}
+            disableInteraction={isOnBannerPage}
             displayMinimap={false}
             locationTitle={LocationTitle.short}
             fullSizeMap={true}
             showAttribution={false}
             rawMapData={nyuadCurrentData}
-            markerSizeInRem={isWidget ? 0.7 : 0.85}
+            markerSizeInRem={isSmallScreen ? 0.75 : 0.9}
           />
 
-          {
-            isWidget === true && <Typography
-              variant="h6"
-              position="absolute"
-              top={0}
-              zIndex={999999}
-              sx={{ mx: 1.5, my: 0.5 }}
-            >
-              NYUAD Air Quality
-            </Typography>
-          }
         </Box>
       </Grid>
 
@@ -159,7 +135,8 @@ const NYUADbanner = (props) => {
         item
         xs={12} sm={6}
         justifyContent="space-around"
-      // backgroundColor="customAlternateBackground"
+        my={isSmallScreen ? 0 : 1}
+        px={1}
       >
         <Grid
           container
@@ -168,7 +145,6 @@ const NYUADbanner = (props) => {
           sm={12}
           justifyContent="center"
           textAlign="center"
-          my={1}
           spacing={isOnBannerPage === false && 1}
         >
           <Grid item xs={12} >
@@ -176,13 +152,12 @@ const NYUADbanner = (props) => {
               currentSensorsData={outdoorLocations}
               isScreen={false}
               showHeatIndex={false}
-              showLastUpdate={!isWidget}
               useLocationShort={true}
               roundTemperature={isOnBannerPage && true}
             />
           </Grid>
 
-          <Grid item xs={12} sx={isOnBannerPage && { transform: "scale(0.7)", my: -2 }}>
+          <Grid item xs={12} >
             <CurrentAQIGrid
               currentSensorsData={featuredIndoorLocations}
               isScreen={false}
@@ -192,16 +167,17 @@ const NYUADbanner = (props) => {
             />
           </Grid>
 
-          <Grid item xs={12} mb={1}>
-            <SimpleCurrentAQIlist
-              currentSensorsData={otherIndoorLocations}
-              useLocationShort={isSmallScreen}
-              smallFont={isOnBannerPage}
-            />
-          </Grid>
+          {(isOnBannerPage === true && isSmallScreen === true) ? null :
+            <Grid item xs={12} mb={1}>
+              <SimpleCurrentAQIlist
+                currentSensorsData={otherIndoorLocations}
+                useLocationShort={true}
+                smallFont={isOnBannerPage}
+              />
+            </Grid>}
         </Grid>
 
-        <Grid container item xs={1.5} sm={11} textAlign="left" my={isSmallScreen ? 2 : 1}>
+        <Grid container item xs={1.5} sm={12} textAlign="left" my={isSmallScreen ? 2 : 1}>
           <Stack
             direction={isSmallScreen ? "column-reverse" : "row"}
             justifyContent="center"
@@ -232,14 +208,14 @@ const NYUADbanner = (props) => {
                     lineHeight={1}
                     color="text.secondary"
                   >
-                    <small>{element.aqiUS.low === 301 ? '300+' : Math.round(element.aqiUS.low / 50) * 50}</small>
+                    <small>{element.aqiUS.low === 301 ? '300+' : element.aqiUS.low}</small>
                   </Typography>
                   <Box
                     backgroundColor={element.lightThemeColor}
                     width={isSmallScreen ? "0.35rem" : "100%"}
                     height={isSmallScreen ? "100%" : "0.5rem"}
                   />
-                  {(isSmallScreen === false && isWidget === false) &&
+                  {(isSmallScreen === false) &&
                     <Typography
                       variant="caption"
                       lineHeight={0.9}
@@ -249,7 +225,8 @@ const NYUADbanner = (props) => {
                         textOverflow: "ellipsis",
                         display: "-webkit-box",
                         WebkitBoxOrient: "vertical",
-                        WebkitLineClamp: 2
+                        WebkitLineClamp: 3,
+                        px: 0.25
                       }}
                     >
                       <small>{element.category}</small>
@@ -261,51 +238,9 @@ const NYUADbanner = (props) => {
           </Stack>
         </Grid>
       </Grid>
-
-      {/* 
-      <Link
-        href={Host[hostParam].detailedPageUrl}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        sx={{
-          position: "fixed",
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-          height: "auto",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          position="fixed"
-          backgroundColor={isHovered ? '#d2d4d5' : 'rgba(0,0,0,0.6)'}
-          height="57px"
-          width="57px"
-          bottom={0}
-          right={0}
-        >
-          <GoIcon />
-        </Box>
-      </Link> */}
     </Grid >
 
   );
 };
-
-const GoIcon = () => {
-  return (
-    <svg version="1.1" id="Layer_1" x="0px" y="0px" width="32px" height="32px" viewBox="0 0 32 32" enableBackground="new 0 0 32 32" xmlSpace="preserve">
-      <path fill="#FFFFFF" d="M19.438,2.798v8.29c0,0-7.646,0.037-12.288,3.937c-5.66,4.756-7.681,13.865-6.918,12.901
- 	c7.11-8.985,19.206-8.427,19.206-8.427v8.375L32,15.651L19.438,2.798z"/>
-    </svg>
-  );
-};
-
 
 export default NYUADbanner;

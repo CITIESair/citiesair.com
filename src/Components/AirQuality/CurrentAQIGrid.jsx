@@ -30,7 +30,6 @@ const CurrentAQIGrid = (props) => {
   const { temperatureUnitPreference } = useContext(PreferenceContext);
 
   const getGridItemSize = ({ itemIndex, numOfItems }) => {
-
     return {
       xs: (itemIndex === 0 && firstSensorOwnLine) ? 12 : Math.max(12 / numOfItems, 6),
       sm: Math.max(12 / numOfItems, 4),
@@ -42,6 +41,7 @@ const CurrentAQIGrid = (props) => {
     <Grid
       container
       justifyContent="center"
+      spacing={1}
       sx={{
         '& .MuiSvgIcon-root': {
           verticalAlign: 'sub',
