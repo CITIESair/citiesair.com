@@ -29,6 +29,15 @@ export const ChartEndpoints = {
   correlationDailyAverage: "chart/correlationDailyAverage"
 }
 
+export const ChartEndpointsOrder = [
+  ChartEndpoints.historical,
+  ChartEndpoints.dailyAverageAllTime,
+  ChartEndpoints.percentageByMonth,
+  ChartEndpoints.yearlyAverageByDoW,
+  ChartEndpoints.hourlyAverageByMonth,
+  ChartEndpoints.correlationDailyAverage
+]
+
 export const RawDatasetType = {
   daily: "daily",
   hourly: "hourly"

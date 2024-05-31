@@ -163,6 +163,7 @@ const Project = () => {
                         chartIndex: index,
                         ...allChartsData[chartID],
                       }}
+                      chartID={chartID}
                     />
                     : <Skeleton variant='rounded' width="100%" height={300} />
                 }

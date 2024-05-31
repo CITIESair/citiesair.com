@@ -6,7 +6,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { fetchDataFromURL } from "../Components/DatasetDownload/DatasetFetcher";
 import Project from "./Project";
-import { ChartEndpoints, GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl, getChartApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiUtils";
+import { ChartEndpointsOrder, GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl, getChartApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiUtils";
 import { LinkContext } from "../ContextProviders/LinkContext";
 import { DashboardContext } from "../ContextProviders/DashboardContext";
 
@@ -14,17 +14,7 @@ import { UserContext } from "../ContextProviders/UserContext";
 import { LocalStorage } from "../Utils/LocalStorage";
 import { UniqueRoutes } from "../Utils/RoutesUtils";
 
-const initialCharts = [
-  ChartEndpoints.historical,
-  ChartEndpoints.dailyAverageAllTime
-];
-
-const restOfCharts = [
-  ChartEndpoints.percentageByMonth,
-  ChartEndpoints.yearlyAverageByDoW,
-  ChartEndpoints.hourlyAverageByMonth,
-  ChartEndpoints.correlationDailyAverage
-];
+const numInitialCharts = 2;
 
 const Dashboard = () => {
   const { school_id_param } = useParams();
@@ -104,7 +94,7 @@ const Dashboard = () => {
     try {
       setSchoolMetadata();
       setCurrent();
-
+      
       const response = await Promise.all([
         fetchDataFromURL({
           url: getApiUrl({
@@ -127,7 +117,7 @@ const Dashboard = () => {
       console.log(error);
     }
 
-    const chartsToFetch = loadMoreCharts ? initialCharts.concat(restOfCharts) : initialCharts;
+    const chartsToFetch = loadMoreCharts ? ChartEndpointsOrder : ChartEndpointsOrder.slice(0, numInitialCharts);
     chartsToFetch.forEach((endpoint, index) => {
       setIndividualChartData(index, {}); // set empty chartData to create a placeholder for this chart
 
@@ -150,10 +140,11 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (loadMoreCharts === true) {
+      const restOfCharts = ChartEndpointsOrder.slice(numInitialCharts);
       restOfCharts.forEach((endpoint, index) => {
-        const chartIndexInPage = initialCharts.length + index;
+        const chartIndexInPage = numInitialCharts + index;
         setIndividualChartData(chartIndexInPage, {}); // set empty chartData to create a placeholder for this chart
-
+        
         fetchDataFromURL({
           url: getChartApiUrl({
             endpoint: endpoint,

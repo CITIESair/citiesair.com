@@ -1,7 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { styled } from '@mui/material/styles';
-import { Box, Tabs, Tab, useMediaQuery, Typography, Menu, MenuItem, Stack } from '@mui/material/';
+import { Box, Tabs, Tab, useMediaQuery, Typography, Menu, MenuItem, MenuList, Stack } from '@mui/material/';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
+import { fetchDataFromURL } from "../Components/DatasetDownload/DatasetFetcher";
+import { ChartEndpointsOrder, getChartApiUrl } from "../Utils/ApiUtils";
+import { DashboardContext } from "../ContextProviders/DashboardContext";
 
 import SubChart from './Subchart/SubChart';
 
@@ -72,8 +76,12 @@ function ChartComponentWrapper(props) {
     generalChartReference,
     chartData: passedChartData,
     chartHeight: passedChartHeight,
+    chartID,
     isHomepage
   } = props;
+  
+  const { currentSchoolID, setIndividualChartData } = useContext(DashboardContext);
+
   const isSmallWidth = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   const [isPortrait, setIsPortrait] = useState(window.matchMedia('(orientation: portrait)').matches);
@@ -92,6 +100,7 @@ function ChartComponentWrapper(props) {
   const [dropdownMenuTabIndex, setDropdownMenuTabIndex] = useState(initialDropdownMenuTabIndex);
   const [dropdownMenuCurrentTitle, setDropdownMenuCurrentTitle] = useState();
   const [anchorEl, setAnchorEl] = useState(null); // Define anchorEl state for dropdown menu
+
 
   // eventListener for window resize
   // redraw "Calendar" charts and charts with a time filter upon window resize.
@@ -265,6 +274,8 @@ function ChartComponentWrapper(props) {
             ))}
           </Menu>
         }
+        
+        {showDataTypesMenu()}
         <Box
           position="relative"
           sx={{
@@ -273,6 +284,7 @@ function ChartComponentWrapper(props) {
             overflowY: 'hidden',
           }}
         >
+          
           {chartData.subcharts.map((__, index) => (
             <Box
               key={index}
@@ -323,6 +335,42 @@ function ChartComponentWrapper(props) {
       text += chartData.subcharts[currentTab].reference;
     }
     return text;
+  }
+
+
+  const fetchChartDataType = async (dataType) => {
+    const endpoint = ChartEndpointsOrder[chartID]
+    fetchDataFromURL({
+      url: getChartApiUrl({
+        endpoint: endpoint,
+        school_id: currentSchoolID,
+        dataType
+      }),
+      extension: 'json',
+      needsAuthorization: true
+    })
+      .then(data => {
+        console.log('voc data', data)
+        setIndividualChartData(chartID, data);
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+  }
+
+  const showDataTypesMenu = () => {
+    const { allowedDataTypes } = chartData;
+
+    return <MenuList dense>
+      {allowedDataTypes && allowedDataTypes.map((dataType, index) => (
+        <MenuItem
+          key={index}
+          onClick={() => fetchChartDataType(dataType)}
+        >
+          {dataType}
+        </MenuItem>
+      ))}
+    </MenuList>
   }
 
   return (

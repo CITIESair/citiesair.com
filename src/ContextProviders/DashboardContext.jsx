@@ -2,7 +2,7 @@
 
 import { useState, createContext, useMemo, useEffect } from 'react';
 
-export const DashboardContext = createContext();
+export const DashboardContext = createContext("");
 
 export function DashboardProvider({ children }) {
   const [schoolMetadata, setSchoolMetadata] = useState();
