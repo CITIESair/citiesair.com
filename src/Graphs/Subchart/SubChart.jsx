@@ -302,7 +302,12 @@ export default function SubChart(props) {
     return { min: vAxisMin, max: vAxisMax };
   }
 
-  const handleSeriesSelection = ({ newDataColumns, _allInitialColumns = allInitialColumns, _chartWrapper = chartWrapper }) => {
+  const handleSeriesSelection = ({
+    newDataColumns,
+    _allInitialColumns = allInitialColumns,
+    _chartWrapper = chartWrapper,
+    _controlWrapper = controlWrapper
+  }) => {
     if (!_allInitialColumns) return;
 
     setDataColumns(newDataColumns);
@@ -325,6 +330,23 @@ export default function SubChart(props) {
           ...hiddenSeriesObject
         }
       });
+
+      if (hasChartControl) {
+        const currentControlOptions = _controlWrapper?.getOptions();
+        _controlWrapper?.setOptions({
+          ...currentControlOptions,
+          ui: {
+            ...currentControlOptions.ui,
+            chartOptions: {
+              ...currentControlOptions.ui.chartOptions,
+              series: {
+                ...options.series,
+                ...hiddenSeriesObject
+              }
+            }
+          }
+        });
+      }
     }
     else if (seriesSelector.method === "setViewColumn") {
       let newViewColumns = [];
@@ -368,13 +390,31 @@ export default function SubChart(props) {
       })
       newOptions.series = series;
       _chartWrapper?.setOptions(newOptions);
+
+      if (hasChartControl) {
+        const currentControlOptions = _controlWrapper?.getOptions();
+        _controlWrapper?.setOptions({
+          ...currentControlOptions,
+          ui: {
+            ...currentControlOptions.ui,
+            chartOptions: {
+              ...currentControlOptions.ui.chartOptions,
+              colors: newOptions.colors,
+              series: newOptions.series
+            },
+            chartView: {
+              columns: newViewColumns
+            }
+          }
+        });
+      }
     }
 
     // Call draw to apply the new DataView and 'refresh' the chart
     _chartWrapper?.draw();
 
     if (hasChartControl) {
-      controlWrapper?.draw();
+      _controlWrapper?.draw();
     }
   };
 
@@ -443,6 +483,7 @@ export default function SubChart(props) {
       });
       setChartWrapper(thisChartWrapper);
 
+      let thisControlWrapper;
       if (hasChartControl) {
         const thisDashboardWrapper = new google.visualization.Dashboard(
           document.getElementById(`dashboard-${chartID}`));
@@ -450,7 +491,7 @@ export default function SubChart(props) {
 
         google.visualization.events.addListener(thisDashboardWrapper, 'ready', onChartReady);
 
-        const thisControlWrapper = new google.visualization.ControlWrapper({
+        thisControlWrapper = new google.visualization.ControlWrapper({
           controlType: chartControl.controlType,
           options: chartControlOptions,
           containerId: `control-${chartID}`
@@ -474,7 +515,8 @@ export default function SubChart(props) {
         handleSeriesSelection({
           _allInitialColumns: initAllInitialColumns,
           newDataColumns: initDataColumns,
-          _chartWrapper: thisChartWrapper
+          _chartWrapper: thisChartWrapper,
+          _controlWrapper: thisControlWrapper
         });
       }
     }
