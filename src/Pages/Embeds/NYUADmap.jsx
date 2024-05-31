@@ -40,7 +40,7 @@ const NYUADmap = () => {
         defaultZoom={16}
         minZoom={16}
         maxZoom={16}
-        disableInteraction={true}
+        disableZoom={true}
         displayMinimap={false}
         fullSizeMap={true}
         showAttribution={false}

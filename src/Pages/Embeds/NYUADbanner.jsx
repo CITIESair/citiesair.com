@@ -2,6 +2,7 @@
 /* eslint-disable */
 import { useState, useEffect, useContext } from 'react';
 import { Box, Grid, Typography, Stack, Tooltip } from '@mui/material/';
+import { useLocation } from 'react-router-dom';
 import { useMediaQuery, useTheme } from '@mui/material';
 
 import AQImap, { LocationTitle, TileOptions } from '../../Components/AirQuality/AQImap';
@@ -11,8 +12,19 @@ import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import ThemePreferences from '../../Themes/ThemePreferences';
 
+const Host = {
+  "students-portal": {
+    name: "Students Portal",
+    detailedPageUrl: "https://students.nyuad.nyu.edu/services/safety-and-awareness/nyuad-air-quality-index/"
+  },
+  "intranet": {
+    name: "Intranet",
+    detailedPageUrl: "https://intranet.nyuad.nyu.edu/administrative-services/operations-and-facilities/campus-maps-facilities/nyuad-air-quality-index/"
+  }
+}
+
 const NYUADbanner = (props) => {
-  const { themePreference, setThemePreference } = useContext(PreferenceContext);
+  const { themePreference } = useContext(PreferenceContext);
 
   const {
     initialNyuadCurrentData = null,
@@ -22,29 +34,20 @@ const NYUADbanner = (props) => {
 
   const theme = useTheme();
 
-  // Update the themePreference to dark for isOnBannerPage
-  // when the component is mounted and reset it when the component is unmounted
-  useEffect(() => {
-    if (isOnBannerPage) {
-      const previousTheme = themePreference;
-      setThemePreference(ThemePreferences.dark);
-
-      return () => {
-        setThemePreference(previousTheme);
-      };
-    }
-  }, [isOnBannerPage, setThemePreference, themePreference]);
-
   const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
 
   const getCenterCoordinates = () => {
     if (isOnBannerPage) {
-      return [24.5239, 54.43449]
+      return [isWidget ? 24.5239 : 24.5235, 54.43449]
     }
     else {
       return [24.524, 54.43449]
     }
   }
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const isWidget = queryParams.get('isWidget')?.toLowerCase() === 'true';
 
   const zoomLevel = isSmallScreen ? 16 : 17;
 
@@ -52,6 +55,9 @@ const NYUADbanner = (props) => {
   const [outdoorLocations, setOutdoorLocations] = useState();
   const [featuredIndoorLocations, setFeaturedIndoorLocations] = useState();
   const [otherIndoorLocations, setOtherIndoorLocations] = useState();
+
+  // const hostParam = queryParams.get('host') || 'students-portal';
+  // const [isHovered, setIsHovered] = useState(false);
 
   const url = getApiUrl({
     endpoint: GeneralEndpoints.current,
@@ -100,7 +106,7 @@ const NYUADbanner = (props) => {
           minHeight={minMapHeight}
           sx={{
             '& .leaflet-container': {
-              borderRadius: (isSmallScreen === false && isOnBannerPage === false) && theme.shape.borderRadius
+              borderRadius: isSmallScreen === false && theme.shape.borderRadius
             },
             '& .leaflet-marker-icon': {
               cursor: (isSmallScreen && isOnBannerPage) && "default"
@@ -113,7 +119,7 @@ const NYUADbanner = (props) => {
         >
           <AQImap
             tileOption={TileOptions.nyuad}
-            themePreference={isOnBannerPage ? ThemePreferences.dark : themePreference}
+            themePreference={isOnBannerPage ? ThemePreferences.light : themePreference}
             placeholderText={"Map of CITIESair air quality sensors on NYUAD campus."}
             centerCoordinates={getCenterCoordinates()}
             maxBounds={[
@@ -123,15 +129,28 @@ const NYUADbanner = (props) => {
             defaultZoom={zoomLevel}
             minZoom={zoomLevel}
             maxZoom={isOnBannerPage ? zoomLevel : zoomLevel + 1}
-            disableInteraction={isOnBannerPage}
+            disableZoom={isOnBannerPage}
+            disableInteraction={(isSmallScreen && isOnBannerPage)}
+            showInstruction={!isSmallScreen}
             displayMinimap={false}
             locationTitle={LocationTitle.short}
             fullSizeMap={true}
             showAttribution={false}
             rawMapData={nyuadCurrentData}
-            markerSizeInRem={0.75}
+            markerSizeInRem={isWidget ? 0.7 : 0.85}
           />
 
+          {
+            isWidget === true && <Typography
+              variant="h6"
+              position="absolute"
+              top={0}
+              zIndex={999999}
+              sx={{ mx: 1.5, my: 0.5 }}
+            >
+              NYUAD Air Quality
+            </Typography>
+          }
         </Box>
       </Grid>
 
@@ -140,7 +159,7 @@ const NYUADbanner = (props) => {
         item
         xs={12} sm={6}
         justifyContent="space-around"
-        px={1}
+      // backgroundColor="customAlternateBackground"
       >
         <Grid
           container
@@ -157,6 +176,7 @@ const NYUADbanner = (props) => {
               currentSensorsData={outdoorLocations}
               isScreen={false}
               showHeatIndex={false}
+              showLastUpdate={!isWidget}
               useLocationShort={true}
               roundTemperature={isOnBannerPage && true}
             />
@@ -175,13 +195,13 @@ const NYUADbanner = (props) => {
           <Grid item xs={12} mb={1}>
             <SimpleCurrentAQIlist
               currentSensorsData={otherIndoorLocations}
-              useLocationShort={true}
+              useLocationShort={isSmallScreen}
               smallFont={isOnBannerPage}
             />
           </Grid>
         </Grid>
 
-        <Grid container item xs={1.5} sm={12} textAlign="left" my={isSmallScreen ? 2 : 1}>
+        <Grid container item xs={1.5} sm={11} textAlign="left" my={isSmallScreen ? 2 : 1}>
           <Stack
             direction={isSmallScreen ? "column-reverse" : "row"}
             justifyContent="center"
@@ -212,14 +232,14 @@ const NYUADbanner = (props) => {
                     lineHeight={1}
                     color="text.secondary"
                   >
-                    <small>{element.aqiUS.low === 301 ? '300+' : element.aqiUS.low}</small>
+                    <small>{element.aqiUS.low === 301 ? '300+' : Math.round(element.aqiUS.low / 50) * 50}</small>
                   </Typography>
                   <Box
                     backgroundColor={element.lightThemeColor}
                     width={isSmallScreen ? "0.35rem" : "100%"}
                     height={isSmallScreen ? "100%" : "0.5rem"}
                   />
-                  {(isSmallScreen === false) &&
+                  {(isSmallScreen === false && isWidget === false) &&
                     <Typography
                       variant="caption"
                       lineHeight={0.9}
@@ -229,8 +249,7 @@ const NYUADbanner = (props) => {
                         textOverflow: "ellipsis",
                         display: "-webkit-box",
                         WebkitBoxOrient: "vertical",
-                        WebkitLineClamp: 3,
-                        px: 0.25
+                        WebkitLineClamp: 2
                       }}
                     >
                       <small>{element.category}</small>
@@ -242,9 +261,51 @@ const NYUADbanner = (props) => {
           </Stack>
         </Grid>
       </Grid>
+
+      {/* 
+      <Link
+        href={Host[hostParam].detailedPageUrl}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        sx={{
+          position: "fixed",
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          height: "auto",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          position="fixed"
+          backgroundColor={isHovered ? '#d2d4d5' : 'rgba(0,0,0,0.6)'}
+          height="57px"
+          width="57px"
+          bottom={0}
+          right={0}
+        >
+          <GoIcon />
+        </Box>
+      </Link> */}
     </Grid >
 
   );
 };
+
+const GoIcon = () => {
+  return (
+    <svg version="1.1" id="Layer_1" x="0px" y="0px" width="32px" height="32px" viewBox="0 0 32 32" enableBackground="new 0 0 32 32" xmlSpace="preserve">
+      <path fill="#FFFFFF" d="M19.438,2.798v8.29c0,0-7.646,0.037-12.288,3.937c-5.66,4.756-7.681,13.865-6.918,12.901
+ 	c7.11-8.985,19.206-8.427,19.206-8.427v8.375L32,15.651L19.438,2.798z"/>
+    </svg>
+  );
+};
+
 
 export default NYUADbanner;
