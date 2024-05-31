@@ -71,7 +71,7 @@ const getHumidityColorAxis = ({ isDark }) => {
     isGradient: true,
     colors: [
       colors.grey[isDark ? 900 : 200],
-      colors.blue[isDark ? darkShade : lightShade]
+      colors.blue[isDark ? darkShade + 100 : lightShade + 100]
     ]
   }
 }
@@ -79,28 +79,28 @@ const getHumidityColorAxis = ({ isDark }) => {
 const getTemperatureColorAxis = ({ isDark }) => {
   return {
     minValue: 0,
-    maxValue: 250,
+    maxValue: 50,
     isGradient: true,
     colors: [
       {
         color: colors.lightBlue[isDark ? darkShade : lightShade],
-        stop: 50
+        stop: 10
       },
       {
         color: colors.green[isDark ? darkShade : lightShade],
-        stop: 100
+        stop: 20
       },
       {
         color: colors.yellow[isDark ? darkShade : lightShade],
-        stop: 150
+        stop: 30
       },
       {
         color: colors.red[isDark ? darkShade : lightShade],
-        stop: 200
+        stop: 40
       },
       {
         color: maroon[isDark ? darkShade : lightShade],
-        stop: 250
+        stop: 50
       }
     ]
   }
