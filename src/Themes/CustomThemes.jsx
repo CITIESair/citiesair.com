@@ -106,6 +106,50 @@ const getTemperatureColorAxis = ({ isDark }) => {
   }
 }
 
+const getPressureColorAxis = ({ isDark }) => {
+  return {
+    minValue: 980,
+    maxValue: 1040,
+    isGradient: true,
+    colors: [
+      {
+        color: colors.lightBlue[isDark ? darkShade : lightShade],
+        stop: 980
+      },
+      {
+        color: colors.grey[isDark ? darkShade : lightShade],
+        stop: 1013
+      },
+      {
+        color: colors.red[isDark ? darkShade : lightShade],
+        stop: 1040
+      }
+    ]
+  }
+}
+
+const getVocColorAxis = ({ isDark }) => {
+  return {
+    minValue: 0,
+    maxValue: 200,
+    isGradient: true,
+    colors: [
+      {
+        color: colors.green[isDark ? darkShade : lightShade],
+        stop: 0
+      },
+      {
+        color: colors.yellow[isDark ? darkShade : lightShade],
+        stop: 100
+      },
+      {
+        color: colors.red[isDark ? darkShade : lightShade],
+        stop: 200
+      }
+    ]
+  }
+}
+
 const CustomThemes = {
   dark: {
     palette: {
@@ -135,9 +179,14 @@ const CustomThemes = {
           studentPopulation: ['#aaa', '#666', colors.red[darkShade], colors.amber[darkShade + 100], colors.teal[darkShade]]
         },
         colorAxisFirstColor: colors.grey[darkShadeColorAxis],
-        humidityColorAxis: getHumidityColorAxis({ isDark: true }),
-        temperatureColorAxis: getTemperatureColorAxis({ isDark: true }),
-        aqiColorAxis: getAqiColorAxis({ isDark: true }),
+        colorAxes: {
+          voc: getVocColorAxis({ isDark: true }),
+          pressure: getPressureColorAxis({ isDark: true }),
+          humidity: getHumidityColorAxis({ isDark: true }),
+          temperature: getTemperatureColorAxis({ isDark: true }),
+          aqi: getAqiColorAxis({ isDark: true }),
+
+        },
         axisTitle: colors.grey[darkShade - 100],
         axisText: colors.grey[darkShade],
         gridlines: colors.grey[darkShade + 200],
@@ -175,9 +224,13 @@ const CustomThemes = {
           studentPopulation: [colors.grey[lightShade], '#333333', colors.red[lightShade], colors.amber[lightShade], colors.teal[lightShade]]
         },
         colorAxisFirstColor: colors.common.white,
-        humidityColorAxis: getHumidityColorAxis({ isDark: false }),
-        temperatureColorAxis: getTemperatureColorAxis({ isDark: false }),
-        aqiColorAxis: getAqiColorAxis({ isDark: false }),
+        colorAxes: {
+          voc: getVocColorAxis({ isDark: false }),
+          pressure: getPressureColorAxis({ isDark: false }),
+          humidity: getHumidityColorAxis({ isDark: false }),
+          temperature: getTemperatureColorAxis({ isDark: false }),
+          aqi: getAqiColorAxis({ isDark: false }),
+        },
         axisTitle: colors.grey[lightShade + 100],
         axisText: colors.grey[lightShade],
         gridlines: colors.grey[lightShade - 200],

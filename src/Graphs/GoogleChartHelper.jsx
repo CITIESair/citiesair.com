@@ -241,17 +241,14 @@ export const returnGenericOptions = (props) => {
           theme.palette.chart.colorAxisFirstColor,
           theme.palette.NYUpurple,
         ];
-        break;
-      case 'aqi':
-        options.colorAxis = theme.palette.chart.aqiColorAxis;
-        break;
-      case 'temperature':
-        options.colorAxis = theme.palette.chart.temperatureColorAxis;
-        break;
-      case 'humidity':
-        options.colorAxis = theme.palette.chart.humidityColorAxis;
-        break;
+        break
+      // If not any of the above, then the colorAxis should be from the chart (aqi/temperature/humidity...)
       default:
+        try {
+          options.colorAxis = theme.palette.chart.colorAxes[options.colorAxis.colors]
+        } catch {
+          options.colorAxis = []
+        }
         break;
     }
   }
