@@ -2,7 +2,6 @@
 /* eslint-disable */
 import { useState, useEffect, useContext } from 'react';
 import { Box, Grid, Typography, Stack, Tooltip } from '@mui/material/';
-import { useLocation } from 'react-router-dom';
 import { useMediaQuery, useTheme } from '@mui/material';
 
 import AQImap, { LocationTitle, TileOptions } from '../../Components/AirQuality/AQImap';
@@ -18,7 +17,7 @@ const NYUADbanner = (props) => {
   const {
     initialNyuadCurrentData = null,
     isOnBannerPage = true,
-    minMapHeight = "190px"
+    minMapHeight = "230px"
   } = props;
 
   const theme = useTheme();
@@ -27,22 +26,19 @@ const NYUADbanner = (props) => {
 
   const getCenterCoordinates = () => {
     if (isOnBannerPage) {
-      return [24.5239, 54.43449]
+      return [24.5238, 54.43449]
     }
     else {
-      return [24.524, 54.43449]
+      return [24.5238, 54.4341]
     }
   }
 
-  const zoomLevel = isSmallScreen ? 16 : 17;
+  const zoomLevel = isSmallScreen ? 16.25 : (isOnBannerPage ? 16.75 : 17.25);
 
   const [nyuadCurrentData, setNYUADcurrentData] = useState(initialNyuadCurrentData);
   const [outdoorLocations, setOutdoorLocations] = useState();
   const [featuredIndoorLocations, setFeaturedIndoorLocations] = useState();
   const [otherIndoorLocations, setOtherIndoorLocations] = useState();
-
-  // const hostParam = queryParams.get('host') || 'students-portal';
-  // const [isHovered, setIsHovered] = useState(false);
 
   const url = getApiUrl({
     endpoint: GeneralEndpoints.current,
@@ -81,10 +77,9 @@ const NYUADbanner = (props) => {
     setOtherIndoorLocations(otherIndoorLocations);
   }, [nyuadCurrentData]);
 
-  const borderStyle = `solid ${isOnBannerPage ? 'black' : theme.palette.customBackground} ${isOnBannerPage ? '1px' : '1rem'}`
 
   return (
-    <Grid container overflow="hidden" flex={1}>
+    <Grid container overflow="hidden" flex={1} maxWidth="lg" margin="auto" backgroundColor="customAlternateBackground">
       <Grid item xs={12} sm={6}>
         <Box
           height="100%"
@@ -95,11 +90,7 @@ const NYUADbanner = (props) => {
             },
             '& .leaflet-marker-icon': {
               cursor: (isSmallScreen && isOnBannerPage) && "default"
-            },
-            ...(
-              isOnBannerPage ?
-                (isSmallScreen ? { borderBottom: borderStyle } : { borderRight: borderStyle })
-                : (isSmallScreen ? {} : { border: borderStyle }))
+            }
           }}
         >
           <AQImap
@@ -113,16 +104,14 @@ const NYUADbanner = (props) => {
             ]}
             defaultZoom={zoomLevel}
             minZoom={zoomLevel}
-            maxZoom={isOnBannerPage ? zoomLevel : zoomLevel + 1}
-            disableZoom={isOnBannerPage}
-            disableInteraction={(isSmallScreen && isOnBannerPage)}
-            showInstruction={!isSmallScreen}
+            maxZoom={isOnBannerPage ? zoomLevel : Math.round(zoomLevel + 1)}
+            disableInteraction={isOnBannerPage}
             displayMinimap={false}
             locationTitle={LocationTitle.short}
             fullSizeMap={true}
             showAttribution={false}
             rawMapData={nyuadCurrentData}
-            markerSizeInRem={0.75}
+            markerSizeInRem={isWidget ? 0.7 : 0.85}
           />
 
         </Box>
@@ -133,7 +122,7 @@ const NYUADbanner = (props) => {
         item
         xs={12} sm={6}
         justifyContent="space-around"
-        px={1}
+      // backgroundColor="customAlternateBackground"
       >
         <Grid
           container
@@ -142,7 +131,6 @@ const NYUADbanner = (props) => {
           sm={12}
           justifyContent="center"
           textAlign="center"
-          my={1}
           spacing={isOnBannerPage === false && 1}
         >
           <Grid item xs={12} >
@@ -155,7 +143,7 @@ const NYUADbanner = (props) => {
             />
           </Grid>
 
-          <Grid item xs={12} sx={isOnBannerPage && { transform: "scale(0.7)", my: -2 }}>
+          <Grid item xs={12} >
             <CurrentAQIGrid
               currentSensorsData={featuredIndoorLocations}
               isScreen={false}
@@ -168,7 +156,7 @@ const NYUADbanner = (props) => {
           <Grid item xs={12} mb={1}>
             <SimpleCurrentAQIlist
               currentSensorsData={otherIndoorLocations}
-              useLocationShort={true}
+              useLocationShort={isSmallScreen}
               smallFont={isOnBannerPage}
             />
           </Grid>

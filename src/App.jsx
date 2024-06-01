@@ -1,6 +1,6 @@
 // React components
-import { React, useMemo, lazy, Suspense, useContext } from 'react';
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { React, useMemo, lazy, Suspense, useContext, useEffect } from 'react';
+import { BrowserRouter, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 
 // MUI components
 import { Box } from '@mui/material/';
@@ -53,7 +53,7 @@ const getDesignTokens = (themePreference) => ({
 });
 
 function App() {
-  const { themePreference } = useContext(PreferenceContext);
+  const { themePreference, setThemePreference } = useContext(PreferenceContext);
   const { chartsTitlesList } = useContext(LinkContext);
 
   // Create theme using getDesignTokens
@@ -65,6 +65,22 @@ function App() {
   // set backgroundColor of 'body' element depending on theme.
   // this is to set bg-color of left/right padding on landscape iOS devices
   document.body.style.background = theme.palette.customAlternateBackground;
+
+  // Update the themePreference to if it is included in queryParams when the app is mounted
+  // and reset it when the component is unmounted
+  useEffect(() => {
+    // Use vanilla JS to get the query parameters from the URL
+    const queryParams = new URLSearchParams(window.location.search);
+    const optionallyPassedThemePreference = queryParams.get('themePreference');
+    if (optionallyPassedThemePreference) {
+      const previousTheme = themePreference;
+      setThemePreference(optionallyPassedThemePreference);
+
+      return () => {
+        setThemePreference(previousTheme);
+      };
+    }
+  }, []);
 
   return (
     <BrowserRouter basename="/">
