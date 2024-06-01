@@ -75,7 +75,6 @@ export default function SubChart(props) {
         || null;
       if (!dataArray) return; // early return if there is no data to render
 
-
       const dateStrings = dataArray.map(item => item.day);
       const values = dataArray.map(item => item.value);
       const dateRange = getDateRangeForCalendarChart(dateStrings);
@@ -83,7 +82,6 @@ export default function SubChart(props) {
       setCalendarData({
         data: dataArray,
         dateRange: dateRange,
-        allowedDataTypes: chartData.allowedDataTypes,
         valueRange: getValueRangeForCalendarChart(values)
       });
 
@@ -125,7 +123,6 @@ export default function SubChart(props) {
             data={calendarData.data}
             dateRange={calendarData.dateRange}
             valueRange={calendarData.valueRange}
-            allowedDataTypes={calendarData.allowedDataTypes}
             isPortrait={isPortrait}
             options={options}
           />
