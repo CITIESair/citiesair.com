@@ -24,7 +24,7 @@ import CommentIcon from '@mui/icons-material/Comment';
 
 import { replacePlainHTMLWithMuiComponents } from '../Utils/Utils';
 import DatasetDownloadDialog from '../Components/DatasetDownload/DatasetDownloadDialog';
-import ScreenDialog from '../Components/AirQuality/AirQualityScreen/ScreenDialog';
+import ScreenDropDownMenu from '../Components/AirQuality/AirQualityScreen/ScreenDropDownMenu';
 
 import { scrollToSection } from '../Components/Header/MenuItemAsNavLink';
 import FullWidthBox from '../Components/FullWidthBox';
@@ -145,28 +145,18 @@ const Project = () => {
                 className={themePreference === ThemePreferences.dark ? 'dark' : ''}
                 id={`chart-${index + 1}`}
               >
-                {
-                  allChartsData[chartID].title ?
-                    <Typography variant="h6" color="text.primary">
-                      {index + 1}. {allChartsData[chartID].title}
-                    </Typography>
-                    : <Skeleton variant='text' sx={{ width: '100%', fontSize: '2rem' }} />
 
-                }
-
-                {
-                  allChartsData[chartID].title ?
-                    <ChartComponentWrapper
-                      generalChartSubtitle={allChartsData[chartID].subtitle}
-                      generalChartReference={allChartsData[chartID].reference}
-                      chartData={{
-                        chartIndex: index,
-                        ...allChartsData[chartID],
-                      }}
-                      chartID={chartID}
-                    />
-                    : <Skeleton variant='rounded' width="100%" height={300} />
-                }
+                <ChartComponentWrapper
+                  chartTitle={allChartsData[chartID].title}
+                  generalChartSubtitle={allChartsData[chartID].subtitle}
+                  generalChartReference={allChartsData[chartID].reference}
+                  chartData={{
+                    chartIndex: index,
+                    ...allChartsData[chartID],
+                  }}
+                  chartID={chartID}
+                  chartIndex={index}
+                />
 
                 {
                   // Optionally display the button to load more charts at the bottom of the last chart
@@ -301,7 +291,7 @@ const Project = () => {
           {displayProjectDescription()}
 
           <Stack direction="row" spacing={2}>
-            <ScreenDialog />
+            <ScreenDropDownMenu />
             <DatasetDownloadDialog />
           </Stack>
 

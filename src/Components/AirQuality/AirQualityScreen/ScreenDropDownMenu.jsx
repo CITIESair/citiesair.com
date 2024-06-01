@@ -7,14 +7,15 @@ import TvIcon from '@mui/icons-material/Tv';
 import MenuItemAsNavLink from "../../Header/MenuItemAsNavLink";
 import NavLinkBehavior from "../../Header/NavLinkBehavior";
 import { DashboardContext } from "../../../ContextProviders/DashboardContext";
+import { isValidArray } from "../../../Utils/Utils";
 
-const ScreenDialog = () => {
+const ScreenDropDownMenu = () => {
   const { currentSchoolID, schoolMetadata } = useContext(DashboardContext);
 
   if (!schoolMetadata) return;
   const screens = schoolMetadata.screens;
 
-  if (!Array.isArray(screens)) return null;
+  if (!isValidArray(screens)) return null;
 
   // If there is only 1 screen, display a button linked to that screen
   if (screens.length <= 1) {
@@ -76,4 +77,4 @@ const ScreenDialog = () => {
   );
 };
 
-export default ScreenDialog;
+export default ScreenDropDownMenu;

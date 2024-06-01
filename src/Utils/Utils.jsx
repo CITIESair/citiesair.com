@@ -1,6 +1,11 @@
 import { Link, List, ListItem, ListItemText, Table, TableBody, TableCell, TableHead, TableRow, styled, TableFooter } from '@mui/material';
 import { domToReact } from 'html-react-parser';
 
+// Function to check if an array has valid data
+export const isValidArray = (array) => {
+  return Array.isArray(array) && array.length > 0 && !array.every(item => item == null);
+}
+
 // Function to replace characters like "-" with " " from a string and capitalize it
 export const capitalizePhrase = (str) => {
   if (!str) return;

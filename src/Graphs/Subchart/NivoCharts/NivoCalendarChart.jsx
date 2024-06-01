@@ -16,7 +16,7 @@ export const getCalendarChartMargin = (isPortrait) => {
 }
 
 export const CalendarChart = (props) => {
-    const { data, dateRange, valueRange, allowedDataTypes, isPortrait, options } = props;
+    const { data, dateRange, valueRange, isPortrait, options } = props;
 
     const calendarChartMargin = getCalendarChartMargin(isPortrait);
 
