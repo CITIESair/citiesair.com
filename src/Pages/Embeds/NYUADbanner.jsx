@@ -1,12 +1,12 @@
 // disable eslint for this file
 /* eslint-disable */
 import { useState, useEffect, useContext } from 'react';
-import { Box, Grid, Typography, Stack, Tooltip } from '@mui/material/';
+import { Container, Box, Grid, Typography, Stack, Tooltip } from '@mui/material/';
 import { useMediaQuery, useTheme } from '@mui/material';
 
 import AQImap, { LocationTitle, TileOptions } from '../../Components/AirQuality/AQImap';
 import { GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
-import CurrentAQIGrid, { SimpleCurrentAQIlist } from '../../Components/AirQuality/CurrentAQIGrid';
+import CurrentAQIGrid, { CurrentAQIGridSize, SimpleCurrentAQIlist } from '../../Components/AirQuality/CurrentAQIGrid';
 import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import ThemePreferences from '../../Themes/ThemePreferences';
@@ -80,6 +80,16 @@ const NYUADbanner = (props) => {
 
   return (
     <Grid container overflow="hidden" flex={1} maxWidth="lg" margin="auto" backgroundColor="customAlternateBackground">
+      {
+        isOnBannerPage &&
+        <Grid item xs={12} height="fit-content">
+          <Container sx={{ p: 1, pb: 0, m: 0 }}>
+            <Typography color="text.primary" variant="h5" textAlign="center" fontWeight="500">
+              NYUAD Air Quality
+            </Typography>
+          </Container>
+        </Grid>
+      }
       <Grid item xs={12} sm={6}>
         <Box
           height="100%"
@@ -96,7 +106,6 @@ const NYUADbanner = (props) => {
           <AQImap
             tileOption={TileOptions.nyuad}
             themePreference={isOnBannerPage ? ThemePreferences.dark : themePreference}
-            placeholderText={"Map of CITIESair air quality sensors on NYUAD campus."}
             centerCoordinates={getCenterCoordinates()}
             maxBounds={[
               [24.52, 54.42612],
@@ -111,9 +120,9 @@ const NYUADbanner = (props) => {
             fullSizeMap={true}
             showAttribution={false}
             rawMapData={nyuadCurrentData}
-            markerSizeInRem={isWidget ? 0.7 : 0.85}
+            markerSizeInRem={isSmallScreen ? 0.75 : 0.9}
+            ariaLabel={"A map of all air quality sensors at NYU Abu Dhabi"}
           />
-
         </Box>
       </Grid>
 
@@ -122,12 +131,12 @@ const NYUADbanner = (props) => {
         item
         xs={12} sm={6}
         justifyContent="space-around"
-      // backgroundColor="customAlternateBackground"
+        px={1}
       >
         <Grid
           container
           item
-          xs={9}
+          xs={10}
           sm={12}
           justifyContent="center"
           textAlign="center"
@@ -136,30 +145,31 @@ const NYUADbanner = (props) => {
           <Grid item xs={12} >
             <CurrentAQIGrid
               currentSensorsData={outdoorLocations}
-              isScreen={false}
               showHeatIndex={false}
               useLocationShort={true}
               roundTemperature={isOnBannerPage && true}
+              size={isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium}
             />
           </Grid>
 
           <Grid item xs={12} >
             <CurrentAQIGrid
               currentSensorsData={featuredIndoorLocations}
-              isScreen={false}
               showWeather={!isOnBannerPage}
               showHeatIndex={false}
               showLastUpdate={!isOnBannerPage}
+              size={CurrentAQIGridSize.small}
             />
           </Grid>
 
-          <Grid item xs={12} mb={1}>
-            <SimpleCurrentAQIlist
-              currentSensorsData={otherIndoorLocations}
-              useLocationShort={isSmallScreen}
-              smallFont={isOnBannerPage}
-            />
-          </Grid>
+          {(isOnBannerPage === true && isSmallScreen === true) ? null :
+            <Grid item xs={12} mb={1}>
+              <SimpleCurrentAQIlist
+                currentSensorsData={otherIndoorLocations}
+                useLocationShort={true}
+                size={isOnBannerPage ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium}
+              />
+            </Grid>}
         </Grid>
 
         <Grid container item xs={1.5} sm={12} textAlign="left" my={isSmallScreen ? 2 : 1}>
@@ -170,6 +180,7 @@ const NYUADbanner = (props) => {
           >
             {AQIdatabase.map((element, index) => (
               <Tooltip
+                key={index}
                 title={!isOnBannerPage && isSmallScreen && element.category}
                 slotProps={{
                   popper: {
@@ -193,7 +204,7 @@ const NYUADbanner = (props) => {
                     lineHeight={1}
                     color="text.secondary"
                   >
-                    <small>{element.aqiUS.low === 301 ? '300+' : element.aqiUS.low}</small>
+                    <small>{element.aqiUS.low === 301 ? '301+' : element.aqiUS.low}</small>
                   </Typography>
                   <Box
                     backgroundColor={element.lightThemeColor}

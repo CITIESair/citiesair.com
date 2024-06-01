@@ -70,6 +70,7 @@ const getTileUrl = ({ tileOption, themePreference, isMiniMap }) => {
             if (tileOption === TileOptions.nyuad) svgUrl = Tiles.nyuad.light;
             break
     }
+
     if (tileOption === TileOptions.nyuad) return svgUrl;
     else return `https://{s}.tile.jawg.io/${Tiles[tileOption][tileTheme]}/{z}/{x}/{y}{r}.png?access-token={accessToken}`;
 }
@@ -113,7 +114,6 @@ const AQImap = (props) => {
     const { themePreference, temperatureUnitPreference } = useContext(PreferenceContext);
     const {
         tileOption,
-        placeholderText,
         centerCoordinates,
         maxBounds,
         minZoom = 8,
@@ -125,8 +125,11 @@ const AQImap = (props) => {
         showAttribution = true,
         locationTitle,
         rawMapData,
-        markerSizeInRem = 1
+        markerSizeInRem = 1,
+        ariaLabel = "A map of air quality sensors"
     } = props;
+
+    const placeholderText = ariaLabel;
 
     const disableZoomParameters = {
         doubleClickZoom: false,
@@ -177,7 +180,7 @@ const AQImap = (props) => {
             // Create the marker icon on the map
             location.markerIcon = new L.DivIcon({
                 className: aqiMarkerIconClass,
-                html: `<div style="background-color: ${location.current?.color}">${displayAqiValue(location)}</div>`
+                html: `<div aria-hidden={true} style="background-color: ${location.current?.color}">${displayAqiValue(location)}</div>`
             });
 
             return location;
@@ -222,7 +225,7 @@ const AQImap = (props) => {
     }
 
     const MinimapControl = ({ position, zoom, mapData }) => {
-        const parentMap = useMap()
+        const parentMap = useMap();
         const mapZoom = zoom || minZoom - 2;
 
         // Memoize the minimap so it's not affected by position changes
@@ -238,11 +241,7 @@ const AQImap = (props) => {
                     attributionControl={false}
                 >
                     <TileLayer
-                        attribution={tileAttribution}
-                        url={getTileUrl({ tileOption, themePreference })}
-                        minZoom={minZoom}
-                        maxZoom={maxZoom}
-                        bounds={maxBounds}
+                        url={getTileUrl({ tileOption, themePreference, isMiniMap: true })}
                         accessToken={tileAccessToken}
                     />
                     {
@@ -256,6 +255,7 @@ const AQImap = (props) => {
                                     weight: 0,
                                     fillOpacity: 1
                                 }}
+                                keyboard={false}
                             >
                             </CircleMarker>
 
@@ -295,56 +295,58 @@ const AQImap = (props) => {
     }
 
     return (
-        <Box sx={{
-            ...(fullSizeMap ? { height: '100%' } : {
-                height: "55vh",
-                [theme.breakpoints.down('md')]: {
-                    height: '60vh',
+        <Box
+            aria-label={ariaLabel}
+            sx={{
+                ...(fullSizeMap ? { height: '100%' } : {
+                    height: "55vh",
+                    [theme.breakpoints.down('md')]: {
+                        height: '60vh',
+                    },
+                }),
+                '& .leaflet-container': {
+                    height: "100%",
+                    width: "100%",
+                    background: "transparent"
                 },
-            }),
-            '& .leaflet-container': {
-                height: "100%",
-                width: "100%",
-                background: "transparent"
-            },
-            '& .leaflet-control-attribution': {
-                ...(showAttribution ? { fontSize: '0.5rem' } : { display: 'none' }),
-            },
-            '& .leaflet-tooltip': {
-                border: 'unset',
-                color: theme.palette.text.primary,
-                backgroundColor: "transparent !important",
-                opacity: 1,
-                boxShadow: 'unset',
-                fontWeight: 500,
-                fontSize: `${markerSizeInRem}rem`,
-                textTransform: 'capitalize'
-            },
-            '& .leaflet-tooltip-bottom:before': {
-                borderBottomColor: 'transparent !important',
-            },
-            '& .leaflet-marker-icon': {
-                cursor: disableInteraction ? 'auto' : 'pointer'
-            },
-            [`& .${aqiMarkerIconClass} > div`]: {
-                width: `${2.25 * markerSizeInRem}rem`,
-                height: `${2.25 * markerSizeInRem}rem`,
-                borderRadius: '50%',
-                border: `solid ${markerSizeInRem / 8}rem`,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                fontSize: `${markerSizeInRem}rem`,
-                fontWeight: 600,
-                color: 'black',
-                transition: "0.15s ease-in-out",
-                ...(disableInteraction === false && {
-                    '&:hover, &:focus': {
-                        transform: "scale(1.2)",
-                    }
-                })
-            }
-        }}>
+                '& .leaflet-control-attribution': {
+                    ...(showAttribution ? { fontSize: '0.5rem' } : { display: 'none' }),
+                },
+                '& .leaflet-tooltip': {
+                    border: 'unset',
+                    color: theme.palette.text.primary,
+                    backgroundColor: "transparent !important",
+                    opacity: 1,
+                    boxShadow: 'unset',
+                    fontWeight: 500,
+                    fontSize: `${markerSizeInRem}rem`,
+                    textTransform: 'capitalize'
+                },
+                '& .leaflet-tooltip-bottom:before': {
+                    borderBottomColor: 'transparent !important',
+                },
+                '& .leaflet-marker-icon': {
+                    cursor: disableInteraction ? 'auto' : 'pointer'
+                },
+                [`& .${aqiMarkerIconClass} > div`]: {
+                    width: `${2.25 * markerSizeInRem}rem`,
+                    height: `${2.25 * markerSizeInRem}rem`,
+                    borderRadius: '50%',
+                    border: `solid ${markerSizeInRem / 8}rem`,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    fontSize: `${markerSizeInRem}rem`,
+                    fontWeight: 600,
+                    color: 'black',
+                    transition: "0.15s ease-in-out",
+                    ...(disableInteraction === false && {
+                        '&:hover, &:focus': {
+                            transform: "scale(1.2)",
+                        }
+                    })
+                }
+            }}>
             <MapContainer
                 center={centerCoordinates}
                 zoom={defaultZoom}
@@ -378,6 +380,7 @@ const AQImap = (props) => {
                             key={key}
                             position={[location.sensor?.coordinates?.latitude, location.sensor?.coordinates?.longitude]}
                             icon={location.markerIcon}
+                            keyboard={false}
                         >
                             {
                                 locationTitle &&
@@ -387,9 +390,12 @@ const AQImap = (props) => {
                                     offset={locationTitle === LocationTitle.short ?
                                         [7.5, -35] : [15, -40]}
                                 >
-                                    {locationTitle === LocationTitle.short ?
-                                        location.sensor?.location_short : location.sensor?.location_long}
+                                    <Box aria-hidden={true}>
+                                        {locationTitle === LocationTitle.short ?
+                                            location.sensor?.location_short : location.sensor?.location_long}
+                                    </Box>
                                 </Tooltip>
+
                             }
 
                             {
