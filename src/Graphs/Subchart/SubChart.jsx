@@ -21,12 +21,12 @@ import { isValidArray } from '../../Utils/Utils';
 
 const NoChartToRender = ({ dataType }) => {
   return (
-    <Alert severity="error">
+    <Alert severity="error" sx={{ my: 2 }}>
       This sensor does not have&nbsp;
       <Box component="span" textTransform="capitalize">
         {dataType}
       </Box>
-      &nbsp;data. Choose another sensor.
+      &nbsp;data
     </Alert>
   )
 }

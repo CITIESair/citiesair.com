@@ -218,21 +218,33 @@ const ValueRangeBox = ({ valueRange, colorAxis, isPortrait }) => {
 
     const labelStyle = {
         position: 'absolute',
-        top: '-1.5rem',
         fontSize: '0.75rem',
-        transform: 'translateX(-50%)',
         color: theme.palette.text.secondary
+    };
+    const topLabelStyle = {
+        top: '-1.5rem',
+        transform: 'translateX(-100%)'
+    };
+    const bottomLabelStyle = {
+        bottom: '-1.5rem',
     };
 
     const triangleStyle = {
         position: 'absolute',
-        top: '-0.5rem',
         width: 0,
         height: 0,
         borderLeft: '0.25rem solid transparent',
         borderRight: '0.25rem solid transparent',
-        borderTop: `0.25rem solid ${theme.palette.text.secondary}`,
         transform: 'translateX(-50%)',
+    };
+
+    const topTriangleStyle = {
+        top: '-0.5rem',
+        borderTop: `0.25rem solid ${theme.palette.text.secondary}`
+    };
+    const bottomTriangleStyle = {
+        bottom: '-0.5rem',
+        borderBottom: `0.25rem solid ${theme.palette.text.secondary}`
     };
 
     return (
@@ -241,10 +253,10 @@ const ValueRangeBox = ({ valueRange, colorAxis, isPortrait }) => {
                 {isGradient ? null : colors.map((color, index) => (
                     <Box key={index} style={{ ...discreteBoxStyle, backgroundColor: color.color || color }} />
                 ))}
-                <span style={{ ...labelStyle, left: calculatePosition(valueRange.min) }}>min: {valueRange.min}</span>
-                <span style={{ ...labelStyle, left: calculatePosition(valueRange.max) }}>max: {valueRange.max}</span>
-                <div style={{ ...triangleStyle, left: calculatePosition(valueRange.min) }}></div>
-                <div style={{ ...triangleStyle, left: calculatePosition(valueRange.max) }}></div>
+                <span style={{ ...labelStyle, ...topLabelStyle, left: calculatePosition(valueRange.min) }}>min: {valueRange.min}</span>
+                <span style={{ ...labelStyle, ...bottomLabelStyle, left: calculatePosition(valueRange.max) }}>max: {valueRange.max}</span>
+                <div style={{ ...triangleStyle, ...topTriangleStyle, left: calculatePosition(valueRange.min) }}></div>
+                <div style={{ ...triangleStyle, ...bottomTriangleStyle, left: calculatePosition(valueRange.max) }}></div>
             </Box>
         </Box>
     );
