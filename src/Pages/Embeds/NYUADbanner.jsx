@@ -12,7 +12,7 @@ import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import ThemePreferences from '../../Themes/ThemePreferences';
 
 const NYUADbanner = (props) => {
-  const { themePreference, setThemePreference } = useContext(PreferenceContext);
+  const { themePreference } = useContext(PreferenceContext);
 
   const {
     initialNyuadCurrentData = null,
@@ -21,19 +21,6 @@ const NYUADbanner = (props) => {
   } = props;
 
   const theme = useTheme();
-
-  // Update the themePreference to dark for isOnBannerPage
-  // when the component is mounted and reset it when the component is unmounted
-  useEffect(() => {
-    if (isOnBannerPage) {
-      const previousTheme = themePreference;
-      setThemePreference(ThemePreferences.dark);
-
-      return () => {
-        setThemePreference(previousTheme);
-      };
-    }
-  }, [isOnBannerPage, setThemePreference, themePreference]);
 
   const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
 
@@ -92,7 +79,7 @@ const NYUADbanner = (props) => {
 
 
   return (
-    <Grid container overflow="hidden" flex={1} maxWidth="lg" margin="auto">
+    <Grid container overflow="hidden" flex={1} maxWidth="lg" margin="auto" backgroundColor="customAlternateBackground">
       <Grid item xs={12} sm={6}>
         <Box
           height="100%"

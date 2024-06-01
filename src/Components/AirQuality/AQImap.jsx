@@ -111,7 +111,6 @@ const aqiMarkerIconClass = 'aqi-marker-icons';
 
 const AQImap = (props) => {
     const { themePreference, temperatureUnitPreference } = useContext(PreferenceContext);
-
     const {
         tileOption,
         placeholderText,
@@ -144,8 +143,7 @@ const AQImap = (props) => {
     const theme = useTheme();
     const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const nyuadMapUrl = '/images/nyuadMapLight.svg'; // Set the path to your image here
-    const nyuadMapBounds = [[24.521723816185933, 54.4313558149772], [24.526096645999797, 54.43779988466673]];
+    const nyuadMapBounds = [[24.521723, 54.43135], [24.52609, 54.43779]];
 
     useEffect(() => {
         if (!Array.isArray(rawMapData) || rawMapData.length === 0) return;

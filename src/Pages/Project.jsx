@@ -272,23 +272,21 @@ const Project = () => {
       <AirQualityIndexLegendQuickGlance />
 
       <FullWidthBox backgroundColor='customAlternateBackground'>
-        <Container sx={{ pt: 5 }}>
+        <Container sx={{ pt: 5, pb: 2 }}>
           <UppercaseTitle text={getDashboardTitle()} />
           <GridOfMetadataChips />
-        </Container>
-      </FullWidthBox>
-      {displayMapOfSensors === true &&
-        (
-          <NYUADbanner
-            initialNyuadCurrentData={current}
-            isOnBannerPage={false}
-            themePreference={themePreference}
-            minMapHeight={"250px"}
-          />
-        )
-      }
-      <FullWidthBox backgroundColor='customAlternateBackground'>
-        <Container sx={{ pt: 3, pb: 3 }}>
+
+          {displayMapOfSensors === true &&
+            (
+              <NYUADbanner
+                initialNyuadCurrentData={current}
+                isOnBannerPage={false}
+                themePreference={themePreference}
+                minMapHeight={"250px"}
+              />
+            )
+          }
+
           {displayMapOfSensors === false &&
             (<Box textAlign="center" sx={{ mb: 2 }}>
               <CurrentAQIGrid
