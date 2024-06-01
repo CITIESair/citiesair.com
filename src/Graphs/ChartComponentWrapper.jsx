@@ -138,9 +138,6 @@ function ChartComponentWrapper(props) {
   // Filter & Calendar charts are not automatically respnsive, so we have to redraw them.
   // redraw other charts when device orientation changes
   useEffect(() => {
-    setPreviousTab(currentTab);
-    setCurrentTab(0); // set tab back to 0 if chartData changes (changed school)
-
     let timeoutID = null;
 
     const handleWindowResize = () => {
@@ -166,6 +163,12 @@ function ChartComponentWrapper(props) {
       window.removeEventListener('resize', handleWindowResize);
     };
   }, [chartData]);
+
+  // set tab back to 0 if school is changed
+  useEffect(() => {
+    setPreviousTab(currentTab);
+    setCurrentTab(0);
+  }, [currentSchoolID])
 
   if (chartData.chartType !== 'Calendar' && !chartHeight) {
     chartHeight = isPortrait ? '80vw' : '35vw';

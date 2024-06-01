@@ -64,42 +64,63 @@ const getAqiColorAxis = ({ isDark }) => {
   )
 }
 
+const getCO2ColorAxis = ({ isDark }) => {
+  const shade = isDark ? darkShade : lightShade;
+  return (
+    {
+      minValue: 400,
+      maxValue: 1500,
+      isGradient: true,
+      colors: [
+        { color: colors.green[shade], stop: 400 },
+        { color: colors.yellow[shade], stop: 700 },
+        { color: colors.orange[shade - 100], stop: 1000 },
+        { color: colors.red[shade], stop: 1500 }
+      ]
+    }
+  )
+}
+
 const getHumidityColorAxis = ({ isDark }) => {
+  const shade = isDark ? darkShade : lightShade;
+
   return {
     minValue: 0,
     maxValue: 100,
     isGradient: true,
     colors: [
-      colors.grey[isDark ? 900 : 200],
+      colors.grey[shade],
       colors.blue[isDark ? darkShade + 100 : lightShade + 100]
     ]
   }
 }
 
 const getTemperatureColorAxis = ({ isDark }) => {
+  const shade = isDark ? darkShade : lightShade;
+
   return {
     minValue: 0,
     maxValue: 50,
     isGradient: true,
     colors: [
       {
-        color: colors.lightBlue[isDark ? darkShade : lightShade],
+        color: colors.lightBlue[shade],
         stop: 10
       },
       {
-        color: colors.green[isDark ? darkShade : lightShade],
+        color: colors.green[shade],
         stop: 20
       },
       {
-        color: colors.yellow[isDark ? darkShade : lightShade],
+        color: colors.yellow[shade],
         stop: 30
       },
       {
-        color: colors.red[isDark ? darkShade : lightShade],
+        color: colors.red[shade],
         stop: 40
       },
       {
-        color: maroon[isDark ? darkShade : lightShade],
+        color: maroon[shade],
         stop: 50
       }
     ]
@@ -107,21 +128,23 @@ const getTemperatureColorAxis = ({ isDark }) => {
 }
 
 const getPressureColorAxis = ({ isDark }) => {
+  const shade = isDark ? darkShade : lightShade;
+
   return {
     minValue: 980,
     maxValue: 1040,
     isGradient: true,
     colors: [
       {
-        color: colors.lightBlue[isDark ? darkShade : lightShade],
+        color: colors.lightBlue[shade],
         stop: 980
       },
       {
-        color: colors.grey[isDark ? darkShade : lightShade],
+        color: colors.grey[shade],
         stop: 1013
       },
       {
-        color: colors.red[isDark ? darkShade : lightShade],
+        color: colors.red[shade],
         stop: 1040
       }
     ]
@@ -129,22 +152,39 @@ const getPressureColorAxis = ({ isDark }) => {
 }
 
 const getVocColorAxis = ({ isDark }) => {
+  const shade = isDark ? darkShade : lightShade;
   return {
     minValue: 0,
-    maxValue: 200,
+    maxValue: 400,
     isGradient: true,
     colors: [
       {
-        color: colors.green[isDark ? darkShade : lightShade],
+        color: colors.green[shade],
         stop: 0
       },
       {
-        color: colors.yellow[isDark ? darkShade : lightShade],
+        color: colors.lime[shade],
+        stop: 50
+      },
+      {
+        color: colors.yellow[shade],
         stop: 100
       },
       {
-        color: colors.red[isDark ? darkShade : lightShade],
+        color: colors.orange[shade],
+        stop: 150
+      },
+      {
+        color: colors.red[shade],
         stop: 200
+      },
+      {
+        color: colors.purple[shade],
+        stop: 250
+      },
+      {
+        color: maroon[shade],
+        stop: 350
       }
     ]
   }
@@ -184,6 +224,7 @@ const CustomThemes = {
           pressure: getPressureColorAxis({ isDark: true }),
           humidity: getHumidityColorAxis({ isDark: true }),
           temperature: getTemperatureColorAxis({ isDark: true }),
+          co2: getCO2ColorAxis({ isDark: true }),
           aqi: getAqiColorAxis({ isDark: true }),
 
         },
@@ -229,6 +270,7 @@ const CustomThemes = {
           pressure: getPressureColorAxis({ isDark: false }),
           humidity: getHumidityColorAxis({ isDark: false }),
           temperature: getTemperatureColorAxis({ isDark: false }),
+          co2: getCO2ColorAxis({ isDark: false }),
           aqi: getAqiColorAxis({ isDark: false }),
         },
         axisTitle: colors.grey[lightShade + 100],
