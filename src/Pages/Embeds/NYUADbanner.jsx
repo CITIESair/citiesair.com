@@ -111,7 +111,7 @@ const NYUADbanner = (props) => {
             fullSizeMap={true}
             showAttribution={false}
             rawMapData={nyuadCurrentData}
-            markerSizeInRem={isWidget ? 0.7 : 0.85}
+            markerSizeInRem={isSmallScreen ? 0.75 : 0.9}
           />
 
         </Box>
@@ -122,7 +122,8 @@ const NYUADbanner = (props) => {
         item
         xs={12} sm={6}
         justifyContent="space-around"
-      // backgroundColor="customAlternateBackground"
+        my={isSmallScreen ? 0 : 1}
+        px={1}
       >
         <Grid
           container
@@ -153,13 +154,14 @@ const NYUADbanner = (props) => {
             />
           </Grid>
 
-          <Grid item xs={12} mb={1}>
-            <SimpleCurrentAQIlist
-              currentSensorsData={otherIndoorLocations}
-              useLocationShort={isSmallScreen}
-              smallFont={isOnBannerPage}
-            />
-          </Grid>
+          {(isOnBannerPage === true && isSmallScreen === true) ? null :
+            <Grid item xs={12} mb={1}>
+              <SimpleCurrentAQIlist
+                currentSensorsData={otherIndoorLocations}
+                useLocationShort={true}
+                smallFont={isOnBannerPage}
+              />
+            </Grid>}
         </Grid>
 
         <Grid container item xs={1.5} sm={12} textAlign="left" my={isSmallScreen ? 2 : 1}>

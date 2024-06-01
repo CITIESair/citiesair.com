@@ -70,6 +70,7 @@ const getTileUrl = ({ tileOption, themePreference, isMiniMap }) => {
             if (tileOption === TileOptions.nyuad) svgUrl = Tiles.nyuad.light;
             break
     }
+
     if (tileOption === TileOptions.nyuad) return svgUrl;
     else return `https://{s}.tile.jawg.io/${Tiles[tileOption][tileTheme]}/{z}/{x}/{y}{r}.png?access-token={accessToken}`;
 }
@@ -222,7 +223,7 @@ const AQImap = (props) => {
     }
 
     const MinimapControl = ({ position, zoom, mapData }) => {
-        const parentMap = useMap()
+        const parentMap = useMap();
         const mapZoom = zoom || minZoom - 2;
 
         // Memoize the minimap so it's not affected by position changes
@@ -238,11 +239,7 @@ const AQImap = (props) => {
                     attributionControl={false}
                 >
                     <TileLayer
-                        attribution={tileAttribution}
-                        url={getTileUrl({ tileOption, themePreference })}
-                        minZoom={minZoom}
-                        maxZoom={maxZoom}
-                        bounds={maxBounds}
+                        url={getTileUrl({ tileOption, themePreference, isMiniMap: true })}
                         accessToken={tileAccessToken}
                     />
                     {
