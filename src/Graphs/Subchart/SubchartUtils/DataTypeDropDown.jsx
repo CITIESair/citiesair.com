@@ -12,7 +12,7 @@ const DataTypeDropDownMenu = ({ selectedDataType, dataTypes, fetchChartDataType 
   if (dataTypes.length <= 1) {
     return (
       <Typography display="inline" variant="h6" color="text.primary">
-        {dataTypes[0]}
+        {dataTypes[0].name_short}
       </Typography>
     )
   }
@@ -69,9 +69,9 @@ const DataTypeDropDownMenu = ({ selectedDataType, dataTypes, fetchChartDataType 
           <MenuItem
             key={index}
             sx={{ fontSize: '0.8rem' }}
-            onClick={() => handleMenuItemClick(dataType)}
+            onClick={() => handleMenuItemClick(dataType.key)}
           >
-            {dataType}
+            {dataType.name_short}
           </MenuItem>
         ))}
 
