@@ -12,7 +12,7 @@ const DataTypeDropDownMenu = ({ selectedDataType, dataTypes, fetchChartDataType 
   if (dataTypes.length <= 1) {
     return (
       <Typography display="inline" variant="h6" color="text.primary">
-        {dataTypes[0].name_short}
+        {dataTypes[0].name_title}
       </Typography>
     )
   }
@@ -51,7 +51,7 @@ const DataTypeDropDownMenu = ({ selectedDataType, dataTypes, fetchChartDataType 
         }}
       >
         <Typography display="inline" variant="h6" borderBottom="dotted">
-          {selectedDataType}
+          {dataTypes.filter(dataType => dataType.key === selectedDataType).map(dataType => dataType.name_title)}
         </Typography>
         <ArrowDropDownIcon />
       </Button>
@@ -71,7 +71,7 @@ const DataTypeDropDownMenu = ({ selectedDataType, dataTypes, fetchChartDataType 
             sx={{ fontSize: '0.8rem' }}
             onClick={() => handleMenuItemClick(dataType.key)}
           >
-            {dataType.name_short}
+            {dataType.name_title}
           </MenuItem>
         ))}
 
