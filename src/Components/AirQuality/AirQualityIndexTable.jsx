@@ -28,59 +28,6 @@ function AirQualityIndexTable(props) {
 
   const { isTiny, hideAQIDescription } = props;
 
-  const renderAQIchart = ({ shouldRender }) => {
-    let aqiChart = null;
-    let ticks = [];
-    const maxValToRender = 400;
-
-    if (shouldRender) {
-      const dataArray = [['category'], ['US AQI']];
-      for (let i = 0; i < AQIdatabase.length; i += 1) {
-        dataArray[0].push(AQIdatabase[i].category);
-        let high = AQIdatabase[i].aqiUS.high;
-        let low = AQIdatabase[i].aqiUS.low;
-
-        if (high === Infinity) high = maxValToRender;
-
-        dataArray[1].push(
-          Math.ceil((high - AQIdatabase[i].aqiUS.low) / 50) * 50
-        );
-
-        if (high === maxValToRender) low = { v: low, f: `${low}+` }
-        ticks.push(low);
-      }
-
-      aqiChart = (
-        <ChartComponentWrapper
-          chartHeight="4rem"
-          chartData={
-            {
-              dataArray,
-              chartType: 'BarChart',
-              options: {
-                enableInteractivity: false,
-                legend: { position: 'none' },
-                hAxis: {
-                  ticks: ticks
-                },
-                chartArea:
-                {
-                  width: { portrait: '98%', landscape: '50%' },
-                  height: { portrait: '20%', landscape: '30%' }
-                },
-                isStacked: true,
-                colors: 'aqi',
-                bar: { groupWidth: '100%' }
-              }
-            }
-          }
-        />
-      );
-    }
-
-    return aqiChart;
-  };
-
   const returnFormattedBreakpoints = (low, high) => {
     if (high === Infinity) return `${low}+`;
     else return `${low} - ${high}`;
@@ -143,7 +90,6 @@ function AirQualityIndexTable(props) {
           </TableBody>
         </StyledTable>
       </Box>
-      {renderAQIchart({ shouldRender: !hideAQIDescription })}
     </>
   );
 }

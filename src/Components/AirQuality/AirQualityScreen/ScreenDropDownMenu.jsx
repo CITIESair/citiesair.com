@@ -10,6 +10,8 @@ import { DashboardContext } from "../../../ContextProviders/DashboardContext";
 import { isValidArray } from "../../../Utils/Utils";
 
 const ScreenDropDownMenu = () => {
+  const [anchorEl, setAnchorEl] = useState(null);
+
   const { currentSchoolID, schoolMetadata } = useContext(DashboardContext);
 
   if (!schoolMetadata) return;
@@ -30,7 +32,6 @@ const ScreenDropDownMenu = () => {
     )
   }
   // If there are more than 1 screens to choose from, display a popup dropdown menu
-  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
