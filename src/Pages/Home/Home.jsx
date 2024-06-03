@@ -158,13 +158,14 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
           tileOption={TileOptions.default}
           themePreference={themePreference}
           temperatureUnitPreference={temperatureUnitPreference}
-          placeholderText={"Map of CITIESair public outdoor air quality stations in Abu Dhabi."}
           centerCoordinates={[24.46, 54.52]}
           maxBounds={[
             [22.608292, 51.105185],
             [26.407575, 56.456571],
           ]}
           rawMapData={rawMapData}
+          ariaLabel={"Map of CITIESair public outdoor air quality stations in Abu Dhabi"}
+
         />
 
       </FullWidthBox>

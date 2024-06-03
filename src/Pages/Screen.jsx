@@ -19,7 +19,7 @@ import CustomThemes from '../Themes/CustomThemes';
 
 import QRCode from "react-qr-code";
 
-import CurrentAQIGrid from '../Components/AirQuality/CurrentAQIGrid';
+import CurrentAQIGrid, { CurrentAQIGridSize } from '../Components/AirQuality/CurrentAQIGrid';
 import { GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../Utils/ApiUtils';
 import { UniqueRoutes } from '../Utils/RoutesUtils';
 import { PreferenceContext } from '../ContextProviders/PreferenceContext';
@@ -212,7 +212,12 @@ const Screen = ({ title }) => {
             container
             justifyContent="space-around"
           >
-            <CurrentAQIGrid currentSensorsData={data} temperatureUnitPreference={temperatureUnitPreference} />
+            <CurrentAQIGrid
+              currentSensorsData={data}
+              temperatureUnitPreference={temperatureUnitPreference}
+              isScreen={true}
+              size={CurrentAQIGridSize.large}
+            />
           </Grid>
 
           <List className='condensedFont'
