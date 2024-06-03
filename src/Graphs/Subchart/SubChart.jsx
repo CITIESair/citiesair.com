@@ -15,6 +15,7 @@ import GoogleChartStyleWrapper from './SubchartUtils/GoogleChartStyleWrapper';
 import LoadingAnimation from '../../Components/LoadingAnimation';
 
 import { CalendarChart, getCalendarChartMargin, yearSpacing } from './NivoCharts/NivoCalendarChart'
+import { generateSvgFillGradient, BackgroundGradient } from '../../Utils/Gradient/GradientUtils';
 
 import CustomDateRangePicker from '../../Components/DateRangePicker/CustomDateRangePicker'
 import { isValidArray } from '../../Utils/Utils';
@@ -570,6 +571,14 @@ export default function SubChart(props) {
     else return <Box id={chartID} sx={{ height: height, maxHeight: maxHeight }} />;
   }
 
+  const gradientBackground = options.backgroundColor?.fill !== "aqi";
+  const gradientBackgroundId = `${chartID}-backgroundGradient`;
+  const svgFillGradient = generateSvgFillGradient({
+    gradient: theme.palette.chart.colorAxes.aqi.colors,
+    realMinValue: options.vAxis?.viewWindow?.min || theme.palette.chart.colorAxes.aqi.minValue,
+    realMaxValue: options.vAxis?.viewWindow?.max || theme.palette.chart.colorAxes.aqi.maxValue
+  });
+
   const onChartReady = () => {
     if (!isFirstRender) return;
     // Hide the circleProgress when chart finishes rendering the first time
@@ -624,6 +633,7 @@ export default function SubChart(props) {
     shouldRenderChart ?
       <GoogleChartStyleWrapper
         isPortrait={isPortrait}
+        gradientBackgroundId={gradientBackgroundId}
         className={className}
         position="relative"
         height="100%"
@@ -635,11 +645,9 @@ export default function SubChart(props) {
             <LoadingAnimation />
           </Box>
         )}
-
         {showAuxiliaryControls()}
-
-        {/* Display chart here */}
         {renderChart()}
+        {gradientBackground ? <BackgroundGradient id={gradientBackgroundId} stops={svgFillGradient} /> : null}
       </GoogleChartStyleWrapper>
       : <NoChartToRender dataType={selectedDataType} />
   );

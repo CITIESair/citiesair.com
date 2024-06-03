@@ -21,7 +21,7 @@ export const GeneralEndpoints = {
 }
 
 export const ChartEndpoints = {
-  historical: "chart/historicalAQI",
+  historical: "chart/historicalAQI2",
   dailyAverageAllTime: "chart/dailyAverageAllTime",
   percentageByMonth: "chart/percentageByMonth",
   yearlyAverageByDoW: "chart/yearlyAverageByDoW",

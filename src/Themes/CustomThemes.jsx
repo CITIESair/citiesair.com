@@ -48,17 +48,20 @@ const getAqiColorAxis = ({ isDark }) => {
   return (
     {
       minValue: 0,
-      maxValue: 400,
-      isGradient: false,
+      maxValue: 500,
       colors: [
-        colors.green[shade],
-        colors.yellow[shade],
-        colors.orange[shade - 100],
-        colors.red[shade],
-        colors.purple[shade],
-        colors.purple[shade],
-        maroon[shade],
-        maroon[shade]
+        { color: colors.green[shade], stop: 0 },
+        { color: colors.green[shade], stop: 50 },
+        { color: colors.yellow[shade], stop: 50 },
+        { color: colors.yellow[shade], stop: 100 },
+        { color: colors.orange[shade - 100], stop: 100 },
+        { color: colors.orange[shade - 100], stop: 150 },
+        { color: colors.red[shade], stop: 150 },
+        { color: colors.red[shade], stop: 200 },
+        { color: colors.purple[shade], stop: 200 },
+        { color: colors.purple[shade], stop: 300 },
+        { color: maroon[shade], stop: 300 },
+        { color: maroon[shade], stop: 500 },
       ]
     }
   )
@@ -70,7 +73,6 @@ const getCO2ColorAxis = ({ isDark }) => {
     {
       minValue: 400,
       maxValue: 1500,
-      isGradient: true,
       colors: [
         { color: colors.green[shade], stop: 400 },
         { color: colors.yellow[shade], stop: 700 },
@@ -87,7 +89,6 @@ const getHumidityColorAxis = ({ isDark }) => {
   return {
     minValue: 0,
     maxValue: 100,
-    isGradient: true,
     colors: [
       colors.grey[shade],
       colors.blue[isDark ? darkShade + 100 : lightShade + 100]
@@ -101,7 +102,6 @@ const getTemperatureColorAxis = ({ isDark }) => {
   return {
     minValue: 0,
     maxValue: 50,
-    isGradient: true,
     colors: [
       {
         color: colors.lightBlue[shade],
@@ -133,7 +133,6 @@ const getPressureColorAxis = ({ isDark }) => {
   return {
     minValue: 980,
     maxValue: 1040,
-    isGradient: true,
     colors: [
       {
         color: colors.lightBlue[shade],
@@ -156,7 +155,6 @@ const getVocColorAxis = ({ isDark }) => {
   return {
     minValue: 0,
     maxValue: 400,
-    isGradient: true,
     colors: [
       {
         color: colors.green[shade],
