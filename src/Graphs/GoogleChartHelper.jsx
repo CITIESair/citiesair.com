@@ -152,7 +152,7 @@ export const returnGenericOptions = (props) => {
     theme: 'material',
     curveType: options.curveType || chartData.options?.curveType || 'function',
     crosshair: { orientation: 'both', trigger: 'focus', opacity: 0.5 },
-    backgroundColor: { fill: options.backgroundColor?.fill || 'transparent' },
+    backgroundColor: { fill: chartData.options?.backgroundColor?.fill || 'transparent' },
     chartArea: {
       ...chartData.options?.chartArea,
       width: isPortrait ? (chartData.options?.chartArea?.width?.portrait || '80%') : (chartData.options?.chartArea?.width?.landscape || '75%'),

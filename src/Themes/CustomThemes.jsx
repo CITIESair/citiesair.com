@@ -1,26 +1,9 @@
 /* eslint-disable max-len */
 import { colors } from '@mui/material';
-
-const darkShade = 400;
-const lightShade = 600;
-const darkShadeColorAxis = 300;
-
-const maroon = {
-  50: '#f0e0e5',
-  100: '#d8b3bd',
-  200: '#bf8091',
-  300: '#a54d65',
-  400: '#912644',
-  500: '#7e0023',
-  600: '#76001f',
-  700: '#6b001a',
-  800: '#610015',
-  900: '#4e000c',
-  A100: '#ff8189',
-  A200: '#ff4e5a',
-  A400: '#ff1b2a',
-  A700: '#ff0212'
-};
+import ThemePreferences from './ThemePreferences';
+import { getAqiColorAxis } from '../Utils/AirQuality/AirQualityIndexHelper';
+import { darkShade, lightShade, maroon, darkShadeColorAxis } from './CustomColors';
+import AQIDataTypes from '../Utils/AirQuality/DataTypes';
 
 const getAQIPalette = ({ increasingOrder, isDark }) => {
   const shade = isDark ? darkShade : lightShade;
@@ -42,30 +25,6 @@ const getAQIPalette = ({ increasingOrder, isDark }) => {
 
   return array;
 };
-
-const getAqiColorAxis = ({ isDark }) => {
-  const shade = isDark ? darkShade : lightShade;
-  return (
-    {
-      minValue: 0,
-      maxValue: 500,
-      colors: [
-        { color: colors.green[shade], offset: 0 },
-        { color: colors.green[shade], offset: 50 },
-        { color: colors.yellow[shade], offset: 50 },
-        { color: colors.yellow[shade], offset: 100 },
-        { color: colors.orange[shade - 100], offset: 100 },
-        { color: colors.orange[shade - 100], offset: 150 },
-        { color: colors.red[shade], offset: 150 },
-        { color: colors.red[shade], offset: 200 },
-        { color: colors.purple[shade], offset: 200 },
-        { color: colors.purple[shade], offset: 300 },
-        { color: maroon[shade], offset: 300 },
-        { color: maroon[shade], offset: 500 },
-      ]
-    }
-  )
-}
 
 const getCO2ColorAxis = ({ isDark }) => {
   const shade = isDark ? darkShade : lightShade;
@@ -223,8 +182,10 @@ const CustomThemes = {
           humidity: getHumidityColorAxis({ isDark: true }),
           temperature: getTemperatureColorAxis({ isDark: true }),
           co2: getCO2ColorAxis({ isDark: true }),
-          aqi: getAqiColorAxis({ isDark: true }),
-
+          [AQIDataTypes.aqi.color_axis]: getAqiColorAxis({ themePreference: ThemePreferences.dark, dataType: AQIDataTypes.aqi.threshold_mapping_name }),
+          [AQIDataTypes['pm2.5'].color_axis]: getAqiColorAxis({ themePreference: ThemePreferences.dark, dataType: AQIDataTypes['pm2.5'].threshold_mapping_name }),
+          [AQIDataTypes.pm10_raw.color_axis]: getAqiColorAxis({ themePreference: ThemePreferences.dark, dataType: AQIDataTypes.pm10_raw.threshold_mapping_name }),
+          [AQIDataTypes.co2.color_axis]: getAqiColorAxis({ themePreference: ThemePreferences.dark, dataType: AQIDataTypes.co2.threshold_mapping_name })
         },
         axisTitle: colors.grey[darkShade - 100],
         axisText: colors.grey[darkShade],
@@ -269,7 +230,11 @@ const CustomThemes = {
           humidity: getHumidityColorAxis({ isDark: false }),
           temperature: getTemperatureColorAxis({ isDark: false }),
           co2: getCO2ColorAxis({ isDark: false }),
-          aqi: getAqiColorAxis({ isDark: false }),
+          [AQIDataTypes.aqi.color_axis]: getAqiColorAxis({ themePreference: ThemePreferences.light, dataType: AQIDataTypes.aqi.threshold_mapping_name }),
+          [AQIDataTypes['pm2.5'].color_axis]: getAqiColorAxis({ themePreference: ThemePreferences.light, dataType: AQIDataTypes['pm2.5'].threshold_mapping_name }),
+          [AQIDataTypes.pm10_raw.color_axis]: getAqiColorAxis({ themePreference: ThemePreferences.light, dataType: AQIDataTypes.pm10_raw.threshold_mapping_name }),
+          [AQIDataTypes.co2.color_axis]: getAqiColorAxis({ themePreference: ThemePreferences.light, dataType: AQIDataTypes.co2.threshold_mapping_name })
+
         },
         axisTitle: colors.grey[lightShade + 100],
         axisText: colors.grey[lightShade],
@@ -293,5 +258,7 @@ const CustomThemes = {
     }
   }
 };
+
+console.log(CustomThemes)
 
 export default CustomThemes;

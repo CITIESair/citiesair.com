@@ -127,7 +127,7 @@ export const processCurrentSensorsData = (data) => {
         if (sensorData.current.sensor_status === SensorStatus.active) {
           sensorData.current = {
             ...sensorData.current,
-            color: aqiCategory.lightThemeColor,
+            color: aqiCategory.color.Light,
             healthSuggestion: aqiCategory.healthSuggestions[sensorData.sensor?.location_type] && parse(aqiCategory.healthSuggestions[sensorData.sensor?.location_type])
           };
         }

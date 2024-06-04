@@ -206,7 +206,7 @@ const NYUADbanner = (props) => {
                     <small>{element.aqiUS.low === 301 ? '301+' : element.aqiUS.low}</small>
                   </Typography>
                   <Box
-                    backgroundColor={element.lightThemeColor}
+                    backgroundColor={element.color[themePreference]}
                     width={isSmallScreen ? "0.35rem" : "100%"}
                     height={isSmallScreen ? "100%" : "0.5rem"}
                   />

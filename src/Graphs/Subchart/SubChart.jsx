@@ -571,13 +571,18 @@ export default function SubChart(props) {
     else return <Box id={chartID} sx={{ height: height, maxHeight: maxHeight }} />;
   }
 
-  const gradientBackground = options.backgroundColor?.fill !== "aqi";
-  const gradientBackgroundId = `${chartID}-backgroundGradient`;
-  const svgFillGradient = generateSvgFillGradient({
-    colors: theme.palette.chart.colorAxes.aqi.colors,
-    optionalMinValue: options.vAxis?.viewWindow?.min,
-    optionalMaxValue: options.vAxis?.viewWindow?.max
-  });
+  // Generate the gradient background if it exists in options parameter
+  let gradientBackgroundColor = options.backgroundColor?.fill;
+  if (gradientBackgroundColor === "transparent") gradientBackgroundColor = null;
+  let gradientBackgroundId, svgFillGradient;
+  if (gradientBackgroundColor) {
+    gradientBackgroundId = `${chartID}-backgroundGradient`;
+    svgFillGradient = generateSvgFillGradient({
+      colors: theme.palette.chart.colorAxes[gradientBackgroundColor].colors,
+      optionalMinValue: options.vAxis?.viewWindow?.min,
+      optionalMaxValue: options.vAxis?.viewWindow?.max
+    });
+  }
 
   const onChartReady = () => {
     if (!isFirstRender) return;
@@ -647,7 +652,7 @@ export default function SubChart(props) {
         )}
         {showAuxiliaryControls()}
         {renderChart()}
-        {gradientBackground ? <BackgroundGradient id={gradientBackgroundId} colors={svgFillGradient} /> : null}
+        {gradientBackgroundColor ? <BackgroundGradient id={gradientBackgroundId} colors={svgFillGradient} /> : null}
       </GoogleChartStyleWrapper>
       : <NoChartToRender dataType={selectedDataType} />
   );

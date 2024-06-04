@@ -113,7 +113,7 @@ const RecentHistoricalGraph = (props) => {
         .attr("y", height - (category.aqiUS.high / maxAQItoDisplay) * height + margin.top)
         .attr("width", width)
         .attr("height", aqiRange / maxAQItoDisplay * height)
-        .attr("fill", category.lightThemeColor);
+        .attr("fill", category.color.Light);
 
       // Add the AQI categories numbers
       d3.select(layerTexts.current)
@@ -125,7 +125,7 @@ const RecentHistoricalGraph = (props) => {
           (category.aqiUS.low / maxAQItoDisplay) * height -
           3.5 * marginText + margin.top
         )
-        .attr("fill", category.lightThemeColor)
+        .attr("fill", category.color.Light)
         .attr("font-size", font_size)
         .text(Math.floor(category.aqiUS.low / 50) * 50);
 
@@ -137,7 +137,7 @@ const RecentHistoricalGraph = (props) => {
           "y",
           height - (category.aqiUS.low / maxAQItoDisplay) * height - marginText + margin.top
         )
-        .attr("fill", category.lightThemeColor)
+        .attr("fill", category.color.Light)
         .attr("font-size", font_size / 2)
         .text(category.category);
     };
@@ -204,7 +204,7 @@ const RecentHistoricalGraph = (props) => {
           )
           .attr("fill",
             sensorData.current?.sensor_status === SensorStatus.active
-              ? aqiObject.lightThemeColor
+              ? aqiObject.color.Light
               : CustomThemes.universal.palette.inactiveSensor)
           ;
 
