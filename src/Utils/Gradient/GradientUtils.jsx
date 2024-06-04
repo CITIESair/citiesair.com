@@ -1,7 +1,51 @@
+import { isValidArray } from "../Utils";
+
+const normalizeColorStopOffsets = ({ offsets, minOffset, maxOffset }) => {
+  return offsets.map(offset => (offset - minOffset) / (maxOffset - minOffset));
+}
+
+const normalizeColorStops = ({ colors, optionalMinValue, optionalMaxValue }) => {
+  if (!isValidArray(colors)) return [
+    { color: "#fff", offset: 0 },
+    { color: "#fff", offset: 1 }
+  ];
+
+  // No offsets provided, generate equally spaced offsets
+  if (typeof colors[0] === 'string') {
+    const totalColors = colors.length;
+    return colors.map((color, index) => ({
+      color: color,
+      offset: index / (totalColors - 1)
+    }));
+  }
+  // Offsets are provided, normalize them
+  else {
+    let clampedStops;
+    if (optionalMinValue) {
+      clampedStops = colors.filter(colorStop => colorStop.offset >= optionalMinValue);
+    }
+    if (optionalMaxValue) {
+      clampedStops = colors.filter(colorStop => colorStop.offset <= optionalMaxValue)
+    }
+    else clampedStops = colors;
+
+    const offsets = clampedStops.map(colorStop => colorStop.offset);
+
+    const minOffset = optionalMinValue || Math.min(...offsets);
+    const maxOffset = optionalMaxValue || Math.max(...offsets);
+
+    const normalizedOffsets = normalizeColorStopOffsets({ offsets, minOffset, maxOffset });
+
+    return clampedStops.map((colorStop, index) => ({
+      color: colorStop.color,
+      offset: normalizedOffsets[index]
+    }));
+  }
+}
 
 // Function to return an array of STEPS discrete colors in a gradient from an array of starting colors
 // Used for NivoCalendarChart
-export const generateDiscreteColorGradientArray = (colors, numSteps) => {
+export const generateDiscreteColorGradientArray = ({ colors, numSteps }) => {
   function hexToRgb(hex) {
     const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
     hex = hex.replace(shorthandRegex, function (m, r, g, b) {
@@ -28,50 +72,30 @@ export const generateDiscreteColorGradientArray = (colors, numSteps) => {
     return result;
   }
 
-  function normalizeStops(stops) {
-    const minStop = Math.min(...stops);
-    const maxStop = Math.max(...stops);
-    return stops.map(stop => (stop - minStop) / (maxStop - minStop));
-  }
-
-  let colorStops;
-  if (typeof colors[0] === 'string') {
-    // No stops provided, generate equally spaced stops
-    const totalColors = colors.length;
-    colorStops = colors.map((color, index) => ({
-      color: hexToRgb(color),
-      stop: index / (totalColors - 1)
-    }));
-  } else {
-    // Stops are provided, normalize them
-    let stops = colors.map(cs => cs.stop);
-    stops = normalizeStops(stops);
-
-    colorStops = colors.map((cs, index) => ({
-      color: hexToRgb(cs.color),
-      stop: stops[index]
-    }));
-  }
+  const normalizedColors = normalizeColorStops({ colors });
+  normalizedColors.forEach((colorStop) => {
+    colorStop.color = hexToRgb(colorStop.color)
+  });
 
   let colorArray = [];
-  let stepPositions = Array.from({ length: numSteps }, (_, i) => i / (numSteps - 1));
+  const stepPositions = Array.from({ length: numSteps }, (_, i) => i / (numSteps - 1));
 
   for (let i = 0; i < stepPositions.length; i++) {
-    let pos = stepPositions[i];
-    let color1, color2, stop1, stop2;
+    const pos = stepPositions[i];
+    let color1, color2, offset1, offset2;
 
-    for (let j = 0; j < colorStops.length - 1; j++) {
-      if (pos >= colorStops[j].stop && pos <= colorStops[j + 1].stop) {
-        color1 = colorStops[j].color;
-        color2 = colorStops[j + 1].color;
-        stop1 = colorStops[j].stop;
-        stop2 = colorStops[j + 1].stop;
+    for (let j = 0; j < normalizedColors.length - 1; j++) {
+      if (pos >= normalizedColors[j].offset && pos <= normalizedColors[j + 1].offset) {
+        color1 = normalizedColors[j].color;
+        color2 = normalizedColors[j + 1].color;
+        offset1 = normalizedColors[j].offset;
+        offset2 = normalizedColors[j + 1].offset;
         break;
       }
     }
 
-    let localFactor = (pos - stop1) / (stop2 - stop1);
-    let interpolatedColor = interpolateColor(color1, color2, localFactor);
+    const localFactor = (pos - offset1) / (offset2 - offset1);
+    const interpolatedColor = interpolateColor(color1, color2, localFactor);
     colorArray.push(rgbToHex(...interpolatedColor));
   }
 
@@ -79,47 +103,27 @@ export const generateDiscreteColorGradientArray = (colors, numSteps) => {
 };
 
 // Function to return CSS background from an array of colors (with or without offsets)
-export const generateCssBackgroundGradient = (colors) => {
-  if (typeof colors[0] === 'string') {
-    // No stops provided, generate equally spaced stops
-    return `linear-gradient(to right, ${colors.map((color, index, array) => {
-      const position = (index / (array.length - 1)) * 100;
-      return `${color} ${position}%`;
-    }).join(', ')})`;
-  } else {
-    // Normalize the stops
-    const stops = colors.map(cs => cs.stop);
-    const minStop = Math.min(...stops);
-    const maxStop = Math.max(...stops);
-    const normalizedColors = colors.map(cs => ({
-      color: cs.color,
-      stop: ((cs.stop - minStop) / (maxStop - minStop)) * 100
-    }));
-    return `linear-gradient(to right, ${normalizedColors.map(cs => `${cs.color} ${cs.stop}%`).join(', ')})`;
-  }
+export const generateCssBackgroundGradient = ({ gradientDirection, colors }) => {
+  const normalizedColors = normalizeColorStops({ colors });
+
+  return `linear-gradient(${gradientDirection}, ${normalizedColors.map(colorStop => `${colorStop.color} ${colorStop.offset * 100}%`).join(', ')})`;
 }
 
-export const generateSvgFillGradient = ({ gradient, realMinValue, realMaxValue }) => {
-  // Filter out stops that are outside the range
-  const clampedStops = gradient.filter(stop => stop.stop >= realMinValue && stop.stop <= realMaxValue);
-
-  // Normalize the stop positions
-  const range = realMaxValue - realMinValue;
-  const normalizedStops = clampedStops.map(stop => ({
-    ...stop,
-    stop: ((stop.stop - realMinValue) / range) * 100 + '%'
+export const generateSvgFillGradient = ({ colors, optionalMinValue, optionalMaxValue }) => {
+  const normalizedColors = normalizeColorStops({ colors, optionalMinValue, optionalMaxValue });
+  return normalizedColors.map(colorStop => ({
+    color: colorStop.color,
+    offset: colorStop.offset * 100 + '%'
   }));
-
-  return normalizedStops;
 };
 
 // Gradient for background of the Google Charts
-export const BackgroundGradient = ({ id, stops: colors }) => (
+export const BackgroundGradient = ({ id, colors }) => (
   <svg width={0} height={0} visibility="hidden">
     <defs>
       <linearGradient id={id} x1="0" y1="1" x2="0" y2="0">
-        {colors.map((color, index) => (
-          <stop key={index} offset={color.stop} stopColor={color.color} />
+        {colors.map((colorStop, index) => (
+          <stop key={index} offset={colorStop.offset} stopColor={colorStop.color} />
         ))}
       </linearGradient>
     </defs>

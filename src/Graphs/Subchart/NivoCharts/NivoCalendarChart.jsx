@@ -49,7 +49,10 @@ export const CalendarChart = (props) => {
         return isFirstTwoDaysOfWeek && isInFirstYear;
     };
 
-    const colors = generateDiscreteColorGradientArray(options?.colorAxis?.colors, 20);
+    const colors = generateDiscreteColorGradientArray({
+        colors: options?.colorAxis?.colors,
+        numSteps: 20
+    });
 
     const showLegend = () => {
         return (
@@ -202,7 +205,7 @@ const ValueRangeBox = ({ valueRange, colorAxis, isPortrait }) => {
             right: (isPortrait ? '0' : '5%')
         }}>
             <Box sx={{
-                background: generateCssBackgroundGradient(colors),
+                background: generateCssBackgroundGradient({ gradientDirection: 'to right', colors: colors }),
                 color: theme.palette.text.secondary,
                 border: `1px solid ${theme.palette.text.secondary}`,
                 width: '300px',

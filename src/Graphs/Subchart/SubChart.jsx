@@ -574,9 +574,9 @@ export default function SubChart(props) {
   const gradientBackground = options.backgroundColor?.fill !== "aqi";
   const gradientBackgroundId = `${chartID}-backgroundGradient`;
   const svgFillGradient = generateSvgFillGradient({
-    gradient: theme.palette.chart.colorAxes.aqi.colors,
-    realMinValue: options.vAxis?.viewWindow?.min || theme.palette.chart.colorAxes.aqi.minValue,
-    realMaxValue: options.vAxis?.viewWindow?.max || theme.palette.chart.colorAxes.aqi.maxValue
+    colors: theme.palette.chart.colorAxes.aqi.colors,
+    optionalMinValue: options.vAxis?.viewWindow?.min,
+    optionalMaxValue: options.vAxis?.viewWindow?.max
   });
 
   const onChartReady = () => {
@@ -647,7 +647,7 @@ export default function SubChart(props) {
         )}
         {showAuxiliaryControls()}
         {renderChart()}
-        {gradientBackground ? <BackgroundGradient id={gradientBackgroundId} stops={svgFillGradient} /> : null}
+        {gradientBackground ? <BackgroundGradient id={gradientBackgroundId} colors={svgFillGradient} /> : null}
       </GoogleChartStyleWrapper>
       : <NoChartToRender dataType={selectedDataType} />
   );

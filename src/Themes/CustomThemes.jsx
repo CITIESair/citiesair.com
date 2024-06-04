@@ -50,18 +50,18 @@ const getAqiColorAxis = ({ isDark }) => {
       minValue: 0,
       maxValue: 500,
       colors: [
-        { color: colors.green[shade], stop: 0 },
-        { color: colors.green[shade], stop: 50 },
-        { color: colors.yellow[shade], stop: 50 },
-        { color: colors.yellow[shade], stop: 100 },
-        { color: colors.orange[shade - 100], stop: 100 },
-        { color: colors.orange[shade - 100], stop: 150 },
-        { color: colors.red[shade], stop: 150 },
-        { color: colors.red[shade], stop: 200 },
-        { color: colors.purple[shade], stop: 200 },
-        { color: colors.purple[shade], stop: 300 },
-        { color: maroon[shade], stop: 300 },
-        { color: maroon[shade], stop: 500 },
+        { color: colors.green[shade], offset: 0 },
+        { color: colors.green[shade], offset: 50 },
+        { color: colors.yellow[shade], offset: 50 },
+        { color: colors.yellow[shade], offset: 100 },
+        { color: colors.orange[shade - 100], offset: 100 },
+        { color: colors.orange[shade - 100], offset: 150 },
+        { color: colors.red[shade], offset: 150 },
+        { color: colors.red[shade], offset: 200 },
+        { color: colors.purple[shade], offset: 200 },
+        { color: colors.purple[shade], offset: 300 },
+        { color: maroon[shade], offset: 300 },
+        { color: maroon[shade], offset: 500 },
       ]
     }
   )
@@ -74,10 +74,10 @@ const getCO2ColorAxis = ({ isDark }) => {
       minValue: 400,
       maxValue: 1500,
       colors: [
-        { color: colors.green[shade], stop: 400 },
-        { color: colors.yellow[shade], stop: 700 },
-        { color: colors.orange[shade - 100], stop: 1000 },
-        { color: colors.red[shade], stop: 1500 }
+        { color: colors.green[shade], offset: 400 },
+        { color: colors.yellow[shade], offset: 700 },
+        { color: colors.orange[shade - 100], offset: 1000 },
+        { color: colors.red[shade], offset: 1500 }
       ]
     }
   )
@@ -105,23 +105,23 @@ const getTemperatureColorAxis = ({ isDark }) => {
     colors: [
       {
         color: colors.lightBlue[shade],
-        stop: 10
+        offset: 10
       },
       {
         color: colors.green[shade],
-        stop: 20
+        offset: 20
       },
       {
         color: colors.yellow[shade],
-        stop: 30
+        offset: 30
       },
       {
         color: colors.red[shade],
-        stop: 40
+        offset: 40
       },
       {
         color: maroon[shade],
-        stop: 50
+        offset: 50
       }
     ]
   }
@@ -136,15 +136,15 @@ const getPressureColorAxis = ({ isDark }) => {
     colors: [
       {
         color: colors.lightBlue[shade],
-        stop: 980
+        offset: 980
       },
       {
         color: colors.grey[shade],
-        stop: 1013
+        offset: 1013
       },
       {
         color: colors.red[shade],
-        stop: 1040
+        offset: 1040
       }
     ]
   }
@@ -158,31 +158,31 @@ const getVocColorAxis = ({ isDark }) => {
     colors: [
       {
         color: colors.green[shade],
-        stop: 0
+        offset: 0
       },
       {
         color: colors.lime[shade],
-        stop: 50
+        offset: 50
       },
       {
         color: colors.yellow[shade],
-        stop: 100
+        offset: 100
       },
       {
         color: colors.orange[shade],
-        stop: 150
+        offset: 150
       },
       {
         color: colors.red[shade],
-        stop: 200
+        offset: 200
       },
       {
         color: colors.purple[shade],
-        stop: 250
+        offset: 250
       },
       {
         color: maroon[shade],
-        stop: 350
+        offset: 350
       }
     ]
   }
