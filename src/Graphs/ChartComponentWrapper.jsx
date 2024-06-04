@@ -1,12 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { styled } from '@mui/material/styles';
-import { Box, Tabs, Tab, useMediaQuery, Typography, Menu, MenuItem, Stack } from '@mui/material/';
+import { Box, Tabs, Tab, useMediaQuery, Typography, Menu, MenuItem, Stack, Skeleton } from '@mui/material/';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
+import { fetchDataFromURL } from "../Components/DatasetDownload/DatasetFetcher";
+import { ChartEndpointsOrder, getChartApiUrl } from "../Utils/ApiUtils";
+import { DashboardContext } from "../ContextProviders/DashboardContext";
 
 import SubChart from './Subchart/SubChart';
 
 import CollapsibleSubtitle from '../Components/CollapsibleSubtitle';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import DataTypeDropDownMenu from './Subchart/SubchartUtils/DataTypeDropDown';
+import { isValidArray } from '../Utils/Utils';
 
 const debounceMilliseconds = 100;
 
@@ -68,12 +74,18 @@ const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
 // eslint-disable-next-line max-len
 function ChartComponentWrapper(props) {
   const {
+    chartTitle,
     generalChartSubtitle,
     generalChartReference,
     chartData: passedChartData,
     chartHeight: passedChartHeight,
+    chartID,
+    chartIndex,
     isHomepage
   } = props;
+
+  const { currentSchoolID, setIndividualChartData } = useContext(DashboardContext);
+
   const isSmallWidth = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   const [isPortrait, setIsPortrait] = useState(window.matchMedia('(orientation: portrait)').matches);
@@ -91,16 +103,41 @@ function ChartComponentWrapper(props) {
   const [previousTab, setPreviousTab] = useState(0); // keep tracking of previous tab to keep displaying it if the currentTab = -1 (selecting the dropdown menu tab)
   const [dropdownMenuTabIndex, setDropdownMenuTabIndex] = useState(initialDropdownMenuTabIndex);
   const [dropdownMenuCurrentTitle, setDropdownMenuCurrentTitle] = useState();
-  const [anchorEl, setAnchorEl] = useState(null); // Define anchorEl state for dropdown menu
+  const [anchorEl, setAnchorEl] = useState(null); // Define anchorEl state for dropdown menu of the tabs
+
+  // Props for dataType management
+  const { allowedDataTypes } = chartData;
+  const [selectedDataType, setSelectedDataType] = useState(null);
+
+  useEffect(() => {
+    setSelectedDataType(chartData.selectedDataType)
+  }, [chartData]);
+
+  const fetchChartDataType = async (dataType) => {
+    const endpoint = ChartEndpointsOrder[chartID]
+    fetchDataFromURL({
+      url: getChartApiUrl({
+        endpoint: endpoint,
+        school_id: currentSchoolID,
+        dataType
+      }),
+      extension: 'json',
+      needsAuthorization: true
+    })
+      .then(data => {
+        setIndividualChartData(chartID, data);
+        setSelectedDataType(data.selectedDataType);
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+  }
 
   // eventListener for window resize
   // redraw "Calendar" charts and charts with a time filter upon window resize.
   // Filter & Calendar charts are not automatically respnsive, so we have to redraw them.
   // redraw other charts when device orientation changes
   useEffect(() => {
-    setPreviousTab(currentTab);
-    setCurrentTab(0); // set tab back to 0 if chartData changes (changed school)
-
     let timeoutID = null;
 
     const handleWindowResize = () => {
@@ -127,6 +164,12 @@ function ChartComponentWrapper(props) {
     };
   }, [chartData]);
 
+  // set tab back to 0 if school is changed
+  useEffect(() => {
+    setPreviousTab(currentTab);
+    setCurrentTab(0);
+  }, [currentSchoolID])
+
   if (chartData.chartType !== 'Calendar' && !chartHeight) {
     chartHeight = isPortrait ? '80vw' : '35vw';
     chartMaxHeight = isPortrait ? '800px' : '500px';
@@ -136,6 +179,7 @@ function ChartComponentWrapper(props) {
   const renderOnlyOneChart = () => {
     return (
       <SubChart
+        selectedDataType={selectedDataType}
         chartData={chartData}
         isPortrait={isPortrait}
         isHomepage={isHomepage}
@@ -216,6 +260,11 @@ function ChartComponentWrapper(props) {
               key={index}
               value={index}
               label={chartData.subcharts[index].subchartTitle}
+              sx={{
+                // If this subchart doesn't have a valid dataArray to render chart
+                // Make the Tab's text line-through to let user know
+                textDecoration: !isValidArray(chartData.subcharts[index].dataArray) && 'line-through'
+              }}
             />
           ))}
           {/* Render dropdown menu if needed */}
@@ -251,6 +300,11 @@ function ChartComponentWrapper(props) {
                 key={index}
                 selected={index === currentTab - maxTabsToDisplay}
                 onClick={() => handleDropdownMenuSelection(index)}
+                sx={{
+                  // If this subchart doesn't have a valid dataArray to render chart
+                  // Make the Tab's text line-through to let user know
+                  textDecoration: !isValidArray(chartData.subcharts[index + maxTabsToDisplay].dataArray) && 'line-through'
+                }}
               >
                 <Stack direction="row" alignItems="center" gap={1}>
                   <Box>
@@ -265,6 +319,7 @@ function ChartComponentWrapper(props) {
             ))}
           </Menu>
         }
+
         <Box
           position="relative"
           sx={{
@@ -273,6 +328,7 @@ function ChartComponentWrapper(props) {
             overflowY: 'hidden',
           }}
         >
+
           {chartData.subcharts.map((__, index) => (
             <Box
               key={index}
@@ -288,6 +344,7 @@ function ChartComponentWrapper(props) {
               }}
             >
               <SubChart
+                selectedDataType={selectedDataType}
                 chartData={chartData}
                 subchartIndex={index}
                 isPortrait={isPortrait}
@@ -326,24 +383,47 @@ function ChartComponentWrapper(props) {
   }
 
   return (
-    <ChartStyleWrapper height="100%">
-      {chartData.subcharts ? renderMultipleSubcharts() : renderOnlyOneChart()}
+    chartTitle ?
+      <>
+        <Box>
+          <Typography display="inline" variant="h6" color="text.primary">
+            {chartIndex + 1}. {chartTitle}
+            &nbsp;
+          </Typography>
+          <Box display="inline">
+            <DataTypeDropDownMenu
+              selectedDataType={selectedDataType}
+              dataTypes={allowedDataTypes}
+              fetchChartDataType={fetchChartDataType}
+            />
+          </Box>
+        </Box>
 
-      {/* Render subtitle and reference below */}
-      <Box sx={{ my: 3 }}>
-        <Typography
-          component="div"
-          variant="body1"
-          color="text.secondary"
-          sx={{ mb: 1 }}
-        >
-          <CollapsibleSubtitle
-            text={getSubtitles()}
-            reference={getReferences()}
-          />
-        </Typography>
-      </Box>
-    </ChartStyleWrapper>
+
+        <ChartStyleWrapper height="100%">
+          {chartData.subcharts ? renderMultipleSubcharts() : renderOnlyOneChart()}
+
+          {/* Render subtitle and reference below */}
+          <Box sx={{ my: 3 }}>
+            <Typography
+              component="div"
+              variant="body1"
+              color="text.secondary"
+              sx={{ mb: 1 }}
+            >
+              <CollapsibleSubtitle
+                text={getSubtitles()}
+                reference={getReferences()}
+              />
+            </Typography>
+          </Box>
+        </ChartStyleWrapper>
+      </>
+
+      : <>
+        <Skeleton variant='text' sx={{ width: '100%', fontSize: '2rem' }} />
+        <Skeleton variant='rounded' width="100%" height={300} />
+      </>
   );
 }
 

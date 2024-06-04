@@ -1,11 +1,14 @@
-import CustomThemes from '../../Themes/CustomThemes';
+import { lightShade, darkShade, maroon } from '../../Themes/CustomColors';
+import { colors } from '@mui/material';
 
 const AQIdatabase = [
   {
     id: 0,
     category: 'Good',
-    lightThemeColor: CustomThemes.light.palette.chart.optionsColors.aqi[0],
-    darkThemeColor: CustomThemes.dark.palette.chart.optionsColors.aqi[0],
+    color: {
+      Light: colors.green[lightShade],
+      Dark: colors.green[darkShade]
+    },
     aqiUS: {
       low: 0,
       high: 50
@@ -34,8 +37,10 @@ const AQIdatabase = [
   {
     id: 1,
     category: 'Moderate',
-    lightThemeColor: CustomThemes.light.palette.chart.optionsColors.aqi[1],
-    darkThemeColor: CustomThemes.dark.palette.chart.optionsColors.aqi[1],
+    color: {
+      Light: colors.yellow[lightShade + 100],
+      Dark: colors.yellow[darkShade + 200]
+    },
     aqiUS: {
       low: 51,
       high: 100
@@ -64,8 +69,10 @@ const AQIdatabase = [
   {
     id: 2,
     category: 'Unhealthy for Sensitive Groups',
-    lightThemeColor: CustomThemes.light.palette.chart.optionsColors.aqi[2],
-    darkThemeColor: CustomThemes.dark.palette.chart.optionsColors.aqi[2],
+    color: {
+      Light: colors.orange[lightShade],
+      Dark: colors.orange[darkShade]
+    },
     aqiUS: {
       low: 101,
       high: 150
@@ -93,8 +100,10 @@ const AQIdatabase = [
   {
     id: 3,
     category: 'Unhealthy',
-    lightThemeColor: CustomThemes.light.palette.chart.optionsColors.aqi[3],
-    darkThemeColor: CustomThemes.dark.palette.chart.optionsColors.aqi[3],
+    color: {
+      Light: colors.red[lightShade],
+      Dark: colors.red[darkShade]
+    },
     aqiUS: {
       low: 151,
       high: 200
@@ -123,8 +132,10 @@ const AQIdatabase = [
   {
     id: 4,
     category: 'Very Unhealthy',
-    lightThemeColor: CustomThemes.light.palette.chart.optionsColors.aqi[4],
-    darkThemeColor: CustomThemes.dark.palette.chart.optionsColors.aqi[4],
+    color: {
+      Light: colors.purple[lightShade],
+      Dark: colors.purple[darkShade]
+    },
     aqiUS: {
       low: 201,
       high: 300
@@ -153,8 +164,10 @@ const AQIdatabase = [
   {
     id: 5,
     category: 'Hazardous',
-    lightThemeColor: CustomThemes.light.palette.chart.optionsColors.aqi[5],
-    darkThemeColor: CustomThemes.dark.palette.chart.optionsColors.aqi[5],
+    color: {
+      Light: maroon[lightShade],
+      Dark: maroon[darkShade]
+    },
     aqiUS: {
       low: 301,
       high: Infinity
@@ -182,47 +195,34 @@ const AQIdatabase = [
   },
 ];
 
-export const AQIDataTypes = {
-  aqi: {
-    name: "Air Quality Index (US)",
-    name_short: "AQI",
-    unit: ""
-  },
-  pm1: {
-    name: "Particulate matter smaller than 1μm",
-    name_short: "PM1",
-    unit: "μg/m3"
-  },
-  pm2_5: {
-    name: "Particulate matter smaller than 2.5μm",
-    name_short: "PM2.5",
-    unit: "μg/m3"
-  },
-  pm10: {
-    name: "Particulate matter smaller than 10μm",
-    name_short: "PM10",
-    unit: "μg/m3"
-  },
-  co2: {
-    name: "Carbon Dioxide",
-    name_short: "CO2",
-    unit: "PPM"
-  },
-  voc: {
-    name: "Volatile Organic Compounds",
-    name_short: "VOC",
-    unit: ""
-  },
-  temperature: {
-    name: "Temperature",
-    name_short: "T°",
-    unit: "°C"
-  },
-  humidity: {
-    name: "Relative humidity",
-    name_short: "%RH",
-    unit: "%"
+export const getAqiColorAxis = ({ themePreference, dataType }) => {
+  const minValue = AQIdatabase[0][dataType].low;
+  let maxValue = AQIdatabase[AQIdatabase.length - 1][dataType].high;
+
+  let secondHighestCategoryRange;
+  if (maxValue === Infinity) {
+    // just stack another interval of the next lower category if the highest category has an Infinity high threshold
+    secondHighestCategoryRange = (AQIdatabase[AQIdatabase.length - 2][dataType].high - AQIdatabase[AQIdatabase.length - 2][dataType].low);
+    maxValue = AQIdatabase[AQIdatabase.length - 2][dataType].high + secondHighestCategoryRange;
   }
-};
+
+  return (
+    {
+      minValue,
+      maxValue,
+      colors: AQIdatabase.flatMap(category => {
+        const lowOffset = category[dataType].low;
+        let highOffset = category[dataType].high;
+
+        if (category[dataType].high === Infinity) highOffset = maxValue;
+
+        return [
+          { color: category.color[themePreference], offset: lowOffset },
+          { color: category.color[themePreference], offset: highOffset }
+        ]
+      })
+    }
+  )
+}
 
 export default AQIdatabase;

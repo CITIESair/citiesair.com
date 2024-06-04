@@ -1,7 +1,16 @@
 import { Box } from '@mui/material/';
 import { styled } from '@mui/material/styles';
 
-const GoogleChartStyleWrapper = styled(Box)(({ theme, isPortrait }) => ({
+const GoogleChartStyleWrapper = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'gradientBackgroundId' && prop !== 'isPortrait',
+})(({ theme, isPortrait, gradientBackgroundId }) => ({
+  // CSS for optional gradient background 
+  '& svg>g:nth-of-type(2)>rect:first-of-type': {
+    fill: `url(#${gradientBackgroundId})`,
+    fillOpacity: 1,
+    filter: 'contrast(0.4) brightness(1.4)'
+  },
+
   // CSS for HTML tooltip
   '& .google-visualization-tooltip, .nivo-tooltip': {
     width: 'unset !important',

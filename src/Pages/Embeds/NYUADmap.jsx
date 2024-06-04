@@ -24,7 +24,6 @@ const NYUADmap = () => {
     <FullWidthBox height="100vh" backgroundColor='customAlternateBackground'>
       <AQImap
         tileOption={TileOptions.nyuad}
-        placeholderText={"Map of CITIESair air quality sensors on NYUAD campus."}
         centerCoordinates={[24.5238, 54.43449]}
         maxBounds={[
           [24.52038, 54.42612],
@@ -40,6 +39,7 @@ const NYUADmap = () => {
         rawMapData={nyuadCurrentData}
         locationTitle={LocationTitle.short}
         markerSizeInRem={0.65}
+        ariaLabel={"A map of all air quality sensors at NYU Abu Dhabi"}
       />
     </FullWidthBox>
   );

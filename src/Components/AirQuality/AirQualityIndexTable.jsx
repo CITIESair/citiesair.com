@@ -1,9 +1,7 @@
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, styled } from '@mui/material';
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
-import ChartComponentWrapper from '../../Graphs/ChartComponentWrapper';
 import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
-import ThemePreferences from '../../Themes/ThemePreferences';
 import { useContext } from 'react';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 
@@ -27,59 +25,6 @@ function AirQualityIndexTable(props) {
   const { themePreference } = useContext(PreferenceContext);
 
   const { isTiny, hideAQIDescription } = props;
-
-  const renderAQIchart = ({ shouldRender }) => {
-    let aqiChart = null;
-    let ticks = [];
-    const maxValToRender = 400;
-
-    if (shouldRender) {
-      const dataArray = [['category'], ['US AQI']];
-      for (let i = 0; i < AQIdatabase.length; i += 1) {
-        dataArray[0].push(AQIdatabase[i].category);
-        let high = AQIdatabase[i].aqiUS.high;
-        let low = AQIdatabase[i].aqiUS.low;
-
-        if (high === Infinity) high = maxValToRender;
-
-        dataArray[1].push(
-          Math.ceil((high - AQIdatabase[i].aqiUS.low) / 50) * 50
-        );
-
-        if (high === maxValToRender) low = { v: low, f: `${low}+` }
-        ticks.push(low);
-      }
-
-      aqiChart = (
-        <ChartComponentWrapper
-          chartHeight="4rem"
-          chartData={
-            {
-              dataArray,
-              chartType: 'BarChart',
-              options: {
-                enableInteractivity: false,
-                legend: { position: 'none' },
-                hAxis: {
-                  ticks: ticks
-                },
-                chartArea:
-                {
-                  width: { portrait: '98%', landscape: '50%' },
-                  height: { portrait: '20%', landscape: '30%' }
-                },
-                isStacked: true,
-                colors: 'aqi',
-                bar: { groupWidth: '100%' }
-              }
-            }
-          }
-        />
-      );
-    }
-
-    return aqiChart;
-  };
 
   const returnFormattedBreakpoints = (low, high) => {
     if (high === Infinity) return `${low}+`;
@@ -116,7 +61,7 @@ function AirQualityIndexTable(props) {
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCell sx={{ pr: 0 }}>
-                  <Box sx={{ width: '1em', height: '1em', backgroundColor: themePreference === ThemePreferences.light ? element.lightThemeColor : element.darkThemeColor }} />
+                  <Box sx={{ width: '1em', height: '1em', backgroundColor: element.color[themePreference] }} />
                 </TableCell>
                 <TableCell sx={{ pl: 1 }}>
                   {element.category}
@@ -143,7 +88,6 @@ function AirQualityIndexTable(props) {
           </TableBody>
         </StyledTable>
       </Box>
-      {renderAQIchart({ shouldRender: !hideAQIDescription })}
     </>
   );
 }

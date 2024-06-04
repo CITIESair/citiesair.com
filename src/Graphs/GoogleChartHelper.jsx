@@ -152,7 +152,7 @@ export const returnGenericOptions = (props) => {
     theme: 'material',
     curveType: options.curveType || chartData.options?.curveType || 'function',
     crosshair: { orientation: 'both', trigger: 'focus', opacity: 0.5 },
-    backgroundColor: { fill: 'transparent' },
+    backgroundColor: { fill: chartData.options?.backgroundColor?.fill || 'transparent' },
     chartArea: {
       ...chartData.options?.chartArea,
       width: isPortrait ? (chartData.options?.chartArea?.width?.portrait || '80%') : (chartData.options?.chartArea?.width?.landscape || '75%'),
@@ -241,17 +241,14 @@ export const returnGenericOptions = (props) => {
           theme.palette.chart.colorAxisFirstColor,
           theme.palette.NYUpurple,
         ];
-        break;
-      case 'aqi':
-        options.colorAxis = theme.palette.chart.aqiColorAxis;
-        break;
-      case 'temperature':
-        options.colorAxis = theme.palette.chart.temperatureColorAxis;
-        break;
-      case 'humidity':
-        options.colorAxis = theme.palette.chart.humidityColorAxis;
-        break;
+        break
+      // If not any of the above, then the colorAxis should be from the chart (aqi/temperature/humidity...)
       default:
+        try {
+          options.colorAxis = theme.palette.chart.colorAxes[options.colorAxis.colors]
+        } catch {
+          options.colorAxis = []
+        }
         break;
     }
   }

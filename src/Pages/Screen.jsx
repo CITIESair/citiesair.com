@@ -19,13 +19,13 @@ import CustomThemes from '../Themes/CustomThemes';
 
 import QRCode from "react-qr-code";
 
-import CurrentAQIGrid from '../Components/AirQuality/CurrentAQIGrid';
+import CurrentAQIGrid, { CurrentAQIGridSize } from '../Components/AirQuality/CurrentAQIGrid';
 import { GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../Utils/ApiUtils';
 import { UniqueRoutes } from '../Utils/RoutesUtils';
 import { PreferenceContext } from '../ContextProviders/PreferenceContext';
 
 const Screen = ({ title }) => {
-  const { temperatureUnitPreference } = useContext(PreferenceContext);
+  const { temperatureUnitPreference, themePreference } = useContext(PreferenceContext);
 
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
@@ -134,7 +134,7 @@ const Screen = ({ title }) => {
           <>Indoors air is
             <Typography
               component="span"
-              color={`${AQIdatabase[0].lightThemeColor} !important`}
+              color={`${AQIdatabase[0].color[themePreference]} !important`}
             >
               {` ${comparison} `}
             </Typography>
@@ -164,10 +164,10 @@ const Screen = ({ title }) => {
         },
         '& .flashingRed': {
           '& .MuiTypography-root ': {
-            color: `${AQIdatabase[3].lightThemeColor} !important`,
+            color: `${AQIdatabase[3].color[themePreference]} !important`,
             opacity: 0.8
           },
-          color: `${AQIdatabase[3].lightThemeColor} !important`,
+          color: `${AQIdatabase[3].color[themePreference]} !important`,
           animation: 'flashingRed 3s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite',
           '@keyframes flashingRed': {
             '0%': {
@@ -212,7 +212,12 @@ const Screen = ({ title }) => {
             container
             justifyContent="space-around"
           >
-            <CurrentAQIGrid currentSensorsData={data} temperatureUnitPreference={temperatureUnitPreference} />
+            <CurrentAQIGrid
+              currentSensorsData={data}
+              temperatureUnitPreference={temperatureUnitPreference}
+              isScreen={true}
+              size={CurrentAQIGridSize.large}
+            />
           </Grid>
 
           <List className='condensedFont'
