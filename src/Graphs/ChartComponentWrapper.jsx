@@ -29,10 +29,6 @@ const ChartStyleWrapper = styled(Box)(({ theme }) => ({
       filter: 'invert(0.848) hue-rotate(180deg)',
     }
   }),
-  // Special CSS for historical-snapshot-aqi chart
-  '& .historical-snapshot-aqi svg [clip-path*="ABSTRACT_RENDERER"] > g:nth-of-type(1), .historical-snapshot-aqi [id*="googlechart-control"] svg [clip-path*="ABSTRACT_RENDERER"] > g:nth-of-type(2)': {
-    opacity: 0.6
-  },
   // Center Calendar chart in wrapper
   '& .Calendar [dir]:not(:empty)': {
     margin: 'auto'
@@ -180,6 +176,7 @@ function ChartComponentWrapper(props) {
     return (
       <SubChart
         selectedDataType={selectedDataType}
+        allowedDataTypes={allowedDataTypes}
         chartData={chartData}
         isPortrait={isPortrait}
         isHomepage={isHomepage}
@@ -345,6 +342,7 @@ function ChartComponentWrapper(props) {
             >
               <SubChart
                 selectedDataType={selectedDataType}
+                allowedDataTypes={allowedDataTypes}
                 chartData={chartData}
                 subchartIndex={index}
                 isPortrait={isPortrait}

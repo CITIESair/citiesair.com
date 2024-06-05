@@ -47,11 +47,11 @@ const DataTypeDropDownMenu = ({ selectedDataType, dataTypes, fetchChartDataType 
           minWidth: 'unset',
           borderRadius: 0,
           verticalAlign: 'top',
-          textTransform: 'capitalize'
+          textTransform: 'unset'
         }}
       >
         <Typography display="inline" variant="h6" borderBottom="dotted">
-          {dataTypes.filter(dataType => dataType.key === selectedDataType).map(dataType => dataType.name_title)}
+          {dataTypes.filter(dataType => dataType.key === selectedDataType).map(dataType => `${dataType.name_short}${dataType.unit !== '' ? ` (${dataType.unit})` : ''}`)}
         </Typography>
         <ArrowDropDownIcon />
       </Button>

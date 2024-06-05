@@ -34,10 +34,7 @@ const NoChartToRender = ({ dataType }) => {
 
 export default function SubChart(props) {
   // Props
-  const { chartData, subchartIndex, windowSize, isPortrait, isHomepage, height, maxHeight, selectedDataType } = props;
-
-  // Formulate the className
-  const className = chartData.customClassName ? `${chartData.chartType} ${chartData.customClassName}` : chartData.chartType;
+  const { chartData, subchartIndex, windowSize, isPortrait, isHomepage, height, maxHeight, selectedDataType, allowedDataTypes } = props;
 
   // Use GoogleContext for loading and manipulating the Google Charts
   const google = useContext(GoogleContext);
@@ -133,7 +130,7 @@ export default function SubChart(props) {
       shouldRenderChart ? (
         <GoogleChartStyleWrapper
           isPortrait={isPortrait}
-          className={className}
+          className={chartData.chartType}
           style={{
             position: 'relative',
             minWidth: '700px',
@@ -146,6 +143,7 @@ export default function SubChart(props) {
             <CalendarChart
               data={calendarData.data}
               dateRange={calendarData.dateRange}
+              valueRangeBoxTitle={allowedDataTypes.filter(dataType => dataType.key === selectedDataType).map(dataType => `${dataType.name_short}${dataType.unit !== '' ? ` (${dataType.unit})` : ''}`)}
               valueRange={calendarData.valueRange}
               isPortrait={isPortrait}
               options={options}
@@ -572,8 +570,7 @@ export default function SubChart(props) {
   }
 
   // Generate the gradient background if it exists in options parameter
-  let gradientBackgroundColor = options.backgroundColor?.fill;
-  if (gradientBackgroundColor === "transparent") gradientBackgroundColor = null;
+  const gradientBackgroundColor = options.gradientBackgroundColor;
   let gradientBackgroundId, svgFillGradient;
   if (gradientBackgroundColor) {
     gradientBackgroundId = `${chartID}-backgroundGradient`;
@@ -624,7 +621,7 @@ export default function SubChart(props) {
                 height: "2rem",
                 width: { [theme.breakpoints.down('sm')]: { width: '100%' } }
               }} >
-              <CustomDateRangePicker minDateOfDataset={new Date(dateRangePicker.minDate)} />
+              <CustomDateRangePicker dataType={selectedDataType} minDateOfDataset={new Date(dateRangePicker.minDate)} />
             </Grid>
           }
         </Grid >
@@ -639,7 +636,7 @@ export default function SubChart(props) {
       <GoogleChartStyleWrapper
         isPortrait={isPortrait}
         gradientBackgroundId={gradientBackgroundId}
-        className={className}
+        className={chartData.chartType}
         position="relative"
         height="100%"
         minHeight={chartData.chartType === 'Calendar' && '200px'}

@@ -2,7 +2,7 @@
 import { ResponsiveCalendar } from '@nivo/calendar';
 import { useEffect, useRef } from 'react';
 import { useTheme } from '@mui/material/styles';
-import { Box, Chip } from '@mui/material';
+import { Box, Chip, Typography } from '@mui/material';
 
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../../Utils/Utils';
@@ -17,7 +17,7 @@ export const getCalendarChartMargin = (isPortrait) => {
 }
 
 export const CalendarChart = (props) => {
-    const { data, dateRange, valueRange, isPortrait, options } = props;
+    const { data, dateRange, valueRangeBoxTitle, valueRange, isPortrait, options } = props;
 
     const calendarChartMargin = getCalendarChartMargin(isPortrait);
 
@@ -51,12 +51,13 @@ export const CalendarChart = (props) => {
 
     const colors = generateDiscreteColorGradientArray({
         colors: options?.colorAxis?.colors,
-        numSteps: 20
+        numSteps: options?.colorAxis?.gradientSteps
     });
 
     const showLegend = () => {
         return (
             <ValueRangeBox
+                title={valueRangeBoxTitle}
                 valueRange={valueRange}
                 colorAxis={options?.colorAxis}
                 isPortrait={isPortrait}
@@ -155,7 +156,7 @@ const CustomTooltip = ({ day, color, tooltipText, dateRange, inFirstTwoRowsOfCha
     );
 };
 
-const ValueRangeBox = ({ valueRange, colorAxis, isPortrait }) => {
+const ValueRangeBox = ({ title, valueRange, colorAxis, isPortrait }) => {
     if (valueRange?.min === null || valueRange?.max === null) return null;
 
     const { colors, minValue, maxValue } = colorAxis;
@@ -169,14 +170,17 @@ const ValueRangeBox = ({ valueRange, colorAxis, isPortrait }) => {
     const labelStyle = {
         position: 'absolute',
         fontSize: '0.75rem',
-        color: theme.palette.text.secondary
+        color: theme.palette.text.secondary,
+        lineHeight: 1,
+        textAlign: 'center',
+        transform: 'translateX(-50%)',
+        minWidth: '75px'
     };
     const topLabelStyle = {
-        top: '-1.5rem',
-        transform: 'translateX(-100%)'
+        top: '-1.35rem'
     };
     const bottomLabelStyle = {
-        bottom: '-1.5rem',
+        bottom: '-1.25rem'
     };
 
     const triangleStyle = {
@@ -202,13 +206,25 @@ const ValueRangeBox = ({ valueRange, colorAxis, isPortrait }) => {
             width: 'fit-content',
             marginTop: '1.5rem',
             float: 'right',
-            right: (isPortrait ? '0' : '5%')
+            right: (isPortrait ? '0' : '50px')
         }}>
+            <Typography sx={{
+                display: 'inline',
+                position: 'absolute',
+                textAlign: 'right',
+                transform: 'translateX(calc(-100% - 0.5rem))',
+                fontSize: '0.75rem',
+                lineHeight: 1.25,
+                fontWeight: 500,
+                color: 'text.secondary'
+            }}>
+                {title}
+            </Typography>
             <Box sx={{
                 background: generateCssBackgroundGradient({ gradientDirection: 'to right', colors: colors }),
                 color: theme.palette.text.secondary,
                 border: `1px solid ${theme.palette.text.secondary}`,
-                width: '300px',
+                width: isPortrait ? '250px' : '300px',
                 height: '1rem',
                 position: 'relative',
                 justifyContent: 'space-between',
