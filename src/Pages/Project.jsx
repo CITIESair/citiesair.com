@@ -263,7 +263,7 @@ const Project = () => {
       <AirQualityIndexLegendQuickGlance />
 
       <FullWidthBox backgroundColor='customAlternateBackground'>
-        <Container sx={{ pt: 5, pb: 2 }}>
+        <Container sx={{ pt: 2, pb: 2 }}>
           <UppercaseTitle text={getDashboardTitle()} />
           <GridOfMetadataChips />
 
