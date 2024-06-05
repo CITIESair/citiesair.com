@@ -93,4 +93,17 @@ const AQIDataTypes = {
   }
 }
 
+export const returnSelectedDataType = ({ dataTypeKey, dataTypes, showUnit = false }) => {
+  return (dataTypes
+    .filter(dataType => dataType.key === dataTypeKey)
+    .map((dataType) => {
+      if (showUnit) {
+        const unitString = `${dataType.unit !== '' ? ` (${dataType.unit})` : ''}`;
+        return `${dataType.name_short}${unitString}`;
+      }
+      else return dataType.name_short;
+    })
+  )
+}
+
 export default AQIDataTypes;

@@ -19,6 +19,7 @@ import { generateSvgFillGradient, BackgroundGradient } from '../../Utils/Gradien
 
 import CustomDateRangePicker from '../../Components/DateRangePicker/CustomDateRangePicker'
 import { isValidArray } from '../../Utils/Utils';
+import { returnSelectedDataType } from '../../Utils/AirQuality/DataTypes';
 
 const NoChartToRender = ({ dataType }) => {
   return (
@@ -143,7 +144,7 @@ export default function SubChart(props) {
             <CalendarChart
               data={calendarData.data}
               dateRange={calendarData.dateRange}
-              valueRangeBoxTitle={allowedDataTypes.filter(dataType => dataType.key === selectedDataType).map(dataType => `${dataType.name_short}${dataType.unit !== '' ? ` (${dataType.unit})` : ''}`)}
+              valueRangeBoxTitle={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes, showUnit: true })}
               valueRange={calendarData.valueRange}
               isPortrait={isPortrait}
               options={options}
@@ -154,7 +155,7 @@ export default function SubChart(props) {
             </Box>
           )}
         </GoogleChartStyleWrapper>
-      ) : <NoChartToRender dataType={selectedDataType} />
+      ) : <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />
     );
   }
 
@@ -533,6 +534,7 @@ export default function SubChart(props) {
       if (seriesSelector) {
         const { initAllInitialColumns, initDataColumns } = getInitialColumns({ chartWrapper: thisChartWrapper, dataTable: thisDataTable, seriesSelector: seriesSelector });
 
+        console.log(chartID)
         handleSeriesSelection({
           _allInitialColumns: initAllInitialColumns,
           newDataColumns: initDataColumns,
@@ -651,6 +653,6 @@ export default function SubChart(props) {
         {renderChart()}
         {gradientBackgroundColor ? <BackgroundGradient id={gradientBackgroundId} colors={svgFillGradient} /> : null}
       </GoogleChartStyleWrapper>
-      : <NoChartToRender dataType={selectedDataType} />
+      : <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />
   );
 }
