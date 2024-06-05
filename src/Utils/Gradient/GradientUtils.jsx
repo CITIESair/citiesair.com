@@ -45,7 +45,7 @@ const normalizeColorStops = ({ colors, optionalMinValue, optionalMaxValue }) => 
 
 // Function to return an array of STEPS discrete colors in a gradient from an array of starting colors
 // Used for NivoCalendarChart
-export const generateDiscreteColorGradientArray = ({ colors, numSteps }) => {
+export const generateDiscreteColorGradientArray = ({ colors, numSteps = 100 }) => {
   function hexToRgb(hex) {
     const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
     hex = hex.replace(shorthandRegex, function (m, r, g, b) {
@@ -65,6 +65,10 @@ export const generateDiscreteColorGradientArray = ({ colors, numSteps }) => {
   }
 
   function interpolateColor(color1, color2, factor) {
+    // Return immediately if the 2 colors are the same
+    if (color1.every((element, index) => element === color2[index])) return color1;
+
+    // Else, calculate the middle of the 2 colors
     let result = color1.slice();
     for (let i = 0; i < 3; i++) {
       result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]));

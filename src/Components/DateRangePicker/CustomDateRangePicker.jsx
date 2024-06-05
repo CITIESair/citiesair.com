@@ -24,7 +24,7 @@ const InvalidRangeMessages = {
 }
 
 const CustomDateRangePicker = (props) => {
-  const { minDateOfDataset } = props;
+  const { minDateOfDataset, dataType } = props;
 
   const { currentSchoolID, setIndividualChartData } = useContext(DashboardContext);
   const [aggregationType, setAggregationType] = useState(AggregationType.hourly);
@@ -110,6 +110,7 @@ const CustomDateRangePicker = (props) => {
       endpoint: ChartEndpoints.historical,
       school_id: currentSchoolID,
       aggregationType: aggregationType,
+      dataType: dataType,
       startDate: format(selectedRange[0].startDate, 'yyyy-MM-dd'), // only one range can be selected at a time --> [0]
       endDate: format(selectedRange[0].endDate, 'yyyy-MM-dd')
     });
