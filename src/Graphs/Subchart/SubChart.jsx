@@ -468,6 +468,8 @@ export default function SubChart(props) {
     return evaluatedColumns;
   }
 
+  const formatters = options.formatters;
+
   // Prepare to draw the chart if there is any change in chartData
   // but only set flag renderChartNow if the chart should draw in the next rendering cycle
   // to prevent chartID container not being mounted on time
@@ -488,7 +490,17 @@ export default function SubChart(props) {
       setShouldRenderChart(_shouldRenderChart);
       if (_shouldRenderChart === true) {
         setRenderChartNow(true);
-        setDataTable(google.visualization.arrayToDataTable(dataArray));
+        const dataTable = google.visualization.arrayToDataTable(dataArray);
+
+        // Call functions for formatting the number if numberFormat is specified 
+        if (formatters && typeof formatters === 'object') {
+          if (formatters.hasOwnProperty("numberFormatter")) {
+            numberFormat = new google.visualization.NumberFormat(formatters.numberFormatter.numberFormat);
+            formatters.numberFormatter.columns.forEach(col => numberFormat.format(dataTable, col));
+          }
+        }
+
+        setDataTable(dataTable);
       }
     }
   }, [google, chartData]);
