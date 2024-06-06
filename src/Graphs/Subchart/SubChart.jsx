@@ -657,6 +657,8 @@ export default function SubChart(props) {
 
   return (
     <>
+      {!shouldRenderChart && <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />}
+
       <GoogleChartStyleWrapper
         isPortrait={isPortrait}
         gradientBackgroundId={gradientBackgroundId}
@@ -675,7 +677,6 @@ export default function SubChart(props) {
         {renderChart()}
         {gradientBackgroundColor ? <BackgroundGradient id={gradientBackgroundId} colors={svgFillGradient} /> : null}
       </GoogleChartStyleWrapper>
-      {!shouldRenderChart && <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />}
     </>
   );
 }
