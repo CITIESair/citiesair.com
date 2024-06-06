@@ -21,6 +21,11 @@ import CustomDateRangePicker from '../../Components/DateRangePicker/CustomDateRa
 import { isValidArray } from '../../Utils/Utils';
 import { returnSelectedDataType } from '../../Utils/AirQuality/DataTypes';
 
+const dummyArray = [
+  ['', ''],
+  ['', 0],
+];
+
 const NoChartToRender = ({ dataType }) => {
   return (
     <Alert severity="error" sx={{ my: 2 }}>
@@ -518,6 +523,7 @@ export default function SubChart(props) {
         setDashboardWrapper(thisDashboardWrapper);
 
         google.visualization.events.addListener(thisDashboardWrapper, 'ready', onChartReady);
+        google.visualization.events.addListener(thisDashboardWrapper, 'error', handleChartError);
 
         thisControlWrapper = new google.visualization.ControlWrapper({
           controlType: chartControl.controlType,
@@ -533,6 +539,7 @@ export default function SubChart(props) {
       }
       else {
         google.visualization.events.addListener(thisChartWrapper, 'ready', onChartReady);
+        google.visualization.events.addListener(thisChartWrapper, 'error', handleChartError);
         thisChartWrapper.draw();
       }
 
@@ -552,6 +559,13 @@ export default function SubChart(props) {
   }, [renderChartNow])
 
   const renderChart = () => {
+    const chartContainer = (
+      <Box
+        id={chartID}
+        sx={{ height: height, maxHeight: maxHeight }}
+      />
+    );
+
     if (hasChartControl) {
       return (
         <Stack
@@ -567,12 +581,13 @@ export default function SubChart(props) {
               filter: 'saturate(0.3)'
             }}
           />
-          <Box id={chartID} sx={{ height: height, maxHeight: maxHeight }} />
+          {chartContainer}
         </Stack>
-      )
+      );
+    } else {
+      return chartContainer;
     }
-    else return <Box id={chartID} sx={{ height: height, maxHeight: maxHeight }} />;
-  }
+  };
 
   // Generate the gradient background if it exists in options parameter
   const gradientBackgroundColor = options.gradientBackgroundColor;
@@ -591,6 +606,10 @@ export default function SubChart(props) {
     // Hide the circleProgress when chart finishes rendering the first time
     setIsFirstRender(false);
   };
+
+  const handleChartError = (error) => {
+    console.log(error);
+  }
 
   const showAuxiliaryControls = () => {
     if (!isFirstRender) {
@@ -637,7 +656,7 @@ export default function SubChart(props) {
   };
 
   return (
-    shouldRenderChart ?
+    <>
       <GoogleChartStyleWrapper
         isPortrait={isPortrait}
         gradientBackgroundId={gradientBackgroundId}
@@ -656,6 +675,7 @@ export default function SubChart(props) {
         {renderChart()}
         {gradientBackgroundColor ? <BackgroundGradient id={gradientBackgroundId} colors={svgFillGradient} /> : null}
       </GoogleChartStyleWrapper>
-      : <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />
+      {!shouldRenderChart && <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />}
+    </>
   );
 }
