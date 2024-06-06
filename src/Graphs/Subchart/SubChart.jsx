@@ -328,7 +328,6 @@ export default function SubChart(props) {
     _controlWrapper = controlWrapper
   }) => {
     if (!_allInitialColumns) return;
-    if (!_chartWrapper) return;
 
     setDataColumns(newDataColumns);
 
@@ -343,7 +342,7 @@ export default function SubChart(props) {
           }; // 'hide' the serie by making it transparent
       });
 
-      _chartWrapper.setOptions({
+      _chartWrapper?.setOptions({
         ...options,
         series: {
           ...options.series,
@@ -387,7 +386,7 @@ export default function SubChart(props) {
           }
         }
       });
-      _chartWrapper.setView({ columns: newViewColumns });
+      _chartWrapper?.setView({ columns: newViewColumns });
 
       const newOptions = { ...options };
       // Preserve the initial vAxis range so that the vAxis doesn't shift based on the visible serie(s)
@@ -409,7 +408,7 @@ export default function SubChart(props) {
         selectedSeriesCount++;
       })
       newOptions.series = series;
-      _chartWrapper.setOptions(newOptions);
+      _chartWrapper?.setOptions(newOptions);
 
       if (hasChartControl) {
         const currentControlOptions = _controlWrapper?.getOptions();
@@ -431,7 +430,7 @@ export default function SubChart(props) {
     }
 
     // Call draw to apply the new DataView and 'refresh' the chart
-    _chartWrapper.draw();
+    _chartWrapper?.draw();
 
     if (hasChartControl) {
       _controlWrapper?.draw();
@@ -514,10 +513,8 @@ export default function SubChart(props) {
 
       let thisControlWrapper;
       if (hasChartControl) {
-        const dashboardDOM = document.getElementById(`dashboard-${chartID}`);
-        if (!dashboardDOM) return;
-
-        const thisDashboardWrapper = new google.visualization.Dashboard(dashboardDOM);
+        const thisDashboardWrapper = new google.visualization.Dashboard(
+          document.getElementById(`dashboard-${chartID}`));
         setDashboardWrapper(thisDashboardWrapper);
 
         google.visualization.events.addListener(thisDashboardWrapper, 'ready', onChartReady);
