@@ -204,6 +204,9 @@ export default function SubChart(props) {
   // Properties for date-range-picker
   const dateRangePicker = options.dateRangePicker || null;
 
+  // Properties for data formatters
+  const formatters = options.formatters || null;
+
   // Set new options prop and re-render the chart if theme or isPortrait changes
   useEffect(() => {
     if (seriesSelector) handleSeriesSelection({ newDataColumns: dataColumns }); // this function set new options, too
@@ -468,8 +471,6 @@ export default function SubChart(props) {
     return evaluatedColumns;
   }
 
-  const formatters = options.formatters;
-
   // Prepare to draw the chart if there is any change in chartData
   // but only set flag renderChartNow if the chart should draw in the next rendering cycle
   // to prevent chartID container not being mounted on time
@@ -668,9 +669,7 @@ export default function SubChart(props) {
   };
 
   return (
-    <>
-      {!shouldRenderChart && <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />}
-
+    shouldRenderChart ?
       <GoogleChartStyleWrapper
         isPortrait={isPortrait}
         gradientBackgroundId={gradientBackgroundId}
@@ -688,7 +687,6 @@ export default function SubChart(props) {
         {showAuxiliaryControls()}
         {renderChart()}
         {gradientBackgroundColor ? <BackgroundGradient id={gradientBackgroundId} colors={svgFillGradient} /> : null}
-      </GoogleChartStyleWrapper>
-    </>
+      </GoogleChartStyleWrapper> : <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />
   );
 }
