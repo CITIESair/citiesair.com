@@ -56,6 +56,7 @@ export default function SubChart(props) {
 
   // To determine if the charts should be rendered or not
   const [shouldRenderChart, setShouldRenderChart] = useState(true);
+  const [renderChartNow, setRenderChartNow] = useState(false);
 
   // Keep track of the columns (series) of the chart
   const [allInitialColumns, setAllInitialColumns] = useState();
@@ -462,8 +463,9 @@ export default function SubChart(props) {
     return evaluatedColumns;
   }
 
-
-  // Call this function to fetch the data and draw the initial chart
+  // Prepare to draw the chart if there is any change in chartData
+  // but only set flag renderChartNow if the chart should draw in the next rendering cycle
+  // to prevent chartID container not being mounted on time
   useEffect(() => {
     if (google && chartData) {
       // Do not draw again if deep comparison between current chartData and previousChartData is true
@@ -477,14 +479,18 @@ export default function SubChart(props) {
         || null
         || null;
 
-      if (!isValidArray(dataArray)) {
-        setShouldRenderChart(false);
-        return; // early return if there is no data to render
+      const _shouldRenderChart = isValidArray(dataArray);
+      setShouldRenderChart(_shouldRenderChart);
+      if (_shouldRenderChart === true) {
+        setRenderChartNow(true);
+        setDataTable(google.visualization.arrayToDataTable(dataArray));
       }
+    }
+  }, [google, chartData]);
 
-      const thisDataTable = google.visualization.arrayToDataTable(dataArray);
-      setDataTable(thisDataTable);
-
+  // Actually draw the chart now because chartID container is already mounted from shouldRenderChart flag
+  useEffect(() => {
+    if (renderChartNow === true) {
       // Get dataColumn views
       const columns = chartData.columns
         || (chartData.subcharts
@@ -496,7 +502,7 @@ export default function SubChart(props) {
       // Create chartWrapper
       const thisChartWrapper = new google.visualization.ChartWrapper({
         chartType: chartData.chartType,
-        dataTable: (!hasChartControl) ? thisDataTable : undefined,
+        dataTable: (!hasChartControl) ? dataTable : undefined,
         options: options,
         view: {
           columns: reconstructedColumns
@@ -523,7 +529,7 @@ export default function SubChart(props) {
         // Establish dependencies
         thisDashboardWrapper.bind(thisControlWrapper, thisChartWrapper);
 
-        thisDashboardWrapper.draw(thisDataTable);
+        thisDashboardWrapper.draw(dataTable);
       }
       else {
         google.visualization.events.addListener(thisChartWrapper, 'ready', onChartReady);
@@ -532,9 +538,7 @@ export default function SubChart(props) {
 
       // Run the seriesSelector for the first time
       if (seriesSelector) {
-        const { initAllInitialColumns, initDataColumns } = getInitialColumns({ chartWrapper: thisChartWrapper, dataTable: thisDataTable, seriesSelector: seriesSelector });
-
-        console.log(chartID)
+        const { initAllInitialColumns, initDataColumns } = getInitialColumns({ chartWrapper: thisChartWrapper, dataTable: dataTable, seriesSelector: seriesSelector });
         handleSeriesSelection({
           _allInitialColumns: initAllInitialColumns,
           newDataColumns: initDataColumns,
@@ -543,10 +547,9 @@ export default function SubChart(props) {
         });
       }
 
-      // Set shouldRenderChart finally
-      setShouldRenderChart(true);
+      setRenderChartNow(false);
     }
-  }, [google, chartData]);
+  }, [renderChartNow])
 
   const renderChart = () => {
     if (hasChartControl) {
