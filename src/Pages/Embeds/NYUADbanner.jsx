@@ -131,7 +131,7 @@ const NYUADbanner = (props) => {
         item
         xs={12} sm={6}
         justifyContent="space-around"
-      // backgroundColor="customAlternateBackground"
+        sx={{ p: 1 }}
       >
         <Grid
           container
@@ -166,7 +166,7 @@ const NYUADbanner = (props) => {
             <SimpleCurrentAQIlist
               currentSensorsData={otherIndoorLocations}
               useLocationShort={isSmallScreen}
-              smallFont={isOnBannerPage}
+              size={isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium}
             />
           </Grid>
         </Grid>
