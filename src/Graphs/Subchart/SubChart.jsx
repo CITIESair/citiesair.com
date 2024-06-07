@@ -496,7 +496,7 @@ export default function SubChart(props) {
         // Call functions for formatting the number if numberFormat is specified 
         if (formatters && typeof formatters === 'object') {
           if (formatters.hasOwnProperty("numberFormatter")) {
-            numberFormat = new google.visualization.NumberFormat(formatters.numberFormatter.numberFormat);
+            const numberFormat = new google.visualization.NumberFormat(formatters.numberFormatter.numberFormat);
             formatters.numberFormatter.columns.forEach(col => numberFormat.format(dataTable, col));
           }
         }
