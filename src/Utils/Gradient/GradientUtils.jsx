@@ -30,6 +30,10 @@ const normalizeColorStops = ({ colors, optionalMinValue, optionalMaxValue }) => 
     else clampedStops = colors;
 
     const offsets = clampedStops.map(colorStop => colorStop.offset);
+    // If optionalMinValue or optionalMaxValue is out of range of the offsets
+    // extend the range of offsets to match optionalMinValue or optionalMaxValue
+    if (optionalMaxValue > offsets[offsets.length - 1]) offsets[offsets.length - 1] = optionalMaxValue;
+    if (optionalMinValue < offsets[0]) offsets[0] = optionalMinValue;
 
     const minOffset = optionalMinValue || Math.min(...offsets);
     const maxOffset = optionalMaxValue || Math.max(...offsets);
@@ -115,6 +119,7 @@ export const generateCssBackgroundGradient = ({ gradientDirection, colors }) => 
 
 export const generateSvgFillGradient = ({ colors, optionalMinValue, optionalMaxValue }) => {
   const normalizedColors = normalizeColorStops({ colors, optionalMinValue, optionalMaxValue });
+
   return normalizedColors.map(colorStop => ({
     color: colorStop.color,
     offset: colorStop.offset * 100 + '%'
