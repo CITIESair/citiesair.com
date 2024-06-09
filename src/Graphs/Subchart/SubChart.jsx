@@ -1,10 +1,10 @@
 /* eslint-disable */
 
-import { useState, useEffect, useContext, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import { GoogleContext } from '../../ContextProviders/GoogleContext';
 
-import { Box, Stack, Grid, Alert } from '@mui/material/';
+import { Alert, Box, Grid, Slider, Stack } from '@mui/material/';
 
 import { useTheme } from '@mui/material/styles';
 import SeriesSelector from './SubchartUtils/SeriesSelector';
@@ -14,11 +14,12 @@ import GoogleChartStyleWrapper from './SubchartUtils/GoogleChartStyleWrapper';
 
 import LoadingAnimation from '../../Components/LoadingAnimation';
 
-import { CalendarChart, getCalendarChartMargin, yearSpacing } from './NivoCharts/NivoCalendarChart'
+import { CalendarChart, getCalendarChartMargin, calculateCalendarChartHeight } from './NivoCharts/NivoCalendarChart'
 import { generateSvgFillGradient, BackgroundGradient } from '../../Utils/Gradient/GradientUtils';
 
 import CustomDateRangePicker from '../../Components/DateRangePicker/CustomDateRangePicker'
 import { isValidArray } from '../../Utils/Utils';
+import { useYearRange } from '../../ContextProviders/YearRangeContext';
 
 const NoChartToRender = ({ dataType }) => {
   return (
@@ -34,7 +35,7 @@ const NoChartToRender = ({ dataType }) => {
 
 export default function SubChart(props) {
   // Props
-  const { chartData, subchartIndex, windowSize, isPortrait, isHomepage, height, maxHeight, selectedDataType } = props;
+  const { chartData, subchartIndex, windowSize, isPortrait, isHomepage, height, maxHeight, selectedDataType, currentSubchart } = props;
 
   // Formulate the className
   const className = chartData.customClassName ? `${chartData.chartType} ${chartData.customClassName}` : chartData.chartType;
@@ -80,8 +81,11 @@ export default function SubChart(props) {
   }, [props, theme, chartData.chartType]);
   // State to store transformed data for CalendarChart
   const [calendarData, setCalendarData] = useState(null);
+  const { yearRange, setYearRange } = useYearRange();
   const [calendarHeight, setCalendarHeight] = useState(200);
   const [containerWidth, setContainerWidth] = useState(1200); // max width of the chart container
+  const [shouldDisplaySlider, setshouldDisplaySlider] = useState(false);
+  const calendarRef = useRef(null);
   // Early exit for 'Calendar' chartType
   if (chartData.chartType === 'Calendar') {
     useEffect(() => {
@@ -106,56 +110,124 @@ export default function SubChart(props) {
         valueRange: getValueRangeForCalendarChart(values)
       });
 
-      // Get the number of years in the dateRange
-      const startYear = new Date(dateRange.min).getFullYear();
+      // Get the number of years to display
       const endYear = new Date(dateRange.max).getFullYear();
-      const numberOfYear = endYear - startYear + 1;
+      const startYear = isPortrait ? endYear - 3 : endYear - 2;
 
-      // Calculate the size of each cell
-      const cellSize = Math.min(containerWidth / 60, 20); // max cell size of 20
-      const yearHeight = cellSize * 7; // Height for one year
+      setYearRange([startYear, endYear]);
 
-      const calendarChartMargin = getCalendarChartMargin(isPortrait);
-
-      // Calculate the total height based on the number of years and margins
-      let totalHeight;
-      if (numberOfYear == 1) {
-        totalHeight = yearHeight + yearSpacing + calendarChartMargin.top + calendarChartMargin.bottom
-      }
-      else {
-        totalHeight = numberOfYear * (yearHeight + yearSpacing) + calendarChartMargin.top + calendarChartMargin.bottom;
-      }
-      setCalendarHeight(totalHeight);
+      setshouldDisplaySlider((new Date(dateRange.min).getFullYear() <= endYear - 2));
       setShouldRenderChart(true);
     }, [chartData]);
 
+    // Generate marks for the slider
+    const marks = Array.from(
+      { length: yearRange[1] - yearRange[0] + 1 },
+      (_, i) => ({ value: yearRange[0] + i, label: yearRange[0] + i })
+    );
+
+    // Detect and display the current subchart
+    // Not used here, but kept for reference. Feel free to remove
+    // useEffect(() => {
+    //   console.log('current subchart: ', currentSubchart);
+    //   console.log(calendarData);
+    // }, [currentSubchart]);
+
+    // Effect to adjust the height based on the yearRange
+    useEffect(() => {
+      if (calendarData) {
+        const calendarChartMargin = getCalendarChartMargin(isPortrait);
+        const cellSize = Math.min(containerWidth / 60, 20); // max cell size of 20
+        const yearHeight = cellSize * 7; // Height for one year
+
+        const totalHeight = calculateCalendarChartHeight(yearRange, yearHeight, calendarChartMargin);
+        setCalendarHeight(totalHeight);
+
+        if (calendarRef.current) {
+          let element = calendarRef.current; // Start with the current ref
+
+          // Search for the highest MuiBox-root that has a MuiTabs-root sibling
+          let targetElement = null;
+
+          while (element) {
+            // Check if this element is a MuiBox-root
+            if (element.classList.contains('MuiBox-root')) {
+              // Check if any sibling is a MuiTabs-root
+              let sibling = element.parentElement.firstChild;
+              while (sibling) {
+                if (sibling !== element && sibling.classList.contains('MuiTabs-root')) {
+                  targetElement = element; // Found the target element
+                  break;
+                }
+                sibling = sibling.nextSibling;
+              }
+            }
+
+            if (targetElement) break; // Stop if we've found our target
+            element = element.parentElement; // Continue searching upwards
+          }
+
+          if (targetElement) {
+            // targetElement.style.border = "2px solid red";
+            targetElement.style.height = `${totalHeight + 125}px`
+          }
+        }
+      }
+    }, [yearRange, isPortrait]);
+
+    if (!calendarData) {
+      return (
+        <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+          <LoadingAnimation />
+        </Box>
+      )
+    }
+
     return (
       shouldRenderChart ? (
-        <GoogleChartStyleWrapper
-          isPortrait={isPortrait}
-          className={className}
-          style={{
-            position: 'relative',
-            minWidth: '700px',
-            minHeight: isPortrait ? '200px' : `${calendarHeight}px`,
-            height: `${calendarHeight}px`,
-            maxHeight: isPortrait ? '550px' : 'none',
-          }}
-        >
-          {calendarData ? (
+        <>
+          {shouldDisplaySlider && (
+            <Box
+              ref={calendarRef}
+              sx={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                mt: isPortrait ? 1 : 2,
+                mb: isPortrait ? 3 : 4,
+              }}>
+              <Slider
+                value={yearRange}
+                min={new Date(calendarData.dateRange.min).getFullYear()}
+                max={new Date(calendarData.dateRange.max).getFullYear()}
+                onChange={(event, newValue) => setYearRange(newValue)}
+                valueLabelDisplay="off"
+                aria-labelledby="calendar-chart-year-slider"
+                marks={marks}
+                size='small'
+                sx={{ width: '75%' }}
+              />
+            </Box>
+          )}
+          <GoogleChartStyleWrapper
+            isPortrait={isPortrait}
+            className={className}
+            position="relative"
+            minWidth="700px"
+            height={calendarHeight + 'px'}
+            minHeight={isPortrait ? '200px' : calendarHeight + 'px'}
+            maxHeight={isPortrait && '550px'}
+          >
             <CalendarChart
               data={calendarData.data}
               dateRange={calendarData.dateRange}
               valueRange={calendarData.valueRange}
+              yearRange={shouldDisplaySlider ? yearRange : [new Date(calendarData.dateRange.min), new Date(calendarData.dateRange.max)]}
               isPortrait={isPortrait}
               options={options}
             />
-          ) : (
-            <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-              <LoadingAnimation />
-            </Box>
-          )}
-        </GoogleChartStyleWrapper>
+          </GoogleChartStyleWrapper>
+        </>
       ) : <NoChartToRender dataType={selectedDataType} />
     );
   }

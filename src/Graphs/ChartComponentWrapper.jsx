@@ -6,6 +6,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { fetchDataFromURL } from "../Components/DatasetDownload/DatasetFetcher";
 import { ChartEndpointsOrder, getChartApiUrl } from "../Utils/ApiUtils";
 import { DashboardContext } from "../ContextProviders/DashboardContext";
+import { YearRangeProvider } from '../ContextProviders/YearRangeContext';
 
 import SubChart from './Subchart/SubChart';
 
@@ -168,6 +169,7 @@ function ChartComponentWrapper(props) {
   useEffect(() => {
     setPreviousTab(currentTab);
     setCurrentTab(0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSchoolID])
 
   if (chartData.chartType !== 'Calendar' && !chartHeight) {
@@ -356,6 +358,7 @@ function ChartComponentWrapper(props) {
                     ? ''
                     : chartMaxHeight
                 }
+                currentSubchart={currentTab}
               />
             </Box>
           ))}
@@ -401,7 +404,9 @@ function ChartComponentWrapper(props) {
 
 
         <ChartStyleWrapper height="100%">
-          {chartData.subcharts ? renderMultipleSubcharts() : renderOnlyOneChart()}
+          <YearRangeProvider>
+            {chartData.subcharts ? renderMultipleSubcharts() : renderOnlyOneChart()}
+          </YearRangeProvider>
 
           {/* Render subtitle and reference below */}
           <Box sx={{ my: 3 }}>
