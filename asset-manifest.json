@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/static/css/main.5da02c21.css",
-    "main.js": "/static/js/main.afb9e0ba.js",
+    "main.js": "/static/js/main.04aa0182.js",
     "static/js/871.72149f94.chunk.js": "/static/js/871.72149f94.chunk.js",
     "static/css/127.0d1390dd.chunk.css": "/static/css/127.0d1390dd.chunk.css",
-    "static/js/127.f4b85bbf.chunk.js": "/static/js/127.f4b85bbf.chunk.js",
+    "static/js/127.40a7ed85.chunk.js": "/static/js/127.40a7ed85.chunk.js",
     "static/js/442.4a07b827.chunk.js": "/static/js/442.4a07b827.chunk.js",
     "static/js/630.8def87d6.chunk.js": "/static/js/630.8def87d6.chunk.js",
     "static/js/151.f5362ebe.chunk.js": "/static/js/151.f5362ebe.chunk.js",
     "static/js/936.2beed748.chunk.js": "/static/js/936.2beed748.chunk.js",
     "static/media/cities-logo.png": "/static/media/cities-logo.6e8b8fce882b8a120203.png",
-    "static/media/IQAir_logo.svg": "/static/media/IQAir_logo.ca5627e09dcf5485c1839cf4b166f5f3.svg",
     "index.html": "/index.html",
+    "static/media/IQAir_logo.svg": "/static/media/IQAir_logo.6664e0a790249b05f736fb791effaaf3.svg",
     "main.5da02c21.css.map": "/static/css/main.5da02c21.css.map",
-    "main.afb9e0ba.js.map": "/static/js/main.afb9e0ba.js.map",
+    "main.04aa0182.js.map": "/static/js/main.04aa0182.js.map",
     "871.72149f94.chunk.js.map": "/static/js/871.72149f94.chunk.js.map",
     "127.0d1390dd.chunk.css.map": "/static/css/127.0d1390dd.chunk.css.map",
-    "127.f4b85bbf.chunk.js.map": "/static/js/127.f4b85bbf.chunk.js.map",
+    "127.40a7ed85.chunk.js.map": "/static/js/127.40a7ed85.chunk.js.map",
     "442.4a07b827.chunk.js.map": "/static/js/442.4a07b827.chunk.js.map",
     "630.8def87d6.chunk.js.map": "/static/js/630.8def87d6.chunk.js.map",
     "151.f5362ebe.chunk.js.map": "/static/js/151.f5362ebe.chunk.js.map",
@@ -24,6 +24,6 @@
   },
   "entrypoints": [
     "static/css/main.5da02c21.css",
-    "static/js/main.afb9e0ba.js"
+    "static/js/main.04aa0182.js"
   ]
 }
