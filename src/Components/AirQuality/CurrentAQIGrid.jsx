@@ -14,48 +14,8 @@ import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
 import CustomThemes from '../../Themes/CustomThemes';
 import { useContext } from 'react';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
-
-export const CurrentAQIGridSize = {
-  large: "large",
-  medium: "medium",
-  small: "small"
-}
-
-const ElementSizes = {
-  [CurrentAQIGridSize.large]: {
-    icon: null,
-    locationAndCategory: 'h4',
-    aqi: 'h1',
-    aqiLineHeight: 0.8,
-    sensorStatus: 'h6',
-    heatIndex: 'body1',
-    meteroDataMarginTop: 2,
-    metero: 'h6',
-    importantFontWeight: '500 !important'
-  },
-  [CurrentAQIGridSize.medium]: {
-    icon: '1rem',
-    locationAndCategory: 'h5',
-    aqi: 'h2',
-    aqiLineHeight: 0.9,
-    sensorStatus: 'caption',
-    heatIndex: 'body2',
-    meteroDataMarginTop: 1,
-    metero: 'body1',
-    importantFontWeight: null
-  },
-  [CurrentAQIGridSize.small]: {
-    icon: '1rem',
-    locationAndCategory: 'body1',
-    aqi: 'h3',
-    aqiLineHeight: 0.9,
-    sensorStatus: 'caption',
-    heatIndex: 'caption',
-    meteroDataMarginTop: 1,
-    metero: 'caption',
-    importantFontWeight: null
-  }
-}
+import { CurrentAQIGridSize, ElementSizes } from './CurrentAQIGridSize';
+import ThemePreferences from '../../Themes/ThemePreferences';
 
 const CurrentAQIGrid = (props) => {
   const {
@@ -64,6 +24,7 @@ const CurrentAQIGrid = (props) => {
     showWeather = true,
     showHeatIndex = true,
     showLastUpdate = true,
+    showRawMeasurements = true,
     useLocationShort = false,
     roundTemperature = false,
     firstSensorOwnLine = false,
@@ -72,12 +33,110 @@ const CurrentAQIGrid = (props) => {
 
   const { temperatureUnitPreference } = useContext(PreferenceContext);
 
-  const getGridItemSize = ({ itemIndex, numOfItems }) => {
+  const getGridItemSizes = ({ itemIndex, numOfItems }) => {
     return {
       xs: (itemIndex === 0 && firstSensorOwnLine) ? 12 : Math.max(12 / numOfItems, 6),
       sm: Math.max(12 / numOfItems, 4),
       lg: size === CurrentAQIGridSize.large ? (12 / numOfItems) : Math.min(5, Math.max(12 / numOfItems, 2))
     }
+  }
+
+  const CurrentAQISingleSensor = (props) => {
+    const { sensor, current, gridSizes } = props;
+    const { themePreference } = useContext(PreferenceContext);
+
+    return (
+      <Grid item {...gridSizes}
+        sx={
+          current?.sensor_status !== SensorStatus.active &&
+          { '& *': { color: CustomThemes.universal.palette.inactiveSensor } }
+        }
+      >
+        <Box sx={{ '& *': { color: current?.color[isScreen ? ThemePreferences.light : themePreference] } }}>
+          <Typography variant={ElementSizes[size].locationAndCategory} fontWeight="500" className='condensedFont' textTransform="capitalize">
+            {returnLocationName({
+              useLocationShort,
+              location_short: sensor?.location_short,
+              location_long: sensor?.location_long
+            })}
+          </Typography>
+          <Typography variant={ElementSizes[size].aqi} fontWeight="500" lineHeight={ElementSizes[size].aqiLineHeight}>
+            {current?.aqi?.val || '--'}
+          </Typography>
+          <Typography
+            variant={ElementSizes[size].locationAndCategory}
+            fontWeight="500"
+            className='condensedFont'
+            style={{
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden'
+            }}
+          >
+            {current?.category || '--'}
+          </Typography>
+        </Box>
+
+        {showRawMeasurements ?
+          <Box sx={{
+            '& *': {
+              color:
+                isScreen ? CustomThemes.universal.palette.inactiveSensor : 'text.secondary'
+            }
+          }}>
+            <Typography
+              variant={ElementSizes[size].rawValues}
+              display="block"
+              fontWeight="500"
+              className='condensedFont'
+            >
+              {`PM2.5: ${current?.["pm2.5"] || "--"} μg/m3`}
+            </Typography>
+            <Typography
+              variant={ElementSizes[size].rawValues}
+              display="block"
+              fontWeight="500"
+              className='condensedFont'
+            >
+              {`PM10: ${current?.pm10 || "--"} μg/m3`}
+            </Typography>
+          </Box> : null}
+
+        <Box sx={{
+          '& *': {
+            color:
+              isScreen ? (
+                current?.sensor_status === SensorStatus.active ?
+                  '#c8dcff' : CustomThemes.universal.palette.inactiveSensor
+              )
+                : 'text.secondary'
+          }, mt: ElementSizes[size].meteroDataMarginTop
+        }} className='condensedFont'>
+          {
+            showWeather && displayMetero({ size, current, temperatureUnitPreference, roundTemperature })
+          }
+          {
+            // Show heat index for selected location types
+            showHeatIndex &&
+            ['outdoors', 'indoors_gym'].includes(sensor?.location_type) &&
+            <Typography variant={ElementSizes[size].metero} sx={{ fontWeight: '300 !important' }}>
+              {returnHeatIndex({ current, temperatureUnitPreference })}
+            </Typography>
+          }
+          {
+            showLastUpdate && displayLastUpdateAndSensorStatus({ size, current, isScreen })
+          }
+        </Box>
+
+        {
+          current?.sensor_status !== SensorStatus.active &&
+          <Typography variant={ElementSizes[size].sensorStatus} className="condensedFont">
+            {returnSensorStatus(current)}
+          </Typography>
+        }
+      </Grid>
+    )
   }
 
   return (
@@ -103,80 +162,18 @@ const CurrentAQIGrid = (props) => {
     >
       {
         currentSensorsData ?
-          (Object.entries(currentSensorsData).map(([key, sensorData], index) => (
-            <Grid
-              item
-              key={key}
-              {...getGridItemSize({
+          (Object.entries(currentSensorsData).map(([_, sensorData], index) => (
+            <CurrentAQISingleSensor
+              key={index}
+              sensor={sensorData.sensor}
+              current={sensorData.current}
+              gridSizes={getGridItemSizes({
                 itemIndex: index,
                 numOfItems: Object.keys(currentSensorsData).length
               }
               )}
-              sx={
-                sensorData.current?.sensor_status !== SensorStatus.active &&
-                { '& *': { color: `${CustomThemes.universal.palette.inactiveSensor}` } }
-              }
-            >
-              <Box sx={{ '& *': { color: sensorData.current?.color } }}>
-                <Typography variant={ElementSizes[size].locationAndCategory} fontWeight="500" className='condensedFont' textTransform="capitalize">
-                  {returnLocationName({
-                    useLocationShort,
-                    location_short: sensorData.sensor?.location_short,
-                    location_long: sensorData.sensor?.location_long
-                  })}
-                </Typography>
-                <Typography variant={ElementSizes[size].aqi} fontWeight="500" lineHeight={ElementSizes[size].aqiLineHeight}>
-                  {sensorData.current?.aqi || '--'}
-                </Typography>
-                <Typography
-                  variant={ElementSizes[size].locationAndCategory}
-                  fontWeight="500"
-                  className='condensedFont'
-                  style={{
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden'
-                  }}
-                >
-                  {sensorData.current?.category || '--'}
-                </Typography>
 
-              </Box>
-
-              <Box sx={{
-                '& *': {
-                  color:
-                    isScreen ? (
-                      sensorData.current?.sensor_status === SensorStatus.active ?
-                        '#c8dcff' : CustomThemes.universal.palette.inactiveSensor
-                    )
-                      : 'text.secondary'
-                }, mt: ElementSizes[size].meteroDataMarginTop
-              }} className='condensedFont'>
-                {
-                  showWeather && displayMetero({ size, sensorData, temperatureUnitPreference, roundTemperature })
-                }
-                {
-                  // Show heat index for selected location types
-                  showHeatIndex &&
-                  ['outdoors', 'indoors_gym'].includes(sensorData.sensor?.location_type) &&
-                  <Typography variant={ElementSizes[size].metero} sx={{ fontWeight: '300 !important' }}>
-                    {returnHeatIndex({ sensorData, temperatureUnitPreference })}
-                  </Typography>
-                }
-                {
-                  showLastUpdate && displayLastUpdateAndSensorStatus({ size, sensorData, isScreen })
-                }
-              </Box>
-
-              {
-                sensorData.sensor_status !== SensorStatus.active &&
-                <Typography variant={ElementSizes[size].sensorStatus} className="condensedFont">
-                  {returnSensorStatus(sensorData)}
-                </Typography>
-              }
-            </Grid>
+            />
           ))
           )
           :
@@ -190,7 +187,7 @@ const CurrentAQIGrid = (props) => {
             </Stack>
           )
       }
-    </Grid>
+    </Grid >
   );
 };
 
@@ -200,6 +197,8 @@ export const SimpleCurrentAQIlist = (props) => {
     useLocationShort = false,
     size = CurrentAQIGridSize.medium
   } = props;
+
+  const { themePreference } = useContext(PreferenceContext);
 
   const displayAQI = ({ aqi, category }) => {
     if (!aqi) return "--";
@@ -252,8 +251,8 @@ export const SimpleCurrentAQIlist = (props) => {
                 })}
                 :
                 &nbsp;
-                <Box component="span" color={sensorData.current?.color}>
-                  {displayAQI({ aqi: sensorData.current?.aqi, category: sensorData.current?.category })}
+                <Box component="span" color={sensorData.current?.color[themePreference]}>
+                  {displayAQI({ aqi: sensorData.current?.aqi?.val, category: sensorData.current?.category })}
                 </Box>
               </Typography>
             </Grid>
@@ -272,10 +271,10 @@ export const SimpleCurrentAQIlist = (props) => {
   );
 }
 
-const displayLastUpdateAndSensorStatus = ({ size, sensorData, isScreen }) => {
+const displayLastUpdateAndSensorStatus = ({ size, current, isScreen }) => {
   const { themePreference } = useContext(PreferenceContext);
 
-  if (isScreen && sensorData.current.sensor_status === SensorStatus.active) return null;
+  if (isScreen && current.sensor_status === SensorStatus.active) return null;
   else
     return (
       <Typography
@@ -287,13 +286,13 @@ const displayLastUpdateAndSensorStatus = ({ size, sensorData, isScreen }) => {
         }}
       >
         {
-          sensorData.current?.sensor_status !== SensorStatus.active
+          current?.sensor_status !== SensorStatus.active
           &&
           <>
             <ErrorIcon
               sx={{
                 '& *': {
-                  color: `${AQIdatabase[3].color[themePreference]} !important` // red
+                  color: `${AQIdatabase[3].color[isScreen ? ThemePreferences.light : themePreference]} !important` // red
                 },
                 mr: 0.5
               }} />
@@ -301,36 +300,36 @@ const displayLastUpdateAndSensorStatus = ({ size, sensorData, isScreen }) => {
           </>
         }
         Last update:
-        {(sensorData.current?.timestamp || sensorData.sensor?.last_seen)
-          ? ` ${getFormattedElapsedTimeFromNow(sensorData.current?.timestamp || sensorData.sensor?.last_seen)} ago`
+        {(current?.timestamp || sensor?.last_seen)
+          ? ` ${getFormattedElapsedTimeFromNow(current?.timestamp || sensor?.last_seen)} ago`
           : '--'}
       </Typography>
     )
 }
 
-const displayMetero = ({ size, sensorData, temperatureUnitPreference, roundTemperature }) => {
+const displayMetero = ({ size, current, temperatureUnitPreference, roundTemperature }) => {
   return (
     <Typography variant={ElementSizes[size].metero}>
       <ThermostatIcon />
       {
         getFormattedTemperature({
-          rawTemp: roundTemperature ? Math.round(sensorData.current?.temperature) : sensorData.current?.temperature,
+          rawTemp: roundTemperature ? Math.round(current?.temperature) : current?.temperature,
           currentUnit: TemperatureUnits.celsius,
           returnUnit: temperatureUnitPreference
         })
       }
       &nbsp;&nbsp;-&nbsp;
       <WaterDropIcon sx={{ transform: 'scaleX(0.9)' }} />
-      {sensorData.current?.rel_humidity ? Math.round(sensorData.current?.rel_humidity) : "--"}%
+      {current?.rel_humidity ? Math.round(current?.rel_humidity) : "--"}%
     </Typography>
   )
 }
 
-const returnHeatIndex = ({ sensorData, temperatureUnitPreference }) => {
+const returnHeatIndex = ({ current, temperatureUnitPreference }) => {
   return calculateHeatIndex({
-    rawTemp: sensorData.current?.temperature,
+    rawTemp: current?.temperature,
     currentUnit: TemperatureUnits.celsius,
-    rel_humidity: sensorData.current?.rel_humidity,
+    rel_humidity: current?.rel_humidity,
     returnUnit: temperatureUnitPreference
   })
 }

@@ -1,6 +1,6 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 
 import convertToAQI from '../../../Utils/AirQuality/AirQualityIndexCalculator';
@@ -11,6 +11,7 @@ import { Box } from '@mui/material';
 import { capitalizeFirstCharacter, areDOMOverlapped } from './ScreenUtils';
 
 import CustomThemes from '../../../Themes/CustomThemes';
+import ThemePreferences from '../../../Themes/ThemePreferences';
 
 const numberOfHoursForHistoricalData = 6;
 
@@ -36,7 +37,7 @@ const RecentHistoricalGraph = (props) => {
       return xAxis(d.timestamp);
     }) // set the x values for the line generator
     .y(function (d) {
-      return yAxis(d.aqi);
+      return yAxis(d.aqi.val);
     }) // set the y values for the line generator
     .curve(d3.curveCardinal.tension(0)); // apply smoothing to the line
 
@@ -66,14 +67,13 @@ const RecentHistoricalGraph = (props) => {
     Object.entries(data).forEach(([key, sensorData]) => {
       // Create the JS date object and calculate AQI from raw measurements
       sensorData.historical?.forEach(function (d) {
-        d.timestamp = new Date(d.timestamp);
-        d.aqi = convertToAQI(d["pm2.5"]).aqi;
+        d.timestamp = new Date(d.timestamp)
       });
 
       // Calculate the maximum value AQI of this sensor
       if (sensorData.historical && Array.isArray(sensorData.historical)) {
         const max = d3.max(sensorData.historical, function (d) {
-          return d.aqi;
+          return d.aqi.val;
         });
         if (max > maxAQItoDisplay) maxAQItoDisplay = max;
       }
@@ -84,7 +84,7 @@ const RecentHistoricalGraph = (props) => {
 
     for (let category of AQIdatabase) {
       if (maxAQItoDisplay >= category.aqiUS.low && maxAQItoDisplay <= category.aqiUS.high) {
-        maxAQItoDisplay = category.aqiUS.high;
+        maxAQItoDisplay = category.aqiUS.high === Infinity ? maxAQItoDisplay : category.aqiUS.high;
         break;
       }
     };
@@ -99,18 +99,25 @@ const RecentHistoricalGraph = (props) => {
     yAxis = d3.scaleLinear().domain([0, maxAQItoDisplay]).range([height + margin.top, margin.top]); // height is already exclusive of margin
 
     // 7. Add the background category layer and the AQI levels (rectangles) and the grids
-    let font_size = Math.floor((((AQIdatabase[1].aqiUS.high - AQIdatabase[0].aqiUS.high) / maxAQItoDisplay) * height) / 2);
+    let font_size = Math.max(
+      Math.floor(((AQIdatabase[1].aqiUS.high - AQIdatabase[0].aqiUS.high) / maxAQItoDisplay) * height / 2),
+      20);
+
     let marginText = Math.floor(font_size / 5);
     // Loop through all the aqi_category and add each category into the graph
     for (let i = 0; i < AQIdatabase.length; i++) {
       const category = AQIdatabase[i];
-      if (maxAQItoDisplay <= category.aqiUS.low) break;
+      const upper = category.aqiUS.high === Infinity ? maxAQItoDisplay : category.aqiUS.high;
+      const lower = category.aqiUS.low;
+
+      if (maxAQItoDisplay <= lower) break;
+
       // Add the rectangles
-      const aqiRange = Math.ceil((category.aqiUS.high - category.aqiUS.low) / 50) * 50;
+      const aqiRange = Math.ceil((upper - lower) / 50) * 50;
       d3.select(layerBackground.current)
         .append("rect")
         .attr("x", 0)
-        .attr("y", height - (category.aqiUS.high / maxAQItoDisplay) * height + margin.top)
+        .attr("y", height - (upper / maxAQItoDisplay) * height + margin.top)
         .attr("width", width)
         .attr("height", aqiRange / maxAQItoDisplay * height)
         .attr("fill", category.color.Light);
@@ -165,7 +172,7 @@ const RecentHistoricalGraph = (props) => {
             return formatHour(d);
           })
       )
-      .attr("font-size", font_size / 2.25)
+      .attr("font-size", height / 20)
       .attr("color", CustomThemes.universal.palette.inactiveSensor)
       .select(".domain")
       .remove();
@@ -191,7 +198,10 @@ const RecentHistoricalGraph = (props) => {
       // Append the circle marker at the end of this line chart to denote its liveness
       const mostRecentData = sensorData.historical?.length > 0 ? sensorData.historical?.[0] : null;
       if (mostRecentData) {
-        const aqiObject = AQIdatabase[convertToAQI(mostRecentData["pm2.5"]).aqi_category_index];
+        const category = AQIdatabase[mostRecentData?.aqi?.categoryIndex];
+        let color;
+        if (category) color = category.color[ThemePreferences.light];
+
         const markerWrapper = d3.select(layerLines.current)
           .append("g")
           .attr(
@@ -199,12 +209,12 @@ const RecentHistoricalGraph = (props) => {
             "translate(" +
             xAxis(mostRecentData.timestamp) +
             "," +
-            yAxis(mostRecentData.aqi) +
+            yAxis(mostRecentData.aqi.val) +
             ")"
           )
           .attr("fill",
             sensorData.current?.sensor_status === SensorStatus.active
-              ? aqiObject.color.Light
+              ? color
               : CustomThemes.universal.palette.inactiveSensor)
           ;
 
@@ -230,7 +240,7 @@ const RecentHistoricalGraph = (props) => {
           .attr("fill", "black")
           .attr("alignment-baseline", "middle")
           .attr("text-anchor", "left")
-          .attr("font-size", font_size / 3)
+          .attr("font-size", height / 25)
           .text(capitalizeFirstCharacter(sensorData.sensor?.location_short));
 
         const locationLabels = document.getElementsByClassName("location-label");

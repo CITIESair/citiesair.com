@@ -6,7 +6,8 @@ import { useMediaQuery, useTheme } from '@mui/material';
 
 import AQImap, { LocationTitle, TileOptions } from '../../Components/AirQuality/AQImap';
 import { GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
-import CurrentAQIGrid, { CurrentAQIGridSize, SimpleCurrentAQIlist } from '../../Components/AirQuality/CurrentAQIGrid';
+import CurrentAQIGrid, { SimpleCurrentAQIlist } from '../../Components/AirQuality/CurrentAQIGrid';
+import { CurrentAQIGridSize } from '../../Components/AirQuality/CurrentAQIGridSize';
 import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import ThemePreferences from '../../Themes/ThemePreferences';
@@ -146,6 +147,7 @@ const NYUADbanner = (props) => {
             <CurrentAQIGrid
               currentSensorsData={outdoorLocations}
               showHeatIndex={false}
+              showRawMeasurements={!isOnBannerPage}
               useLocationShort={true}
               roundTemperature={isOnBannerPage && true}
               size={isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium}
@@ -156,6 +158,7 @@ const NYUADbanner = (props) => {
             <CurrentAQIGrid
               currentSensorsData={featuredIndoorLocations}
               showWeather={!isOnBannerPage}
+              showRawMeasurements={!isOnBannerPage}
               showHeatIndex={false}
               showLastUpdate={!isOnBannerPage}
               size={CurrentAQIGridSize.small}

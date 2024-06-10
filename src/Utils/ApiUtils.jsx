@@ -1,7 +1,5 @@
 import { fetchDataFromURL } from "../Components/DatasetDownload/DatasetFetcher";
 import { calculateSensorStatus } from "../Components/AirQuality/AirQualityScreen/ScreenUtils";
-import { SensorStatus } from "../Components/AirQuality/SensorStatus";
-import convertToAQI from "./AirQuality/AirQualityIndexCalculator";
 import AQIdatabase from "./AirQuality/AirQualityIndexHelper";
 import parse from 'html-react-parser';
 import AggregationType from "../Components/DateRangePicker/AggregationType";
@@ -113,26 +111,39 @@ export const processCurrentSensorsData = (data) => {
     if (sensorData.current) {
       sensorData.current.lastSeenInHours = lastSeenInHours;
       sensorData.current.sensor_status = calculateSensorStatus(lastSeenInHours);
-    }
 
-    // Calculate AQI from raw measurements
-    if (sensorData.current?.["pm2.5"]) {
-      const aqiObject = convertToAQI(sensorData.current["pm2.5"]);
-      if (aqiObject) {
-        const aqiCategory = AQIdatabase[aqiObject.aqi_category_index];
-        sensorData.current.aqi = aqiObject.aqi;
-        sensorData.current.category = aqiCategory.category;
+      const aqi = sensorData.current.aqi;
+      if (typeof aqi?.categoryIndex === 'number' && !isNaN(aqi?.categoryIndex)) {
+        const { color, category, healthSuggestions } = AQIdatabase[aqi.categoryIndex];
+        const healthSuggestion = parse(healthSuggestions[sensorData.sensor?.location_type] || "");
 
-        // Only add color and healthSuggestion if the sensor is active
-        if (sensorData.current.sensor_status === SensorStatus.active) {
-          sensorData.current = {
-            ...sensorData.current,
-            color: aqiCategory.color.Light,
-            healthSuggestion: aqiCategory.healthSuggestions[sensorData.sensor?.location_type] && parse(aqiCategory.healthSuggestions[sensorData.sensor?.location_type])
-          };
+        sensorData.current = {
+          ...sensorData.current,
+          color,
+          category,
+          healthSuggestion
         }
       }
     }
+
+    // Calculate AQI from raw measurements
+    // if (sensorData.current?.["pm2.5"]) {
+    //   const aqiObject = convertToAQI(sensorData.current["pm2.5"]);
+    //   if (aqiObject) {
+    //     const aqiCategory = AQIdatabase[aqiObject.aqi_category_index];
+    //     sensorData.current.aqi = aqiObject.aqi;
+    //     sensorData.current.category = aqiCategory.category;
+
+    //     // Only add color and healthSuggestion if the sensor is active
+    //     if (sensorData.current.sensor_status === SensorStatus.active) {
+    //       sensorData.current = {
+    //         ...sensorData.current,
+    //         color: aqiCategory.color.Light,
+    //         healthSuggestion: aqiCategory.healthSuggestions[sensorData.sensor?.location_type] && parse(aqiCategory.healthSuggestions[sensorData.sensor?.location_type])
+    //       };
+    //     }
+    //   }
+    // }
   });
   return data;
 }

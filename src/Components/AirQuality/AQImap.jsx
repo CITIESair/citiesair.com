@@ -161,26 +161,10 @@ const AQImap = (props) => {
                 location.current.sensor_status = calculateSensorStatus(lastSeenInHours);
             }
 
-            // Calculate AQI from raw measurements
-            if (location.current?.["pm2.5"]) {
-                const aqiObject = convertToAQI(location.current["pm2.5"]);
-                if (aqiObject) {
-                    const aqiCategory = AQIdatabase[aqiObject.aqi_category_index];
-                    location.current.aqi = aqiObject.aqi;
-                    location.current.category = aqiCategory.category;
-
-                    if (location.current.sensor_status === SensorStatus.active) {
-                        location.current.color = aqiCategory.color[themePreference];
-                    } else {
-                        location.current.color = CustomThemes.universal.palette.inactiveSensor;
-                    }
-                }
-            }
-
             // Create the marker icon on the map
             location.markerIcon = new L.DivIcon({
                 className: aqiMarkerIconClass,
-                html: `<div aria-hidden={true} style="background-color: ${location.current?.color}">${displayAqiValue(location)}</div>`
+                html: `<div aria-hidden={true} style="background-color: ${location.current?.color[themePreference]}">${displayAqiValue(location)}</div>`
             });
 
             return location;
@@ -250,7 +234,7 @@ const AQImap = (props) => {
                                 key={key}
                                 center={[location.sensor?.coordinates?.latitude, location.sensor?.coordinates?.longitude]}
                                 pathOptions={{
-                                    fillColor: location.current?.color,
+                                    fillColor: location.current?.color[themePreference],
                                     radius: 3,
                                     weight: 0,
                                     fillOpacity: 1
@@ -279,10 +263,10 @@ const AQImap = (props) => {
     const displayAqiValue = (location) => {
         const emptyValue = "--";
         if (!location.current) return emptyValue;
-        if (!location.current.aqi) return emptyValue;
+        if (!location.current.aqi.val) return emptyValue;
         if (location.current.sensor_status === SensorStatus.offline) return emptyValue;
 
-        return location.current.aqi;
+        return location.current.aqi.val;
     };
 
     const displayAqiCategory = (location) => {
@@ -440,7 +424,7 @@ const AQImap = (props) => {
                                     }
 
 
-                                    <Box sx={{ '& *': { color: location.current?.color } }}>
+                                    <Box sx={{ '& *': { color: location.current?.color[themePreference] }, mb: 2 }}>
                                         <Typography variant={smallScreen ? 'h4' : 'h3'} fontWeight="500" lineHeight={0.9}>
                                             {displayAqiValue(location)}
                                             <Typography variant='caption' fontWeight="500">(US AQI)</Typography>
@@ -454,7 +438,6 @@ const AQImap = (props) => {
                                     <Typography
                                         variant="caption"
                                         sx={{ display: 'block' }}
-                                        gutterBottom
                                     >
                                         <Typography variant='caption' fontWeight="500">PM2.5:</Typography>
                                         &nbsp;
@@ -463,39 +446,34 @@ const AQImap = (props) => {
                                     <Typography
                                         variant="caption"
                                         sx={{ display: 'block' }}
-                                        gutterBottom
                                     >
-                                        <ThermostatIcon sx={{ fontSize: '1rem', verticalAlign: 'sub' }} />
-                                        {
-                                            getFormattedTemperature({
-                                                rawTemp: location.current?.temperature,
-                                                currentUnit: TemperatureUnits.celsius,
-                                                returnUnit: temperatureUnitPreference
-                                            })}
-                                        &nbsp;&nbsp;-&nbsp;&nbsp;
-                                        <WaterDropIcon sx={{ fontSize: '1rem', verticalAlign: 'sub' }} />
+                                        <Typography variant='caption' fontWeight="500">PM10:</Typography>
+                                        &nbsp;
+                                        {location.current?.pm10 || '--'}µg/m<sup>3</sup>
+                                    </Typography>
+
+                                    <Typography
+                                        variant="caption"
+                                        sx={{ display: 'block' }}
+                                    >
+                                        <Typography variant='caption' fontWeight="500">Weather: </Typography>
+                                        {getFormattedTemperature({
+                                            rawTemp: location.current?.temperature,
+                                            currentUnit: TemperatureUnits.celsius,
+                                            returnUnit: temperatureUnitPreference
+                                        })}
+                                        &nbsp;-&nbsp;
                                         {location.current?.rel_humidity ? Math.round(location.current?.rel_humidity) : "--"}%
                                     </Typography>
-                                    <Typography variant="caption" sx={{ display: 'block', fontWeight: 500 }}>
 
+                                    <Typography variant="caption">
+                                        <Typography variant='caption' fontWeight="500">Status:</Typography>
+                                        &nbsp;
+                                        {location.current?.sensor_status}
+                                        {location.current?.timestamp
+                                            ? ` (${getFormattedElapsedTimeFromNow(location.current.timestamp)} ago)`
+                                            : ''}
                                     </Typography>
-                                    <Box sx={{ mt: 1 }}>
-                                        <Typography variant='caption' sx={{ mt: 0 }}>
-                                            <Typography variant='caption' fontWeight="500">Last update:</Typography>
-                                            {location.current?.timestamp
-                                                ? ` ${getFormattedElapsedTimeFromNow(location.current.timestamp)} ago`
-                                                : '--'}
-                                        </Typography>
-                                        <br />
-                                        <Typography
-                                            variant="caption"
-                                            textTransform="capitalize"
-                                        >
-                                            <Typography variant='caption' fontWeight="500">Status:</Typography>
-                                            &nbsp;
-                                            {location.current?.sensor_status}
-                                        </Typography>
-                                    </Box>
                                 </StyledLeafletPopup>
                             }
 

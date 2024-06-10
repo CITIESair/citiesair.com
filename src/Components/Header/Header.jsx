@@ -44,7 +44,7 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
 }));
 
 export default function Header() {
-  const { currentPage, chartsTitlesList } = useContext(LinkContext);
+  const { currentPage } = useContext(LinkContext);
 
   // trigger for hiding/showing the AppBar
   const triggerHideAppBar = useScrollTrigger({
