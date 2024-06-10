@@ -1,9 +1,7 @@
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, styled } from '@mui/material';
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
-import ChartComponentWrapper from '../../Graphs/ChartComponentWrapper';
 import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
-import ThemePreferences from '../../Themes/ThemePreferences';
 import { useContext } from 'react';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 
@@ -63,7 +61,7 @@ function AirQualityIndexTable(props) {
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCell sx={{ pr: 0 }}>
-                  <Box sx={{ width: '1em', height: '1em', backgroundColor: themePreference === ThemePreferences.light ? element.lightThemeColor : element.darkThemeColor }} />
+                  <Box sx={{ width: '1em', height: '1em', backgroundColor: element.color[themePreference] }} />
                 </TableCell>
                 <TableCell sx={{ pl: 1 }}>
                   {element.category}

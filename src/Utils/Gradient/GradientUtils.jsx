@@ -30,6 +30,10 @@ const normalizeColorStops = ({ colors, optionalMinValue, optionalMaxValue }) => 
     else clampedStops = colors;
 
     const offsets = clampedStops.map(colorStop => colorStop.offset);
+    // If optionalMinValue or optionalMaxValue is out of range of the offsets
+    // extend the range of offsets to match optionalMinValue or optionalMaxValue
+    if (optionalMaxValue > offsets[offsets.length - 1]) offsets[offsets.length - 1] = optionalMaxValue;
+    if (optionalMinValue < offsets[0]) offsets[0] = optionalMinValue;
 
     const minOffset = optionalMinValue || Math.min(...offsets);
     const maxOffset = optionalMaxValue || Math.max(...offsets);
@@ -45,7 +49,7 @@ const normalizeColorStops = ({ colors, optionalMinValue, optionalMaxValue }) => 
 
 // Function to return an array of STEPS discrete colors in a gradient from an array of starting colors
 // Used for NivoCalendarChart
-export const generateDiscreteColorGradientArray = ({ colors, numSteps }) => {
+export const generateDiscreteColorGradientArray = ({ colors, numSteps = 100 }) => {
   function hexToRgb(hex) {
     const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
     hex = hex.replace(shorthandRegex, function (m, r, g, b) {
@@ -65,6 +69,10 @@ export const generateDiscreteColorGradientArray = ({ colors, numSteps }) => {
   }
 
   function interpolateColor(color1, color2, factor) {
+    // Return immediately if the 2 colors are the same
+    if (color1.every((element, index) => element === color2[index])) return color1;
+
+    // Else, calculate the middle of the 2 colors
     let result = color1.slice();
     for (let i = 0; i < 3; i++) {
       result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]));
@@ -111,6 +119,7 @@ export const generateCssBackgroundGradient = ({ gradientDirection, colors }) => 
 
 export const generateSvgFillGradient = ({ colors, optionalMinValue, optionalMaxValue }) => {
   const normalizedColors = normalizeColorStops({ colors, optionalMinValue, optionalMaxValue });
+
   return normalizedColors.map(colorStop => ({
     color: colorStop.color,
     offset: colorStop.offset * 100 + '%'

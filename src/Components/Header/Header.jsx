@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import { styled } from '@mui/material/styles';
-import { Link, Tooltip, Box, Typography, Container, Paper, AppBar, Toolbar, useScrollTrigger, Slide, Stack, Drawer, Divider } from '@mui/material';
+import { Link, Tooltip, Box, Typography, Container, Paper, AppBar, Toolbar, useScrollTrigger, Slide, Stack, Drawer, Divider, Alert } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -63,6 +63,7 @@ export default function Header() {
 
   return (
     <>
+
       {/* Hidable navbar */}
       <Slide appear={false} direction="down" in={!triggerHideAppBar}>
         <StyledAppBar enableColorOnDark component="nav">
@@ -176,13 +177,22 @@ export default function Header() {
         sx={{ backgroundColor: 'customAlternateBackground', height: `${toolBarHeightInRem * 1.5}rem` }}
       />
 
+      <FullWidthBox sx={{
+        backgroundColor: "customAlternateBackground",
+        pt: 4
+      }}>
+        <Container maxWidth="lg">
+          <Alert severity="info">We are adding new features to CITIESair from <b> June - July 2024</b>. We ask for your understanding if some functionalities do not work as expected. Please reach out if you notice any abnormality.</Alert>
+        </Container >
+      </FullWidthBox>
+
       {
         (
           currentPage === UniqueRoutes.home
           && (
             <FullWidthBox sx={{
               width: '100%',
-              pt: 4,
+              pt: 2,
               pb: 3,
               backgroundColor: 'customAlternateBackground'
             }}
@@ -229,6 +239,7 @@ export default function Header() {
           )
         )
       }
+
     </>
   );
 }

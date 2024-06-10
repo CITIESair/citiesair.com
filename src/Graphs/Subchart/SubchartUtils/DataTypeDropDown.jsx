@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button, Menu, MenuItem, Typography } from "@mui/material";
 import { isValidArray } from "../../../Utils/Utils";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { returnSelectedDataType } from "../../../Utils/AirQuality/DataTypes";
 
 const DataTypeDropDownMenu = ({ selectedDataType, dataTypes, fetchChartDataType }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -47,11 +48,11 @@ const DataTypeDropDownMenu = ({ selectedDataType, dataTypes, fetchChartDataType 
           minWidth: 'unset',
           borderRadius: 0,
           verticalAlign: 'top',
-          textTransform: 'capitalize'
+          textTransform: 'unset'
         }}
       >
         <Typography display="inline" variant="h6" borderBottom="dotted">
-          {dataTypes.filter(dataType => dataType.key === selectedDataType).map(dataType => dataType.name_title)}
+          {returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: dataTypes, showUnit: true })}
         </Typography>
         <ArrowDropDownIcon />
       </Button>

@@ -1,11 +1,16 @@
-import CustomThemes from '../../Themes/CustomThemes';
+import { lightShade, darkShade, maroon } from '../../Themes/CustomColors';
+import { colors } from '@mui/material';
+import ThemePreferences from '../../Themes/ThemePreferences';
+import AQIDataTypes from './DataTypes';
 
 const AQIdatabase = [
   {
     id: 0,
     category: 'Good',
-    lightThemeColor: CustomThemes.light.palette.chart.optionsColors.aqi[0],
-    darkThemeColor: CustomThemes.dark.palette.chart.optionsColors.aqi[0],
+    color: {
+      Light: colors.green[lightShade],
+      Dark: colors.green[darkShade]
+    },
     aqiUS: {
       low: 0,
       high: 50
@@ -34,8 +39,10 @@ const AQIdatabase = [
   {
     id: 1,
     category: 'Moderate',
-    lightThemeColor: CustomThemes.light.palette.chart.optionsColors.aqi[1],
-    darkThemeColor: CustomThemes.dark.palette.chart.optionsColors.aqi[1],
+    color: {
+      Light: colors.yellow[lightShade + 100],
+      Dark: colors.yellow[darkShade + 200]
+    },
     aqiUS: {
       low: 51,
       high: 100
@@ -64,8 +71,10 @@ const AQIdatabase = [
   {
     id: 2,
     category: 'Unhealthy for Sensitive Groups',
-    lightThemeColor: CustomThemes.light.palette.chart.optionsColors.aqi[2],
-    darkThemeColor: CustomThemes.dark.palette.chart.optionsColors.aqi[2],
+    color: {
+      Light: colors.orange[lightShade],
+      Dark: colors.orange[darkShade]
+    },
     aqiUS: {
       low: 101,
       high: 150
@@ -93,8 +102,10 @@ const AQIdatabase = [
   {
     id: 3,
     category: 'Unhealthy',
-    lightThemeColor: CustomThemes.light.palette.chart.optionsColors.aqi[3],
-    darkThemeColor: CustomThemes.dark.palette.chart.optionsColors.aqi[3],
+    color: {
+      Light: colors.red[lightShade],
+      Dark: colors.red[darkShade]
+    },
     aqiUS: {
       low: 151,
       high: 200
@@ -123,8 +134,10 @@ const AQIdatabase = [
   {
     id: 4,
     category: 'Very Unhealthy',
-    lightThemeColor: CustomThemes.light.palette.chart.optionsColors.aqi[4],
-    darkThemeColor: CustomThemes.dark.palette.chart.optionsColors.aqi[4],
+    color: {
+      Light: colors.purple[lightShade],
+      Dark: colors.purple[darkShade]
+    },
     aqiUS: {
       low: 201,
       high: 300
@@ -153,8 +166,10 @@ const AQIdatabase = [
   {
     id: 5,
     category: 'Hazardous',
-    lightThemeColor: CustomThemes.light.palette.chart.optionsColors.aqi[5],
-    darkThemeColor: CustomThemes.dark.palette.chart.optionsColors.aqi[5],
+    color: {
+      Light: maroon[lightShade],
+      Dark: maroon[darkShade]
+    },
     aqiUS: {
       low: 301,
       high: Infinity
@@ -182,47 +197,141 @@ const AQIdatabase = [
   },
 ];
 
-export const AQIDataTypes = {
-  aqi: {
-    name: "Air Quality Index (US)",
-    name_short: "AQI",
-    unit: ""
+// From https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme680-ds001.pdf
+const vocDatabase = [
+  {
+    id: 0,
+    category: 'Excellent',
+    rawVOC: {
+      low: 0,
+      high: 50
+    },
+    color: {
+      Light: colors.lightBlue[lightShade],
+      Dark: colors.lightBlue[darkShade]
+    }
   },
-  pm1: {
-    name: "Particulate matter smaller than 1μm",
-    name_short: "PM1",
-    unit: "μg/m3"
+  {
+    id: 1,
+    category: 'Good',
+    rawVOC: {
+      low: 51,
+      high: 100
+    },
+    color: {
+      Light: colors.green[lightShade],
+      Dark: colors.green[darkShade]
+    }
   },
-  pm2_5: {
-    name: "Particulate matter smaller than 2.5μm",
-    name_short: "PM2.5",
-    unit: "μg/m3"
+  {
+    id: 2,
+    category: 'Lightly Polluted',
+    rawVOC: {
+      low: 101,
+      high: 150
+    },
+    color: {
+      Light: colors.yellow[lightShade + 100],
+      Dark: colors.yellow[darkShade + 200]
+    }
   },
-  pm10: {
-    name: "Particulate matter smaller than 10μm",
-    name_short: "PM10",
-    unit: "μg/m3"
+  {
+    id: 3,
+    category: 'Moderately Polluted',
+    rawVOC: {
+      low: 151,
+      high: 200
+    },
+    color: {
+      Light: colors.orange[lightShade],
+      Dark: colors.orange[darkShade]
+    }
   },
-  co2: {
-    name: "Carbon Dioxide",
-    name_short: "CO2",
-    unit: "PPM"
+  {
+    id: 4,
+    category: 'Heavily Polluted',
+    rawVOC: {
+      low: 201,
+      high: 250
+    },
+    color: {
+      Light: colors.red[lightShade],
+      Dark: colors.red[darkShade]
+    }
   },
-  voc: {
-    name: "Volatile Organic Compounds",
-    name_short: "VOC",
-    unit: ""
+  {
+    id: 5,
+    category: 'Severely Polluted',
+    rawVOC: {
+      low: 251,
+      high: 350
+    },
+    color: {
+      Light: colors.purple[lightShade],
+      Dark: colors.purple[darkShade]
+    }
   },
-  temperature: {
-    name: "Temperature",
-    name_short: "T°",
-    unit: "°C"
-  },
-  humidity: {
-    name: "Relative humidity",
-    name_short: "%RH",
-    unit: "%"
+  {
+    id: 5,
+    category: 'Extremely Polluted',
+    rawVOC: {
+      low: 351,
+      high: Infinity
+    },
+    color: {
+      Light: maroon[lightShade],
+      Dark: maroon[darkShade]
+    }
   }
-};
+];
+
+export const getCategoryColors = ({ themePreference, dataType, isGradient }) => {
+  let database;
+  if (dataType === AQIDataTypes.voc) database = vocDatabase;
+  else database = AQIdatabase;
+
+  const thresholdMappingName = dataType.threshold_mapping_name;
+
+  // Return an object with a color gradient of colors associated with different categories for this dataType
+  if (isGradient) {
+    const minValue = database[0][thresholdMappingName].low;
+    let maxValue = database[database.length - 1][thresholdMappingName].high;
+
+    let secondHighestCategoryRange;
+    if (maxValue === Infinity) {
+      // just stack another interval of the next lower category if the highest category has an Infinity high threshold
+      secondHighestCategoryRange = (database[database.length - 2][thresholdMappingName].high - database[database.length - 2][thresholdMappingName].low);
+      maxValue = database[database.length - 2][thresholdMappingName].high + secondHighestCategoryRange;
+    }
+
+    return (
+      {
+        minValue,
+        maxValue,
+        gradientSteps: dataType.gradient_steps,
+        colors: database.flatMap(category => {
+          const lowOffset = category[thresholdMappingName].low;
+          let highOffset = category[thresholdMappingName].high;
+
+          if (category[thresholdMappingName].high === Infinity) highOffset = maxValue;
+
+          return [
+            { color: category.color[themePreference], offset: lowOffset },
+            { color: category.color[themePreference], offset: highOffset }
+          ]
+        })
+      }
+    )
+  }
+
+  // Just return an array with colors associated with different categories for this dataType
+  else {
+    const colorArray = database.map(category => category.color[themePreference]);
+    const noDataColor = colors.grey[themePreference === ThemePreferences.dark ? darkShade + 400 : lightShade - 300];
+    colorArray.push(noDataColor);
+
+    return colorArray;
+  }
+}
 
 export default AQIdatabase;

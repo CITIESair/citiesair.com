@@ -273,6 +273,8 @@ export const SimpleCurrentAQIlist = (props) => {
 }
 
 const displayLastUpdateAndSensorStatus = ({ size, sensorData, isScreen }) => {
+  const { themePreference } = useContext(PreferenceContext);
+
   if (isScreen && sensorData.current.sensor_status === SensorStatus.active) return null;
   else
     return (
@@ -291,7 +293,7 @@ const displayLastUpdateAndSensorStatus = ({ size, sensorData, isScreen }) => {
             <ErrorIcon
               sx={{
                 '& *': {
-                  color: `${AQIdatabase[3].lightThemeColor} !important`
+                  color: `${AQIdatabase[3].color[themePreference]} !important` // red
                 },
                 mr: 0.5
               }} />

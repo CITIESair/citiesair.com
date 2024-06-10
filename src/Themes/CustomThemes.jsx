@@ -1,97 +1,53 @@
 /* eslint-disable max-len */
 import { colors } from '@mui/material';
-
-const darkShade = 400;
-const lightShade = 600;
-const darkShadeColorAxis = 300;
-
-const maroon = {
-  50: '#f0e0e5',
-  100: '#d8b3bd',
-  200: '#bf8091',
-  300: '#a54d65',
-  400: '#912644',
-  500: '#7e0023',
-  600: '#76001f',
-  700: '#6b001a',
-  800: '#610015',
-  900: '#4e000c',
-  A100: '#ff8189',
-  A200: '#ff4e5a',
-  A400: '#ff1b2a',
-  A700: '#ff0212'
-};
-
-const getAQIPalette = ({ increasingOrder, isDark }) => {
-  const shade = isDark ? darkShade : lightShade;
-  const array = [
-    colors.green[shade],
-    colors.yellow[isDark ? shade + 200 : shade],
-    colors.orange[isDark ? shade : shade - 100],
-    colors.red[shade],
-    colors.purple[shade],
-    maroon[shade]
-  ];
-
-  if (increasingOrder) {
-    const noDataColor = colors.grey[isDark ? shade + 400 : shade - 300];
-    array.push(noDataColor);
-  } else {
-    array.reverse();
-  }
-
-  return array;
-};
-
-const getAqiColorAxis = ({ isDark }) => {
-  const shade = isDark ? darkShade : lightShade;
-  return (
-    {
-      minValue: 0,
-      maxValue: 500,
-      colors: [
-        { color: colors.green[shade], offset: 0 },
-        { color: colors.green[shade], offset: 50 },
-        { color: colors.yellow[shade], offset: 50 },
-        { color: colors.yellow[shade], offset: 100 },
-        { color: colors.orange[shade - 100], offset: 100 },
-        { color: colors.orange[shade - 100], offset: 150 },
-        { color: colors.red[shade], offset: 150 },
-        { color: colors.red[shade], offset: 200 },
-        { color: colors.purple[shade], offset: 200 },
-        { color: colors.purple[shade], offset: 300 },
-        { color: maroon[shade], offset: 300 },
-        { color: maroon[shade], offset: 500 },
-      ]
-    }
-  )
-}
-
-const getCO2ColorAxis = ({ isDark }) => {
-  const shade = isDark ? darkShade : lightShade;
-  return (
-    {
-      minValue: 400,
-      maxValue: 1500,
-      colors: [
-        { color: colors.green[shade], offset: 400 },
-        { color: colors.yellow[shade], offset: 700 },
-        { color: colors.orange[shade - 100], offset: 1000 },
-        { color: colors.red[shade], offset: 1500 }
-      ]
-    }
-  )
-}
+import ThemePreferences from './ThemePreferences';
+import { getCategoryColors } from '../Utils/AirQuality/AirQualityIndexHelper';
+import { darkShade, lightShade, maroon, darkShadeColorAxis } from './CustomColors';
+import AQIDataTypes from '../Utils/AirQuality/DataTypes';
 
 const getHumidityColorAxis = ({ isDark }) => {
-  const shade = isDark ? darkShade : lightShade;
-
   return {
     minValue: 0,
     maxValue: 100,
     colors: [
-      colors.grey[shade],
-      colors.blue[isDark ? darkShade + 100 : lightShade + 100]
+      { color: colors.grey[isDark ? darkShade + 400 : lightShade - 300], offset: 0 },
+      { color: colors.grey[isDark ? darkShade + 400 : lightShade - 300], offset: 15 },
+      { color: colors.blue[isDark ? darkShade + 200 : lightShade], offset: 85 },
+      { color: colors.blue[isDark ? darkShade + 200 : lightShade], offset: 100 }
+
+    ]
+  }
+}
+
+const getPressureColorAxis = ({ isDark }) => {
+  return {
+    minValue: 980,
+    maxValue: 1040,
+    colors: [
+      {
+        color: colors.blue[900],
+        offset: 980
+      },
+      {
+        color: colors.blue[500],
+        offset: 1000
+      },
+      {
+        color: colors.grey[isDark ? 300 : 200],
+        offset: 1012.25
+      },
+      {
+        color: colors.grey[isDark ? 300 : 200],
+        offset: 1013.75
+      },
+      {
+        color: colors.red[500],
+        offset: 1020
+      },
+      {
+        color: colors.red[900],
+        offset: 1040
+      }
     ]
   }
 }
@@ -100,7 +56,7 @@ const getTemperatureColorAxis = ({ isDark }) => {
   const shade = isDark ? darkShade : lightShade;
 
   return {
-    minValue: 0,
+    minValue: 10,
     maxValue: 50,
     colors: [
       {
@@ -109,80 +65,23 @@ const getTemperatureColorAxis = ({ isDark }) => {
       },
       {
         color: colors.green[shade],
-        offset: 20
+        offset: 15
       },
       {
         color: colors.yellow[shade],
-        offset: 30
+        offset: 25
       },
       {
         color: colors.red[shade],
+        offset: 35
+      },
+      {
+        color: maroon[shade],
         offset: 40
       },
       {
         color: maroon[shade],
         offset: 50
-      }
-    ]
-  }
-}
-
-const getPressureColorAxis = ({ isDark }) => {
-  const shade = isDark ? darkShade : lightShade;
-
-  return {
-    minValue: 980,
-    maxValue: 1040,
-    colors: [
-      {
-        color: colors.lightBlue[shade],
-        offset: 980
-      },
-      {
-        color: colors.grey[shade],
-        offset: 1013
-      },
-      {
-        color: colors.red[shade],
-        offset: 1040
-      }
-    ]
-  }
-}
-
-const getVocColorAxis = ({ isDark }) => {
-  const shade = isDark ? darkShade : lightShade;
-  return {
-    minValue: 0,
-    maxValue: 400,
-    colors: [
-      {
-        color: colors.green[shade],
-        offset: 0
-      },
-      {
-        color: colors.lime[shade],
-        offset: 50
-      },
-      {
-        color: colors.yellow[shade],
-        offset: 100
-      },
-      {
-        color: colors.orange[shade],
-        offset: 150
-      },
-      {
-        color: colors.red[shade],
-        offset: 200
-      },
-      {
-        color: colors.purple[shade],
-        offset: 250
-      },
-      {
-        color: maroon[shade],
-        offset: 350
       }
     ]
   }
@@ -212,19 +111,22 @@ const CustomThemes = {
           multiColor: [colors.blue[darkShade], colors.pink[darkShade], colors.amber[darkShade], colors.teal[darkShade], colors.grey[darkShade]],
           grayscale: [colors.grey[darkShade + 100], colors.grey[darkShade + 300]],
           rainbow: [colors.red[darkShade], colors.orange[darkShade], colors.amber[darkShade], colors.green[darkShade], colors.blue[darkShade], colors.indigo[darkShade], colors.blue[darkShade]],
-          aqi: getAQIPalette({ increasingOrder: true, isDark: true }),
-          reverseAqi: getAQIPalette({ increasingOrder: false, isDark: true }),
-          studentPopulation: ['#aaa', '#666', colors.red[darkShade], colors.amber[darkShade + 100], colors.teal[darkShade]]
+          [AQIDataTypes.aqi.color_axis]: getCategoryColors({ isGradient: false, themePreference: ThemePreferences.dark, dataType: AQIDataTypes.aqi }),
+          [AQIDataTypes['pm2.5'].color_axis]: getCategoryColors({ isGradient: false, themePreference: ThemePreferences.dark, dataType: AQIDataTypes['pm2.5'] }),
+          [AQIDataTypes.pm10_raw.color_axis]: getCategoryColors({ isGradient: false, themePreference: ThemePreferences.dark, dataType: AQIDataTypes.pm10_raw }),
+          [AQIDataTypes.co2.color_axis]: getCategoryColors({ isGradient: false, themePreference: ThemePreferences.dark, dataType: AQIDataTypes.co2 }),
+          [AQIDataTypes.voc.color_axis]: getCategoryColors({ isGradient: false, themePreference: ThemePreferences.dark, dataType: AQIDataTypes.voc }),
         },
         colorAxisFirstColor: colors.grey[darkShadeColorAxis],
         colorAxes: {
-          voc: getVocColorAxis({ isDark: true }),
           pressure: getPressureColorAxis({ isDark: true }),
           humidity: getHumidityColorAxis({ isDark: true }),
           temperature: getTemperatureColorAxis({ isDark: true }),
-          co2: getCO2ColorAxis({ isDark: true }),
-          aqi: getAqiColorAxis({ isDark: true }),
-
+          [AQIDataTypes.aqi.color_axis]: getCategoryColors({ isGradient: true, themePreference: ThemePreferences.dark, dataType: AQIDataTypes.aqi }),
+          [AQIDataTypes['pm2.5'].color_axis]: getCategoryColors({ isGradient: true, themePreference: ThemePreferences.dark, dataType: AQIDataTypes['pm2.5'] }),
+          [AQIDataTypes.pm10_raw.color_axis]: getCategoryColors({ isGradient: true, themePreference: ThemePreferences.dark, dataType: AQIDataTypes.pm10_raw }),
+          [AQIDataTypes.co2.color_axis]: getCategoryColors({ isGradient: true, themePreference: ThemePreferences.dark, dataType: AQIDataTypes.co2 }),
+          [AQIDataTypes.voc.color_axis]: getCategoryColors({ isGradient: true, themePreference: ThemePreferences.dark, dataType: AQIDataTypes.voc })
         },
         axisTitle: colors.grey[darkShade - 100],
         axisText: colors.grey[darkShade],
@@ -258,18 +160,22 @@ const CustomThemes = {
           multiColor: [colors.blue[lightShade], colors.pink[lightShade], colors.amber[lightShade], colors.teal[lightShade], colors.grey[lightShade]],
           grayscale: [colors.grey[lightShade - 100], colors.grey[lightShade + 200]],
           rainbow: [colors.red[lightShade], colors.orange[lightShade], colors.amber[lightShade], colors.green[lightShade], colors.blue[lightShade], colors.indigo[lightShade], colors.deepPurple[lightShade]],
-          aqi: getAQIPalette({ increasingOrder: true, isDark: false }),
-          reverseAqi: getAQIPalette({ increasingOrder: false, isDark: false }),
-          studentPopulation: [colors.grey[lightShade], '#333333', colors.red[lightShade], colors.amber[lightShade], colors.teal[lightShade]]
+          [AQIDataTypes.aqi.color_axis]: getCategoryColors({ isGradient: false, themePreference: ThemePreferences.light, dataType: AQIDataTypes.aqi }),
+          [AQIDataTypes['pm2.5'].color_axis]: getCategoryColors({ isGradient: false, themePreference: ThemePreferences.light, dataType: AQIDataTypes['pm2.5'] }),
+          [AQIDataTypes.pm10_raw.color_axis]: getCategoryColors({ isGradient: false, themePreference: ThemePreferences.light, dataType: AQIDataTypes.pm10_raw }),
+          [AQIDataTypes.co2.color_axis]: getCategoryColors({ isGradient: false, themePreference: ThemePreferences.light, dataType: AQIDataTypes.co2 }),
+          [AQIDataTypes.voc.color_axis]: getCategoryColors({ isGradient: false, themePreference: ThemePreferences.light, dataType: AQIDataTypes.voc }),
         },
         colorAxisFirstColor: colors.common.white,
         colorAxes: {
-          voc: getVocColorAxis({ isDark: false }),
           pressure: getPressureColorAxis({ isDark: false }),
           humidity: getHumidityColorAxis({ isDark: false }),
           temperature: getTemperatureColorAxis({ isDark: false }),
-          co2: getCO2ColorAxis({ isDark: false }),
-          aqi: getAqiColorAxis({ isDark: false }),
+          [AQIDataTypes.aqi.color_axis]: getCategoryColors({ isGradient: true, themePreference: ThemePreferences.light, dataType: AQIDataTypes.aqi }),
+          [AQIDataTypes['pm2.5'].color_axis]: getCategoryColors({ isGradient: true, themePreference: ThemePreferences.light, dataType: AQIDataTypes['pm2.5'] }),
+          [AQIDataTypes.pm10_raw.color_axis]: getCategoryColors({ isGradient: true, themePreference: ThemePreferences.light, dataType: AQIDataTypes.pm10_raw }),
+          [AQIDataTypes.co2.color_axis]: getCategoryColors({ isGradient: true, themePreference: ThemePreferences.light, dataType: AQIDataTypes.co2 }),
+          [AQIDataTypes.voc.color_axis]: getCategoryColors({ isGradient: true, themePreference: ThemePreferences.light, dataType: AQIDataTypes.voc })
         },
         axisTitle: colors.grey[lightShade + 100],
         axisText: colors.grey[lightShade],

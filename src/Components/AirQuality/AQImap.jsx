@@ -170,7 +170,7 @@ const AQImap = (props) => {
                     location.current.category = aqiCategory.category;
 
                     if (location.current.sensor_status === SensorStatus.active) {
-                        location.current.color = aqiCategory.lightThemeColor;
+                        location.current.color = aqiCategory.color[themePreference];
                     } else {
                         location.current.color = CustomThemes.universal.palette.inactiveSensor;
                     }

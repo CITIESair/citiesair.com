@@ -19,6 +19,12 @@ import { generateSvgFillGradient, BackgroundGradient } from '../../Utils/Gradien
 
 import CustomDateRangePicker from '../../Components/DateRangePicker/CustomDateRangePicker'
 import { isValidArray } from '../../Utils/Utils';
+import { returnSelectedDataType } from '../../Utils/AirQuality/DataTypes';
+
+const dummyArray = [
+  ['', ''],
+  ['', 0],
+];
 import { useYearRange } from '../../ContextProviders/YearRangeContext';
 
 const NoChartToRender = ({ dataType }) => {
@@ -35,10 +41,7 @@ const NoChartToRender = ({ dataType }) => {
 
 export default function SubChart(props) {
   // Props
-  const { chartData, subchartIndex, windowSize, isPortrait, isHomepage, height, maxHeight, selectedDataType, currentSubchart } = props;
-
-  // Formulate the className
-  const className = chartData.customClassName ? `${chartData.chartType} ${chartData.customClassName}` : chartData.chartType;
+  const { chartData, subchartIndex, windowSize, isPortrait, isHomepage, height, maxHeight, selectedDataType, allowedDataTypes, currentSubchart } = props;
 
   // Use GoogleContext for loading and manipulating the Google Charts
   const google = useContext(GoogleContext);
@@ -59,6 +62,7 @@ export default function SubChart(props) {
 
   // To determine if the charts should be rendered or not
   const [shouldRenderChart, setShouldRenderChart] = useState(true);
+  const [renderChartNow, setRenderChartNow] = useState(false);
 
   // Keep track of the columns (series) of the chart
   const [allInitialColumns, setAllInitialColumns] = useState();
@@ -211,7 +215,7 @@ export default function SubChart(props) {
           )}
           <GoogleChartStyleWrapper
             isPortrait={isPortrait}
-            className={className}
+            className={chartData.chartType}
             position="relative"
             minWidth="700px"
             height={calendarHeight + 'px'}
@@ -221,6 +225,7 @@ export default function SubChart(props) {
             <CalendarChart
               data={calendarData.data}
               dateRange={calendarData.dateRange}
+              valueRangeBoxTitle={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes, showUnit: true })}
               valueRange={calendarData.valueRange}
               yearRange={shouldDisplaySlider ? yearRange : [new Date(calendarData.dateRange.min), new Date(calendarData.dateRange.max)]}
               isPortrait={isPortrait}
@@ -228,7 +233,7 @@ export default function SubChart(props) {
             />
           </GoogleChartStyleWrapper>
         </>
-      ) : <NoChartToRender dataType={selectedDataType} />
+      ) : <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />
     );
   }
 
@@ -270,6 +275,9 @@ export default function SubChart(props) {
 
   // Properties for date-range-picker
   const dateRangePicker = options.dateRangePicker || null;
+
+  // Properties for data formatters
+  const formatters = options.formatters || null;
 
   // Set new options prop and re-render the chart if theme or isPortrait changes
   useEffect(() => {
@@ -535,8 +543,9 @@ export default function SubChart(props) {
     return evaluatedColumns;
   }
 
-
-  // Call this function to fetch the data and draw the initial chart
+  // Prepare to draw the chart if there is any change in chartData
+  // but only set flag renderChartNow if the chart should draw in the next rendering cycle
+  // to prevent chartID container not being mounted on time
   useEffect(() => {
     if (google && chartData) {
       // Do not draw again if deep comparison between current chartData and previousChartData is true
@@ -550,14 +559,28 @@ export default function SubChart(props) {
         || null
         || null;
 
-      if (!isValidArray(dataArray)) {
-        setShouldRenderChart(false);
-        return; // early return if there is no data to render
+      const _shouldRenderChart = isValidArray(dataArray);
+      setShouldRenderChart(_shouldRenderChart);
+      if (_shouldRenderChart === true) {
+        setRenderChartNow(true);
+        const dataTable = google.visualization.arrayToDataTable(dataArray);
+
+        // Call functions for formatting the number if numberFormat is specified 
+        if (formatters && typeof formatters === 'object') {
+          if (formatters.hasOwnProperty("numberFormatter")) {
+            const numberFormat = new google.visualization.NumberFormat(formatters.numberFormatter.numberFormat);
+            formatters.numberFormatter.columns.forEach(col => numberFormat.format(dataTable, col));
+          }
+        }
+
+        setDataTable(dataTable);
       }
+    }
+  }, [google, chartData]);
 
-      const thisDataTable = google.visualization.arrayToDataTable(dataArray);
-      setDataTable(thisDataTable);
-
+  // Actually draw the chart now because chartID container is already mounted from shouldRenderChart flag
+  useEffect(() => {
+    if (renderChartNow === true) {
       // Get dataColumn views
       const columns = chartData.columns
         || (chartData.subcharts
@@ -569,7 +592,7 @@ export default function SubChart(props) {
       // Create chartWrapper
       const thisChartWrapper = new google.visualization.ChartWrapper({
         chartType: chartData.chartType,
-        dataTable: (!hasChartControl) ? thisDataTable : undefined,
+        dataTable: (!hasChartControl) ? dataTable : undefined,
         options: options,
         view: {
           columns: reconstructedColumns
@@ -585,6 +608,7 @@ export default function SubChart(props) {
         setDashboardWrapper(thisDashboardWrapper);
 
         google.visualization.events.addListener(thisDashboardWrapper, 'ready', onChartReady);
+        google.visualization.events.addListener(thisDashboardWrapper, 'error', handleChartError);
 
         thisControlWrapper = new google.visualization.ControlWrapper({
           controlType: chartControl.controlType,
@@ -596,17 +620,17 @@ export default function SubChart(props) {
         // Establish dependencies
         thisDashboardWrapper.bind(thisControlWrapper, thisChartWrapper);
 
-        thisDashboardWrapper.draw(thisDataTable);
+        thisDashboardWrapper.draw(dataTable);
       }
       else {
         google.visualization.events.addListener(thisChartWrapper, 'ready', onChartReady);
+        google.visualization.events.addListener(thisChartWrapper, 'error', handleChartError);
         thisChartWrapper.draw();
       }
 
       // Run the seriesSelector for the first time
       if (seriesSelector) {
-        const { initAllInitialColumns, initDataColumns } = getInitialColumns({ chartWrapper: thisChartWrapper, dataTable: thisDataTable, seriesSelector: seriesSelector });
-
+        const { initAllInitialColumns, initDataColumns } = getInitialColumns({ chartWrapper: thisChartWrapper, dataTable: dataTable, seriesSelector: seriesSelector });
         handleSeriesSelection({
           _allInitialColumns: initAllInitialColumns,
           newDataColumns: initDataColumns,
@@ -615,12 +639,18 @@ export default function SubChart(props) {
         });
       }
 
-      // Set shouldRenderChart finally
-      setShouldRenderChart(true);
+      setRenderChartNow(false);
     }
-  }, [google, chartData]);
+  }, [renderChartNow])
 
   const renderChart = () => {
+    const chartContainer = (
+      <Box
+        id={chartID}
+        sx={{ height: height, maxHeight: maxHeight }}
+      />
+    );
+
     if (hasChartControl) {
       return (
         <Stack
@@ -636,26 +666,35 @@ export default function SubChart(props) {
               filter: 'saturate(0.3)'
             }}
           />
-          <Box id={chartID} sx={{ height: height, maxHeight: maxHeight }} />
+          {chartContainer}
         </Stack>
-      )
+      );
+    } else {
+      return chartContainer;
     }
-    else return <Box id={chartID} sx={{ height: height, maxHeight: maxHeight }} />;
-  }
+  };
 
-  const gradientBackground = options.backgroundColor?.fill !== "aqi";
-  const gradientBackgroundId = `${chartID}-backgroundGradient`;
-  const svgFillGradient = generateSvgFillGradient({
-    colors: theme.palette.chart.colorAxes.aqi.colors,
-    optionalMinValue: options.vAxis?.viewWindow?.min,
-    optionalMaxValue: options.vAxis?.viewWindow?.max
-  });
+  // Generate the gradient background if it exists in options parameter
+  const gradientBackgroundColor = options.gradientBackgroundColor;
+  let gradientBackgroundId, svgFillGradient;
+  if (gradientBackgroundColor) {
+    gradientBackgroundId = `${chartID}-backgroundGradient`;
+    svgFillGradient = generateSvgFillGradient({
+      colors: theme.palette.chart.colorAxes[gradientBackgroundColor].colors,
+      optionalMinValue: options.vAxis?.viewWindow?.min,
+      optionalMaxValue: options.vAxis?.viewWindow?.max
+    });
+  }
 
   const onChartReady = () => {
     if (!isFirstRender) return;
     // Hide the circleProgress when chart finishes rendering the first time
     setIsFirstRender(false);
   };
+
+  const handleChartError = (error) => {
+    console.log(error);
+  }
 
   const showAuxiliaryControls = () => {
     if (!isFirstRender) {
@@ -691,7 +730,7 @@ export default function SubChart(props) {
                 height: "2rem",
                 width: { [theme.breakpoints.down('sm')]: { width: '100%' } }
               }} >
-              <CustomDateRangePicker minDateOfDataset={new Date(dateRangePicker.minDate)} />
+              <CustomDateRangePicker dataType={selectedDataType} minDateOfDataset={new Date(dateRangePicker.minDate)} />
             </Grid>
           }
         </Grid >
@@ -706,7 +745,7 @@ export default function SubChart(props) {
       <GoogleChartStyleWrapper
         isPortrait={isPortrait}
         gradientBackgroundId={gradientBackgroundId}
-        className={className}
+        className={chartData.chartType}
         position="relative"
         height="100%"
         minHeight={chartData.chartType === 'Calendar' && '200px'}
@@ -719,8 +758,7 @@ export default function SubChart(props) {
         )}
         {showAuxiliaryControls()}
         {renderChart()}
-        {gradientBackground ? <BackgroundGradient id={gradientBackgroundId} colors={svgFillGradient} /> : null}
-      </GoogleChartStyleWrapper>
-      : <NoChartToRender dataType={selectedDataType} />
+        {gradientBackgroundColor ? <BackgroundGradient id={gradientBackgroundId} colors={svgFillGradient} /> : null}
+      </GoogleChartStyleWrapper> : <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />
   );
 }

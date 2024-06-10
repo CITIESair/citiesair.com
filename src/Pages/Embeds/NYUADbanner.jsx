@@ -131,7 +131,7 @@ const NYUADbanner = (props) => {
         item
         xs={12} sm={6}
         justifyContent="space-around"
-      // backgroundColor="customAlternateBackground"
+        sx={{ p: 1 }}
       >
         <Grid
           container
@@ -166,7 +166,7 @@ const NYUADbanner = (props) => {
             <SimpleCurrentAQIlist
               currentSensorsData={otherIndoorLocations}
               useLocationShort={isSmallScreen}
-              smallFont={isOnBannerPage}
+              size={isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium}
             />
           </Grid>
         </Grid>
@@ -206,7 +206,7 @@ const NYUADbanner = (props) => {
                     <small>{element.aqiUS.low === 301 ? '301+' : element.aqiUS.low}</small>
                   </Typography>
                   <Box
-                    backgroundColor={element.lightThemeColor}
+                    backgroundColor={element.color[themePreference]}
                     width={isSmallScreen ? "0.35rem" : "100%"}
                     height={isSmallScreen ? "100%" : "0.5rem"}
                   />

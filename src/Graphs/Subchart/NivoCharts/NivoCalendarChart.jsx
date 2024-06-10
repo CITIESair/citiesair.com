@@ -2,7 +2,7 @@
 import { ResponsiveCalendar } from '@nivo/calendar';
 import { useEffect, useRef } from 'react';
 import { useTheme } from '@mui/material/styles';
-import { Box, Chip } from '@mui/material';
+import { Box, Chip, Typography } from '@mui/material';
 
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../../Utils/Utils';
@@ -32,7 +32,7 @@ export const calculateValueRange = (data) => {
 };
 
 export const CalendarChart = (props) => {
-    const { data, dateRange, valueRange, yearRange, isPortrait, options } = props;
+    const { data, dateRange, valueRangeBoxTitle, valueRange, yearRange, isPortrait, options } = props;
 
     const calendarChartMargin = getCalendarChartMargin(isPortrait);
 
@@ -40,7 +40,7 @@ export const CalendarChart = (props) => {
 
     const dynamicFrom = `${yearRange[0]}-01-01`
     const dynamicTo = `${yearRange[1]}-12-31`
-    
+
     // Filter data based on the selected year range
     const filteredData = data.filter(item => {
         const year = new Date(item.day).getFullYear();
@@ -81,12 +81,13 @@ export const CalendarChart = (props) => {
 
     const colors = generateDiscreteColorGradientArray({
         colors: options?.colorAxis?.colors,
-        numSteps: 20
+        numSteps: options?.colorAxis?.gradientSteps
     });
 
     const showLegend = () => {
         return (
             <ValueRangeBox
+                title={valueRangeBoxTitle}
                 valueRange={valueRange}
                 filteredValueRange={filteredValueRange}
                 colorAxis={options?.colorAxis}
@@ -186,7 +187,7 @@ const CustomTooltip = ({ day, color, tooltipText, dateRange, inFirstTwoRowsOfCha
     );
 };
 
-const ValueRangeBox = ({ valueRange, filteredValueRange, colorAxis, isPortrait }) => {
+const ValueRangeBox = ({ title, filteredValueRange, valueRange, colorAxis, isPortrait }) => {
     if (valueRange?.min === null || valueRange?.max === null) return null;
 
     const { colors, minValue, maxValue } = colorAxis;
@@ -205,6 +206,10 @@ const ValueRangeBox = ({ valueRange, filteredValueRange, colorAxis, isPortrait }
         position: 'absolute',
         fontSize: '0.75rem',
         color: theme.palette.text.secondary,
+        lineHeight: 1,
+        textAlign: 'center',
+        transform: 'translateX(-50%)',
+        minWidth: '75px',
         whiteSpace: 'nowrap',
     };
     const topLabelStyle = {
@@ -212,7 +217,7 @@ const ValueRangeBox = ({ valueRange, filteredValueRange, colorAxis, isPortrait }
         transform: 'translateX(-50%)'
     };
     const bottomLabelStyle = {
-        bottom: '-1.5rem',
+        bottom: '-1.25rem',
         transform: isPortrait ? 'translateX(-100%)' : 'translateX(-50%)'
     };
 
@@ -239,13 +244,25 @@ const ValueRangeBox = ({ valueRange, filteredValueRange, colorAxis, isPortrait }
             width: 'fit-content',
             marginTop: '1.5rem',
             float: 'right',
-            right: (isPortrait ? '0' : '5%')
+            right: (isPortrait ? '0' : '50px')
         }}>
+            <Typography sx={{
+                display: 'inline',
+                position: 'absolute',
+                textAlign: 'right',
+                transform: 'translateX(calc(-100% - 0.5rem))',
+                fontSize: '0.75rem',
+                lineHeight: 1.25,
+                fontWeight: 500,
+                color: 'text.secondary'
+            }}>
+                {title}
+            </Typography>
             <Box sx={{
                 background: generateCssBackgroundGradient({ gradientDirection: 'to right', colors: colors }),
                 color: theme.palette.text.secondary,
                 border: `1px solid ${theme.palette.text.secondary}`,
-                width: '300px',
+                width: isPortrait ? '250px' : '300px',
                 height: '1rem',
                 position: 'relative',
                 justifyContent: 'space-between',
