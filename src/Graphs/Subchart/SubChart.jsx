@@ -27,15 +27,17 @@ const dummyArray = [
 ];
 import { useYearRange } from '../../ContextProviders/YearRangeContext';
 
-const NoChartToRender = ({ dataType }) => {
+const NoChartToRender = ({ dataType, height }) => {
   return (
-    <Alert severity="error" sx={{ my: 2 }}>
-      This sensor does not have&nbsp;
-      <Box component="span" textTransform="capitalize">
-        {dataType}
-      </Box>
-      &nbsp;data
-    </Alert>
+    <Box height={height}>
+      <Alert severity="error" sx={{ my: 2 }}>
+        This sensor does not have&nbsp;
+        <Box component="span" textTransform="capitalize">
+          {dataType}
+        </Box>
+        &nbsp;data
+      </Alert>
+    </Box>
   )
 }
 
@@ -769,6 +771,12 @@ export default function SubChart(props) {
         {showAuxiliaryControls()}
         {renderChart()}
         {gradientBackgroundColor ? <BackgroundGradient id={gradientBackgroundId} colors={svgFillGradient} /> : null}
-      </GoogleChartStyleWrapper> : <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />
+      </GoogleChartStyleWrapper> :
+      <NoChartToRender
+        dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })}
+        // If the visualization has a series selector or control, we need to account for its height
+        // And since the height is a string, we need to parse it to a number before adding to it
+        height={seriesSelector || hasChartControl ? (parseFloat(height) * 1.2 + 'vw') : height}
+      />
   );
 }
