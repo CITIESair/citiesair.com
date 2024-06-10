@@ -443,14 +443,6 @@ const AQImap = (props) => {
                                         &nbsp;
                                         {location.current?.["pm2.5"] || '--'}µg/m<sup>3</sup>
                                     </Typography>
-                                    <Typography
-                                        variant="caption"
-                                        sx={{ display: 'block' }}
-                                    >
-                                        <Typography variant='caption' fontWeight="500">PM10:</Typography>
-                                        &nbsp;
-                                        {location.current?.pm10 || '--'}µg/m<sup>3</sup>
-                                    </Typography>
 
                                     <Typography
                                         variant="caption"

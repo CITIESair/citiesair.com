@@ -205,7 +205,7 @@ const Screen = ({ title }) => {
               AIR QUALITY INDEX
             </Typography>
             <Typography variant="h4" className='condensedFont' color={CustomThemes.universal.palette.inactiveSensor}>
-              Particulate Matter PM2.5 & PM10
+              Particulate Matter PM2.5
             </Typography>
           </Box>
 
