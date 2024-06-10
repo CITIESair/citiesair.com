@@ -83,6 +83,17 @@ export default function SubChart(props) {
     }
     return opts;
   }, [props, theme, chartData.chartType]);
+
+  // Debounce function to prevent ResizeObserver loop
+  // (from MUI Slider) from crashing the app
+  const debounce = (func, wait) => {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+  };
+
   // State to store transformed data for CalendarChart
   const [calendarData, setCalendarData] = useState(null);
   const { yearRange, setYearRange } = useYearRange();
@@ -137,26 +148,20 @@ export default function SubChart(props) {
     //   console.log(calendarData);
     // }, [currentSubchart]);
 
-    // Effect to adjust the height based on the yearRange
-    useEffect(() => {
+    const updateHeight = () => {
       if (calendarData) {
         const calendarChartMargin = getCalendarChartMargin(isPortrait);
         const cellSize = Math.min(containerWidth / 60, 20); // max cell size of 20
         const yearHeight = cellSize * 7; // Height for one year
-
         const totalHeight = calculateCalendarChartHeight(yearRange, yearHeight, calendarChartMargin);
         setCalendarHeight(totalHeight);
 
         if (calendarRef.current) {
           let element = calendarRef.current; // Start with the current ref
-
-          // Search for the highest MuiBox-root that has a MuiTabs-root sibling
           let targetElement = null;
 
           while (element) {
-            // Check if this element is a MuiBox-root
             if (element.classList.contains('MuiBox-root')) {
-              // Check if any sibling is a MuiTabs-root
               let sibling = element.parentElement.firstChild;
               while (sibling) {
                 if (sibling !== element && sibling.classList.contains('MuiTabs-root')) {
@@ -167,17 +172,22 @@ export default function SubChart(props) {
               }
             }
 
-            if (targetElement) break; // Stop if we've found our target
-            element = element.parentElement; // Continue searching upwards
+            if (targetElement) break;
+            element = element.parentElement;
           }
 
           if (targetElement) {
-            // targetElement.style.border = "2px solid red";
-            targetElement.style.height = `${totalHeight + 125}px`
+            targetElement.style.height = `${totalHeight + 125}px`;
           }
         }
       }
-    }, [yearRange, isPortrait]);
+    };
+
+    const debouncedUpdateHeight = debounce(updateHeight, 100);
+
+    useEffect(() => {
+      debouncedUpdateHeight();
+    }, [yearRange, isPortrait, calendarData]);
 
     if (!calendarData) {
       return (
