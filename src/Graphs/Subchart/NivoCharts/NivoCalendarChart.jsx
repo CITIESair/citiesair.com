@@ -191,14 +191,18 @@ const ValueRangeBox = ({ title, filteredValueRange, valueRange, colorAxis, isPor
     if (valueRange?.min === null || valueRange?.max === null) return null;
 
     const { colors, minValue, maxValue } = colorAxis;
+    let rangeBoxMinValue = minValue, rangeBoxMaxValue = maxValue;
 
-    if (minValue === undefined) minValue = valueRange.min;
-    if (maxValue === undefined) maxValue = valueRange.max;
+    if (minValue === undefined) rangeBoxMinValue = valueRange.min;
+    if (maxValue === undefined) rangeBoxMaxValue = valueRange.max;
+
+    if (valueRange.min < rangeBoxMinValue) rangeBoxMinValue = valueRange.min;
+    if (valueRange.max > rangeBoxMaxValue) rangeBoxMaxValue = valueRange.max;
 
     const theme = useTheme();
 
     const calculateMarkerPositionOnRangeBox = (value) => {
-        const position = ((value - minValue) / (maxValue - minValue)) * 100;
+        const position = ((value - rangeBoxMinValue) / (rangeBoxMaxValue - rangeBoxMinValue)) * 100;
         return `${position}%`;
     };
 
@@ -259,7 +263,7 @@ const ValueRangeBox = ({ title, filteredValueRange, valueRange, colorAxis, isPor
                 {title}
             </Typography>
             <Box sx={{
-                background: generateCssBackgroundGradient({ gradientDirection: 'to right', colors: colors }),
+                background: generateCssBackgroundGradient({ gradientDirection: 'to right', colors: colors, optionalMaxValue: rangeBoxMaxValue }),
                 color: theme.palette.text.secondary,
                 border: `1px solid ${theme.palette.text.secondary}`,
                 width: isPortrait ? '250px' : '300px',
