@@ -102,6 +102,7 @@ export default function SubChart(props) {
   const [calendarHeight, setCalendarHeight] = useState(200);
   const [containerWidth, setContainerWidth] = useState(1200); // max width of the chart container
   const [shouldDisplaySlider, setshouldDisplaySlider] = useState(false);
+  const [sliderMarks, setSliderMarks] = useState([]);
   const calendarRef = useRef(null);
   // Early exit for 'Calendar' chartType
   if (chartData.chartType === 'Calendar') {
@@ -127,21 +128,24 @@ export default function SubChart(props) {
         valueRange: getValueRangeForCalendarChart(values)
       });
 
-      // Get the number of years to display
-      const endYear = new Date(dateRange.max).getFullYear();
-      const startYear = isPortrait ? endYear - 3 : endYear - 2;
+      // Get the number of years we have data for and the number of years to display
+      const lastYear = new Date(dateRange.max).getFullYear();
+      const firstYear = new Date(dateRange.min).getFullYear();
+      const firstVisibleYear = isPortrait ? lastYear - 3 : lastYear - 2;
 
-      setYearRange([startYear, endYear]);
+      setYearRange([firstVisibleYear, lastYear]);
 
-      setshouldDisplaySlider((new Date(dateRange.min).getFullYear() <= endYear - 2));
+      const marks = Array.from(
+        { length: lastYear - firstYear + 1 },
+        (_, i) => ({ value: firstYear + i, label: firstYear + i })
+      );
+      setSliderMarks(marks);
+
+      console.log(sliderMarks);
+
+      setshouldDisplaySlider((firstYear <= lastYear - 2));
       setShouldRenderChart(true);
     }, [chartData]);
-
-    // Generate marks for the slider
-    const marks = Array.from(
-      { length: yearRange[1] - yearRange[0] + 1 },
-      (_, i) => ({ value: yearRange[0] + i, label: yearRange[0] + i })
-    );
 
     // Detect and display the current subchart
     // Not used here, but kept for reference. Feel free to remove
@@ -219,7 +223,7 @@ export default function SubChart(props) {
                 onChange={(event, newValue) => setYearRange(newValue)}
                 valueLabelDisplay="off"
                 aria-labelledby="calendar-chart-year-slider"
-                marks={marks}
+                marks={sliderMarks}
                 size='small'
                 sx={{ width: '75%' }}
               />
