@@ -3,7 +3,7 @@
 import { styled } from '@mui/material/styles';
 import { Paper } from '@mui/material';
 
-import { addDays, endOfDay, startOfDay } from "date-fns";
+import { addDays, endOfDay, startOfDay, format } from "date-fns";
 import AggregationType from './AggregationType';
 
 export const returnCustomStaticRanges = ({ today, minDateOfDataset, aggregationType }) => {
@@ -235,3 +235,10 @@ export const StyledDateRangePicker = styled(Paper)(({ theme, showPickerPanel, sm
     borderRadius: "50%"
   }
 }));
+
+export const returnFormattedDates = ({ startDateObject, endDateObject }) => {
+  return {
+    startDate: format(startDateObject, 'yyyy-MM-dd'),
+    endDate: format(endDateObject, 'yyyy-MM-dd')
+  }
+}

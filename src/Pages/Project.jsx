@@ -44,6 +44,7 @@ import { DashboardContext } from '../ContextProviders/DashboardContext';
 import { PreferenceContext } from '../ContextProviders/PreferenceContext';
 import LoadMoreChartsButton from '../Components/LoadMoreChartsButton';
 import AQIexplanation from '../Components/AirQuality/AQIexplanation';
+import { DateRangePickerProvider } from '../ContextProviders/DateRangePickerContext';
 
 // Custom Chip component to display metadata
 export const CustomChip = (props) => {
@@ -146,18 +147,19 @@ const Project = () => {
                 id={`chart-${index + 1}`}
               >
 
-                <ChartComponentWrapper
-                  chartTitle={allChartsData[chartID].title}
-                  generalChartSubtitle={allChartsData[chartID].subtitle}
-                  generalChartReference={allChartsData[chartID].reference}
-                  chartData={{
-                    chartIndex: index,
-                    ...allChartsData[chartID],
-                  }}
-                  chartID={chartID}
-                  chartIndex={index}
-                />
-
+                <DateRangePickerProvider>
+                  <ChartComponentWrapper
+                    chartTitle={allChartsData[chartID].title}
+                    generalChartSubtitle={allChartsData[chartID].subtitle}
+                    generalChartReference={allChartsData[chartID].reference}
+                    chartData={{
+                      chartIndex: index,
+                      ...allChartsData[chartID],
+                    }}
+                    chartID={chartID}
+                    chartIndex={index}
+                  />
+                </DateRangePickerProvider>
                 {
                   // Optionally display the button to load more charts at the bottom of the last chart
                   // (if not already fetched every chart)

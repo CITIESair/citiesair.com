@@ -4,7 +4,7 @@ import { Box, Tabs, Tab, useMediaQuery, Typography, Menu, MenuItem, Stack, Skele
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { fetchDataFromURL } from "../Components/DatasetDownload/DatasetFetcher";
-import { ChartEndpointsOrder, getChartApiUrl } from "../Utils/ApiUtils";
+import { ChartEndpoints, ChartEndpointsOrder, getChartApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiUtils";
 import { DashboardContext } from "../ContextProviders/DashboardContext";
 import { YearRangeProvider } from '../ContextProviders/YearRangeContext';
 
@@ -14,6 +14,8 @@ import CollapsibleSubtitle from '../Components/CollapsibleSubtitle';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DataTypeDropDownMenu from './Subchart/SubchartUtils/DataTypeDropDown';
 import { isValidArray } from '../Utils/Utils';
+import { useDateRangePicker } from '../ContextProviders/DateRangePickerContext';
+import { returnFormattedDates } from '../Components/DateRangePicker/DateRangePickerUtils';
 
 const debounceMilliseconds = 100;
 
@@ -106,18 +108,43 @@ function ChartComponentWrapper(props) {
   const { allowedDataTypes } = chartData;
   const [selectedDataType, setSelectedDataType] = useState(null);
 
+  // Retrieve the dateRange for chart with DateRangePicker
+  const { dateRange, aggregationType } = useDateRangePicker();
   useEffect(() => {
     setSelectedDataType(chartData.selectedDataType)
   }, [chartData]);
 
   const fetchChartDataType = async (dataType) => {
-    const endpoint = ChartEndpointsOrder[chartID]
-    fetchDataFromURL({
-      url: getChartApiUrl({
+    const endpoint = ChartEndpointsOrder[chartID];
+    let url;
+    if (endpoint === ChartEndpoints.historical) {
+      const { startDate, endDate } = dateRange || {};
+      if (!startDate || !endDate) return;
+
+      const formattedDates = returnFormattedDates({
+        startDateObject: startDate,
+        endDateObject: endDate
+      });
+      url = getHistoricalChartApiUrl({
         endpoint: endpoint,
         school_id: currentSchoolID,
-        dataType
-      }),
+        startDate: formattedDates.startDate,
+        endDate: formattedDates.endDate,
+        aggregationType: aggregationType,
+        dataType: dataType
+      })
+    }
+    else {
+      url = getChartApiUrl({
+        endpoint: endpoint,
+        school_id: currentSchoolID,
+        dataType: dataType
+      });
+    }
+    if (!url) return;
+
+    fetchDataFromURL({
+      url: url,
       extension: 'json',
       needsAuthorization: true
     })
@@ -165,7 +192,7 @@ function ChartComponentWrapper(props) {
   useEffect(() => {
     setPreviousTab(currentTab);
     setCurrentTab(0);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSchoolID])
 
   if (chartData.chartType !== 'Calendar' && !chartHeight) {
