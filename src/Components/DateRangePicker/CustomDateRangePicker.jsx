@@ -9,15 +9,14 @@ import 'react-date-range/dist/theme/default.css'; // theme css file
 import { CircularProgress, useMediaQuery, useTheme } from '@mui/material';
 import { Alert, Button, Stack } from '@mui/material';
 
-import { StyledDateRangePicker, returnCustomStaticRanges, returnFormattedDates } from './DateRangePickerUtils';
+import { StyledDateRangePicker, returnCustomStaticRanges } from './DateRangePickerUtils';
 import { ChartEndpoints, getHistoricalChartApiUrl } from '../../Utils/ApiUtils';
 import AggregationTypeToggle from './AggregationTypeToggle';
 import AggregationType from './AggregationType';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
 
-import { differenceInDays, isSameDay } from 'date-fns';
+import { differenceInDays, isSameDay, format } from 'date-fns';
 import { fetchDataFromURL } from '../DatasetDownload/DatasetFetcher';
-import { useDateRangePicker } from '../../ContextProviders/DateRangePickerContext';
 
 const InvalidRangeMessages = {
   tooLong: "HOURLY data is limited to max 30d",
@@ -26,22 +25,22 @@ const InvalidRangeMessages = {
 
 const CustomDateRangePicker = (props) => {
   const { minDateOfDataset, dataType } = props;
+
   const { currentSchoolID, setIndividualChartData } = useContext(DashboardContext);
-  const [invalidRangeMessage, setInvalidRangeMessage] = useState();
+  const [aggregationType, setAggregationType] = useState(AggregationType.hourly);
 
   const today = new Date();
+
+  const [invalidRangeMessage, setInvalidRangeMessage] = useState();
+
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  // Keep track of the date range and aggregationType  selected by the user
-  const { dateRange, setDateRange, aggregationType, setAggregationType } = useDateRangePicker();
-  useEffect(() => {
-    // Initialize with the range of the first static range
-    setDateRange({
-      ...returnCustomStaticRanges({ today, minDateOfDataset })[0].range(), key: 'selection'
-    });
-    setAggregationType(AggregationType.hourly);
-  }, []);
+
+  // Keep track of the date range being selected by the user
+  const [selectedRange, setSelectedRange] = useState([
+    { ...returnCustomStaticRanges({ today, minDateOfDataset })[0].range(), key: 'selection' } // Initialize with the range of the first static range
+  ]);
 
   const [chartUrl, setChartUrl] = useState();
 
@@ -66,8 +65,7 @@ const CustomDateRangePicker = (props) => {
   }, [paperRef]);
 
   const checkValidRange = (selectedRange) => {
-    const { startDate, endDate } = selectedRange || {};
-    if (!startDate || !endDate) return;
+    const { startDate, endDate } = selectedRange;
 
     // Start date and end date can't be the same date
     if (isSameDay(startDate, endDate)) {
@@ -93,12 +91,12 @@ const CustomDateRangePicker = (props) => {
   const handleSelect = (ranges) => {
     if (!ranges) return;
 
-    checkValidRange(ranges.selection);
-    setDateRange(ranges.selection);
+    checkValidRange(ranges.selection)
+    setSelectedRange([ranges.selection]);
   };
 
   useEffect(() => {
-    checkValidRange(dateRange);
+    checkValidRange(selectedRange[0]);
   }, [aggregationType]);
 
   // Send query request to backend when APPLY button is clicked
@@ -108,17 +106,13 @@ const CustomDateRangePicker = (props) => {
 
     event.stopPropagation(); // Prevents Paper onClick from firing
 
-    const formattedDates = returnFormattedDates({
-      startDateObject: dateRange.startDate,
-      endDateObject: dateRange.endDate
-    });
     const newUrl = getHistoricalChartApiUrl({
       endpoint: ChartEndpoints.historical,
       school_id: currentSchoolID,
       aggregationType: aggregationType,
       dataType: dataType,
-      startDate: formattedDates.startDate,
-      endDate: formattedDates.endDate
+      startDate: format(selectedRange[0].startDate, 'yyyy-MM-dd'), // only one range can be selected at a time --> [0]
+      endDate: format(selectedRange[0].endDate, 'yyyy-MM-dd')
     });
 
     if (newUrl !== chartUrl) {
@@ -158,7 +152,7 @@ const CustomDateRangePicker = (props) => {
     >
       <Stack direction={"column"} spacing={1}>
         <DateRangePicker
-          ranges={[dateRange]}
+          ranges={selectedRange}
           onChange={handleSelect}
           staticRanges={
             createStaticRanges(
@@ -217,7 +211,9 @@ const CustomDateRangePicker = (props) => {
 
         )}
       </Stack>
+
     </StyledDateRangePicker>
+
   );
 };
 

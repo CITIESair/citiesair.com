@@ -50,6 +50,12 @@ function AirQualityIndexTable(props) {
                 <sup>3</sup>
                 )
               </TableCell>
+              <TableCell align="right">
+                PM10
+                (µg/m
+                <sup>3</sup>
+                )
+              </TableCell>
               {!hideAQIDescription && <TableCell align="left">Description</TableCell>}
               {!hideAQIDescription && <TableCell align="left">CITIESair&apos; Suggested Actions</TableCell>}
             </TableRow>
@@ -71,6 +77,9 @@ function AirQualityIndexTable(props) {
                 </TableCell>
                 <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
                   {returnFormattedBreakpoints(element.rawPM2_5.low, element.rawPM2_5.high)}
+                </TableCell>
+                <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
+                  {returnFormattedBreakpoints(element.rawPM10.low, element.rawPM10.high)}
                 </TableCell>
                 {!hideAQIDescription && <TableCell align="left">{element.description}</TableCell>}
                 {!hideAQIDescription
