@@ -161,10 +161,14 @@ const AQImap = (props) => {
                 location.current.sensor_status = calculateSensorStatus(lastSeenInHours);
             }
 
+            let color = CustomThemes.universal.palette.inactiveSensor;
+            if (location.current.aqi?.val) {
+                color = location.current?.color?.[themePreference];
+            }
             // Create the marker icon on the map
             location.markerIcon = new L.DivIcon({
                 className: aqiMarkerIconClass,
-                html: `<div aria-hidden={true} style="background-color: ${location.current?.color[themePreference]}">${displayAqiValue(location)}</div>`
+                html: `<div aria-hidden={true} style="background-color: ${color}">${displayAqiValue(location)}</div>`
             });
 
             return location;
@@ -234,7 +238,7 @@ const AQImap = (props) => {
                                 key={key}
                                 center={[location.sensor?.coordinates?.latitude, location.sensor?.coordinates?.longitude]}
                                 pathOptions={{
-                                    fillColor: location.current?.color[themePreference],
+                                    fillColor: location.current?.color?.[themePreference] || CustomThemes.universal.palette.inactiveSensor,
                                     radius: 3,
                                     weight: 0,
                                     fillOpacity: 1
@@ -424,7 +428,7 @@ const AQImap = (props) => {
                                     }
 
 
-                                    <Box sx={{ '& *': { color: location.current?.color[themePreference] }, mb: 2 }}>
+                                    <Box sx={{ '& *': { color: location.current?.color?.[themePreference] || CustomThemes.universal.palette.inactiveSensor }, mb: 2 }}>
                                         <Typography variant={smallScreen ? 'h4' : 'h3'} fontWeight="500" lineHeight={0.9}>
                                             {displayAqiValue(location)}
                                             <Typography variant='caption' fontWeight="500">(US AQI)</Typography>
