@@ -20,20 +20,17 @@ const normalizeColorStops = ({ colors, optionalMinValue, optionalMaxValue }) => 
   }
   // Offsets are provided, normalize them
   else {
-    let clampedStops;
+    let clampedStops = colors;
     if (optionalMinValue) {
       clampedStops = colors.filter(colorStop => colorStop.offset >= optionalMinValue);
     }
     if (optionalMaxValue) {
-      clampedStops = colors.filter(colorStop => colorStop.offset <= optionalMaxValue)
+      clampedStops = colors.filter((colorStop) => {
+        console.log(colorStop.offset, optionalMaxValue, colorStop.offset <= optionalMaxValue)
+        return colorStop.offset <= optionalMaxValue
+      });
     }
-    else clampedStops = colors;
-
     const offsets = clampedStops.map(colorStop => colorStop.offset);
-    // If optionalMinValue or optionalMaxValue is out of range of the offsets
-    // extend the range of offsets to match optionalMinValue or optionalMaxValue
-    if (optionalMaxValue > offsets[offsets.length - 1]) offsets[offsets.length - 1] = optionalMaxValue;
-    if (optionalMinValue < offsets[0]) offsets[0] = optionalMinValue;
 
     const minOffset = optionalMinValue || Math.min(...offsets);
     const maxOffset = optionalMaxValue || Math.max(...offsets);
