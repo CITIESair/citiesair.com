@@ -1,10 +1,10 @@
 /* eslint-disable */
 
-import { useState, useEffect, useContext, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import { GoogleContext } from '../../ContextProviders/GoogleContext';
 
-import { Box, Stack, Grid, Alert } from '@mui/material/';
+import { Alert, Box, Grid, Slider, Stack } from '@mui/material/';
 
 import { useTheme } from '@mui/material/styles';
 import SeriesSelector from './SubchartUtils/SeriesSelector';
@@ -14,7 +14,7 @@ import GoogleChartStyleWrapper from './SubchartUtils/GoogleChartStyleWrapper';
 
 import LoadingAnimation from '../../Components/LoadingAnimation';
 
-import { CalendarChart, getCalendarChartMargin, yearSpacing } from './NivoCharts/NivoCalendarChart'
+import { CalendarChart, getCalendarChartMargin, calculateCalendarChartHeight } from './NivoCharts/NivoCalendarChart'
 import { generateSvgFillGradient, BackgroundGradient } from '../../Utils/Gradient/GradientUtils';
 
 import CustomDateRangePicker from '../../Components/DateRangePicker/CustomDateRangePicker'
@@ -25,22 +25,25 @@ const dummyArray = [
   ['', ''],
   ['', 0],
 ];
+import { useYearRange } from '../../ContextProviders/YearRangeContext';
 
-const NoChartToRender = ({ dataType }) => {
+const NoChartToRender = ({ dataType, height }) => {
   return (
-    <Alert severity="error" sx={{ my: 2 }}>
-      This sensor does not have&nbsp;
-      <Box component="span" textTransform="capitalize">
-        {dataType}
-      </Box>
-      &nbsp;data
-    </Alert>
+    <Box height={height}>
+      <Alert severity="error" sx={{ my: 2 }}>
+        This sensor does not have&nbsp;
+        <Box component="span" textTransform="capitalize">
+          {dataType}
+        </Box>
+        &nbsp;data
+      </Alert>
+    </Box>
   )
 }
 
 export default function SubChart(props) {
   // Props
-  const { chartData, subchartIndex, windowSize, isPortrait, isHomepage, height, maxHeight, selectedDataType, allowedDataTypes } = props;
+  const { chartData, subchartIndex, windowSize, isPortrait, isHomepage, height, maxHeight, selectedDataType, allowedDataTypes, currentSubchart } = props;
 
   // Use GoogleContext for loading and manipulating the Google Charts
   const google = useContext(GoogleContext);
@@ -82,10 +85,24 @@ export default function SubChart(props) {
     }
     return opts;
   }, [props, theme, chartData.chartType]);
+
+  // Debounce function to prevent ResizeObserver loop
+  // (from MUI Slider) from crashing the app
+  const debounce = (func, wait) => {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+  };
+
   // State to store transformed data for CalendarChart
   const [calendarData, setCalendarData] = useState(null);
+  const { yearRange, setYearRange } = useYearRange();
   const [calendarHeight, setCalendarHeight] = useState(200);
   const [containerWidth, setContainerWidth] = useState(1200); // max width of the chart container
+  const [shouldDisplaySlider, setshouldDisplaySlider] = useState(false);
+  const calendarRef = useRef(null);
   // Early exit for 'Calendar' chartType
   if (chartData.chartType === 'Calendar') {
     useEffect(() => {
@@ -110,57 +127,124 @@ export default function SubChart(props) {
         valueRange: getValueRangeForCalendarChart(values)
       });
 
-      // Get the number of years in the dateRange
-      const startYear = new Date(dateRange.min).getFullYear();
+      // Get the number of years to display
       const endYear = new Date(dateRange.max).getFullYear();
-      const numberOfYear = endYear - startYear + 1;
+      const startYear = isPortrait ? endYear - 3 : endYear - 2;
 
-      // Calculate the size of each cell
-      const cellSize = Math.min(containerWidth / 60, 20); // max cell size of 20
-      const yearHeight = cellSize * 7; // Height for one year
+      setYearRange([startYear, endYear]);
 
-      const calendarChartMargin = getCalendarChartMargin(isPortrait);
-
-      // Calculate the total height based on the number of years and margins
-      let totalHeight;
-      if (numberOfYear == 1) {
-        totalHeight = yearHeight + yearSpacing + calendarChartMargin.top + calendarChartMargin.bottom
-      }
-      else {
-        totalHeight = numberOfYear * (yearHeight + yearSpacing) + calendarChartMargin.top + calendarChartMargin.bottom;
-      }
-      setCalendarHeight(totalHeight);
+      setshouldDisplaySlider((new Date(dateRange.min).getFullYear() <= endYear - 2));
       setShouldRenderChart(true);
     }, [chartData]);
 
+    // Generate marks for the slider
+    const marks = Array.from(
+      { length: yearRange[1] - yearRange[0] + 1 },
+      (_, i) => ({ value: yearRange[0] + i, label: yearRange[0] + i })
+    );
+
+    // Detect and display the current subchart
+    // Not used here, but kept for reference. Feel free to remove
+    // useEffect(() => {
+    //   console.log('current subchart: ', currentSubchart);
+    //   console.log(calendarData);
+    // }, [currentSubchart]);
+
+    const updateHeight = () => {
+      if (calendarData) {
+        const calendarChartMargin = getCalendarChartMargin(isPortrait);
+        const cellSize = Math.min(containerWidth / 60, 20); // max cell size of 20
+        const yearHeight = cellSize * 7; // Height for one year
+        const totalHeight = calculateCalendarChartHeight(yearRange, yearHeight, calendarChartMargin);
+        setCalendarHeight(totalHeight);
+
+        if (calendarRef.current) {
+          let element = calendarRef.current; // Start with the current ref
+          let targetElement = null;
+
+          while (element) {
+            if (element.classList.contains('MuiBox-root')) {
+              let sibling = element.parentElement.firstChild;
+              while (sibling) {
+                if (sibling !== element && sibling.classList.contains('MuiTabs-root')) {
+                  targetElement = element; // Found the target element
+                  break;
+                }
+                sibling = sibling.nextSibling;
+              }
+            }
+
+            if (targetElement) break;
+            element = element.parentElement;
+          }
+
+          if (targetElement) {
+            targetElement.style.height = `${totalHeight + 125}px`;
+          }
+        }
+      }
+    };
+
+    const debouncedUpdateHeight = debounce(updateHeight, 100);
+
+    useEffect(() => {
+      debouncedUpdateHeight();
+    }, [yearRange, isPortrait, calendarData]);
+
+    if (!calendarData) {
+      return (
+        <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+          <LoadingAnimation />
+        </Box>
+      )
+    }
+
     return (
       shouldRenderChart ? (
-        <GoogleChartStyleWrapper
-          isPortrait={isPortrait}
-          className={chartData.chartType}
-          style={{
-            position: 'relative',
-            minWidth: '700px',
-            minHeight: isPortrait ? '200px' : `${calendarHeight}px`,
-            height: `${calendarHeight}px`,
-            maxHeight: isPortrait ? '550px' : 'none',
-          }}
-        >
-          {calendarData ? (
+        <>
+          {shouldDisplaySlider && (
+            <Box
+              ref={calendarRef}
+              sx={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                mt: isPortrait ? 1 : 2,
+                mb: isPortrait ? 3 : 4,
+              }}>
+              <Slider
+                value={yearRange}
+                min={new Date(calendarData.dateRange.min).getFullYear()}
+                max={new Date(calendarData.dateRange.max).getFullYear()}
+                onChange={(event, newValue) => setYearRange(newValue)}
+                valueLabelDisplay="off"
+                aria-labelledby="calendar-chart-year-slider"
+                marks={marks}
+                size='small'
+                sx={{ width: '75%' }}
+              />
+            </Box>
+          )}
+          <GoogleChartStyleWrapper
+            isPortrait={isPortrait}
+            className={chartData.chartType}
+            position="relative"
+            minWidth="700px"
+            height={calendarHeight + 'px'}
+            minHeight={isPortrait ? '200px' : calendarHeight + 'px'}
+            maxHeight={isPortrait && '550px'}
+          >
             <CalendarChart
               data={calendarData.data}
               dateRange={calendarData.dateRange}
               valueRangeBoxTitle={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes, showUnit: true })}
               valueRange={calendarData.valueRange}
+              yearRange={shouldDisplaySlider ? yearRange : [new Date(calendarData.dateRange.min), new Date(calendarData.dateRange.max)]}
               isPortrait={isPortrait}
               options={options}
             />
-          ) : (
-            <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-              <LoadingAnimation />
-            </Box>
-          )}
-        </GoogleChartStyleWrapper>
+          </GoogleChartStyleWrapper>
+        </>
       ) : <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />
     );
   }
@@ -687,6 +771,12 @@ export default function SubChart(props) {
         {showAuxiliaryControls()}
         {renderChart()}
         {gradientBackgroundColor ? <BackgroundGradient id={gradientBackgroundId} colors={svgFillGradient} /> : null}
-      </GoogleChartStyleWrapper> : <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />
+      </GoogleChartStyleWrapper> :
+      <NoChartToRender
+        dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })}
+        // If the visualization has a series selector or control, we need to account for its height
+        // And since the height is a string, we need to parse it to a number before adding to it
+        height={seriesSelector || hasChartControl ? (parseFloat(height) * 1.2 + 'vw') : height}
+      />
   );
 }

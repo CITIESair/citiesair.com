@@ -79,29 +79,16 @@ const CurrentAQIGrid = (props) => {
         </Box>
 
         {showRawMeasurements ?
-          <Box sx={{
-            '& *': {
-              color:
-                isScreen ? CustomThemes.universal.palette.inactiveSensor : 'text.secondary'
-            }
-          }}>
-            <Typography
-              variant={ElementSizes[size].rawValues}
-              display="block"
-              fontWeight="500"
-              className='condensedFont'
-            >
-              {`PM2.5: ${current?.["pm2.5"] || "--"} μg/m3`}
-            </Typography>
-            <Typography
-              variant={ElementSizes[size].rawValues}
-              display="block"
-              fontWeight="500"
-              className='condensedFont'
-            >
-              {`PM10: ${current?.pm10 || "--"} μg/m3`}
-            </Typography>
-          </Box> : null}
+          <Typography
+            variant={ElementSizes[size].rawValues}
+            display="block"
+            fontWeight="500"
+            className='condensedFont'
+            color={isScreen ? CustomThemes.universal.palette.inactiveSensor : 'text.secondary'}
+          >
+            {`PM2.5: ${current?.["pm2.5"] || "--"} μg/m3`}
+          </Typography> : null
+        }
 
         <Box sx={{
           '& *': {
