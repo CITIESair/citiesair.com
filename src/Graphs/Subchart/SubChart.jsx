@@ -141,8 +141,6 @@ export default function SubChart(props) {
       );
       setSliderMarks(marks);
 
-      console.log(sliderMarks);
-
       setshouldDisplaySlider((firstYear <= lastYear - 2));
       setShouldRenderChart(true);
     }, [chartData]);
@@ -709,7 +707,7 @@ export default function SubChart(props) {
   };
 
   const handleChartError = (error) => {
-    console.log(error);
+    console.error('Subchart error:', error);
   }
 
   const showAuxiliaryControls = () => {
