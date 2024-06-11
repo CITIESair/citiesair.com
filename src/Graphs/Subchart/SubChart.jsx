@@ -26,6 +26,7 @@ const dummyArray = [
   ['', 0],
 ];
 import { useYearRange } from '../../ContextProviders/YearRangeContext';
+import AxesPicker from '../../Components/AxesPicker/AxesPicker';
 
 const NoChartToRender = ({ dataType, height }) => {
   return (
@@ -290,6 +291,29 @@ export default function SubChart(props) {
 
   // Properties for data formatters
   const formatters = options.formatters || null;
+
+  // Properties for selectableAxes
+  // const selectableAxes = options.selectableAxes || null;
+  let selectableAxes;
+  if (chartData.chartType === "ScatterChart") {
+    selectableAxes = {
+      allowedAxes: ["outdoors",
+        "c2",
+        "d2",
+        "a1",
+        "a5",
+        "c1",
+        "a6",
+        "a3",
+        "f1",
+        "f2",
+        "a2"],
+      selectedAxes: {
+        vAxis: "outdoors",
+        hAxis: "c2"
+      }
+    };
+  }
 
   // Set new options prop and re-render the chart if theme or isPortrait changes
   useEffect(() => {
@@ -620,7 +644,6 @@ export default function SubChart(props) {
         setDashboardWrapper(thisDashboardWrapper);
 
         google.visualization.events.addListener(thisDashboardWrapper, 'ready', onChartReady);
-        google.visualization.events.addListener(thisDashboardWrapper, 'error', handleChartError);
 
         thisControlWrapper = new google.visualization.ControlWrapper({
           controlType: chartControl.controlType,
@@ -636,7 +659,6 @@ export default function SubChart(props) {
       }
       else {
         google.visualization.events.addListener(thisChartWrapper, 'ready', onChartReady);
-        google.visualization.events.addListener(thisChartWrapper, 'error', handleChartError);
         thisChartWrapper.draw();
       }
 
@@ -704,10 +726,6 @@ export default function SubChart(props) {
     setIsFirstRender(false);
   };
 
-  const handleChartError = (error) => {
-    console.log(error);
-  }
-
   const showAuxiliaryControls = () => {
     if (!isFirstRender) {
       return (
@@ -744,6 +762,13 @@ export default function SubChart(props) {
               }} >
               <CustomDateRangePicker dataType={selectedDataType} minDateOfDataset={new Date(dateRangePicker.minDate)} />
             </Grid>
+          }
+          {selectableAxes &&
+            <AxesPicker
+              allowedAxes={selectableAxes.allowedAxes}
+              selectedAxes={selectableAxes.selectedAxes}
+              dataType={selectedDataType}
+            />
           }
         </Grid >
       );
