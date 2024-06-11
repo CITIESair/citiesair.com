@@ -45,7 +45,7 @@ function AirQualityIndexTable(props) {
               </TableCell>
               <TableCell align="right">US AQI</TableCell>
               <TableCell align="right">
-                PM2.5 Concentration
+                PM2.5
                 (µg/m
                 <sup>3</sup>
                 )
@@ -66,10 +66,10 @@ function AirQualityIndexTable(props) {
                 <TableCell sx={{ pl: 1 }}>
                   {element.category}
                 </TableCell>
-                <TableCell align="right">
+                <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
                   {returnFormattedBreakpoints(element.aqiUS.low, element.aqiUS.high)}
                 </TableCell>
-                <TableCell align="right">
+                <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
                   {returnFormattedBreakpoints(element.rawPM2_5.low, element.rawPM2_5.high)}
                 </TableCell>
                 {!hideAQIDescription && <TableCell align="left">{element.description}</TableCell>}

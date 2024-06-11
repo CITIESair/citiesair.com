@@ -19,7 +19,8 @@ import CustomThemes from '../Themes/CustomThemes';
 
 import QRCode from "react-qr-code";
 
-import CurrentAQIGrid, { CurrentAQIGridSize } from '../Components/AirQuality/CurrentAQIGrid';
+import CurrentAQIGrid from '../Components/AirQuality/CurrentAQIGrid';
+import { CurrentAQIGridSize } from '../Components/AirQuality/CurrentAQIGridSize';
 import { GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../Utils/ApiUtils';
 import { UniqueRoutes } from '../Utils/RoutesUtils';
 import { PreferenceContext } from '../ContextProviders/PreferenceContext';
@@ -164,10 +165,10 @@ const Screen = ({ title }) => {
         },
         '& .flashingRed': {
           '& .MuiTypography-root ': {
-            color: `${AQIdatabase[3].color[themePreference]} !important`,
+            color: `${AQIdatabase[3].color.Light} !important`,
             opacity: 0.8
           },
-          color: `${AQIdatabase[3].color[themePreference]} !important`,
+          color: `${AQIdatabase[3].color.Light} !important`,
           animation: 'flashingRed 3s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite',
           '@keyframes flashingRed': {
             '0%': {
@@ -200,11 +201,11 @@ const Screen = ({ title }) => {
           textAlign="center"
         >
           <Box>
-            <Typography variant="h4" fontWeight="500" color="white">
-              PM2.5 AIR QUALITY INDEX
+            <Typography variant="h3" fontWeight="500" color="white">
+              AIR QUALITY INDEX
             </Typography>
-            <Typography variant="h5" className='condensedFont' color={CustomThemes.universal.palette.inactiveSensor}>
-              Particulate Matter &lt; 2.5μm
+            <Typography variant="h4" className='condensedFont' color={CustomThemes.universal.palette.inactiveSensor}>
+              Particulate Matter PM2.5
             </Typography>
           </Box>
 
@@ -276,8 +277,8 @@ const Screen = ({ title }) => {
           textAlign="center"
         >
           <Grid item xs={12} sx={{ pt: 3, px: 2 }}>
-            <Typography variant="h4" fontWeight="500" sx={{ color: 'black' }}>
-              AN INITIATIVE BY CITIESair
+            <Typography variant="h3" fontWeight="500" sx={{ color: 'black' }}>
+              CITIESair
             </Typography>
           </Grid>
           <Grid item xs={2}>
