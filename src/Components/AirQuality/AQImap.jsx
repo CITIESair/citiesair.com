@@ -162,7 +162,7 @@ const AQImap = (props) => {
             }
 
             let color = CustomThemes.universal.palette.inactiveSensor;
-            if (location.current.aqi?.val) {
+            if (location.current?.aqi?.val) {
                 color = location.current?.color?.[themePreference];
             }
             // Create the marker icon on the map
@@ -267,16 +267,16 @@ const AQImap = (props) => {
     const displayAqiValue = (location) => {
         const emptyValue = "--";
         if (!location.current) return emptyValue;
-        if (!location.current.aqi.val) return emptyValue;
+        if (!location.current?.aqi.val) return emptyValue;
         if (location.current.sensor_status === SensorStatus.offline) return emptyValue;
 
-        return location.current.aqi.val;
+        return location.current?.aqi.val;
     };
 
     const displayAqiCategory = (location) => {
         const emptyValue = "--";
         if (!location.current) return emptyValue;
-        if (!location.current.aqi) return emptyValue;
+        if (!location.current?.aqi) return emptyValue;
         if (location.current.sensor_status === SensorStatus.offline) return emptyValue;
 
         return location.current.category;
