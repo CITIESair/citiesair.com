@@ -26,6 +26,7 @@ const dummyArray = [
   ['', 0],
 ];
 import { useYearRange } from '../../ContextProviders/YearRangeContext';
+import AxesPicker from '../../Components/AxesPicker/AxesPicker';
 
 const NoChartToRender = ({ dataType, height }) => {
   return (
@@ -292,6 +293,14 @@ export default function SubChart(props) {
 
   // Properties for data formatters
   const formatters = options.formatters || null;
+
+  // Properties for selectableAxes
+  let selectableAxes = chartData.selectableAxes || null;
+  if (selectableAxes) {
+    if (isValidArray(selectableAxes.allowedAxes)) {
+      if (selectableAxes.allowedAxes.length <= 2) selectableAxes = null; // don't display selectableAxes if number of allowedSensors is less than 3
+    }
+  }
 
   // Set new options prop and re-render the chart if theme or isPortrait changes
   useEffect(() => {
@@ -622,7 +631,6 @@ export default function SubChart(props) {
         setDashboardWrapper(thisDashboardWrapper);
 
         google.visualization.events.addListener(thisDashboardWrapper, 'ready', onChartReady);
-        google.visualization.events.addListener(thisDashboardWrapper, 'error', handleChartError);
 
         thisControlWrapper = new google.visualization.ControlWrapper({
           controlType: chartControl.controlType,
@@ -638,7 +646,6 @@ export default function SubChart(props) {
       }
       else {
         google.visualization.events.addListener(thisChartWrapper, 'ready', onChartReady);
-        google.visualization.events.addListener(thisChartWrapper, 'error', handleChartError);
         thisChartWrapper.draw();
       }
 
@@ -706,10 +713,6 @@ export default function SubChart(props) {
     setIsFirstRender(false);
   };
 
-  const handleChartError = (error) => {
-    console.error('Subchart error:', error);
-  }
-
   const showAuxiliaryControls = () => {
     if (!isFirstRender) {
       return (
@@ -746,6 +749,13 @@ export default function SubChart(props) {
               }} >
               <CustomDateRangePicker dataType={selectedDataType} minDateOfDataset={new Date(dateRangePicker.minDate)} />
             </Grid>
+          }
+          {selectableAxes &&
+            <AxesPicker
+              allowedAxes={selectableAxes.allowedAxes}
+              selectedAxes={selectableAxes.selectedAxes}
+              dataType={selectedDataType}
+            />
           }
         </Grid >
       );

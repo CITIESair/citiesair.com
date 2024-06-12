@@ -5,7 +5,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import AQIDataTypes from '../Utils/AirQuality/DataTypes';
 import { fetchDataFromURL } from "../Components/DatasetDownload/DatasetFetcher";
-import { ChartEndpoints, ChartEndpointsOrder, getChartApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiUtils";
+import { ChartEndpoints, ChartEndpointsOrder, getChartApiUrl, getCorrelationChartApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiUtils";
 import { DashboardContext } from "../ContextProviders/DashboardContext";
 import { YearRangeProvider } from '../ContextProviders/YearRangeContext';
 
@@ -17,6 +17,7 @@ import DataTypeDropDownMenu from './Subchart/SubchartUtils/DataTypeDropDown';
 import { isValidArray } from '../Utils/Utils';
 import { useDateRangePicker } from '../ContextProviders/DateRangePickerContext';
 import { returnFormattedDates } from '../Components/DateRangePicker/DateRangePickerUtils';
+import { useAxesPicker } from '../ContextProviders/AxesPickerContext';
 
 const debounceMilliseconds = 100;
 
@@ -111,6 +112,10 @@ function ChartComponentWrapper(props) {
 
   // Retrieve the dateRange for chart with DateRangePicker
   const { dateRange, aggregationType } = useDateRangePicker();
+
+  // Retrieve the hAxis and vAxis for chart with AxesPicker
+  const { hAxis, vAxis } = useAxesPicker();
+
   useEffect(() => {
     // Using keys returned from backend,
     // generate the allowedDataTypes object from AQIDataTypes
@@ -149,6 +154,15 @@ function ChartComponentWrapper(props) {
         aggregationType: aggregationType,
         dataType: dataType
       })
+    }
+    else if (endpoint === ChartEndpoints.correlationDailyAverage) {
+      url = getCorrelationChartApiUrl({
+        endpoint: ChartEndpoints.correlationDailyAverage,
+        school_id: currentSchoolID,
+        dataType: dataType,
+        sensorX: hAxis,
+        sensorY: vAxis
+      });
     }
     else {
       url = getChartApiUrl({

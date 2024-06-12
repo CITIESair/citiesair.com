@@ -75,7 +75,7 @@ export const getChartApiUrl = ({ endpoint, school_id, dataType }) => {
 }
 
 export const getCorrelationChartApiUrl = ({ endpoint, school_id, dataType, sensorX, sensorY }) => {
-  return `${apiDomain}/${endpoint}/${school_id}?dataType=${dataType}sensorX=${sensorX}sensorY=${sensorY}`;
+  return `${apiDomain}/${endpoint}/${school_id}?dataType=${dataType}&sensorX=${sensorX}&sensorY=${sensorY}`;
 }
 
 export const getRawDatasetUrl = ({ school_id, sensor_location_short, datasetType, isSample }) => {
