@@ -293,26 +293,11 @@ export default function SubChart(props) {
   const formatters = options.formatters || null;
 
   // Properties for selectableAxes
-  // const selectableAxes = options.selectableAxes || null;
-  let selectableAxes;
-  if (chartData.chartType === "ScatterChart") {
-    selectableAxes = {
-      allowedAxes: ["outdoors",
-        "c2",
-        "d2",
-        "a1",
-        "a5",
-        "c1",
-        "a6",
-        "a3",
-        "f1",
-        "f2",
-        "a2"],
-      selectedAxes: {
-        vAxis: "outdoors",
-        hAxis: "c2"
-      }
-    };
+  let selectableAxes = chartData.selectableAxes || null;
+  if (selectableAxes) {
+    if (isValidArray(selectableAxes.allowedAxes)) {
+      if (selectableAxes.allowedAxes.length <= 2) selectableAxes = null; // don't display selectableAxes if number of allowedSensors is less than 3
+    }
   }
 
   // Set new options prop and re-render the chart if theme or isPortrait changes

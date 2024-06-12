@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Select, MenuItem, FormControl, InputLabel, Button, Stack, Grid, CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useAxesPicker } from '../../ContextProviders/AxesPickerContext';
@@ -44,6 +44,16 @@ const AxesPicker = (props) => {
   const { hAxis, vAxis, setHAxis, setVAxis } = useAxesPicker();
   const [chartUrl, setChartUrl] = useState();
   const [isFetchingData, setIsFetchingData] = useState(false);
+
+  useEffect(() => {
+    const { hAxis: receivedHAxis, vAxis: receivedVAxis } = selectedAxes;
+    if (!(receivedHAxis && receivedVAxis)) return;
+
+    if (!(hAxis === receivedHAxis && vAxis === receivedVAxis)) {
+      setVAxis(receivedVAxis);
+      setHAxis(receivedHAxis);
+    }
+  }, [selectedAxes]);
 
   const handleHAxisChange = (event) => {
     setHAxis(event.target.value);
