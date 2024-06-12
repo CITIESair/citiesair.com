@@ -112,7 +112,7 @@ const CurrentAQIGrid = (props) => {
             </Typography>
           }
           {
-            showLastUpdate && displayLastUpdateAndSensorStatus({ size, current, isScreen })
+            showLastUpdate && displayLastUpdateAndSensorStatus({ sensor, size, current, isScreen })
           }
         </Box>
 
@@ -258,7 +258,7 @@ export const SimpleCurrentAQIlist = (props) => {
   );
 }
 
-const displayLastUpdateAndSensorStatus = ({ size, current, isScreen }) => {
+const displayLastUpdateAndSensorStatus = ({ sensor, size, current, isScreen }) => {
   const { themePreference } = useContext(PreferenceContext);
 
   if (isScreen && current.sensor_status === SensorStatus.active) return null;
