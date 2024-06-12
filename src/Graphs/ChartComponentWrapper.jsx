@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 import { Box, Tabs, Tab, useMediaQuery, Typography, Menu, MenuItem, Stack, Skeleton } from '@mui/material/';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
+import AQIDataTypes from '../Utils/AirQuality/DataTypes';
 import { fetchDataFromURL } from "../Components/DatasetDownload/DatasetFetcher";
 import { ChartEndpoints, ChartEndpointsOrder, getChartApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiUtils";
 import { DashboardContext } from "../ContextProviders/DashboardContext";
@@ -105,12 +106,27 @@ function ChartComponentWrapper(props) {
   const [anchorEl, setAnchorEl] = useState(null); // Define anchorEl state for dropdown menu of the tabs
 
   // Props for dataType management
-  const { allowedDataTypes } = chartData;
+  const [allowedDataTypes, setAllowedDataTypes] = useState([]);
   const [selectedDataType, setSelectedDataType] = useState(null);
 
   // Retrieve the dateRange for chart with DateRangePicker
   const { dateRange, aggregationType } = useDateRangePicker();
   useEffect(() => {
+    // Using keys returned from backend,
+    // generate the allowedDataTypes object from AQIDataTypes
+    if (chartData.allowedDataTypes) {
+      const dataTypesArr = [];
+      for (let dataType of chartData.allowedDataTypes) {
+        const { name_title, name_short, unit } = AQIDataTypes[dataType];
+        dataTypesArr.push({
+          key: dataType,
+          name_title,
+          name_short,
+          unit
+        })
+      }
+      setAllowedDataTypes(dataTypesArr);
+    }
     setSelectedDataType(chartData.selectedDataType)
   }, [chartData]);
 
