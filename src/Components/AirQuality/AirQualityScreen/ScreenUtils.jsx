@@ -34,11 +34,11 @@ export const calculateSensorStatus = (lastSeenInHours) => {
 }
 
 export const returnSensorStatus = (sensorData) => {
-  switch (sensorData.sensor_status) {
+  switch (sensorData?.sensor_status) {
     case SensorStatus.active:
       return null;
     case SensorStatus.temporaryOffline:
-      return `Last seen: ${sensorData.lastSeen}h ago`;
+      return `Last seen: ${sensorData?.lastSeen}h ago`;
     case SensorStatus.offline:
       return "Sensor offline";
     default:
