@@ -248,7 +248,7 @@ export default function SubChart(props) {
             />
           </GoogleChartStyleWrapper>
         </>
-      ) : <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />
+      ) : <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} height={calendarHeight} />
     );
   }
 
