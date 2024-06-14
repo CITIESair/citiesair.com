@@ -21,22 +21,27 @@ import CustomDateRangePicker from '../../Components/DateRangePicker/CustomDateRa
 import { isValidArray } from '../../Utils/Utils';
 import { returnSelectedDataType } from '../../Utils/AirQuality/DataTypes';
 
-const dummyArray = [
-  ['', ''],
-  ['', 0],
-];
 import { useYearRange } from '../../ContextProviders/YearRangeContext';
 import AxesPicker from '../../Components/AxesPicker/AxesPicker';
 
-const NoChartToRender = ({ dataType, height }) => {
+const NoChartToRender = ({ dataType, height, selectableAxes }) => {
+  let messagePrefix = "This sensor ";
+  let messageSuffix = " data. Please choose a different sensor.";
+
+  if (selectableAxes) {
+    messagePrefix = "This pair of sensors ";
+    messageSuffix = " correlation data. Please choose another pair or a different data type."
+  }
+
   return (
     <Box height={height}>
       <Alert severity="error" sx={{ my: 2 }}>
-        This sensor does not have&nbsp;
+        {messagePrefix}
+        does not have&nbsp;
         <Box component="span" textTransform="capitalize">
           {dataType}
         </Box>
-        &nbsp;data
+        {messageSuffix}
       </Alert>
     </Box>
   )
@@ -112,6 +117,7 @@ export default function SubChart(props) {
           && chartData.subcharts[subchartIndex].dataArray)
         || null
         || null;
+      console.log(chartData.title, dataArray)
 
       if (!isValidArray(dataArray)) {
         setShouldRenderChart(false);
@@ -143,13 +149,6 @@ export default function SubChart(props) {
       { length: yearRange[1] - yearRange[0] + 1 },
       (_, i) => ({ value: yearRange[0] + i, label: yearRange[0] + i })
     );
-
-    // Detect and display the current subchart
-    // Not used here, but kept for reference. Feel free to remove
-    // useEffect(() => {
-    //   console.log('current subchart: ', currentSubchart);
-    //   console.log(calendarData);
-    // }, [currentSubchart]);
 
     const updateHeight = () => {
       if (calendarData) {
@@ -246,7 +245,9 @@ export default function SubChart(props) {
             />
           </GoogleChartStyleWrapper>
         </>
-      ) : <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />
+      ) : <NoChartToRender
+        dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })}
+      />
     );
   }
 
@@ -782,11 +783,26 @@ export default function SubChart(props) {
         {renderChart()}
         {gradientBackgroundColor ? <BackgroundGradient id={gradientBackgroundId} colors={svgFillGradient} /> : null}
       </GoogleChartStyleWrapper> :
-      <NoChartToRender
-        dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })}
-        // If the visualization has a series selector or control, we need to account for its height
-        // And since the height is a string, we need to parse it to a number before adding to it
-        height={seriesSelector || hasChartControl ? (parseFloat(height) * 1.2 + 'vw') : height}
-      />
+      (
+        <>
+          {selectableAxes &&
+            <Box mt={1}>
+              <AxesPicker
+                allowedAxes={selectableAxes.allowedAxes}
+                selectedAxes={selectableAxes.selectedAxes}
+                dataType={selectedDataType}
+              />
+            </Box>
+          }
+          <NoChartToRender
+            dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })}
+            selectableAxes={selectableAxes}
+            // If the visualization has a series selector or control, we need to account for its height
+            // And since the height is a string, we need to parse it to a number before adding to it
+            height={seriesSelector || hasChartControl ? (parseFloat(height) * 1.2 + 'vw') : height}
+
+          />
+        </>
+      )
   );
 }

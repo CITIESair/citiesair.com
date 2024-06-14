@@ -44,10 +44,14 @@ const AxesPicker = (props) => {
   const { hAxis, vAxis, setHAxis, setVAxis } = useAxesPicker();
   const [chartUrl, setChartUrl] = useState();
   const [isFetchingData, setIsFetchingData] = useState(false);
+  const [shouldDisableApplyButton, setShouldDisableApplyButton] = useState(true);
 
   useEffect(() => {
     const { hAxis: receivedHAxis, vAxis: receivedVAxis } = selectedAxes;
-    if (!(receivedHAxis && receivedVAxis)) return;
+    if (!(receivedHAxis && receivedVAxis)) {
+      setShouldDisableApplyButton(true);
+      return;
+    };
 
     if (!(hAxis === receivedHAxis && vAxis === receivedVAxis)) {
       setVAxis(receivedVAxis);
@@ -56,8 +60,9 @@ const AxesPicker = (props) => {
   }, [selectedAxes]);
 
   const handleHAxisChange = (event) => {
-    setHAxis(event.target.value);
-    if (event.target.value === vAxis) {
+    const newHAxis = event.target.value;
+    setHAxis(newHAxis);
+    if (newHAxis === vAxis) {
       setVAxis('');
     }
   };
@@ -68,6 +73,16 @@ const AxesPicker = (props) => {
       setHAxis('');
     }
   };
+
+  useEffect(() => {
+    const { hAxis: receivedHAxis, vAxis: receivedVAxis } = selectedAxes;
+    if (!(receivedHAxis && receivedVAxis)) {
+      return;
+    };
+
+    setShouldDisableApplyButton(hAxis === receivedHAxis && vAxis === receivedVAxis);
+
+  }, [hAxis, vAxis, selectedAxes]);
 
   const applyChanges = () => {
     if (!(vAxis && hAxis)) return;
@@ -105,6 +120,11 @@ const AxesPicker = (props) => {
     )
   };
 
+  // Disable option if the current dataType isn't in its allowedDataTypes array
+  const shouldDisableOption = (option) => {
+    return !option.allowedDataTypes.includes(dataType);
+  }
+
   return (
     <Grid container spacing={1} alignItems="center">
       <Grid item xs={12} sm="auto">
@@ -120,12 +140,12 @@ const AxesPicker = (props) => {
             >
               {allowedAxes?.map(option => (
                 <MenuItem
-                  key={option}
-                  value={option}
-                  disabled={option === vAxis}
+                  key={option.sensor}
+                  value={option.sensor}
+                  disabled={option.sensor === vAxis || shouldDisableOption(option)}
                   sx={{ textTransform: 'capitalize' }}
                 >
-                  {option}
+                  {option.sensor}{shouldDisableOption(option) && " (No Data)"}
                 </MenuItem>
               ))}
             </Select>
@@ -141,12 +161,12 @@ const AxesPicker = (props) => {
             >
               {allowedAxes?.map(option => (
                 <MenuItem
-                  key={option}
-                  value={option}
-                  disabled={option === hAxis}
+                  key={option.sensor}
+                  value={option.sensor}
+                  disabled={option.sensor === hAxis || shouldDisableOption(option)}
                   sx={{ textTransform: 'capitalize' }}
                 >
-                  {option}
+                  {option.sensor}{shouldDisableOption(option) && " (No Data)"}
                 </MenuItem>
               ))}
             </Select>
@@ -160,7 +180,7 @@ const AxesPicker = (props) => {
           fullWidth
           sx={{ height: "100%" }}
           onClick={applyChanges}
-          disabled={!(vAxis && hAxis)}
+          disabled={shouldDisableApplyButton}
         >
           {renderApplyButtonLabel()}
         </Button>
