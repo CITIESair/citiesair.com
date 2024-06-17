@@ -22,10 +22,21 @@ export function PreferenceProvider({ children }) {
     || TemperatureUnits.celsius
   );
 
+
+  // Set promo dialog display preference state based on localStorage
+  const [showPromoDialogPreference, setShowPromoDialogPreference] = useState(
+    () => {
+      const storedValue = localStorage.getItem(LocalStorage.showPromoDialog);
+      return storedValue !== null ? JSON.parse(storedValue) : true;
+    }
+  );
+
   // eslint-disable-next-line max-len
   const providerValue = useMemo(() => ({
-    themePreference, setThemePreference, temperatureUnitPreference, setTemperatureUnitPreference
-  }), [themePreference, temperatureUnitPreference]);
+    themePreference, setThemePreference,
+    temperatureUnitPreference, setTemperatureUnitPreference,
+    showPromoDialogPreference, setShowPromoDialogPreference
+  }), [themePreference, temperatureUnitPreference, showPromoDialogPreference]);
 
   // return context provider
   return (

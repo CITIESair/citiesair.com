@@ -86,7 +86,7 @@ export default function DatasetDownloadDialog(props) {
         {(
           smallScreen &&
           <DialogActions sx={{ justifyContent: "start" }}>
-            <Button autoFocus onClick={handleClose}>
+            <Button onClick={handleClose}>
               <ChevronLeftIcon sx={{ fontSize: '1rem' }} />Back
             </Button>
           </DialogActions>

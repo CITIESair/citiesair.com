@@ -16,11 +16,6 @@ import { SensorStatus } from "./SensorStatus";
 
 import { getFormattedTemperature, TemperatureUnits } from '../../Utils/AirQuality/TemperatureUtils';
 
-import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
-import convertToAQI from '../../Utils/AirQuality/AirQualityIndexCalculator';
-
-import ThermostatIcon from '@mui/icons-material/Thermostat';
-import WaterDropIcon from '@mui/icons-material/WaterDrop';
 import ThemePreferences from '../../Themes/ThemePreferences';
 
 import { styled } from '@mui/material/styles';
