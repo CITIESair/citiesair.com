@@ -53,7 +53,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
   }, [setCurrentPage, setChartsTitlesList]);
 
   // Fetch public NYUAD sensors data and public map data
-  const [nyuadCurrentSensorData, setNyuadCurrentSensorData] = useState({});
+  const [nyuadCurrentSensorData, setNyuadCurrentSensorData] = useState();
   const [nyuadSensorCounts, setNyuadSensorCounts] = useState({
     active: null,
     total: null
