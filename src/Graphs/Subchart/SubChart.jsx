@@ -152,12 +152,6 @@ export default function SubChart(props) {
       setShouldRenderChart(true);
     }, [chartData]);
 
-    // Generate marks for the slider
-    const marks = Array.from(
-      { length: yearRange[1] - yearRange[0] + 1 },
-      (_, i) => ({ value: yearRange[0] + i, label: yearRange[0] + i })
-    );
-
     const updateHeight = () => {
       if (calendarData) {
         const calendarChartMargin = getCalendarChartMargin(isPortrait);
