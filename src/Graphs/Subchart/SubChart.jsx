@@ -205,42 +205,31 @@ export default function SubChart(props) {
       shouldRenderChart ? (
         <>
           {shouldDisplaySlider && (
-            /**
-             * Outer <Box>: position relative to support the fixed position of the inner box
-             * Inner <Box>: position fixed to ensure that the slider remains centered and in view
-             *              even if the chart container is scrolled horizontally
-             */
             <Box
               sx={{
-                position: 'relative',
-                overflowX: 'auto',
-                mt: isPortrait ? 1 : 3,
-                mb: isPortrait ? 9 : 8,
-              }}
-            >
-              <Box
-                ref={calendarRef}
-                sx={{
-                  position: 'fixed',
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}>
-                <Slider
-                  value={yearRange}
-                  min={new Date(calendarData.dateRange.min).getFullYear()}
-                  max={new Date(calendarData.dateRange.max).getFullYear()}
-                  onChange={(event, newValue) => setYearRange(newValue)}
-                  valueLabelDisplay="off"
-                  aria-labelledby="calendar-chart-year-slider"
-                  marks={sliderMarks}
-                  size='small'
-                  sx={{ width: '75%' }}
-                />
-              </Box>
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                mt: isPortrait ? 1 : 2,
+                mb: isPortrait ? 3 : 4,
+                position: 'sticky',
+                left: 0,
+              }}>
+              <Slider
+                value={yearRange}
+                min={new Date(calendarData.dateRange.min).getFullYear()}
+                max={new Date(calendarData.dateRange.max).getFullYear()}
+                onChange={(event, newValue) => setYearRange(newValue)}
+                valueLabelDisplay="off"
+                aria-labelledby="calendar-chart-year-slider"
+                marks={sliderMarks}
+                size='small'
+                sx={{ width: '75%' }}
+              />
             </Box>
           )}
           <GoogleChartStyleWrapper
+            ref={calendarRef}
             isPortrait={isPortrait}
             className={chartData.chartType}
             position="relative"

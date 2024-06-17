@@ -397,6 +397,8 @@ function ChartComponentWrapper(props) {
                 opacity: shouldDisplayThisSubchart(index) ? '1' : '0',
                 pointerEvents: shouldDisplayThisSubchart(index) ? 'auto' : 'none',
                 top: (index === 0) ? '' : 0,
+                overflowX: 'auto',
+                overflowY: 'hidden',
               }}
             >
               <SubChart
