@@ -6,6 +6,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 import parse from 'html-react-parser';
+import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
+
 import * as Tracking from '../../Utils/Tracking';
 
 import { LinkContext } from '../../ContextProviders/LinkContext';
@@ -14,8 +16,7 @@ import FullWidthBox from '../FullWidthBox';
 import ThemeSelector from './ThemeSelector';
 import NavBar from './NavBar';
 
-import jsonData from '../../section_data.json';
-import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
+import sectionData from '../../section_data.json';
 import CITIESlogoLinkToHome from './CITIESlogoLinkToHome';
 import TemperatureUnitToggle from './TemperatureUnitToggle';
 import { UniqueRoutes } from '../../Utils/RoutesUtils';
@@ -23,6 +24,7 @@ import { UniqueRoutes } from '../../Utils/RoutesUtils';
 import { useTheme } from '@mui/material';
 import PromoAlert from '../Promo/PromoAlert';
 import PromoDialog from '../Promo/PromoDialog';
+
 
 export const showInMobile = (defaultDisplay) => ({ display: { xs: (defaultDisplay || 'block'), lg: 'none' } });
 export const showInDesktop = (defaultDisplay) => ({ display: { xs: 'none', lg: (defaultDisplay || 'block') } });
@@ -174,16 +176,27 @@ export default function Header() {
       You can render a second <Toolbar /> component: */}
 
       <Toolbar
-        id={jsonData.topAnchor.id}
+        id={sectionData.topAnchor.id}
         sx={{ backgroundColor: 'customAlternateBackground', height: `${toolBarHeightInRem * 1.5}rem` }}
       />
 
-      <PromoAlert
-        message={
-          <><b>NEW FEATURE: </b>Switch between different data types (AQI, PM2.5, PM10, temperature...) in the dashboard's data visualizations</>}
-      />
+      <PromoAlert message={parse(sectionData.promo.alert, {
+        replace: replacePlainHTMLWithMuiComponents,
+      })} />
 
-      <PromoDialog />
+      <PromoDialog
+        chipLabel={parse(sectionData.promo.banner.chipLabel, {
+          replace: replacePlainHTMLWithMuiComponents,
+        })}
+        title={parse(sectionData.promo.banner.title, {
+          replace: replacePlainHTMLWithMuiComponents,
+        })}
+        subtitle={parse(sectionData.promo.banner.subtitle, {
+          replace: replacePlainHTMLWithMuiComponents,
+        })}
+        imgSrc={sectionData.promo.banner.imgSrc}
+        imgAlt={sectionData.promo.banner.imgAlt}
+      />
 
       {
         (
@@ -205,18 +218,18 @@ export default function Header() {
                   CITIESair
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
-                  {parse(jsonData.siteDescription, {
+                  {parse(sectionData.siteDescription, {
                     replace: replacePlainHTMLWithMuiComponents,
                   })}
                   <br />
                 </Typography>
                 <Link
-                  href={`#${jsonData.getInTouch.id}`}
+                  href={`#${sectionData.getInTouch.id}`}
                   underline="hover"
                   onClick={(e) => {
                     // Smooth scrolling
                     e.preventDefault();
-                    const section = document.getElementById(jsonData.getInTouch.id);
+                    const section = document.getElementById(sectionData.getInTouch.id);
                     if (section) {
                       section.scrollIntoView({ behavior: 'smooth' });
                     }
@@ -224,7 +237,7 @@ export default function Header() {
                     Tracking.sendEventAnalytics(
                       Tracking.Events.internalNavigation,
                       {
-                        destination_id: jsonData.getInTouch.id,
+                        destination_id: sectionData.getInTouch.id,
                         origin_id: 'header'
                       }
                     );

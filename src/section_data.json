@@ -37,5 +37,15 @@
     "statistics": {
         "partners": 3,
         "datapoints": "16K"
+    },
+    "promo": {
+        "alert": "<b>NEW FEATURE: </b>Switch between different data types (AQI, PM2.5, PM10, temperature...) in the dashboard's data visualizations",
+        "banner": {
+            "chipLabel": "<b>NEW FEATURE</b>",
+            "title": "[JUNE 2024 UPDATE]: Visualize Different Data Types",
+            "subtitle": "CITIESair is excited to announce that you can now <b>visualize all data types</b> provided by the sensors:<ul><li>United States' Air Quality Index (US AQI)</li><li>PM2.5</li><li>PM10</li><li>Volatile Organic Compounds index (VOC)</li><li>Temperature, Humidity, and Pressure</li><li>CO2 (supported sensors)</li></ul>",
+            "imgSrc": "/images/selecting-data-types.gif",
+            "imgAtl": "GIF of new feature showing the ability to switch between different data types"
+        }
     }
 }

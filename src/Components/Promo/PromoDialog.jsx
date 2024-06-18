@@ -2,36 +2,19 @@ import { Dialog, DialogActions, DialogContent, Typography, Button, Chip, Checkbo
 import { useContext, useState } from "react";
 import { PreferenceContext } from "../../ContextProviders/PreferenceContext";
 import { LocalStorage } from "../../Utils/LocalStorage";
-import promoGIF from '../../selecting-data-types.gif';
 
-const PromoData = {
-  title: "[JUNE 2024 UPDATE]: Visualize Different Data Types",
-  subtitle: <>
-    CITIESair is excited to announce that you can now <b>visualize all data types</b> provided by the sensors:
-    <Box component={"ul"} sx={{ mt: 0.5 }}>
-      <li>United States' Air Quality Index (US AQI)</li>
-      <li>PM2.5</li>
-      <li>PM10</li>
-      <li>Volatile Organic Compounds index (VOC)</li>
-      <li>Temperature, Humidity, and Pressure</li>
-      <li>CO2 (supported sensors)</li>
-    </Box>
-  </>
-}
-
-const PromoDialog = (props) => {
+const PromoDialog = ({ title, subtitle, imgSrc, imgAlt, chipLabel }) => {
   const { showPromoDialogPreference, setShowPromoDialogPreference } = useContext(PreferenceContext);
   const [open, setOpen] = useState(showPromoDialogPreference);
 
-  const handleClose = () => {
-    setOpen(false);
-  }
+  const handleClose = (event, reason) => {
+    if (reason && reason === "backdropClick")
+      return;
 
-  const handleCheckboxChanged = (event) => {
-    const newVal = !event.target.checked; // invert because this is a "Don't show checkbox"
-    setShowPromoDialogPreference();
-    localStorage.setItem(LocalStorage.showPromoDialog, newVal);
-  };
+    setOpen(false);
+    setShowPromoDialogPreference(false);
+    localStorage.setItem(LocalStorage.showPromoDialog, false);
+  }
 
   return (
     <Dialog
@@ -45,36 +28,24 @@ const PromoDialog = (props) => {
       <DialogContent sx={{
         px: 3
       }}>
-        <Chip label={<b>NEW FEATURE</b>} color="info" sx={{ mb: 2 }} />
+        <Chip size="small" label={chipLabel} color="info" sx={{ mb: 2 }} />
 
-        <Typography variant="h5" fontWeight="500" color="text.primary" gutterBottom>{PromoData.title}</Typography>
-        <Typography variant="body1" color="text.secondary">{PromoData.subtitle}</Typography>
+        <Typography variant="h5" fontWeight="500" color="text.primary" gutterBottom>{title}</Typography>
+        <Typography variant="body1" color="text.secondary">{subtitle}</Typography>
 
         <Box sx={{ m: 1, mt: 2 }}>
           <img
-            src={promoGIF}
-            alt="GIF of new feature showing the ability to switch between different data types"
+            src={imgSrc}
+            alt={imgAlt}
             width="100%"
           />
         </Box>
 
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Checkbox
-                onChange={handleCheckboxChanged}
-              />}
-            label="Don't show this banner again"
-          />
-        </FormGroup>
-
       </DialogContent>
-
-
 
       <DialogActions sx={{ justifyContent: "start" }}>
         <Button sx={{ marginLeft: "auto" }} onClick={handleClose}>
-          CLOSE
+          CLOSE AND DON'T SHOW THIS BANNER AGAIN
         </Button>
       </DialogActions>
     </Dialog>
