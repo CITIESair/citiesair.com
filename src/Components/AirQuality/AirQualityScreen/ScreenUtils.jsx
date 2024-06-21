@@ -46,12 +46,6 @@ export const returnSensorStatus = (sensorData) => {
   }
 }
 
-// ----- Misc
-export const capitalizeFirstCharacter = (inputString) => {
-  if (inputString) return inputString.charAt(0).toUpperCase() + inputString.slice(1);
-  else return null;
-};
-
 export const getDomainName = (url) => {
   return new URL(url).hostname;
 }

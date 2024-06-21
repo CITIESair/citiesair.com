@@ -2,16 +2,15 @@
 /* eslint-disable */
 import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
-
-import convertToAQI from '../../../Utils/AirQuality/AirQualityIndexCalculator';
 import AQIdatabase from '../../../Utils/AirQuality/AirQualityIndexHelper';
 import { SensorStatus } from '../SensorStatus';
 import { Box } from '@mui/material';
 
-import { capitalizeFirstCharacter, areDOMOverlapped } from './ScreenUtils';
+import { areDOMOverlapped } from './ScreenUtils';
 
 import CustomThemes from '../../../Themes/CustomThemes';
 import ThemePreferences from '../../../Themes/ThemePreferences';
+import { capitalizePhrase } from '../../../Utils/Utils';
 
 const numberOfHoursForHistoricalData = 6;
 
@@ -241,7 +240,7 @@ const RecentHistoricalGraph = (props) => {
           .attr("alignment-baseline", "middle")
           .attr("text-anchor", "left")
           .attr("font-size", height / 25)
-          .text(capitalizeFirstCharacter(sensorData.sensor?.location_short));
+          .text(capitalizePhrase(sensorData.sensor?.location_short));
 
         const locationLabels = document.getElementsByClassName("location-label");
         for (let i = 1; i < locationLabels.length; i++) {

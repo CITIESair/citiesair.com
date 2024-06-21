@@ -54,7 +54,7 @@ export default function DatasetDownloadDialog() {
   return (
     <CustomDialog
       buttonIcon={<DataObjectIcon sx={{ fontSize: '1rem' }} />}
-      buttonLabel="Raw Dataset"
+      buttonLabel="Dataset"
       trackingEvent={Tracking.Events.rawDatasetButtonClicked}
       dialogTitle="Preview and download raw dataset(s)"
       dialogOpenHandler={(() => {
@@ -166,7 +166,7 @@ const DatasetsTable = (props) => {
             Sensor Location
           </TableCell>
           <TableCell sx={{ width: smallScreen ? '9.5rem' : '11rem' }}>
-            Dataset Type
+            Average Period
           </TableCell>
         </TableRow>
       </TableHead>

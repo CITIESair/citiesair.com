@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { styled } from '@mui/material/styles';
-import { Box, Tabs, Tab, useMediaQuery, Typography, Menu, MenuItem, Stack, Skeleton } from '@mui/material/';
+import { Box, Tab, useMediaQuery, Typography, Menu, MenuItem, Stack, Skeleton } from '@mui/material/';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import AQIDataTypes from '../Utils/AirQuality/DataTypes';
@@ -18,6 +18,7 @@ import { isValidArray } from '../Utils/Utils';
 import { useDateRangePicker } from '../ContextProviders/DateRangePickerContext';
 import { returnFormattedDates } from '../Components/DateRangePicker/DateRangePickerUtils';
 import { useAxesPicker } from '../ContextProviders/AxesPickerContext';
+import StyledTabs from '../Components/StyledTabs';
 
 const debounceMilliseconds = 100;
 
@@ -44,23 +45,6 @@ const ChartStyleWrapper = styled(Box)(({ theme }) => ({
     overflowX: 'auto',
     overflowY: 'hidden',
     scrollbarGutter: 'stable'
-  }
-}));
-
-const StyledTabs = styled(Tabs)(({ theme }) => ({
-  '& .MuiTabScrollButton-root': {
-    color: theme.palette.text.primary
-  },
-  '& .MuiTab-root': {
-    [theme.breakpoints.down('sm')]: {
-      fontSize: '0.625rem',
-      padding: theme.spacing(0.5)
-    },
-  },
-  '& .MuiSvgIcon-root ': {
-    [theme.breakpoints.down('sm')]: {
-      fontSize: '0.75rem'
-    }
   }
 }));
 

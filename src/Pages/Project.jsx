@@ -46,6 +46,7 @@ import LoadMoreChartsButton from '../Components/LoadMoreChartsButton';
 import AQIexplanation from '../Components/AirQuality/AQIexplanation';
 import { DateRangePickerProvider } from '../ContextProviders/DateRangePickerContext';
 import { AxesPickerProvider } from '../ContextProviders/AxesPickerContext';
+import AirQualityAlerts from '../Components/AirQuality/AirQualityAlerts/AirQualityAlert';
 
 // Custom Chip component to display metadata
 export const CustomChip = (props) => {
@@ -295,10 +296,17 @@ const Project = () => {
 
           {displayProjectDescription()}
 
-          <Stack direction="row" spacing={2}>
-            <ScreenDropDownMenu />
-            <DatasetDownloadDialog />
-          </Stack>
+          <Grid container spacing={1}>
+            <Grid item>
+              <ScreenDropDownMenu />
+            </Grid>
+            <Grid item>
+              <DatasetDownloadDialog />
+            </Grid>
+            <Grid item>
+              <AirQualityAlerts schoolContactEmail={schoolMetadata?.contactEmail} />
+            </Grid>
+          </Grid>
 
           <AQIexplanation />
 

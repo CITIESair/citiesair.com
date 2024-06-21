@@ -1,31 +1,37 @@
-import { useState, useContext } from 'react';
-import { Typography, Chip, Dialog, Button, DialogActions, DialogContent, useMediaQuery } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import React, { useState, useContext, forwardRef, useImperativeHandle } from 'react';
+import { Chip, Tooltip, IconButton, Dialog, Button, DialogActions, DialogTitle, DialogContent, useMediaQuery } from '@mui/material';
 import * as Tracking from '../../Utils/Tracking';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
+import { useTheme } from '@emotion/react';
 
-export default function CustomDialog(props) {
+const CustomDialog = forwardRef((props, ref) => {
   const {
     buttonIcon,
+    buttonIconAria,
     buttonLabel,
     trackingEvent,
     dialogTitle,
     dialogOpenHandler = null,
     dialogCloseHandler = null,
+    displaySchoolID = true,
+    maxWidth = "lg",
     children
   } = props;
 
+  let iconOnly;
+  if (buttonIcon && !buttonLabel) iconOnly = true;
+  else iconOnly = false;
+
   const { currentSchoolID } = useContext(DashboardContext);
 
-  const theme = useTheme();
-  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const smallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   const [open, setOpen] = useState(false);
 
   const onOpen = () => {
     setOpen(true);
-    Tracking.sendEventAnalytics(trackingEvent);
+    if (trackingEvent) Tracking.sendEventAnalytics(trackingEvent);
     if (dialogOpenHandler) dialogOpenHandler();
   }
 
@@ -34,19 +40,46 @@ export default function CustomDialog(props) {
     if (dialogCloseHandler) dialogCloseHandler();
   }
 
-  return (
-    <>
+  const theme = useTheme();
+
+  useImperativeHandle(ref, () => ({
+    onExternalClick: () => {
+      onOpen();
+    }
+  }));
+
+  const displayButton = () => {
+    if (iconOnly) return (
+      <Tooltip title={buttonIconAria}>
+        <IconButton
+          onClick={onOpen}
+          aria-label={buttonIconAria}
+          size="small"
+          sx={{ "&:hover,:focus": { color: theme.palette.primary.main } }}
+        >
+          {buttonIcon}
+        </IconButton>
+      </Tooltip>
+    );
+
+    else return (
       <Button
         onClick={onOpen}
         variant="contained"
       >
         {buttonIcon}&nbsp;{buttonLabel}
       </Button>
+    )
+  }
+
+  return (
+    <>
+      {displayButton()}
 
       <Dialog
         open={open}
         onClose={onClose}
-        maxWidth="lg"
+        maxWidth={maxWidth}
         fullWidth
         fullScreen={smallScreen}
         keepMounted
@@ -61,21 +94,33 @@ export default function CustomDialog(props) {
           </DialogActions>
         )}
 
+        <DialogTitle>
+          {displaySchoolID &&
+            (<>
+              <Chip
+                label={currentSchoolID ? `School: ${currentSchoolID.toUpperCase()}` : "No School"}
+                size="small"
+                display="block"
+                sx={{ mb: 1 }}
+              />
+              <br />
+            </>
+            )}
+
+          {dialogTitle}
+        </DialogTitle>
+
         <DialogContent sx={{
-          px: smallScreen ? 2 : 3,
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
+          justifyContent: 'stretch',
           alignItems: 'start'
         }}>
-          <Chip label={currentSchoolID ? `School: ${currentSchoolID.toUpperCase()}` : "No School"} size="small" sx={{ mb: 1 }} />
-          <Typography variant="h6" zIndex="10000" sx={{ mb: 1 }}>
-            {dialogTitle}
-          </Typography>
-
           {children}
         </DialogContent>
       </Dialog>
     </>
   );
-}
+});
+
+export default CustomDialog;

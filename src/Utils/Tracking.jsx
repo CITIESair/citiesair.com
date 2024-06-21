@@ -8,6 +8,7 @@ export const Events = {
   collapseSection: 'collapse_section',
   openContactFormInExternalTab: 'open_contact_form_in_external_tab',
   airQualityIndexLegendQuickGlance: 'air_quality_index_legend_quick_glance',
+  airQualityAlertButtonClicked: 'air_quality_alert_button_clicked',
 };
 
 export const sendEventAnalytics = (eventName, options) => {

@@ -15,7 +15,8 @@ export const GeneralEndpoints = {
   screen: "screen",
   login: "login",
   logout: "logout",
-  map: "map_public_outdoors_stations"
+  map: "map_public_outdoors_stations",
+  alert: "alert"
 }
 
 export const ChartEndpoints = {

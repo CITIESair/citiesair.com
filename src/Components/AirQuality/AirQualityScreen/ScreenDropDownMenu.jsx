@@ -52,7 +52,7 @@ const ScreenDropDownMenu = () => {
       >
         <TvIcon sx={{ fontSize: '1rem' }} />
         &nbsp;
-        TV Screens List
+        TV Screens
       </Button>
       <Menu
         id="tv-screen-list-menu"
