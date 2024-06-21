@@ -1,12 +1,11 @@
 // disable eslint for this file
 /* eslint-disable */
 import { useState, useEffect, useContext } from 'react';
-import { Box, Link, Typography, Stack, Select, FormControl, MenuItem, Grid, Chip, Dialog, Button, DialogActions, DialogContent, useMediaQuery, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { Box, Link, Typography, Stack, Select, FormControl, MenuItem, Grid, Button, useMediaQuery, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 import DownloadIcon from '@mui/icons-material/Download';
 import DataObjectIcon from '@mui/icons-material/DataObject';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
 import * as Tracking from '../../Utils/Tracking';
 import { fetchDataFromURL } from './DatasetFetcher';
@@ -15,7 +14,9 @@ import LoadingAnimation from '../LoadingAnimation';
 
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
 
-export default function DatasetDownloadDialog(props) {
+import CustomDialog from '../CustomDialog/CustomDialog';
+
+export default function DatasetDownloadDialog() {
   const { currentSchoolID, current } = useContext(DashboardContext);
 
   const [sensorsDatasets, updateSensorsDatasets] = useState({});
@@ -50,82 +51,38 @@ export default function DatasetDownloadDialog(props) {
     updateSensorsDatasets(sensorsDatasets);
   }, [current]);
 
-  const theme = useTheme();
-  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => {
-    setPreviewingDataset(null);
-    setOpen(true);
-  }
-  const handleClose = () => {
-    setOpen(false);
-  }
-
   return (
-    <>
-      <Button
-        onClick={() => {
-          handleOpen();
-          Tracking.sendEventAnalytics(Tracking.Events.rawDatasetButtonClicked);
-        }}
-        variant="contained"
-      >
-        <DataObjectIcon sx={{ fontSize: '1rem' }} />&nbsp;Raw Dataset
-      </Button>
-
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        maxWidth="lg"
-        fullWidth
-        fullScreen={smallScreen}
-        keepMounted
-        zIndex={10000}
-      >
-        {(
-          smallScreen &&
-          <DialogActions sx={{ justifyContent: "start" }}>
-            <Button onClick={handleClose}>
-              <ChevronLeftIcon sx={{ fontSize: '1rem' }} />Back
-            </Button>
-          </DialogActions>
-        )}
-
-        <DialogContent sx={{
-          px: smallScreen ? 2 : 3,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'start'
-        }}>
-          <Chip label={currentSchoolID ? `School: ${currentSchoolID.toUpperCase()}` : "No School"} size="small" sx={{ mb: 1 }} />
-          <Typography variant="h6" zIndex="10000" sx={{ mb: 1 }}>
-            Preview and download raw dataset(s)
-          </Typography>
-
-          <DatasetSelectorAndPreviewer
-            sensorsDatasets={sensorsDatasets}
-            updateSensorsDatasets={updateSensorsDatasets}
-            previewingDataset={previewingDataset}
-            setPreviewingDataset={setPreviewingDataset}
-            smallScreen={smallScreen}
-            schoolID={currentSchoolID}
-          />
-          {
-            sensorsDatasets &&
-            <Typography variant="caption" sx={{ my: 3, fontStyle: 'italic' }} >
-              These datasets are provided by CITIESair from sensors operated by CITIESair. Should you intend to utilize them for your project, research, or publication, we kindly request that you notify us at <Link href='mailto:nyuad.cities@nyu.edu'>nyuad.cities@nyu.edu</Link> to discuss citation requirements.
-            </Typography>
-          }
-        </DialogContent>
-      </Dialog>
-    </>
+    <CustomDialog
+      buttonIcon={<DataObjectIcon sx={{ fontSize: '1rem' }} />}
+      buttonLabel="Raw Dataset"
+      trackingEvent={Tracking.Events.rawDatasetButtonClicked}
+      dialogTitle="Preview and download raw dataset(s)"
+      dialogOpenHandler={(() => {
+        setPreviewingDataset(null);
+      })}
+    >
+      <DatasetSelectorAndPreviewer
+        sensorsDatasets={sensorsDatasets}
+        updateSensorsDatasets={updateSensorsDatasets}
+        previewingDataset={previewingDataset}
+        setPreviewingDataset={setPreviewingDataset}
+        schoolID={currentSchoolID}
+      />
+      {
+        sensorsDatasets &&
+        <Typography variant="caption" sx={{ my: 3, fontStyle: 'italic' }} >
+          These datasets are provided by CITIESair from sensors operated by CITIESair. Should you intend to utilize them for your project, research, or publication, we kindly request that you notify us at <Link href='mailto:nyuad.cities@nyu.edu'>nyuad.cities@nyu.edu</Link> to discuss citation requirements.
+        </Typography>
+      }
+    </CustomDialog>
   );
 }
 
 const DatasetSelectorAndPreviewer = (props) => {
-  const { sensorsDatasets, updateSensorsDatasets, previewingDataset, setPreviewingDataset, smallScreen, schoolID } = props;
+  const { sensorsDatasets, updateSensorsDatasets, previewingDataset, setPreviewingDataset, schoolID } = props;
+
+  const theme = useTheme();
+  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   // Preview the hourly type of the first sensor initially
   useEffect(() => {
@@ -159,7 +116,15 @@ const DatasetSelectorAndPreviewer = (props) => {
   }, [sensorsDatasets, previewingDataset]);
 
   return (
-    <Grid container justifyContent="center" alignItems="start" spacing={smallScreen ? 1 : 2} sx={{ mt: 0 }} overflow="scroll">
+    <Grid
+      container
+      justifyContent="center"
+      alignItems="start"
+      spacing={smallScreen ? 1 : 2}
+      sx={{ mt: 0 }}
+      overflowY="scroll"
+      overflowX="hidden"
+    >
       <Grid item sm={12} md={6}>
         <DatasetsTable
           schoolID={schoolID}
