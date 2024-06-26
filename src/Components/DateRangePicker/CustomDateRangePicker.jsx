@@ -10,13 +10,13 @@ import { CircularProgress, useMediaQuery, useTheme } from '@mui/material';
 import { Alert, Button, Stack } from '@mui/material';
 
 import { StyledDateRangePicker, returnCustomStaticRanges, returnFormattedDates } from './DateRangePickerUtils';
-import { ChartEndpoints, getHistoricalChartApiUrl } from '../../Utils/ApiUtils';
+import { ChartEndpoints, getHistoricalChartApiUrl } from '../../Utils/ApiFunctions/ApiUtils';
 import AggregationTypeToggle from './AggregationTypeToggle';
 import AggregationType from './AggregationType';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
 
 import { differenceInDays, isSameDay } from 'date-fns';
-import { fetchDataFromURL } from '../DatasetDownload/DatasetFetcher';
+import { fetchDataFromURL } from '../../Utils/ApiFunctions/ApiCalls';
 import { useDateRangePicker } from '../../ContextProviders/DateRangePickerContext';
 
 const InvalidRangeMessages = {
@@ -125,9 +125,7 @@ const CustomDateRangePicker = (props) => {
       setIsFetchingData(true);
 
       fetchDataFromURL({
-        url: newUrl,
-        extension: 'json',
-        needsAuthorization: true
+        url: newUrl
       })
         .then((data) => {
           setIndividualChartData(0, data); // first chart -> chartIndex = 0

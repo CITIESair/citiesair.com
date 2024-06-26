@@ -1,5 +1,5 @@
 import React, { useState, createContext, useMemo } from 'react';
-import { fetchDataFromURL } from '../Components/DatasetDownload/DatasetFetcher';
+import { fetchDataFromURL } from '../Utils/ApiFunctions/ApiCalls';
 import { WEBSITE_ID, AIR_QUALITY_PAGE_ID } from '../Components/CommentSection';
 
 // create context
@@ -15,7 +15,11 @@ export function CommentCountsProvider({ children }) {
   const fetchCommentCounts = async () => {
     const commentCountsForAllPages = {};
     try {
-      const jsonData = await fetchDataFromURL({ url: hyvorTalkApiUrl, extension: 'json' });
+      const jsonData = await fetchDataFromURL({
+        url: hyvorTalkApiUrl,
+        needsAuthorization: false,
+        includesHeadersJSON: false
+      });
       jsonData.data.forEach((item) => {
         commentCountsForAllPages[item.page_identifier] = item.comments_count;
       });

@@ -8,8 +8,8 @@ import DownloadIcon from '@mui/icons-material/Download';
 import DataObjectIcon from '@mui/icons-material/DataObject';
 
 import * as Tracking from '../../Utils/Tracking';
-import { fetchDataFromURL } from './DatasetFetcher';
-import { RawDatasetType, getRawDatasetUrl } from '../../Utils/ApiUtils';
+import { Extensions, fetchDataFromURL } from '../../Utils/ApiFunctions/ApiCalls';
+import { RawDatasetType, getRawDatasetUrl } from '../../Utils/ApiFunctions/ApiUtils';
 import LoadingAnimation from '../LoadingAnimation';
 
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
@@ -105,7 +105,7 @@ const DatasetSelectorAndPreviewer = (props) => {
         isSample: true
       });
 
-      fetchDataFromURL({ url, extension: 'csv', needsAuthorization: true })
+      fetchDataFromURL({ url, extension: Extensions.csv, needsAuthorization: true })
         .then((data) => {
           const tmp = { ...sensorsDatasets };
           tmp[firstSensor].rawDatasets[initialDatasetType].sample = data;
@@ -215,7 +215,7 @@ const Dataset = (props) => {
         isSample: true
       });
 
-      fetchDataFromURL({ url, extension: 'csv', needsAuthorization: true })
+      fetchDataFromURL({ url, extension: Extensions.csv, needsAuthorization: true })
         .then((data) => {
           const tmp = { ...sensorsDatasets };
           tmp[sensor].rawDatasets[datasetType].sample = data;
@@ -301,7 +301,7 @@ const PreviewDataset = (props) => {
         isSample: false
       });
 
-      fetchDataFromURL({ url, extension: 'csv', needsAuthorization: true }).then((data) => {
+      fetchDataFromURL({ url, extension: Extensions.csv, needsAuthorization: true }).then((data) => {
         const tmp = { ...sensorsDatasets };
         tmp[previewingDataset.sensor].rawDatasets[previewingDataset.datasetType].full = data;
         updateSensorsDatasets(tmp);

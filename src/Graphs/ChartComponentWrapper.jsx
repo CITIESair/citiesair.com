@@ -4,8 +4,8 @@ import { Box, Tab, useMediaQuery, Typography, Menu, MenuItem, Stack, Skeleton } 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import AQIDataTypes from '../Utils/AirQuality/DataTypes';
-import { fetchDataFromURL } from "../Components/DatasetDownload/DatasetFetcher";
-import { ChartEndpoints, ChartEndpointsOrder, getChartApiUrl, getCorrelationChartApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiUtils";
+import { fetchDataFromURL } from '../Utils/ApiFunctions/ApiCalls';
+import { ChartEndpoints, ChartEndpointsOrder, getChartApiUrl, getCorrelationChartApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiFunctions/ApiUtils";
 import { DashboardContext } from "../ContextProviders/DashboardContext";
 import { YearRangeProvider } from '../ContextProviders/YearRangeContext';
 
@@ -158,9 +158,7 @@ function ChartComponentWrapper(props) {
     if (!url) return;
 
     fetchDataFromURL({
-      url: url,
-      extension: 'json',
-      needsAuthorization: true
+      url: url
     })
       .then(data => {
         setIndividualChartData(chartID, data);

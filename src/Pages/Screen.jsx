@@ -21,7 +21,7 @@ import QRCode from "react-qr-code";
 
 import CurrentAQIGrid from '../Components/AirQuality/CurrentAQIGrid';
 import { CurrentAQIGridSize } from '../Components/AirQuality/CurrentAQIGridSize';
-import { GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../Utils/ApiUtils';
+import { GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../Utils/ApiFunctions/ApiUtils';
 import { UniqueRoutes } from '../Utils/RoutesUtils';
 import { PreferenceContext } from '../ContextProviders/PreferenceContext';
 

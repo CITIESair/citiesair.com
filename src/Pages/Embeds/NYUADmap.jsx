@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import FullWidthBox from '../../Components/FullWidthBox';
 import * as Tracking from '../../Utils/Tracking';
 import AQImap, { LocationTitle, TileOptions } from '../../Components/AirQuality/AQImap';
-import { GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
+import { GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiFunctions/ApiUtils';
 
 const NYUADmap = () => {
   const [nyuadCurrentData, setNYUADcurrentData] = useState();

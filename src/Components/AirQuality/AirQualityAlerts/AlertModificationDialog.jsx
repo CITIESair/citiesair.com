@@ -139,7 +139,7 @@ const AlertModificationDialog = (props) => {
             icon={<AccessTimeIcon />}
             label={AlertTypes.daily.tableColumnHeader}
             value={currentMinutesPastMidnight}
-            values={HOURS}
+            options={HOURS}
             disabled={disabled}
             handleChange={handleCurrentMinutesPastMidnightChange}
           />
@@ -175,7 +175,7 @@ const AlertModificationDialog = (props) => {
           icon={<PlaceIcon />}
           label={SharedColumnHeader.location}
           value={currentSensorId}
-          values={locations}
+          options={locations}
           disabled={disabled}
           handleChange={handleCurrentSensorChange}
         />
@@ -184,7 +184,7 @@ const AlertModificationDialog = (props) => {
           icon={<CategoryIcon />}
           label={SharedColumnHeader.dataType}
           value={currentDataTypeKey}
-          values={allowedDataTypes}
+          options={allowedDataTypes}
           disabled={disabled}
           handleChange={handleCurrentDataTypeChange}
         />
@@ -250,7 +250,6 @@ const AlertModificationDialog = (props) => {
 };
 
 const ThresholdTypeToggle = ({ thisAlertType, handleChange, disabled }) => {
-  console.log(thisAlertType)
   return (
     <ToggleButtonGroup
       color={disabled ? "standard" : "primary"}
@@ -289,8 +288,10 @@ const HOURS = Array.from({ length: 24 }, (_, i) => {
 });
 
 const SimplePicker = (props) => {
-  const { icon, label, value, values, handleChange, disabled } = props;
+  const { icon, label, value, options, handleChange, disabled } = props;
   const theme = useTheme();
+
+  console.log(value, options)
 
   return (
     <Stack direction="row" spacing={1} alignItems="center">
@@ -304,6 +305,7 @@ const SimplePicker = (props) => {
       >
         {icon}
       </Box>
+
       <FormControl fullWidth size='small' disabled={disabled}>
         <InputLabel id={`${label}-picker-label`}>{label}</InputLabel>
         <Select
@@ -313,7 +315,7 @@ const SimplePicker = (props) => {
           label={label}
           onChange={handleChange}
         >
-          {values.map((option) => (
+          {options.map((option) => (
             <MenuItem key={option.value} value={option.value}>
               {option.label}
             </MenuItem>

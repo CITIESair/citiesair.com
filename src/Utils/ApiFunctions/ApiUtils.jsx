@@ -1,8 +1,8 @@
-import { fetchDataFromURL } from "../Components/DatasetDownload/DatasetFetcher";
-import { calculateSensorStatus } from "../Components/AirQuality/AirQualityScreen/ScreenUtils";
-import AQIdatabase from "./AirQuality/AirQualityIndexHelper";
+import { fetchDataFromURL } from "./ApiCalls";
+import { calculateSensorStatus } from "../../Components/AirQuality/AirQualityScreen/ScreenUtils";
+import AQIdatabase from "../AirQuality/AirQualityIndexHelper";
 import parse from 'html-react-parser';
-import AggregationType from "../Components/DateRangePicker/AggregationType";
+import AggregationType from "../../Components/DateRangePicker/AggregationType";
 
 const apiDomain = 'https://api.citiesair.com';
 
@@ -16,7 +16,8 @@ export const GeneralEndpoints = {
   login: "login",
   logout: "logout",
   map: "map_public_outdoors_stations",
-  alert: "alert"
+  alerts: "alerts",
+  alertsEmails: "alerts/emails"
 }
 
 export const ChartEndpoints = {
@@ -46,19 +47,25 @@ export const getApiUrl = ({
   endpoint,
   school_id
 }) => {
-  if ([GeneralEndpoints.current, GeneralEndpoints.schoolmetadata, GeneralEndpoints.chartdata].includes(endpoint)) {
-    return `${apiDomain}/${endpoint}/${school_id}`;
-  }
 
-  else if (endpoint === GeneralEndpoints.screen) {
-    const currentUrl = window.location.href;
-    const regex = /\/screen\/(.+)/;
-    const match = currentUrl.match(regex);
+  switch (endpoint) {
+    case GeneralEndpoints.current:
+    case GeneralEndpoints.schoolmetadata:
+    case GeneralEndpoints.chartdata:
+    case GeneralEndpoints.alerts:
+    case GeneralEndpoints.alertsEmails:
+      return `${apiDomain}/${endpoint}/${school_id}`;
 
-    if (match && match.length > 1) return `${apiDomain}/${endpoint}/${match[1]}`
-    else return;
+    case GeneralEndpoints.screen:
+      const currentUrl = window.location.href;
+      const regex = /\/screen\/(.+)/;
+      const match = currentUrl.match(regex);
+      if (match && match.length > 1) return `${apiDomain}/${endpoint}/${match[1]}`
+      else return;
+
+    default:
+      return `${apiDomain}/${endpoint}`;
   }
-  else return `${apiDomain}/${endpoint}`;
 }
 
 export const getHistoricalChartApiUrl = ({ endpoint, school_id, aggregationType = AggregationType.hourly, startDate, endDate, dataType }) => {
@@ -85,7 +92,7 @@ export const getRawDatasetUrl = ({ school_id, sensor_location_short, datasetType
 
 export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {
   try {
-    const data = await fetchDataFromURL({ url: apiUrl, extension: 'json', needsAuthorization: true });
+    const data = await fetchDataFromURL({ url: apiUrl });
 
     if (!data) {
       throw new Error('Returned data is empty');
@@ -102,6 +109,26 @@ export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {
     throw new Error(`Error fetching data: ${error.message}`);
   }
 }
+
+// export const fetchAlertEmails = async (apiUrl) => {
+//   try {
+//     const data = await fetchDataFromURL({ url: apiUrl });
+
+//     if (!data) {
+//       throw new Error('Returned data is empty');
+//     }
+
+//     try {
+//       return processCurrentSensorsData(data);
+//     } catch (error) {
+//       // Handle the case where data is not an iterable object
+//       console.error("Error: data is not iterable", error);
+//     }
+//   }
+//   catch (error) {
+//     throw new Error(`Error fetching data: ${error.message}`);
+//   }
+// }
 
 export const processCurrentSensorsData = (data) => {
   Object.entries(data).forEach(([_, sensorData]) => {

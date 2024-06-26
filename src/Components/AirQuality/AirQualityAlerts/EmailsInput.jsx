@@ -1,17 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Box, TextField, Chip, Menu, MenuItem, Snackbar, Alert, Grid, Typography, Button, Stack, useMediaQuery } from '@mui/material';
+import { RESTmethods, fetchDataFromURL } from "../../../Utils/ApiFunctions/ApiCalls";
+import { GeneralEndpoints, getApiUrl } from '../../../Utils/ApiFunctions/ApiUtils';
+import { DashboardContext } from '../../../ContextProviders/DashboardContext';
+import { isValidArray } from '../../../Utils/Utils';
+
+const compareArrays = (arr1, arr2) => {
+  return JSON.stringify(arr1) === JSON.stringify(arr2);
+}
 
 const EmailsInput = (props) => {
   const { schoolContactEmail } = props;
 
+  const { currentSchoolID } = useContext(DashboardContext);
+
   const smallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
-  const [emails, setEmails] = useState([]);
+  const [serverEmails, setServerEmails] = useState([]);
+  const [localEmails, setLocalEmails] = useState([]);
+
   const [currentEmail, setCurrentEmail] = useState('');
   const [menuAnchor, setMenuAnchor] = useState(null);
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertSeverity, setAlertSeverity] = useState(null);
+  const [alertMessage, setAlertMessage] = useState(null);
+  const [alertSeverity, setAlertSeverity] = useState('success');
 
   const maxEmails = 10;
   const validateEmail = (email) => {
@@ -22,25 +33,45 @@ const EmailsInput = (props) => {
       );
   };
 
-  // If no email recipient has been added before, add the admin email as the default one first
+  // Fetch emails from backend
   useEffect(() => {
-    if (emails.length === 0 && schoolContactEmail) {
-      setEmails([schoolContactEmail]);
-    }
-  }, [schoolContactEmail, emails.length]);
+    fetchDataFromURL({
+      url: getApiUrl({
+        endpoint: GeneralEndpoints.alertsEmails,
+        school_id: currentSchoolID
+      }),
+      extension: 'json',
+      needsAuthorization: true
+    }).then((data) => {
+      setServerEmails(data);
+
+      // If no email recipient has been added before, add the admin email as the default one first
+      // then save to backend
+      if (data.length === 0 && schoolContactEmail) {
+        handleSaveEmails([schoolContactEmail]);
+      }
+    })
+      .catch((error) => {
+        setAlertMessage("There was an error loading the email list, please try again.");
+        setAlertSeverity("error");
+      });
+  }, [currentSchoolID]);
+
+  useEffect(() => {
+    setLocalEmails(serverEmails);
+  }, [serverEmails])
 
   const handleAddEmail = (passedEmail) => {
     const email = passedEmail.toLowerCase();
 
     // If email address follows email format
     if (validateEmail(email)) {
-      const newEmails = [...emails, email];
+      const newEmails = [...localEmails, email];
 
       // Make sure currentEmail hasn't been added before
-      if (emails.includes(email)) {
+      if (localEmails.includes(email)) {
         setAlertMessage(`Already added: ${email}`);
         setAlertSeverity('error');
-        setAlertOpen(true);
 
         setCurrentEmail('');
         return;
@@ -50,25 +81,24 @@ const EmailsInput = (props) => {
       if (newEmails.length === maxEmails) {
         setAlertMessage('Maximum number of recipients reached');
         setAlertSeverity('warning');
-        setAlertOpen(true);
       }
 
-      setEmails(newEmails);
+      setLocalEmails(newEmails);
       setCurrentEmail('');
+      setAlertMessage();
     } else {
       setAlertMessage('Invalid email address. Valid format: abc@def.xyz');
       setAlertSeverity('error');
-      setAlertOpen(true);
     }
   };
 
   const handleDeleteEmail = (index) => {
-    const newEmails = emails.filter((_, i) => i !== index);
-    setEmails(newEmails);
+    const newEmails = localEmails.filter((_, i) => i !== index);
+    setLocalEmails(newEmails);
   };
 
   const handleEditEmail = (index) => {
-    setCurrentEmail(emails[index]);
+    setCurrentEmail(localEmails[index]);
     handleDeleteEmail(index);
   };
 
@@ -87,9 +117,42 @@ const EmailsInput = (props) => {
     event.preventDefault();
   };
 
-  const saveEmails = () => {
+  const handleSaveEmails = (_emails) => {
+    const emailsToSave = isValidArray(_emails) ? _emails : (isValidArray(localEmails) ? localEmails : []);
+
+    fetchDataFromURL({
+      url: getApiUrl({
+        endpoint: GeneralEndpoints.alertsEmails,
+        school_id: currentSchoolID
+      }),
+      restMethod: RESTmethods.POST,
+      body: emailsToSave
+    }).then((data) => {
+      setServerEmails(data);
+      setAlertSeverity('success');
+      setAlertMessage('Email list saved successfully!');
+    }).catch(() => {
+      setAlertMessage('There was an error saving the email. Please try again.');
+      setAlertSeverity('error');
+    })
+
     return;
   }
+
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      if (localEmails !== serverEmails) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [localEmails, serverEmails]);
 
   return (
     <Box>
@@ -115,22 +178,18 @@ const EmailsInput = (props) => {
               width: '100%'
             }}
           >
-            {emails.map((email, index) => {
-              // Do not allow actions (click / delete) if the Chip is the first one (mandatory 1 email recipient, aka admin)
-              const allowActions = index !== 0;
-
-              return (
-                <Grid item key={index} sx={{ m: 0.5 }}>
-                  <Chip
-                    label={email}
-                    onDelete={allowActions ? () => handleDeleteEmail(index) : undefined}
-                    onClick={allowActions ? (event) => handleMenuOpen(event, index) : undefined}
-                  />
-                </Grid>
-              );
-            })}
+            {localEmails.map((email, index) => (
+              <Grid item key={index} sx={{ m: 0.5 }}>
+                <Chip
+                  label={email}
+                  onDelete={() => handleDeleteEmail(index)}
+                  onClick={(event) => handleMenuOpen(event, index)}
+                />
+              </Grid>
+            )
+            )}
             {
-              emails.length < maxEmails ? (
+              localEmails.length < maxEmails ? (
                 <Grid item xs={12} sm minWidth="200px">
                   <TextField
                     fullWidth
@@ -167,16 +226,48 @@ const EmailsInput = (props) => {
           color="text.secondary"
           textAlign="right"
         >
-          {emails.length} / {maxEmails} recipient{emails.length > 1 ? 's' : null} added
+          {localEmails.length} / {maxEmails} recipient{localEmails.length > 1 ? 's' : null} added
         </Typography>
+        <Grid container spacing={1} width="fit-content">
+          {alertMessage &&
+            (
+              <Grid item xs={12} sm="auto">
+                <Alert
+                  onClose={() => setAlertMessage()}
+                  severity={alertSeverity}
+                  sx={{
+                    py: 0.5,
+                    px: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    "& div": {
+                      fontSize: "0.75rem",
+                      p: 0
+                    },
+                    "& .MuiAlert-icon": {
+                      fontSize: "1rem",
+                      mr: 0.5
+                    }
+                  }}
+                >
+                  {alertMessage}
+                </Alert>
+              </Grid>
+            )
+          }
+          <Grid item xs={12} sm="auto">
+            <Button
+              onClick={handleSaveEmails}
+              variant="contained"
+              sx={{ width: smallScreen ? "100%" : "fit-content" }}
+              disabled={compareArrays(localEmails, serverEmails)}
+            >
+              SAVE EMAIL LIST
+            </Button>
+          </Grid>
 
-        <Button
-          onClick={saveEmails}
-          variant="contained"
-          sx={{ width: smallScreen ? "100%" : "fit-content" }}
-        >
-          SAVE EMAIL LIST
-        </Button>
+        </Grid>
+
       </Stack>
 
       <Menu
@@ -193,15 +284,6 @@ const EmailsInput = (props) => {
           Edit
         </MenuItem>
       </Menu>
-      <Snackbar
-        open={alertOpen}
-        autoHideDuration={3000}
-        onClose={() => setAlertOpen(false)}
-      >
-        <Alert onClose={() => setAlertOpen(false)} severity={alertSeverity}>
-          {alertMessage}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 };

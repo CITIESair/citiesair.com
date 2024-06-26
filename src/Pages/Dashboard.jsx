@@ -4,9 +4,9 @@
 import { useEffect, useContext } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { fetchDataFromURL } from "../Components/DatasetDownload/DatasetFetcher";
+import { fetchDataFromURL } from "../Utils/ApiFunctions/ApiCalls";
 import Project from "./Project";
-import { ChartEndpointsOrder, GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl, getChartApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiUtils";
+import { ChartEndpointsOrder, GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl, getChartApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiFunctions/ApiUtils";
 import { LinkContext } from "../ContextProviders/LinkContext";
 import { DashboardContext } from "../ContextProviders/DashboardContext";
 
@@ -94,15 +94,13 @@ const Dashboard = () => {
     try {
       setSchoolMetadata();
       setCurrent();
-      
+
       const response = await Promise.all([
         fetchDataFromURL({
           url: getApiUrl({
             endpoint: GeneralEndpoints.schoolmetadata,
             school_id: school_id
-          }),
-          extension: 'json',
-          needsAuthorization: true
+          })
         }),
         fetchAndProcessCurrentSensorsData(getApiUrl({
           endpoint: GeneralEndpoints.current,
@@ -125,9 +123,7 @@ const Dashboard = () => {
         url: getHistoricalChartApiUrl({
           endpoint: endpoint,
           school_id: school_id
-        }),
-        extension: 'json',
-        needsAuthorization: true
+        })
       })
         .then(data => {
           setIndividualChartData(index, data);
@@ -144,14 +140,12 @@ const Dashboard = () => {
       restOfCharts.forEach((endpoint, index) => {
         const chartIndexInPage = numInitialCharts + index;
         setIndividualChartData(chartIndexInPage, {}); // set empty chartData to create a placeholder for this chart
-        
+
         fetchDataFromURL({
           url: getChartApiUrl({
             endpoint: endpoint,
             school_id: currentSchoolID
-          }),
-          extension: 'json',
-          needsAuthorization: true
+          })
         })
           .then(data => {
             setIndividualChartData(chartIndexInPage, data);

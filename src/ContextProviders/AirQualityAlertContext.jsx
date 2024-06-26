@@ -25,10 +25,13 @@ export function AirQualityAlertProvider({ children }) {
     }
   ]);
 
+  const [emails, setEmails] = useState([]);
+
   const contextValue = useMemo(() => ({
     selectedAlert, setSelectedAlert,
-    alerts, setAlerts
-  }), [selectedAlert, alerts]);
+    alerts, setAlerts,
+    emails, setEmails
+  }), [selectedAlert, alerts, emails]);
 
   return (
     <AirQualityAlertContext.Provider value={contextValue}>

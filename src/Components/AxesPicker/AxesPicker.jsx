@@ -2,9 +2,9 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Select, MenuItem, FormControl, InputLabel, Button, Stack, Grid, CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useAxesPicker } from '../../ContextProviders/AxesPickerContext';
-import { ChartEndpoints, getCorrelationChartApiUrl } from '../../Utils/ApiUtils';
+import { ChartEndpoints, getCorrelationChartApiUrl } from '../../Utils/ApiFunctions/ApiUtils';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
-import { fetchDataFromURL } from '../DatasetDownload/DatasetFetcher';
+import { fetchDataFromURL } from '../../Utils/ApiFunctions/ApiCalls';
 
 // Define custom styled components for shared border radius
 const LeftSelect = styled(FormControl)(({ theme }) => ({
@@ -99,9 +99,7 @@ const AxesPicker = (props) => {
       setIsFetchingData(true);
 
       fetchDataFromURL({
-        url: newUrl,
-        extension: 'json',
-        needsAuthorization: true
+        url: newUrl
       })
         .then((data) => {
           setIndividualChartData(5, data); // last chart -> chartIndex = 5
