@@ -1,11 +1,11 @@
-import React, { useState, useContext, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useContext } from 'react';
 import { Chip, Tooltip, IconButton, Dialog, Button, DialogActions, DialogTitle, DialogContent, useMediaQuery } from '@mui/material';
 import * as Tracking from '../../Utils/Tracking';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
 import { useTheme } from '@emotion/react';
 
-const CustomDialog = forwardRef((props, ref) => {
+const CustomDialog = (props) => {
   const {
     buttonIcon,
     buttonIconAria,
@@ -42,12 +42,6 @@ const CustomDialog = forwardRef((props, ref) => {
 
   const theme = useTheme();
 
-  useImperativeHandle(ref, () => ({
-    onExternalClick: () => {
-      onOpen();
-    }
-  }));
-
   const displayButton = () => {
     if (iconOnly) return (
       <Tooltip title={buttonIconAria}>
@@ -83,7 +77,9 @@ const CustomDialog = forwardRef((props, ref) => {
         fullWidth
         fullScreen={smallScreen}
         keepMounted
-        zIndex={10000}
+        sx={{
+          zIndex: 10000
+        }}
       >
         {(
           smallScreen &&
@@ -121,6 +117,6 @@ const CustomDialog = forwardRef((props, ref) => {
       </Dialog>
     </>
   );
-});
+}
 
 export default CustomDialog;

@@ -5,13 +5,15 @@ import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
 import { useContext } from 'react';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 
-export const StyledTable = styled(Table)(({ theme, isTiny }) => ({
-  minWidth: isTiny || 700,
+export const StyledTable = styled(Table, {
+  shouldForwardProp: (prop) => prop !== 'tiny',
+})(({ theme, tiny }) => ({
+  minWidth: tiny || 700,
   '& th, td': {
-    fontSize: isTiny ? '0.625rem' : '0.6875rem',
+    fontSize: tiny ? '0.625rem' : '0.6875rem',
     color: theme.palette.text.secondary,
     [theme.breakpoints.down('sm')]: {
-      fontSize: isTiny ? '0.5rem' : '0.6875rem',
+      fontSize: tiny ? '0.5rem' : '0.6875rem',
     },
   },
   '& th': {
@@ -24,7 +26,7 @@ export const StyledTable = styled(Table)(({ theme, isTiny }) => ({
 function AirQualityIndexTable(props) {
   const { themePreference } = useContext(PreferenceContext);
 
-  const { isTiny, hideAQIDescription } = props;
+  const { tiny, hideAQIDescription } = props;
 
   const returnFormattedBreakpoints = (low, high) => {
     if (high === Infinity) return `${low}+`;
@@ -34,7 +36,7 @@ function AirQualityIndexTable(props) {
   return (
     <>
       <Box overflow="auto">
-        <StyledTable size="small" isTiny={isTiny}>
+        <StyledTable size="small" tiny={tiny}>
           <TableHead>
             <TableRow>
               <TableCell sx={{ pr: 0 }}>

@@ -121,9 +121,7 @@ const DatasetSelectorAndPreviewer = (props) => {
       justifyContent="center"
       alignItems="start"
       spacing={smallScreen ? 1 : 2}
-      sx={{ mt: 0 }}
-      overflowY="scroll"
-      overflowX="hidden"
+      sx={{ mt: 0, overflowY: 'scroll', overflowX: 'hidden' }}
     >
       <Grid item sm={12} md={6}>
         <DatasetsTable
@@ -173,6 +171,7 @@ const DatasetsTable = (props) => {
       <TableBody>
         {sensorsDatasets && Object.keys(sensorsDatasets).map((location_short) => (
           <Dataset
+            key={location_short}
             schoolID={schoolID}
             smallScreen={smallScreen}
             sensor={location_short}

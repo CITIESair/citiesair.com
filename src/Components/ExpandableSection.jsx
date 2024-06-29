@@ -60,7 +60,6 @@ const ExpandableSection = ({ title, content }) => {
       <StyledAccordion
         expanded={expanded === "panel1"}
         onChange={handleAccordionChange("panel1")}
-        transitionDuration={0}
       >
         <StyledAccordionSummary expanded={expanded} expandIcon={<ArrowDropDownIcon />} aria-controls="panel1a-content" id="panel1a-header">
           <Tooltip title={expanded ? TooltipText.collapse : TooltipText.expand} enterDelay={0} leaveDelay={200}>

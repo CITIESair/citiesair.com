@@ -106,7 +106,7 @@ export const generateDiscreteColorGradientArray = ({ colors, numSteps = 100 }) =
 
 // Function to return CSS background from an array of colors (with or without offsets)
 export const generateCssBackgroundGradient = ({ gradientDirection, colors, optionalMinValue, optionalMaxValue }) => {
-  const normalizedColors = normalizeColorStops({ colors, optionalMaxValue });
+  const normalizedColors = normalizeColorStops({ colors, optionalMinValue, optionalMaxValue });
 
   return `linear-gradient(${gradientDirection}, ${normalizedColors.map(colorStop => `${colorStop.color} ${colorStop.offset * 100}%`).join(', ')})`;
 }

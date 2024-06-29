@@ -23,7 +23,9 @@ const PromoDialog = ({ title, subtitle, imgSrc, imgAlt, chipLabel }) => {
       maxWidth="md"
       fullWidth
       keepMounted
-      zIndex={10000}
+      sx={{
+        zIndex: 10000
+      }}
     >
       <DialogContent sx={{
         px: 3
@@ -31,7 +33,7 @@ const PromoDialog = ({ title, subtitle, imgSrc, imgAlt, chipLabel }) => {
         <Chip size="small" label={chipLabel} color="info" sx={{ mb: 2 }} />
 
         <Typography variant="h5" fontWeight="500" color="text.primary" gutterBottom>{title}</Typography>
-        <Typography variant="body1" color="text.secondary">{subtitle}</Typography>
+        <Typography variant="body1" component="div" color="text.secondary">{subtitle}</Typography>
 
         <Box sx={{ m: 1, mt: 2 }}>
           <img

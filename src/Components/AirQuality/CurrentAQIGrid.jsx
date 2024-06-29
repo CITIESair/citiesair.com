@@ -46,11 +46,14 @@ const CurrentAQIGrid = (props) => {
     const { themePreference } = useContext(PreferenceContext);
 
     return (
-      <Grid item {...gridSizes}
-        sx={
-          current?.sensor_status !== SensorStatus.active &&
-          { '& *': { color: CustomThemes.universal.palette.inactiveSensor } }
-        }
+      <Grid
+        item
+        {...gridSizes}
+        sx={{
+          ...(current?.sensor_status !== SensorStatus.active && {
+            '& *': { color: CustomThemes.universal.palette.inactiveSensor }
+          })
+        }}
       >
         <Box sx={{ '& *': { color: current?.color[isScreen ? ThemePreferences.light : themePreference] } }}>
           <Typography variant={ElementSizes[size].locationAndCategory} fontWeight="500" className='condensedFont' textTransform="capitalize">
@@ -214,10 +217,11 @@ export const SimpleCurrentAQIlist = (props) => {
               item
               key={index}
               xs={6}
-              sx={
-                sensorData.current?.sensor_status !== SensorStatus.active &&
-                { '& *': { color: `${CustomThemes.universal.palette.inactiveSensor}` } }
-              }
+              sx={{
+                ...(sensorData.current?.sensor_status !== SensorStatus.active && {
+                  '& *': { color: CustomThemes.universal.palette.inactiveSensor }
+                })
+              }}
               display="block"
             >
               <Typography

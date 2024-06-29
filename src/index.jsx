@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import './index.css';
 import App from './App';
@@ -8,7 +8,10 @@ import { GoogleProvider } from './ContextProviders/GoogleContext';
 import { LinkProvider } from './ContextProviders/LinkContext';
 import { PreferenceProvider } from './ContextProviders/PreferenceContext';
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container);
+
+root.render(
   <React.StrictMode>
     <UserProvider>
       <GoogleProvider>
@@ -19,6 +22,5 @@ ReactDOM.render(
         </LinkProvider>
       </GoogleProvider>
     </UserProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );

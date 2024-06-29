@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { Typography } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
 import AirQualityIndexTable from './AirQualityIndexTable';
@@ -19,7 +19,7 @@ const AQIexplanation = () => {
     <ExpandableSection
       title={Explanation.title}
       content={(
-        <>
+        <Box>
           <AirQualityIndexTable themePreference={themePreference} />
           <Typography
             component="div"
@@ -41,7 +41,7 @@ const AQIexplanation = () => {
               </Typography>
             )}
           />
-        </>
+        </Box>
       )}
     />
   )
