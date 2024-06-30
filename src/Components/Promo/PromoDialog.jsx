@@ -23,9 +23,6 @@ const PromoDialog = ({ title, subtitle, imgSrc, imgAlt, chipLabel }) => {
       maxWidth="md"
       fullWidth
       keepMounted
-      sx={{
-        zIndex: 10000
-      }}
     >
       <DialogContent sx={{
         px: 3

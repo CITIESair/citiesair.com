@@ -5,14 +5,14 @@ const AlertTypes = {
   threshold: {
     id: "threshold",
     index: 0,
-    name: "Threshold Alerts",
+    name: "Threshold",
     tableColumnHeader: "Threshold",
     icon: <SpeedIcon />
   },
   daily: {
     id: "daily",
     index: 1,
-    name: "Daily Alerts",
+    name: "Daily",
     tableColumnHeader: "Alert Hour",
     icon: <CalendarMonthIcon />
   }
@@ -22,12 +22,12 @@ export const ThresholdAlertTypes = {
   below_threshold: {
     id: 'below_threshold',
     sign: "<",
-    label: "< Below"
+    name: "below"
   },
   above_threshold: {
     id: 'above_threshold',
     sign: ">",
-    label: "> Above"
+    name: "above"
   }
 }
 

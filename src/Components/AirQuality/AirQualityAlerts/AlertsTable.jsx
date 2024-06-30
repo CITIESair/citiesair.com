@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Box, Button, IconButton, Stack, useMediaQuery, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, ToggleButtonGroup, ToggleButton, Select, FormControl, InputLabel, MenuItem, Alert } from '@mui/material';
+import { useContext, useState } from 'react';
+import { Box, Button, IconButton, Stack, useMediaQuery, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, ToggleButtonGroup, ToggleButton, Select, FormControl, InputLabel, MenuItem, Alert, Collapse, Fade, Slide, Grow } from '@mui/material';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -12,9 +12,10 @@ import AlertTypes from './AlertTypes';
 import { ThresholdAlertTypes } from './AlertTypes';
 
 import { isValidArray } from '../../../Utils/Utils';
-import AlertModificationDialog from './AlertModificationDialog';
+import AlertModificationDialog from './AlertModificationDialog/AlertModificationDialog';
 
 import { returnHoursFromMinutesPastMidnight, CrudTypes, SharedColumnHeader } from './Utils';
+import { TransitionGroup } from 'react-transition-group';
 
 const AlertsTable = (props) => {
 
@@ -33,27 +34,7 @@ const AlertsTable = (props) => {
     setOpenAlertModificationDialog(true);
   };
 
-  const handleAlertModification = (crudType) => {
-    switch (crudType) {
-      case CrudTypes.add:
-
-        break;
-      case CrudTypes.edit:
-
-        break;
-      case CrudTypes.delete:
-        // Call DELETE first, then remove these later after 200, if 400, then don't set delete, give alert failed
-
-        setAlerts(prevAlerts => prevAlerts.filter(alert => alert.id !== selectedAlert.id));
-        break;
-      default:
-        break
-    }
-    setOpenAlertModificationDialog(false);
-    setSelectedAlert(null);
-  }
-
-  const handleCloseWithoutModification = () => {
+  const handleClose = () => {
     setOpenAlertModificationDialog(false);
     setSelectedAlert(null);
   }
@@ -63,7 +44,7 @@ const AlertsTable = (props) => {
       <Stack spacing={2} alignItems="center">
         <Box width="100%">
           <Table size="small" sx={{ my: 1 }}>
-            <TableHead >
+            <TableHead>
               <TableRow>
                 <TableCell sx={{ width: "5rem", px: 0 }}></TableCell>
 
@@ -81,55 +62,62 @@ const AlertsTable = (props) => {
               </TableRow>
             </TableHead>
 
-            <TableBody>
+            <TransitionGroup component={TableBody}>
               {isValidArray(alertsForTable) ? alertsForTable.map((alert, index) => (
-                <TableRow key={index}>
-                  <TableCell sx={{ width: "5rem", px: 0 }}>
-                    <Tooltip title="Delete Alert">
-                      <IconButton
-                        aria-label="delete"
-                        size="small"
-                        sx={{ "&:hover,:focus": { color: theme.palette.primary.main } }}
-                        onClick={() => handleModifyClick({ alert, crudType: CrudTypes.delete })}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Edit Alert">
-                      <IconButton
-                        aria-label="edit"
-                        size="small"
-                        sx={{ "&:hover,:focus": { color: theme.palette.primary.main } }}
-                        onClick={() => handleModifyClick({ alert, crudType: CrudTypes.edit })}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </TableCell>
-
-                  <TableCell sx={{ textTransform: 'capitalize' }}>
-                    {alert?.location_short}
-                  </TableCell>
-
-                  <TableCell>
-                    {alert?.datatypekey}
-                  </TableCell>
-
-                  {alertTypeKey === AlertTypes.threshold.id ? (
-                    <TableCell>
-                      {ThresholdAlertTypes[alert?.alert_type].sign}{alert?.alert_threshold}
+                <Grow key={index}>
+                  <TableRow
+                    sx={{
+                      background: alert?.id === selectedAlert?.id && theme.palette.background.NYUpurpleLight
+                    }}
+                  >
+                    <TableCell sx={{ width: "5rem", px: 0 }}>
+                      <Tooltip title="Delete Alert">
+                        <IconButton
+                          aria-label="delete"
+                          size="small"
+                          sx={{ "&:hover,:focus": { color: theme.palette.primary.main } }}
+                          onClick={() => handleModifyClick({ alert, crudType: CrudTypes.delete })}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Edit Alert">
+                        <IconButton
+                          aria-label="edit"
+                          size="small"
+                          sx={{ "&:hover,:focus": { color: theme.palette.primary.main } }}
+                          onClick={() => handleModifyClick({ alert, crudType: CrudTypes.edit })}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
                     </TableCell>
-                  ) : null}
 
-                  {alertTypeKey === AlertTypes.daily.id ? (
-                    <TableCell>
-                      {returnHoursFromMinutesPastMidnight(alert?.minutespastmidnight)}
+                    <TableCell sx={{ textTransform: 'capitalize' }}>
+                      {alert?.location_short}
                     </TableCell>
-                  ) : null}
-                </TableRow>
+
+                    <TableCell>
+                      {alert?.datatypekey}
+                    </TableCell>
+
+                    {alertTypeKey === AlertTypes.threshold.id ? (
+                      <TableCell>
+                        {ThresholdAlertTypes[alert?.alert_type].sign}{alert?.threshold_value}
+                      </TableCell>
+                    ) : null}
+
+                    {alertTypeKey === AlertTypes.daily.id ? (
+                      <TableCell>
+                        {returnHoursFromMinutesPastMidnight(alert?.minutespastmidnight)}
+                      </TableCell>
+                    ) : null}
+                  </TableRow>
+                </Grow>
+
               )) : null
               }
-            </TableBody>
+            </TransitionGroup>
           </Table>
 
           {
@@ -137,7 +125,7 @@ const AlertsTable = (props) => {
               (
                 <Alert
                   severity='warning'>
-                  No alerts have been set up for this school
+                  No {AlertTypes[alertTypeKey].name} have been set up for this school
                 </Alert>
               )
               : null
@@ -162,8 +150,7 @@ const AlertsTable = (props) => {
         alertTypeKey={alertTypeKey}
         crudType={crudType}
         openAlertModificationDialog={openAlertModificationDialog}
-        handleCloseWithoutModification={handleCloseWithoutModification}
-        handleAlertModification={handleAlertModification}
+        handleClose={handleClose}
       />
     </>
   );

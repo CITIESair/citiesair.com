@@ -198,7 +198,7 @@ const AQIdatabase = [
 ];
 
 // From https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme680-ds001.pdf
-const vocDatabase = [
+export const vocDatabase = [
   {
     id: 0,
     category: 'Excellent',
@@ -308,6 +308,7 @@ export const getCategoryColors = ({ themePreference, dataType, isGradient }) => 
       {
         minValue,
         maxValue,
+        defaultValueForAlert: database[3][thresholdMappingName].high,
         gradientSteps: dataType.gradient_steps,
         colors: database.flatMap(category => {
           const lowOffset = category[thresholdMappingName].low;

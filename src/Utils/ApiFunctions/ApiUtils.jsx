@@ -43,6 +43,16 @@ export const RawDatasetType = {
   hourly: "hourly"
 }
 
+export const getAlertsApiUrl = ({
+  endpoint,
+  school_id,
+  alert_id
+}) => {
+  if (endpoint !== GeneralEndpoints.alerts) return;
+
+  return `${apiDomain}/${endpoint}/${school_id}${alert_id ? `/${alert_id}` : ''}`;
+}
+
 export const getApiUrl = ({
   endpoint,
   school_id
@@ -52,7 +62,6 @@ export const getApiUrl = ({
     case GeneralEndpoints.current:
     case GeneralEndpoints.schoolmetadata:
     case GeneralEndpoints.chartdata:
-    case GeneralEndpoints.alerts:
     case GeneralEndpoints.alertsEmails:
       return `${apiDomain}/${endpoint}/${school_id}`;
 

@@ -59,7 +59,7 @@ const EmailsInput = (props) => {
 
   useEffect(() => {
     setLocalEmails(serverEmails);
-  }, [serverEmails])
+  }, [serverEmails]);
 
   const handleAddEmail = (passedEmail) => {
     const email = passedEmail.toLowerCase();
@@ -233,7 +233,6 @@ const EmailsInput = (props) => {
             (
               <Grid item xs={12} sm="auto">
                 <Alert
-                  onClose={() => setAlertMessage()}
                   severity={alertSeverity}
                   sx={{
                     py: 0.5,
