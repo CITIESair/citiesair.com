@@ -77,9 +77,6 @@ const CustomDialog = (props) => {
         fullWidth
         fullScreen={smallScreen}
         keepMounted
-        sx={{
-          zIndex: 10000
-        }}
       >
         {(
           smallScreen &&

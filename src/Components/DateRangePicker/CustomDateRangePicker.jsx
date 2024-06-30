@@ -203,7 +203,6 @@ const CustomDateRangePicker = (props) => {
                 disabled={invalidRangeMessage === null ? false : true}
                 onClick={handleApplyButtonClick}
                 sx={{
-                  zIndex: 1005,
                   transform: "translateY(-1px)"
                 }}
               >

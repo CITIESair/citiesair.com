@@ -53,7 +53,7 @@ export const returnCustomStaticRanges = ({ today, minDateOfDataset, aggregationT
 export const StyledDateRangePicker = styled(Paper, {
   shouldForwardProp: (prop) => prop !== 'showPickerPanel' && prop !== 'smallScreen',
 })(({ theme, showPickerPanel, smallScreen }) => ({
-  zIndex: showPickerPanel === true && 1000,
+  zIndex: showPickerPanel === true && 1,
   position: "relative",
   padding: showPickerPanel ? theme.spacing(1) : 0,
   margin: (showPickerPanel && !smallScreen) ? theme.spacing(-1) : 0,

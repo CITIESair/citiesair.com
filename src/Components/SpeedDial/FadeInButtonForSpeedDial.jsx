@@ -19,7 +19,7 @@ export function FadeInButtonForSpeedDial(props) {
           position: 'fixed',
           bottom: distanceFromBottomOfWindow,
           left: 'calc(100vw - 5rem)',
-          zIndex: 999
+          zIndex: 1
         }}
       >
         {children}
