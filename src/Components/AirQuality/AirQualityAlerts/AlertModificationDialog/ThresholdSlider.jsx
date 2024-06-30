@@ -1,4 +1,4 @@
-import { Slider, colors, Grid, Input } from '@mui/material';
+import { Slider, colors, Stack, Input } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useTheme } from '@emotion/react';
@@ -59,88 +59,89 @@ export const ThresholdSlider = (props) => {
 
   return (
     <ThemeProvider theme={directionTheme}>
-      <Grid container spacing={showInput ? 2 : 0} alignItems="center">
-        <Grid item xs>
-          <Slider
-            dir={invertSelection ? "rtl" : "ltr"}
-            aria-label="Alert Threshold Slider"
-            aria-labelledby="input-threshold-slider"
-            value={invertSelection ? sliderValueForInvertSelection || defaultValue : sliderValue || defaultValue}
-            defaultValue={defaultValue}
-            step={marks === null ? "1" : null} // only allow discrete equal step if marks are not provided
-            marks={marks}
-            disabled={disabled}
-            min={min}
-            max={max}
-            onChange={handleSliderChange}
-            valueLabelDisplay={"off"}
-            sx={{
-              '& *': {
-                transition: 'none !important'
-              },
-              '& .MuiSlider-thumb': {
-                width: '4px',
-                borderRadius: 1,
-                color: colors.common.black
-              },
-              '& .MuiSlider-mark': {
-                width: '2px',
-                height: '1rem',
-                color: colors.common.white,
-              },
-              '& .MuiSlider-thumb, .MuiSlider-mark': {
-                transform: `translate(${invertSelection ? "50%" : "-50%"},-50%)`
-              },
-              '& .MuiSlider-rail, .MuiSlider-track': {
-                height: '1rem',
-                opacity: 0.75,
-                border: 'none'
-              },
-              '& .MuiSlider-rail': {
-                background: backgroundCssGradient,
-              },
-              '& .MuiSlider-track': {
-                background: stripedGradient,
-                ...(invertSelection ? {
-                  borderTopLeftRadius: 0,
-                  borderBottomLeftRadius: 0
-                } : {
-                  borderTopRightRadius: 0,
-                  borderBottomRightRadius: 0
-                })
-              },
-              '& .MuiSlider-markLabel': {
-                // transform: 'rotateZ(45deg)',
-                // transformOrigin: 'top left',
-                color: theme.palette.text.primary,
-                fontWeight: 500,
-                textDecoration: 'underline'
-              },
-              '& .MuiSlider-markLabelActive': {
-                color: theme.palette.text.secondary,
-                fontWeight: 'inherit',
-                textDecoration: 'inherit'
-              }
-            }} />
-        </Grid>
+      <Stack
+        spacing={showInput ? 2 : 0}
+        alignItems="center"
+        height={300}
+      >
         {showInput ? (
-          <Grid item>
-            <Input
-              value={sliderValue}
-              size="small"
-              onChange={handleInputChange}
-              onBlur={handleBlur}
-              inputProps={{
-                step: 10,
-                min,
-                max,
-                type: 'number',
-                'aria-labelledby': 'input-threshold-slider'
-              }} />
-          </Grid>
+          <Input
+            value={sliderValue}
+            size="small"
+            onChange={handleInputChange}
+            onBlur={handleBlur}
+            inputProps={{
+              step: 10,
+              min,
+              max,
+              type: 'number',
+              'aria-labelledby': 'input-threshold-slider'
+            }} />
         ) : null}
-      </Grid>
 
+        <Slider
+          dir={invertSelection ? "rtl" : "ltr"}
+          aria-label="Alert Threshold Slider"
+          aria-labelledby="input-threshold-slider"
+          value={invertSelection ? sliderValueForInvertSelection || defaultValue : sliderValue || defaultValue}
+          defaultValue={defaultValue}
+          step={marks === null ? "1" : null} // only allow discrete equal step if marks are not provided
+          marks={marks}
+          disabled={disabled}
+          min={min}
+          max={max}
+          onChange={handleSliderChange}
+          valueLabelDisplay={"off"}
+          orientation="vertical"
+          sx={{
+            '& *': {
+              transition: 'none !important'
+            },
+            '& .MuiSlider-thumb': {
+              width: '2rem',
+              height: '4px',
+              borderRadius: 1,
+              color: colors.common.black
+            },
+            '& .MuiSlider-mark': {
+              width: '2rem',
+              height: '2px',
+              color: colors.common.white,
+            },
+            '& .MuiSlider-thumb, .MuiSlider-mark': {
+              transform: `translate(-50%,${invertSelection ? "-50%" : "50%"})`
+            },
+            '& .MuiSlider-rail, .MuiSlider-track': {
+              width: '1rem',
+              opacity: 0.75,
+              border: 'none'
+            },
+            '& .MuiSlider-rail': {
+              background: backgroundCssGradient,
+            },
+            '& .MuiSlider-track': {
+              background: stripedGradient,
+              ...(invertSelection ? {
+                borderBottomLeftRadius: 0,
+                borderBottomRightRadius: 0
+              } : {
+                borderTopLeftRadius: 0,
+                borderTopRightRadius: 0
+              })
+            },
+            '& .MuiSlider-markLabel': {
+              color: theme.palette.text.primary,
+              fontWeight: 500,
+              textDecoration: 'underline'
+            },
+            '& .MuiSlider-markLabelActive': {
+              color: theme.palette.text.secondary,
+              fontWeight: 'inherit',
+              textDecoration: 'inherit'
+            }
+          }} />
+
+      </Stack>
     </ThemeProvider>
   );
 };

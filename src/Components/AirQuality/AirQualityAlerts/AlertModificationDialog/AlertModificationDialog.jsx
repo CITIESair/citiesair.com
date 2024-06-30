@@ -143,7 +143,7 @@ const AlertModificationDialog = (props) => {
           const { colors, minValue, maxValue, defaultValueForAlert } = dataTypeColorAxis;
 
           const backgroundCssGradient = generateCssBackgroundGradient({
-            gradientDirection: 'to right',
+            gradientDirection: 'to top',
             colors: colors
           });
 
@@ -195,28 +195,16 @@ const AlertModificationDialog = (props) => {
         }
 
         alertTypeSpecificData = (
-          <Stack spacing={2}>
-            <Typography variant='body1' fontWeight={500} color="text.primary">
-              Threshold Settings
+          <Stack direction="column" spacing={1}>
+            <Typography variant='body1' fontWeight={500} color="text.secondary">
+              Alert me if {AQIDataTypes[currentDataTypeKey]?.name_short || 'selected data type'} is:
             </Typography>
-
-            <Stack direction="row" alignItems="center" spacing={1}>
-              <Typography variant='boy2' color="text.secondary">
-                Alert me if {AQIDataTypes[currentDataTypeKey]?.name_short || 'selected data type'} is:
-              </Typography>
-              <ThresholdTypeToggle
-                thisAlertType={currentAlertType || ThresholdAlertTypes.above_threshold}
-                handleChange={handleCurrentAlertTypeChange}
-                disabled={disabled}
-              />
-            </Stack>
-
-            <Stack direction="column" spacing={0.5}>
-              <Typography variant='boy2' color="text.secondary">
-                this threshold:
-              </Typography>
-              {thresholdSlider}
-            </Stack>
+            <ThresholdTypeToggle
+              thisAlertType={currentAlertType || ThresholdAlertTypes.above_threshold}
+              handleChange={handleCurrentAlertTypeChange}
+              disabled={disabled}
+            />
+            {thresholdSlider}
           </Stack>
         )
         break;
