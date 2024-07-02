@@ -6,7 +6,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddAlarmIcon from '@mui/icons-material/AddAlarm';
 
 import { useTheme } from '@emotion/react';
-import { useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
+import { emptySelectedAlert, useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
 
 import AlertTypes from './AlertTypes';
 import { ThresholdAlertTypes } from './AlertTypes';
@@ -19,7 +19,7 @@ import { TransitionGroup } from 'react-transition-group';
 
 const AlertsTable = (props) => {
 
-  const { selectedAlert, setSelectedAlert, setAlerts } = useAirQualityAlert();
+  const { selectedAlert, setSelectedAlert, editingAlert, setAlerts } = useAirQualityAlert();
 
   const { alertTypeKey, alertsForTable } = props;
 
@@ -36,7 +36,7 @@ const AlertsTable = (props) => {
 
   const handleClose = () => {
     setOpenAlertModificationDialog(false);
-    setSelectedAlert(null);
+    setSelectedAlert(emptySelectedAlert);
   }
 
   return (
@@ -146,7 +146,6 @@ const AlertsTable = (props) => {
       </Stack>
 
       <AlertModificationDialog
-        selectedAlert={selectedAlert}
         alertTypeKey={alertTypeKey}
         crudType={crudType}
         openAlertModificationDialog={openAlertModificationDialog}

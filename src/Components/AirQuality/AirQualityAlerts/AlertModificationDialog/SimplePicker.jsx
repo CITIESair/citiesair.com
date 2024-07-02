@@ -5,7 +5,7 @@ import { isValidArray } from '../../../../Utils/Utils';
 export const SimplePicker = (props) => {
   const { icon, label, value, options, handleChange, disabled } = props;
   const theme = useTheme();
-
+  console.log(value, options)
   return (
     <Stack
       direction="row"

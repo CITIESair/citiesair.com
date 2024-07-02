@@ -4,7 +4,7 @@ import AlertTypes from '../AlertTypes';
 import { ThresholdAlertTypes } from '../AlertTypes';
 import { CrudTypes, SharedColumnHeader } from '../Utils';
 
-import { useAirQualityAlert } from '../../../../ContextProviders/AirQualityAlertContext';
+import { AirQualityAlertKeys, useAirQualityAlert } from '../../../../ContextProviders/AirQualityAlertContext';
 
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PlaceIcon from '@mui/icons-material/Place';
@@ -24,7 +24,6 @@ import { ThresholdTypeToggle } from './ThresholdTypeToggle';
 import { SimplePicker } from './SimplePicker';
 import { HOURS } from './HOURS';
 import { ThresholdSlider } from './ThresholdSlider';
-import { returnInvertedValue } from './ThresholdSlider';
 
 const AlertModificationDialog = (props) => {
   const {
@@ -34,18 +33,9 @@ const AlertModificationDialog = (props) => {
     handleClose
   } = props;
 
-  const { selectedAlert, setAlerts } = useAirQualityAlert();
-
   const { schoolMetadata, currentSchoolID } = useContext(DashboardContext);
 
-  const { id, alert_type, sensor_id, datatypekey, threshold_value, minutespastmidnight } = selectedAlert || {};
-
-  const [currentAlertId, setCurrentAlertId] = useState(id || '');
-  const [currentSensorId, setCurrentSensorId] = useState(sensor_id || '');
-  const [currentDataTypeKey, setCurrentDataTypeKey] = useState(datatypekey || '');
-  const [currentAlertType, setCurrentAlertType] = useState(alert_type || '');
-  const [currentAlertThreshold, setCurrentAlertThreshold] = useState(threshold_value || '');
-  const [currentMinutesPastMidnight, setCurrentMinutesPastMidnight] = useState(minutespastmidnight || '');
+  const { selectedAlert, editingAlert, allowedDataTypesForSensor, setEditingAlert, setAlerts } = useAirQualityAlert();
 
   const [shouldDisableButton, setShouldDisableButton] = useState(false);
 
@@ -53,58 +43,44 @@ const AlertModificationDialog = (props) => {
   const [alertSeverity, setAlertSeverity] = useState('success');
 
   useEffect(() => {
-    if (!selectedAlert) return;
-
-    setCurrentAlertId(id);
-    setCurrentSensorId(sensor_id);
-    setCurrentDataTypeKey(datatypekey);
-    setCurrentAlertType(alert_type);
-    setCurrentAlertThreshold(threshold_value)
-    setCurrentMinutesPastMidnight(minutespastmidnight);
-
-    setAllowedDataTypes(returnAllowedDataTypesForThisSensor(selectedAlert?.sensor_id));
-
-    setAlertMessage();
-  }, [selectedAlert]);
-
-  useEffect(() => {
     setAlertMessage();
   }, [crudType]);
 
-  const returnAllowedDataTypesForThisSensor = (sensor) => {
-    if (!schoolMetadata) return;
-
-    const newSensorData = schoolMetadata?.sensors?.find(elem => elem.sensor_id === sensor) || [];
-    const allowedDataTypesForThisSensor = newSensorData.allowedDataTypes;
-
-    if (allowedDataTypesForThisSensor) return allowedDataTypesForThisSensor.map(dataType => ({ value: dataType, label: AQIDataTypes[dataType].name_title }));
-    else return [];
-  }
-
-  const [allowedDataTypes, setAllowedDataTypes] = useState([]);
-
   const handleCurrentSensorChange = (event) => {
     const newSensor = event.target.value;
-    setCurrentSensorId(newSensor);
-
-    setCurrentDataTypeKey('');
-    setAllowedDataTypes(returnAllowedDataTypesForThisSensor(newSensor))
+    setEditingAlert({
+      ...editingAlert,
+      [AirQualityAlertKeys.sensor_id]: newSensor,
+      [AirQualityAlertKeys.datatypekey]: ''
+    });
   }
 
   const handleCurrentDataTypeChange = (event) => {
-    setCurrentDataTypeKey(event.target.value);
+    setEditingAlert({
+      ...editingAlert,
+      [AirQualityAlertKeys.datatypekey]: event.target.value
+    });
   }
 
   const handleCurrentThresholdValueChange = (event) => {
-    setCurrentAlertThreshold(event.target.value);
+    setEditingAlert({
+      ...editingAlert,
+      [AirQualityAlertKeys.threshold_value]: event.target.value
+    });
   }
 
   const handleCurrentAlertTypeChange = (event) => {
-    setCurrentAlertType(event.target.value);
+    setEditingAlert({
+      ...editingAlert,
+      [AirQualityAlertKeys.alert_type]: event.target.value
+    });
   }
 
   const handleCurrentMinutesPastMidnightChange = (event) => {
-    setCurrentMinutesPastMidnight(event.target.value);
+    setEditingAlert({
+      ...editingAlert,
+      [AirQualityAlertKeys.minutespastmidnight]: event.target.value
+    });
   }
 
   const theme = useTheme();
@@ -127,7 +103,7 @@ const AlertModificationDialog = (props) => {
           <SimplePicker
             icon={<AccessTimeIcon />}
             label={AlertTypes.daily.tableColumnHeader}
-            value={currentMinutesPastMidnight}
+            value={editingAlert[AirQualityAlertKeys.minutespastmidnight]}
             options={HOURS}
             disabled={disabled}
             handleChange={handleCurrentMinutesPastMidnightChange}
@@ -137,6 +113,7 @@ const AlertModificationDialog = (props) => {
       case AlertTypes.threshold.id:
         let thresholdSlider = null;
 
+        const currentDataTypeKey = editingAlert[AirQualityAlertKeys.datatypekey];
         if (currentDataTypeKey) {
           const dataType = AQIDataTypes[currentDataTypeKey];
           const dataTypeColorAxis = theme.palette.chart.colorAxes[dataType.color_axis];
@@ -150,7 +127,7 @@ const AlertModificationDialog = (props) => {
           // Check if this dataType exists in the AQIdatabase
           // If yes, return value and label accordingly to the marks
           let marks, database;
-          const invertSelection = currentAlertType === ThresholdAlertTypes.below_threshold.id;
+          const invertSelection = editingAlert[AirQualityAlertKeys.alert_type] === ThresholdAlertTypes.below_threshold.id;
 
           if (dataType === AQIDataTypes.voc) {
             database = vocDatabase;
@@ -159,11 +136,9 @@ const AlertModificationDialog = (props) => {
           }
           if (database) {
             marks = database.map((elem) => {
-              const val = elem[dataType.threshold_mapping_name].high;
+              const val = elem[dataType.threshold_mapping_name].low;
               return {
-                value: invertSelection ?
-                  returnInvertedValue({ val, min: minValue, max: maxValue })
-                  : val,
+                value: val,
                 label: elem.category
               }
             })
@@ -175,10 +150,11 @@ const AlertModificationDialog = (props) => {
               max={maxValue}
               marks={marks}
               defaultValue={defaultValueForAlert}
-              value={currentAlertThreshold}
+              value={editingAlert[AirQualityAlertKeys.threshold_value]}
               disabled={disabled}
               backgroundCssGradient={backgroundCssGradient}
               invertSelection={invertSelection}
+              handleChange={handleCurrentThresholdValueChange}
             />
           )
         } else {
@@ -200,7 +176,7 @@ const AlertModificationDialog = (props) => {
               Alert me if {AQIDataTypes[currentDataTypeKey]?.name_short || 'selected data type'} is:
             </Typography>
             <ThresholdTypeToggle
-              thisAlertType={currentAlertType || ThresholdAlertTypes.above_threshold}
+              thisAlertType={editingAlert[AirQualityAlertKeys.alert_type]}
               handleChange={handleCurrentAlertTypeChange}
               disabled={disabled}
             />
@@ -231,7 +207,7 @@ const AlertModificationDialog = (props) => {
         <SimplePicker
           icon={<PlaceIcon />}
           label={SharedColumnHeader.location}
-          value={currentSensorId}
+          value={editingAlert[AirQualityAlertKeys.sensor_id]}
           options={locations}
           disabled={disabled}
           handleChange={handleCurrentSensorChange}
@@ -240,8 +216,8 @@ const AlertModificationDialog = (props) => {
         <SimplePicker
           icon={<CategoryIcon />}
           label={SharedColumnHeader.dataType}
-          value={currentDataTypeKey}
-          options={allowedDataTypes}
+          value={editingAlert[AirQualityAlertKeys.datatypekey]}
+          options={allowedDataTypesForSensor}
           disabled={disabled}
           handleChange={handleCurrentDataTypeChange}
         />
@@ -267,13 +243,7 @@ const AlertModificationDialog = (props) => {
             school_id: currentSchoolID
           }),
           restMethod: RESTmethods.POST,
-          body: {
-            "alert_type": currentAlertType || AlertTypes[alertTypeKey].id,
-            "datatypekey": currentDataTypeKey,
-            "sensor_id": currentSensorId,
-            "minutespastmidnight": currentMinutesPastMidnight,
-            "threshold_value": currentAlertThreshold || 30
-          }
+          body: editingAlert
         }).then((data) => {
           setAlerts(prevAlerts => [...prevAlerts, data]);
           handleClose();
@@ -281,27 +251,22 @@ const AlertModificationDialog = (props) => {
 
         break;
       case CrudTypes.edit:
+        const alert_id = selectedAlert[AirQualityAlertKeys.id];
         fetchDataFromURL({
           url: getAlertsApiUrl({
             endpoint: GeneralEndpoints.alerts,
             school_id: currentSchoolID,
-            alert_id: currentAlertId
+            alert_id: alert_id
           }),
           restMethod: RESTmethods.PUT,
-          body: {
-            "alert_type": currentAlertType,
-            "datatypekey": currentDataTypeKey,
-            "sensor_id": currentSensorId,
-            "minutespastmidnight": currentMinutesPastMidnight,
-            "threshold_value": currentAlertThreshold || 30
-          }
+          body: editingAlert
         }).then((data) => {
           setAlertSeverity("success");
           setAlertMessage("Changes saved successfully.");
           // setShouldDisableButton(true);
           setAlerts(prevAlerts =>
             prevAlerts.map(alert =>
-              alert.id === currentAlertId ? data : alert
+              alert.id === alert_id ? data : alert
             )
           );
         }).catch((error) => handleFetchError(error));
