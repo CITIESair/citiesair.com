@@ -1,16 +1,18 @@
 import { ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { ThresholdAlertTypes } from '../AlertTypes';
 
-export const ThresholdTypeToggle = ({ thisAlertType, handleChange, disabled }) => {
+export const ThresholdTypeToggle = ({ thisAlertType, handleChange, disabled, ...others }) => {
   return (
     <ToggleButtonGroup
       color={disabled ? "standard" : "primary"}
+      disabled={disabled}
       defaultValue={ThresholdAlertTypes.above_threshold.id}
       value={thisAlertType}
       exclusive
       aria-label="toggle to choose alert below or above a threshold"
       size="small"
       onChange={handleChange}
+      {...others}
     >
       {Object.keys(ThresholdAlertTypes).map((key) => {
         const thresholdAlertType = ThresholdAlertTypes[key];

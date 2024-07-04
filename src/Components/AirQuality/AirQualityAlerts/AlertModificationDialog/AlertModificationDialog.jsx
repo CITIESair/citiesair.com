@@ -1,10 +1,10 @@
-import { Button, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText, Stack, Alert, useMediaQuery, Typography } from '@mui/material';
+import { Button, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText, Stack, Alert, useMediaQuery, Typography, Grid } from '@mui/material';
 import { useTheme } from '@emotion/react';
 import AlertTypes from '../AlertTypes';
 import { ThresholdAlertTypes } from '../AlertTypes';
 import { CrudTypes, SharedColumnHeader } from '../Utils';
 
-import { AirQualityAlertKeys, useAirQualityAlert } from '../../../../ContextProviders/AirQualityAlertContext';
+import { AirQualityAlertKeys, getAlertPlaceholder, useAirQualityAlert } from '../../../../ContextProviders/AirQualityAlertContext';
 
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PlaceIcon from '@mui/icons-material/Place';
@@ -24,6 +24,7 @@ import { ThresholdTypeToggle } from './ThresholdTypeToggle';
 import { SimplePicker } from './SimplePicker';
 import { HOURS } from './HOURS';
 import { ThresholdSlider } from './ThresholdSlider';
+import { AlertSeverity, useNotificationContext } from '../../../../ContextProviders/NotificationContext';
 
 const AlertModificationDialog = (props) => {
   const {
@@ -35,15 +36,15 @@ const AlertModificationDialog = (props) => {
 
   const { schoolMetadata, currentSchoolID } = useContext(DashboardContext);
 
-  const { selectedAlert, editingAlert, allowedDataTypesForSensor, setEditingAlert, setAlerts } = useAirQualityAlert();
+  const { selectedAlert, setSelectedAlert, editingAlert, allowedDataTypesForSensor, setEditingAlert, setAlerts } = useAirQualityAlert();
 
   const [shouldDisableButton, setShouldDisableButton] = useState(false);
 
-  const [alertMessage, setAlertMessage] = useState(null);
-  const [alertSeverity, setAlertSeverity] = useState('success');
+  const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
 
   useEffect(() => {
-    setAlertMessage();
+    setMessage();
+    setShowNotification(false);
   }, [crudType]);
 
   const handleCurrentSensorChange = (event) => {
@@ -56,16 +57,24 @@ const AlertModificationDialog = (props) => {
   }
 
   const handleCurrentDataTypeChange = (event) => {
+    const selectedDataTypeKey = event.target.value;
+    const dataType = AQIDataTypes[selectedDataTypeKey];
+    const dataTypeColorAxis = theme.palette.chart.colorAxes[dataType.color_axis];
+    const { defaultValueForAlert } = dataTypeColorAxis;
+
     setEditingAlert({
       ...editingAlert,
-      [AirQualityAlertKeys.datatypekey]: event.target.value
+      [AirQualityAlertKeys.datatypekey]: selectedDataTypeKey,
+      [AirQualityAlertKeys.threshold_value]: defaultValueForAlert
     });
+
+
   }
 
-  const handleCurrentThresholdValueChange = (event) => {
+  const handleCurrentThresholdValueChange = (value) => {
     setEditingAlert({
       ...editingAlert,
-      [AirQualityAlertKeys.threshold_value]: event.target.value
+      [AirQualityAlertKeys.threshold_value]: value
     });
   }
 
@@ -93,7 +102,27 @@ const AlertModificationDialog = (props) => {
   ));
 
   const returnDialogContent = () => {
-    const disabled = crudType === CrudTypes.delete;
+
+    // Helper function to check if the previous field has a value to disable this field
+    // or disable everything if the crudType is DELETE
+    const isDisabled = (key) => {
+      if (crudType === CrudTypes.delete) return true;
+
+      const dependencies = {
+        [AirQualityAlertKeys.sensor_id]: null,
+        [AirQualityAlertKeys.datatypekey]: AirQualityAlertKeys.sensor_id,
+        [AirQualityAlertKeys.alert_type]: AirQualityAlertKeys.datatypekey,
+        [AirQualityAlertKeys.threshold_value]: AirQualityAlertKeys.datatypekey,
+        [AirQualityAlertKeys.minutespastmidnight]: AirQualityAlertKeys.datatypekey
+      };
+
+      const dependentKey = dependencies[key];
+
+      if (!dependentKey) return false; // if this datatypekey doesnt depend on another one, always return disabled == false
+
+      const placeholder = getAlertPlaceholder(alertTypeKey);
+      return editingAlert[dependentKey] === placeholder[dependentKey];
+    };
 
     let alertTypeSpecificData = null;
 
@@ -105,7 +134,7 @@ const AlertModificationDialog = (props) => {
             label={AlertTypes.daily.tableColumnHeader}
             value={editingAlert[AirQualityAlertKeys.minutespastmidnight]}
             options={HOURS}
-            disabled={disabled}
+            disabled={isDisabled(AirQualityAlertKeys.minutespastmidnight)}
             handleChange={handleCurrentMinutesPastMidnightChange}
           />
         );
@@ -114,10 +143,10 @@ const AlertModificationDialog = (props) => {
         let thresholdSlider = null;
 
         const currentDataTypeKey = editingAlert[AirQualityAlertKeys.datatypekey];
-        if (currentDataTypeKey) {
+        if (currentDataTypeKey && currentDataTypeKey !== "") {
           const dataType = AQIDataTypes[currentDataTypeKey];
           const dataTypeColorAxis = theme.palette.chart.colorAxes[dataType.color_axis];
-          const { colors, minValue, maxValue, defaultValueForAlert } = dataTypeColorAxis;
+          const { colors, minValue, maxValue, defaultValueForAlert, stepsForThreshold } = dataTypeColorAxis;
 
           const backgroundCssGradient = generateCssBackgroundGradient({
             gradientDirection: 'to top',
@@ -135,14 +164,20 @@ const AlertModificationDialog = (props) => {
             database = AQIdatabase;
           }
           if (database) {
-            marks = database.map((elem) => {
-              const val = elem[dataType.threshold_mapping_name].low;
-              return {
-                value: val,
-                label: elem.category
-              }
-            })
+            marks = database
+              .filter((_, index) => index !== 0) // do not return the lowest category
+              .map((elem) => {
+                const val = elem[dataType.threshold_mapping_name].low;
+                return {
+                  value: val,
+                  label: elem.category
+                }
+              })
           }
+
+          const inputUnit = Object.keys(AQIDataTypes)
+            .filter(key => key === editingAlert[AirQualityAlertKeys.datatypekey])
+            .map(key => AQIDataTypes[key].unit)[0]
 
           thresholdSlider = (
             <ThresholdSlider
@@ -151,10 +186,12 @@ const AlertModificationDialog = (props) => {
               marks={marks}
               defaultValue={defaultValueForAlert}
               value={editingAlert[AirQualityAlertKeys.threshold_value]}
-              disabled={disabled}
+              stepsForThreshold={stepsForThreshold}
+              disabled={isDisabled(AirQualityAlertKeys.threshold_value)}
               backgroundCssGradient={backgroundCssGradient}
               invertSelection={invertSelection}
               handleChange={handleCurrentThresholdValueChange}
+              inputUnit={inputUnit}
             />
           )
         } else {
@@ -171,17 +208,34 @@ const AlertModificationDialog = (props) => {
         }
 
         alertTypeSpecificData = (
-          <Stack direction="column" spacing={1}>
-            <Typography variant='body1' fontWeight={500} color="text.secondary">
-              Alert me if {AQIDataTypes[currentDataTypeKey]?.name_short || 'selected data type'} is:
-            </Typography>
-            <ThresholdTypeToggle
-              thisAlertType={editingAlert[AirQualityAlertKeys.alert_type]}
-              handleChange={handleCurrentAlertTypeChange}
-              disabled={disabled}
-            />
+          <Grid
+            container
+            alignItems="stretch"
+          >
+            <Grid item xs={12}>
+              <Typography
+                variant='body1'
+                fontWeight={500}
+                color="text.secondary"
+                sx={{ mb: 1 }}
+              >
+                Alert me if {AQIDataTypes[currentDataTypeKey]?.name_title || 'selected data type'} is:
+              </Typography>
+            </Grid>
+
+            <Grid item sx={{ mr: 2 }}>
+              <ThresholdTypeToggle
+                thisAlertType={editingAlert[AirQualityAlertKeys.alert_type]}
+                handleChange={handleCurrentAlertTypeChange}
+                disabled={isDisabled(AirQualityAlertKeys.alert_type)}
+                sx={{
+                  height: "100%"
+                }}
+              />
+            </Grid>
+
             {thresholdSlider}
-          </Stack>
+          </Grid>
         )
         break;
       default:
@@ -198,7 +252,7 @@ const AlertModificationDialog = (props) => {
         {
           DialogData[crudType]?.contentText ?
             (
-              <DialogContentText>
+              <DialogContentText fontWeight="500">
                 {DialogData[crudType].contentText}
               </DialogContentText>
             ) : null
@@ -209,7 +263,7 @@ const AlertModificationDialog = (props) => {
           label={SharedColumnHeader.location}
           value={editingAlert[AirQualityAlertKeys.sensor_id]}
           options={locations}
-          disabled={disabled}
+          disabled={isDisabled(AirQualityAlertKeys.sensor_id)}
           handleChange={handleCurrentSensorChange}
         />
 
@@ -218,7 +272,7 @@ const AlertModificationDialog = (props) => {
           label={SharedColumnHeader.dataType}
           value={editingAlert[AirQualityAlertKeys.datatypekey]}
           options={allowedDataTypesForSensor}
-          disabled={disabled}
+          disabled={isDisabled(AirQualityAlertKeys.datatypekey)}
           handleChange={handleCurrentDataTypeChange}
         />
 
@@ -230,10 +284,17 @@ const AlertModificationDialog = (props) => {
 
   const handleAlertModification = () => {
     const handleFetchError = (error) => {
-      console.log(error);
-      setAlertSeverity("error");
-      setAlertMessage(DialogData[crudType].errorMessage);
+      setSeverity(AlertSeverity.error);
+      setMessage(DialogData[crudType].errorMessage);
+      setShowNotification(true);
     };
+
+    const handleFetchSuccess = () => {
+      setSeverity(AlertSeverity.success);
+      setMessage(DialogData[crudType].successMessage);
+      setShowNotification(true);
+      handleClose();
+    }
 
     switch (crudType) {
       case CrudTypes.add:
@@ -246,7 +307,11 @@ const AlertModificationDialog = (props) => {
           body: editingAlert
         }).then((data) => {
           setAlerts(prevAlerts => [...prevAlerts, data]);
-          handleClose();
+          handleFetchSuccess();
+
+          const placeholder = getAlertPlaceholder(alertTypeKey);
+          setSelectedAlert(placeholder);
+          setEditingAlert(placeholder);
         }).catch((error) => handleFetchError(error));
 
         break;
@@ -261,14 +326,13 @@ const AlertModificationDialog = (props) => {
           restMethod: RESTmethods.PUT,
           body: editingAlert
         }).then((data) => {
-          setAlertSeverity("success");
-          setAlertMessage("Changes saved successfully.");
           // setShouldDisableButton(true);
           setAlerts(prevAlerts =>
             prevAlerts.map(alert =>
               alert.id === alert_id ? data : alert
             )
           );
+          handleFetchSuccess();
         }).catch((error) => handleFetchError(error));
 
         break;
@@ -282,7 +346,7 @@ const AlertModificationDialog = (props) => {
           restMethod: RESTmethods.DELETE
         }).then(() => {
           setAlerts(prevAlerts => prevAlerts.filter(alert => alert.id !== selectedAlert.id));
-          handleClose();
+          handleFetchSuccess();
         }).catch((error) => handleFetchError(error));
 
         break;
@@ -320,22 +384,7 @@ const AlertModificationDialog = (props) => {
         {DialogData[crudType]?.title}
       </DialogTitle>
 
-      <DialogContent sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}>
-        {alertMessage ?
-          (
-            <Alert
-              severity={alertSeverity}
-              sx={{ mb: 3, width: "100%" }}
-            >
-              {alertMessage}
-            </Alert>
-          ) : null}
-
+      <DialogContent>
         {returnDialogContent()}
       </DialogContent>
       <DialogActions>

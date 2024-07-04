@@ -1,6 +1,6 @@
 // React components
 import { React, useMemo, lazy, Suspense, useContext, useEffect } from 'react';
-import { BrowserRouter, Route, Routes, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 
 // MUI components
 import { Box } from '@mui/material/';
@@ -28,6 +28,8 @@ import { PreferenceContext } from './ContextProviders/PreferenceContext';
 import { LinkContext } from './ContextProviders/LinkContext';
 
 import jsonData from './section_data.json';
+
+import SnackbarNotification from './Components/SnackbarNotification';
 
 // Lazy load pages
 const Home = lazy(() => import('./Pages/Home/Home'));
@@ -95,6 +97,8 @@ function App() {
           }}
         >
           <SpeedDialButton chartsTitlesList={chartsTitlesList} topAnchorID={jsonData.topAnchor.id} />
+
+          <SnackbarNotification />
 
           <Suspense fallback={<LoadingAnimation optionalText="Loading Dashboard" />}>
             <Routes>

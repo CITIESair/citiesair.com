@@ -1,4 +1,3 @@
-import { React, useEffect, useState } from 'react';
 import { Snackbar, Alert, IconButton } from '@mui/material';
 import { Close } from '@mui/icons-material/';
 import { useNotificationContext } from '../ContextProviders/NotificationContext';

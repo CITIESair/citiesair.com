@@ -2,7 +2,7 @@ import { createContext, useMemo, useState, useContext, useEffect } from 'react';
 import { DashboardContext } from './DashboardContext';
 import { fetchDataFromURL } from '../Utils/ApiFunctions/ApiCalls';
 import { GeneralEndpoints, getAlertsApiUrl } from '../Utils/ApiFunctions/ApiUtils';
-import { ThresholdAlertTypes } from '../Components/AirQuality/AirQualityAlerts/AlertTypes';
+import AlertTypes, { ThresholdAlertTypes } from '../Components/AirQuality/AirQualityAlerts/AlertTypes';
 import { isValidArray } from '../Utils/Utils';
 import AQIDataTypes from '../Utils/AirQuality/DataTypes';
 
@@ -12,24 +12,30 @@ export const AirQualityAlertKeys = {
   id: "id",
   alert_type: "alert_type",
   sensor_id: "sensor_id",
+  location_short: "location_short",
   datatypekey: "datatypekey",
   threshold_value: "threshold_value",
   minutespastmidnight: "minutespastmidnight"
 };
 
-export const emptySelectedAlert = {
-  [AirQualityAlertKeys.id]: '',
-  [AirQualityAlertKeys.alert_type]: ThresholdAlertTypes.above_threshold.id,
-  [AirQualityAlertKeys.sensor_id]: '',
-  [AirQualityAlertKeys.datatypekey]: '',
-  [AirQualityAlertKeys.threshold_value]: 0,
-  [AirQualityAlertKeys.minutespastmidnight]: ''
+export const getAlertPlaceholder = (alert_type = AlertTypes.daily.id) => {
+  let localAlertType;
+  if (alert_type === AlertTypes.threshold.id) localAlertType = ThresholdAlertTypes.above_threshold.id;
+
+  return {
+    [AirQualityAlertKeys.id]: '',
+    [AirQualityAlertKeys.alert_type]: localAlertType || alert_type,
+    [AirQualityAlertKeys.sensor_id]: '',
+    [AirQualityAlertKeys.datatypekey]: '',
+    [AirQualityAlertKeys.threshold_value]: 0,
+    [AirQualityAlertKeys.minutespastmidnight]: ''
+  }
 }
 
 export function AirQualityAlertProvider({ children }) {
   const { schoolMetadata, currentSchoolID } = useContext(DashboardContext);
 
-  const [selectedAlert, setSelectedAlert] = useState(emptySelectedAlert);
+  const [selectedAlert, setSelectedAlert] = useState(getAlertPlaceholder());
 
   const [editingAlert, setEditingAlert] = useState(selectedAlert);
 
@@ -38,7 +44,7 @@ export function AirQualityAlertProvider({ children }) {
   const [alerts, setAlerts] = useState([]);
 
   useEffect(() => {
-    setEditingAlert(selectedAlert);
+    setEditingAlert({ ...selectedAlert });
   }, [selectedAlert]);
 
   useEffect(() => {

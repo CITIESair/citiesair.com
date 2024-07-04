@@ -70,7 +70,7 @@ export default function DatasetDownloadDialog() {
       />
       {
         sensorsDatasets &&
-        <Typography variant="caption" sx={{ my: 3, fontStyle: 'italic' }} >
+        <Typography variant="caption" sx={{ my: 2, fontStyle: 'italic', display: "block" }} >
           These datasets are provided by CITIESair from sensors operated by CITIESair. Should you intend to utilize them for your project, research, or publication, we kindly request that you notify us at <Link href='mailto:nyuad.cities@nyu.edu'>nyuad.cities@nyu.edu</Link> to discuss citation requirements.
         </Typography>
       }
@@ -152,10 +152,7 @@ const DatasetsTable = (props) => {
     <Table
       size="small"
       sx={{
-        tableLayout: 'fixed',
-        '& td, div, .MuiMenuItem-root': {
-          fontSize: smallScreen ? '0.625rem' : '0.8rem'
-        }
+        tableLayout: 'fixed'
       }}
     >
       <TableHead>
@@ -259,6 +256,7 @@ const Dataset = (props) => {
               onChange={handleDatasetTypeChange}
               variant="standard"
               MenuProps={{ disablePortal: true }}
+              InputLabelProps={{ style: { fontSize: '0.825rem' } }}
             >
               {Object.keys(sensorsDatasets[sensor].rawDatasets).reverse().map((datasetType, index) => (
                 <MenuItem
@@ -397,8 +395,7 @@ const PreviewDataset = (props) => {
             backgroundColor: theme.palette.customBackground,
             p: 2,
             pt: 1.5,
-            borderRadius: theme.shape.borderRadius,
-            borderTopLeftRadius: 0,
+            borderRadius: 1,
             height: smallScreen ? '11.8rem' : '14rem',
             width: smallScreen ? '100%' : 'unset',
             marginTop: 0
@@ -406,7 +403,7 @@ const PreviewDataset = (props) => {
         >
           <Stack
             direction="row"
-            sx={{ fontSize: smallScreen ? '0.625rem !important' : '0.8rem !important' }}
+            sx={{ fontSize: '0.75rem' }}
           >
             {
               formattedData ?

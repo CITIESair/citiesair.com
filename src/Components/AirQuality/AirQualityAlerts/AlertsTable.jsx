@@ -6,7 +6,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddAlarmIcon from '@mui/icons-material/AddAlarm';
 
 import { useTheme } from '@emotion/react';
-import { emptySelectedAlert, useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
+import { AirQualityAlertKeys, alertPlaceholder, getAlertPlaceholder, useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
 
 import AlertTypes from './AlertTypes';
 import { ThresholdAlertTypes } from './AlertTypes';
@@ -16,10 +16,11 @@ import AlertModificationDialog from './AlertModificationDialog/AlertModification
 
 import { returnHoursFromMinutesPastMidnight, CrudTypes, SharedColumnHeader } from './Utils';
 import { TransitionGroup } from 'react-transition-group';
+import AQIDataTypes from '../../../Utils/AirQuality/DataTypes';
 
 const AlertsTable = (props) => {
 
-  const { selectedAlert, setSelectedAlert, editingAlert, setAlerts } = useAirQualityAlert();
+  const { selectedAlert, setSelectedAlert } = useAirQualityAlert();
 
   const { alertTypeKey, alertsForTable } = props;
 
@@ -36,99 +37,112 @@ const AlertsTable = (props) => {
 
   const handleClose = () => {
     setOpenAlertModificationDialog(false);
-    setSelectedAlert(emptySelectedAlert);
+    setSelectedAlert(getAlertPlaceholder(alertTypeKey));
   }
 
   return (
     <>
       <Stack spacing={2} alignItems="center">
         <Box width="100%">
-          <Table size="small" sx={{ my: 1 }}>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ width: "5rem", px: 0 }}></TableCell>
-
-                <TableCell sx={{ pl: 1 }}>
-                  {SharedColumnHeader.location}
-                </TableCell>
-
-                <TableCell>
-                  {SharedColumnHeader.dataType}
-                </TableCell>
-
-                <TableCell>
-                  {AlertTypes[alertTypeKey]?.tableColumnHeader || ""}
-                </TableCell>
-              </TableRow>
-            </TableHead>
-
-            <TransitionGroup component={TableBody}>
-              {isValidArray(alertsForTable) ? alertsForTable.map((alert, index) => (
-                <Grow key={index}>
-                  <TableRow
-                    sx={{
-                      background: alert?.id === selectedAlert?.id && theme.palette.background.NYUpurpleLight
-                    }}
-                  >
-                    <TableCell sx={{ width: "5rem", px: 0 }}>
-                      <Tooltip title="Delete Alert">
-                        <IconButton
-                          aria-label="delete"
-                          size="small"
-                          sx={{ "&:hover,:focus": { color: theme.palette.primary.main } }}
-                          onClick={() => handleModifyClick({ alert, crudType: CrudTypes.delete })}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Edit Alert">
-                        <IconButton
-                          aria-label="edit"
-                          size="small"
-                          sx={{ "&:hover,:focus": { color: theme.palette.primary.main } }}
-                          onClick={() => handleModifyClick({ alert, crudType: CrudTypes.edit })}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </TableCell>
-
-                    <TableCell sx={{ textTransform: 'capitalize' }}>
-                      {alert?.location_short}
-                    </TableCell>
-
-                    <TableCell>
-                      {alert?.datatypekey}
-                    </TableCell>
-
-                    {alertTypeKey === AlertTypes.threshold.id ? (
-                      <TableCell>
-                        {ThresholdAlertTypes[alert?.alert_type].sign}{alert?.threshold_value}
-                      </TableCell>
-                    ) : null}
-
-                    {alertTypeKey === AlertTypes.daily.id ? (
-                      <TableCell>
-                        {returnHoursFromMinutesPastMidnight(alert?.minutespastmidnight)}
-                      </TableCell>
-                    ) : null}
-                  </TableRow>
-                </Grow>
-
-              )) : null
-              }
-            </TransitionGroup>
-          </Table>
-
           {
-            !isValidArray(alertsForTable) ?
+            isValidArray(alertsForTable) ?
               (
+                <Table size="small" sx={{ my: 1 }}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ pl: 1 }}>
+                        {SharedColumnHeader.location}
+                      </TableCell>
+
+                      <TableCell>
+                        {SharedColumnHeader.dataType}
+                      </TableCell>
+
+                      <TableCell>
+                        {AlertTypes[alertTypeKey]?.tableColumnHeader || ""}
+                      </TableCell>
+
+                      <TableCell sx={{ width: "5rem", px: 0 }}></TableCell>
+                    </TableRow>
+                  </TableHead>
+
+                  <TransitionGroup component={TableBody}>
+                    {isValidArray(alertsForTable) ? alertsForTable.map((alert, index) => (
+                      <Grow key={index}>
+                        <TableRow
+                          sx={{
+                            background: alert?.id === selectedAlert?.id && theme.palette.background.NYUpurpleLight
+                          }}
+                        >
+                          <TableCell sx={{ textTransform: 'capitalize' }}>
+                            {alert?.[AirQualityAlertKeys.location_short]}
+                          </TableCell>
+
+                          <TableCell>
+                            {
+                              Object.keys(AQIDataTypes)
+                                .filter(key => key === alert?.[AirQualityAlertKeys.datatypekey])
+                                .map(key => AQIDataTypes[key].name_title)[0]
+                            }
+                          </TableCell>
+
+                          {alertTypeKey === AlertTypes.threshold.id ? (
+                            <TableCell>
+                              {ThresholdAlertTypes[alert?.alert_type].sign}{alert?.threshold_value}
+                              &nbsp;
+                              {
+                                Object.keys(AQIDataTypes)
+                                  .filter(key => key === alert?.[AirQualityAlertKeys.datatypekey])
+                                  .map(key => AQIDataTypes[key].unit)[0]
+                              }
+                            </TableCell>
+                          ) : null}
+
+                          {alertTypeKey === AlertTypes.daily.id ? (
+                            <TableCell>
+                              {returnHoursFromMinutesPastMidnight(alert?.minutespastmidnight)}
+                            </TableCell>
+                          ) : null}
+
+                          <TableCell sx={{ width: "5rem", px: 0 }}>
+                            <Tooltip title="Edit Alert">
+                              <IconButton
+                                aria-label="edit"
+                                size="small"
+                                sx={{ "&:hover,:focus": { color: theme.palette.primary.main } }}
+                                onClick={() => handleModifyClick({ alert, crudType: CrudTypes.edit })}
+                              >
+                                <EditIcon />
+                              </IconButton>
+                            </Tooltip>
+
+                            <Tooltip title="Delete Alert">
+                              <IconButton
+                                aria-label="delete"
+                                size="small"
+                                sx={{ "&:hover,:focus": { color: theme.palette.primary.main } }}
+                                onClick={() => handleModifyClick({ alert, crudType: CrudTypes.delete })}
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </TableCell>
+                        </TableRow>
+                      </Grow>
+
+                    )) : null
+                    }
+                  </TransitionGroup>
+                </Table>
+              ) : (
                 <Alert
-                  severity='warning'>
-                  No {AlertTypes[alertTypeKey].name} have been set up for this school
+                  severity='warning'
+                  sx={{
+                    mt: 2
+                  }}>
+                  No {AlertTypes[alertTypeKey].name.toLowerCase()} alert has been set up
                 </Alert>
               )
-              : null
           }
         </Box>
 
@@ -136,12 +150,12 @@ const AlertsTable = (props) => {
           variant="outlined"
           startIcon={<AddAlarmIcon />}
           fullWidth
-          sx={{ maxWidth: "sm" }}
+          sx={{ maxWidth: "sm", textTransform: 'uppercase' }}
           onClick={() => handleModifyClick({
-            alert: null, crudType: CrudTypes.add
+            alert: getAlertPlaceholder(alertTypeKey), crudType: CrudTypes.add
           })}
         >
-          ADD ALERT
+          Add Alert
         </Button>
       </Stack>
 

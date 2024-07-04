@@ -5,7 +5,7 @@ import { isValidArray } from '../../../../Utils/Utils';
 export const SimplePicker = (props) => {
   const { icon, label, value, options, handleChange, disabled } = props;
   const theme = useTheme();
-  console.log(value, options)
+
   return (
     <Stack
       direction="row"
@@ -15,7 +15,7 @@ export const SimplePicker = (props) => {
         aria-hidden={true}
         sx={{
           '& .MuiSvgIcon-root': {
-            color: theme.palette.text.secondary
+            color: disabled ? theme.palette.text.secondary : theme.palette.text.primary
           }
         }}
       >

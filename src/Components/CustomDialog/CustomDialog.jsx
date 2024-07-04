@@ -103,12 +103,7 @@ const CustomDialog = (props) => {
           {dialogTitle}
         </DialogTitle>
 
-        <DialogContent sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'stretch',
-          alignItems: 'start'
-        }}>
+        <DialogContent>
           {children}
         </DialogContent>
       </Dialog>

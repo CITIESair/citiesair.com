@@ -27,7 +27,7 @@ export const ThresholdAlertTypes = {
   above_threshold: {
     id: 'above_threshold',
     sign: ">",
-    name: "above"
+    name: "exceed"
   }
 }
 

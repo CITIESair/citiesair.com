@@ -4,7 +4,7 @@ import { Box, Tab, useMediaQuery } from '@mui/material';
 import StyledTabs from '../../StyledTabs';
 import AlertsTable from './AlertsTable';
 
-import { useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
+import { alertPlaceholder, getAlertPlaceholder, useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
 import AlertTypes from './AlertTypes';
 import { isValidArray } from '../../../Utils/Utils';
 
@@ -31,8 +31,13 @@ export default function AlertsTabs(props) {
   const smallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
   const [currentTab, setCurrentTab] = useState(0);
 
+  const { setSelectedAlert } = useAirQualityAlert();
+
   const handleTabChange = (event, newVal) => {
     setCurrentTab(newVal);
+    setSelectedAlert(
+      getAlertPlaceholder(AlertTypes[Object.keys(AlertTypes)?.[newVal]]?.id)
+    );
   };
 
   const { alerts } = useAirQualityAlert();
