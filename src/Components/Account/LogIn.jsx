@@ -8,6 +8,7 @@ import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, T
 import { UserContext } from '../../ContextProviders/UserContext';
 import { GeneralEndpoints, getApiUrl } from '../../Utils/ApiFunctions/ApiUtils';
 import { UniqueRoutes } from '../../Utils/RoutesUtils';
+import { AlertSeverity, useNotificationContext } from '../../ContextProviders/NotificationContext';
 
 export default function LogIn() {
   const { user, setUser } = useContext(UserContext);
@@ -22,11 +23,10 @@ export default function LogIn() {
   const [password, setPassword] = useState();
   const [rememberMe, setRememberMe] = useState(false);
 
-  const [message, setMessage] = useState();
-  const [isWrongCredentials, setIsWrongCredentials] = useState(false);
+  const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
   const [loading, setLoading] = useState(false);
 
-  const prefabErrorMessage = 'Incorrect school ID or access code. Please try again or contact CITIESair if you think there is a mistake.';
+  const prefabErrorMessage = 'Incorrect school ID or access code. Try again or contact us if you think there is a mistake.';
 
   const navigate = useNavigate();
 
@@ -34,10 +34,6 @@ export default function LogIn() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const redirectTo = queryParams.get(UniqueRoutes.redirectQuery)?.toLowerCase() || UniqueRoutes.dashboard;
-
-  const handleSuccessfulLogin = () => {
-    navigate(redirectTo, { replace: true });
-  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -59,26 +55,31 @@ export default function LogIn() {
       .then((response) => {
         if (response.ok) {
           response.json().then((data) => {
-            setIsWrongCredentials(false);
+            setShowNotification(false)
             setLoading(false);
+
             setUser({
               checkedAuthentication: true,
               authenticated: true,
               allowedSchools: data.allowedSchools,
               username: data.username,
             });
+
+            navigate(redirectTo, { replace: true });
           })
-          handleSuccessfulLogin();
         }
         else {
-          throw new Error(`Error authenticating`);
+          setMessage("An unknown error has occurred, please try again.");
+          setSeverity(AlertSeverity.error);
+          setShowNotification(true);
+          setLoading(false);
         }
       })
       .catch((error) => {
         setMessage(prefabErrorMessage);
-        setIsWrongCredentials(true);
+        setSeverity(AlertSeverity.error);
+        setShowNotification(true);
         setLoading(false);
-        console.log(error);
       })
   };
 
@@ -89,11 +90,6 @@ export default function LogIn() {
           Login
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          {
-            message &&
-            <Alert severity={isWrongCredentials ? "error" : "success"}>{message}</Alert>
-          }
-
           <TextField
             margin="normal"
             required

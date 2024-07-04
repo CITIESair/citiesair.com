@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Box, TextField, Chip, Menu, MenuItem, Snackbar, Alert, Grid, Typography, Button, Stack, useMediaQuery } from '@mui/material';
+import { Box, TextField, Chip, Menu, MenuItem, Grid, Typography, Button, Stack, useMediaQuery } from '@mui/material';
 import { RESTmethods, fetchDataFromURL } from "../../../Utils/ApiFunctions/ApiCalls";
 import { GeneralEndpoints, getApiUrl } from '../../../Utils/ApiFunctions/ApiUtils';
 import { DashboardContext } from '../../../ContextProviders/DashboardContext';
 import { isValidArray } from '../../../Utils/Utils';
+import { AlertSeverity, useNotificationContext } from '../../../ContextProviders/NotificationContext';
 
 const compareArrays = (arr1, arr2) => {
   return JSON.stringify(arr1) === JSON.stringify(arr2);
@@ -14,6 +15,8 @@ const EmailsInput = (props) => {
 
   const { currentSchoolID } = useContext(DashboardContext);
 
+  const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
+
   const smallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   const [serverEmails, setServerEmails] = useState([]);
@@ -21,8 +24,6 @@ const EmailsInput = (props) => {
 
   const [currentEmail, setCurrentEmail] = useState('');
   const [menuAnchor, setMenuAnchor] = useState(null);
-  const [alertMessage, setAlertMessage] = useState(null);
-  const [alertSeverity, setAlertSeverity] = useState('success');
 
   const maxEmails = 10;
   const validateEmail = (email) => {
@@ -52,8 +53,9 @@ const EmailsInput = (props) => {
       }
     })
       .catch((error) => {
-        setAlertMessage("There was an error loading the email list, please try again.");
-        setAlertSeverity("error");
+        setMessage("There was an error loading the email list, please try again.");
+        setSeverity(AlertSeverity.error);
+        setShowNotification(true);
       });
   }, [currentSchoolID]);
 
@@ -70,8 +72,9 @@ const EmailsInput = (props) => {
 
       // Make sure currentEmail hasn't been added before
       if (localEmails.includes(email)) {
-        setAlertMessage(`Already added: ${email}`);
-        setAlertSeverity('error');
+        setMessage(`Already added: ${email}`);
+        setSeverity(AlertSeverity.error);
+        setShowNotification(true);
 
         setCurrentEmail('');
         return;
@@ -79,16 +82,18 @@ const EmailsInput = (props) => {
 
       // Display alert if reached maximum number of email recipients
       if (newEmails.length === maxEmails) {
-        setAlertMessage('Maximum number of recipients reached');
-        setAlertSeverity('warning');
+        setMessage('Maximum number of recipients reached');
+        setSeverity(AlertSeverity.warning);
+        setShowNotification(true);
       }
 
       setLocalEmails(newEmails);
       setCurrentEmail('');
-      setAlertMessage();
+      setMessage();
     } else {
-      setAlertMessage('Invalid email address. Valid format: abc@def.xyz');
-      setAlertSeverity('error');
+      setMessage('Invalid email address. Valid format: abc@def.xyz');
+      setSeverity(AlertSeverity.error);
+      setShowNotification(true);
     }
   };
 
@@ -129,11 +134,14 @@ const EmailsInput = (props) => {
       body: emailsToSave
     }).then((data) => {
       setServerEmails(data);
-      setAlertSeverity('success');
-      setAlertMessage('Email list saved successfully!');
+
+      setSeverity(AlertSeverity.success);
+      setMessage('Email list saved successfully!');
+      setShowNotification(true);
     }).catch(() => {
-      setAlertMessage('There was an error saving the email. Please try again.');
-      setAlertSeverity('error');
+      setMessage('There was an error saving the email. Please try again.');
+      setSeverity(AlertSeverity.error);
+      setShowNotification(true);
     })
 
     return;
@@ -214,7 +222,6 @@ const EmailsInput = (props) => {
                 </Grid>
               ) : null
             }
-
           </Grid>
         </Grid>
       </Grid>
@@ -228,45 +235,15 @@ const EmailsInput = (props) => {
         >
           {localEmails.length} / {maxEmails} recipient{localEmails.length > 1 ? 's' : null} added
         </Typography>
-        <Grid container spacing={1} width="fit-content">
-          {alertMessage &&
-            (
-              <Grid item xs={12} sm="auto">
-                <Alert
-                  severity={alertSeverity}
-                  sx={{
-                    py: 0.5,
-                    px: 1,
-                    display: "flex",
-                    alignItems: "center",
-                    "& div": {
-                      fontSize: "0.75rem",
-                      p: 0
-                    },
-                    "& .MuiAlert-icon": {
-                      fontSize: "1rem",
-                      mr: 0.5
-                    }
-                  }}
-                >
-                  {alertMessage}
-                </Alert>
-              </Grid>
-            )
-          }
-          <Grid item xs={12} sm="auto">
-            <Button
-              onClick={handleSaveEmails}
-              variant="contained"
-              sx={{ width: smallScreen ? "100%" : "fit-content" }}
-              disabled={compareArrays(localEmails, serverEmails)}
-            >
-              SAVE EMAIL LIST
-            </Button>
-          </Grid>
 
-        </Grid>
-
+        <Button
+          onClick={handleSaveEmails}
+          variant="contained"
+          sx={{ width: smallScreen ? "100%" : "fit-content" }}
+          disabled={compareArrays(localEmails, serverEmails)}
+        >
+          SAVE EMAIL LIST
+        </Button>
       </Stack>
 
       <Menu

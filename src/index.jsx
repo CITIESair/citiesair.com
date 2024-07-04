@@ -7,6 +7,7 @@ import { UserProvider } from './ContextProviders/UserContext';
 import { GoogleProvider } from './ContextProviders/GoogleContext';
 import { LinkProvider } from './ContextProviders/LinkContext';
 import { PreferenceProvider } from './ContextProviders/PreferenceContext';
+import { NotificationProvider } from './ContextProviders/NotificationContext';
 
 const container = document.getElementById('root');
 const root = createRoot(container);
@@ -17,7 +18,9 @@ root.render(
       <GoogleProvider>
         <LinkProvider>
           <PreferenceProvider>
-            <App />
+            <NotificationProvider>
+              <App />
+            </NotificationProvider>
           </PreferenceProvider>
         </LinkProvider>
       </GoogleProvider>
