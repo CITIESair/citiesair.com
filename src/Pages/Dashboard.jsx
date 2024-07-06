@@ -13,6 +13,7 @@ import { DashboardContext } from "../ContextProviders/DashboardContext";
 import { UserContext } from "../ContextProviders/UserContext";
 import { LocalStorage } from "../Utils/LocalStorage";
 import { UniqueRoutes } from "../Utils/RoutesUtils";
+import { CITIESair, NYUAD } from "../Utils/GlobalVariables";
 
 const numInitialCharts = 2;
 
@@ -27,7 +28,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (!school_id_param) return;
 
-    document.title = `CITIESair | ${school_id_param.toUpperCase()}`;
+    document.title = `${CITIESair} | ${school_id_param.toUpperCase()}`;
   }, [school_id_param]);
 
   // Update current page type
@@ -47,9 +48,9 @@ const Dashboard = () => {
 
   useEffect(() => {
     // NYUAD is public --> skip authentication and just fetch data
-    if (school_id_param === "nyuad") {
-      fetchInitialDataForDashboard('nyuad');
-      setCurrentSchoolID('nyuad');
+    if (school_id_param === NYUAD) {
+      fetchInitialDataForDashboard(NYUAD);
+      setCurrentSchoolID(NYUAD);
       return;
     };
 

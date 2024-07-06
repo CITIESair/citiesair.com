@@ -26,6 +26,7 @@ import GetInTouch from './GetInTouch';
 import { UniqueRoutes } from '../../Utils/RoutesUtils';
 import { SensorStatus } from "../../Components/AirQuality/SensorStatus";
 import AQIexplanation from '../../Components/AirQuality/AQIexplanation';
+import { CITIESair, NYUAD } from '../../Utils/GlobalVariables';
 
 const displayNyuadSensorCounts = (nyuadSensorCounts) => {
   if (nyuadSensorCounts.active && nyuadSensorCounts.total) {
@@ -61,7 +62,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
   const [rawMapData, setRawMapData] = useState();
 
   useEffect(() => {
-    const nyuadUrl = getApiUrl({ endpoint: GeneralEndpoints.current, school_id: 'nyuad' });
+    const nyuadUrl = getApiUrl({ endpoint: GeneralEndpoints.current, school_id: NYUAD });
     fetchAndProcessCurrentSensorsData(nyuadUrl)
       .then((data) => {
         // Only display 3 sensors in the homepage
@@ -123,7 +124,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
                       Tracking.Events.internalNavigation,
                       {
                         destination_id: UniqueRoutes.nyuad,
-                        destination_school_id: "nyuad",
+                        destination_school_id: NYUAD,
                         origin_id: UniqueRoutes.home
                       }
                     );
@@ -164,7 +165,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
             [26.407575, 56.456571],
           ]}
           rawMapData={rawMapData}
-          ariaLabel={"Map of CITIESair public outdoor air quality stations in Abu Dhabi"}
+          ariaLabel={`Map of ${CITIESair} public outdoor air quality stations in Abu Dhabi`}
 
         />
 

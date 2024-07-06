@@ -47,6 +47,7 @@ import AQIexplanation from '../Components/AirQuality/AQIexplanation';
 import { DateRangePickerProvider } from '../ContextProviders/DateRangePickerContext';
 import { AxesPickerProvider } from '../ContextProviders/AxesPickerContext';
 import AirQualityAlerts from '../Components/AirQuality/AirQualityAlerts/AirQualityAlert';
+import { NYUAD } from '../Utils/GlobalVariables';
 
 // Custom Chip component to display metadata
 export const CustomChip = (props) => {
@@ -67,7 +68,7 @@ const Project = () => {
 
   const { setChartsTitlesList } = useContext(LinkContext);
   const { commentCounts, fetchCommentCounts, setCommentCounts } = useContext(CommentCountsContext);
-  const { schoolMetadata, current, allChartsData, loadMoreCharts } = useContext(DashboardContext);
+  const { schoolMetadata, current, allChartsData, loadMoreCharts, currentSchoolID } = useContext(DashboardContext);
   const { themePreference, temperatureUnitPreference } = useContext(PreferenceContext);
 
   const [displayCommentSection, setDisplayCommentSection] = useState(false);
@@ -77,7 +78,7 @@ const Project = () => {
   useEffect(() => {
     if (!schoolMetadata) return;
 
-    const isNYUAD = schoolMetadata.school_id === 'nyuad';
+    const isNYUAD = schoolMetadata.school_id === NYUAD;
     setDisplayCommentSection(isNYUAD);
     setDisplayMapOfSensors(isNYUAD);
 
@@ -303,9 +304,13 @@ const Project = () => {
             <Grid item>
               <DatasetDownloadDialog />
             </Grid>
-            <Grid item>
-              <AirQualityAlerts schoolContactEmail={schoolMetadata?.contactEmail} />
-            </Grid>
+            {
+              // only show Air Quality Alerts for schools other than nyuad at the moment
+              currentSchoolID !== NYUAD ? <Grid item>
+                <AirQualityAlerts schoolContactEmail={schoolMetadata?.contactEmail} />
+              </Grid> : null
+            }
+
           </Grid>
 
           <AQIexplanation />

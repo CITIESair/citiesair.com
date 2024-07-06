@@ -4,6 +4,7 @@ import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
 import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
 import { useContext } from 'react';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
+import { CITIESair } from '../../Utils/GlobalVariables';
 
 export const StyledTable = styled(Table, {
   shouldForwardProp: (prop) => prop !== 'tiny',
@@ -53,7 +54,12 @@ function AirQualityIndexTable(props) {
                 )
               </TableCell>
               {!hideAQIDescription && <TableCell align="left">Description</TableCell>}
-              {!hideAQIDescription && <TableCell align="left">CITIESair&apos; Suggested Actions</TableCell>}
+
+              {!hideAQIDescription &&
+                <TableCell align="left">
+                  {CITIESair}&apos; Suggested Actions
+                </TableCell>
+              }
             </TableRow>
           </TableHead>
           <TableBody>

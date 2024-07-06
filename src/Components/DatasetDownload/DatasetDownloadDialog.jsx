@@ -15,6 +15,7 @@ import LoadingAnimation from '../LoadingAnimation';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
 
 import CustomDialog from '../CustomDialog/CustomDialog';
+import { CITIESair } from '../../Utils/GlobalVariables';
 
 export default function DatasetDownloadDialog() {
   const { currentSchoolID, current } = useContext(DashboardContext);
@@ -71,7 +72,7 @@ export default function DatasetDownloadDialog() {
       {
         sensorsDatasets &&
         <Typography variant="caption" sx={{ my: 2, fontStyle: 'italic', display: "block" }} >
-          These datasets are provided by CITIESair from sensors operated by CITIESair. Should you intend to utilize them for your project, research, or publication, we kindly request that you notify us at <Link href='mailto:nyuad.cities@nyu.edu'>nyuad.cities@nyu.edu</Link> to discuss citation requirements.
+          These datasets are provided by {CITIESair} from sensors operated by {CITIESair}. Should you intend to utilize them for your project, research, or publication, we kindly request that you notify us at <Link href='mailto:nyuad.cities@nyu.edu'>nyuad.cities@nyu.edu</Link> to discuss citation requirements.
         </Typography>
       }
     </CustomDialog>
@@ -256,7 +257,6 @@ const Dataset = (props) => {
               onChange={handleDatasetTypeChange}
               variant="standard"
               MenuProps={{ disablePortal: true }}
-              InputLabelProps={{ style: { fontSize: '0.825rem' } }}
             >
               {Object.keys(sensorsDatasets[sensor].rawDatasets).reverse().map((datasetType, index) => (
                 <MenuItem

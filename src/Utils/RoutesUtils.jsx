@@ -1,3 +1,5 @@
+import { BLOG_CITIESair_URL } from "./GlobalVariables";
+
 export const UniqueRoutes = {
   nyuad: '/dashboard/nyuad',
   nyuadMap: '/nyuadMap',
@@ -8,6 +10,6 @@ export const UniqueRoutes = {
   home: '/',
   anyScreen: '/screen/*',
   404: '/404',
-  blogSubdomain: 'https://blog.citiesair.com',
+  blogSubdomain: BLOG_CITIESair_URL,
   redirectQuery: 'redirectTo'
 }

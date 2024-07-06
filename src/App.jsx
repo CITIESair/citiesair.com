@@ -30,6 +30,7 @@ import { LinkContext } from './ContextProviders/LinkContext';
 import jsonData from './section_data.json';
 
 import SnackbarNotification from './Components/SnackbarNotification';
+import { CITIESair } from './Utils/GlobalVariables';
 
 // Lazy load pages
 const Home = lazy(() => import('./Pages/Home/Home'));
@@ -107,7 +108,7 @@ function App() {
                 element={
                   <Box>
                     <Header />
-                    <Home title="CITIESair" />
+                    <Home title={CITIESair} />
                     <Footer />
                   </Box>
                 }
@@ -148,7 +149,7 @@ function App() {
 
               <Route
                 path={UniqueRoutes.anyScreen}
-                element={<Screen title="CITIESair | Screen" />}
+                element={<Screen title={`${CITIESair} | Screen`} />}
               />
 
               <Route
@@ -161,8 +162,18 @@ function App() {
                 element={<NYUADbanner isOnBannerPage={true} />}
               />
 
-              <Route path={UniqueRoutes[404]} element={<FourOhFour title="Page Not Found | CITIESair" />} />
-              <Route path="*" element={<Navigate replace to={UniqueRoutes[404]} />} />
+              <Route
+                path={UniqueRoutes[404]}
+                element={
+                  <FourOhFour title={`${CITIESair} | Page Not Found`} />
+                }
+              />
+              <Route
+                path="*"
+                element={
+                  <Navigate replace to={UniqueRoutes[404]} />
+                }
+              />
 
             </Routes>
           </Suspense>

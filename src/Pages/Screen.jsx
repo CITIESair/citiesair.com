@@ -24,6 +24,7 @@ import { CurrentAQIGridSize } from '../Components/AirQuality/CurrentAQIGridSize'
 import { GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../Utils/ApiFunctions/ApiUtils';
 import { UniqueRoutes } from '../Utils/RoutesUtils';
 import { PreferenceContext } from '../ContextProviders/PreferenceContext';
+import { CITIESair } from '../Utils/GlobalVariables';
 
 const Screen = ({ title }) => {
   const { temperatureUnitPreference, themePreference } = useContext(PreferenceContext);
@@ -278,7 +279,7 @@ const Screen = ({ title }) => {
         >
           <Grid item xs={12} sx={{ pt: 3, px: 2 }}>
             <Typography variant="h3" fontWeight="500" sx={{ color: 'black' }}>
-              CITIESair
+              {CITIESair}
             </Typography>
           </Grid>
           <Grid item xs={2}>

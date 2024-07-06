@@ -21,6 +21,7 @@ import ThemePreferences from '../../Themes/ThemePreferences';
 import { styled } from '@mui/material/styles';
 import CustomThemes from '../../Themes/CustomThemes';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
+import { NYUAD } from '../../Utils/GlobalVariables';
 
 const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
     '& .leaflet-popup-tip-container': {
@@ -38,7 +39,7 @@ const MapPlaceholder = ({ placeholderText }) => {
 }
 export const TileOptions = {
     default: 'default',
-    nyuad: 'nyuad'
+    nyuad: NYUAD
 };
 
 const Tiles = {

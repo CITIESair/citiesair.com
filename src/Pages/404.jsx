@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button, Typography, Container } from '@mui/material';
 import { LinkContext } from '../ContextProviders/LinkContext';
 import { UniqueRoutes } from '../Utils/RoutesUtils';
+import { CITIESair } from '../Utils/GlobalVariables';
 
 export default function FourOhFour({ title }) {
   // Update the page's title
@@ -28,7 +29,7 @@ export default function FourOhFour({ title }) {
         Page not found
       </Typography>
       <Typography variant="h5" color="text.secondary" gutterBottom>
-        Please contact CITIESair if you think this is a mistake.
+        Please contact {CITIESair} if you think this is a mistake.
       </Typography>
       <Button component={Link} to="/" variant="contained" sx={{ mt: 3 }}>
         <Typography>Return home</Typography>

@@ -24,6 +24,7 @@ import { UniqueRoutes } from '../../Utils/RoutesUtils';
 import { useTheme } from '@mui/material';
 import PromoAlert from '../Promo/PromoAlert';
 import PromoDialog from '../Promo/PromoDialog';
+import { CITIESair } from '../../Utils/GlobalVariables';
 
 
 export const showInMobile = (defaultDisplay) => ({ display: { xs: (defaultDisplay || 'block'), lg: 'none' } });
@@ -146,7 +147,7 @@ export default function Header() {
             <Box sx={showInMobile('block')}>
               <Container sx={{ py: 2 }}>
                 <Typography variant="h6" color="text.secondary" fontWeight="medium" gutterBottom>
-                  CITIESair
+                  {CITIESair}
                 </Typography>
                 <NavBar currentPage={currentPage} isMobile={true} />
               </Container>

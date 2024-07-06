@@ -11,6 +11,7 @@ import { CurrentAQIGridSize } from '../../Components/AirQuality/CurrentAQIGridSi
 import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import ThemePreferences from '../../Themes/ThemePreferences';
+import { NYUAD } from '../../Utils/GlobalVariables';
 
 const NYUADbanner = (props) => {
   const { themePreference } = useContext(PreferenceContext);
@@ -43,7 +44,7 @@ const NYUADbanner = (props) => {
 
   const url = getApiUrl({
     endpoint: GeneralEndpoints.current,
-    school_id: 'nyuad'
+    school_id: NYUAD
   });
 
   useEffect(() => {

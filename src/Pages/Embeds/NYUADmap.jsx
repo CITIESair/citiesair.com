@@ -5,13 +5,14 @@ import FullWidthBox from '../../Components/FullWidthBox';
 import * as Tracking from '../../Utils/Tracking';
 import AQImap, { LocationTitle, TileOptions } from '../../Components/AirQuality/AQImap';
 import { GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiFunctions/ApiUtils';
+import { NYUAD } from '../../Utils/GlobalVariables';
 
 const NYUADmap = () => {
   const [nyuadCurrentData, setNYUADcurrentData] = useState();
 
   const url = getApiUrl({
     endpoint: GeneralEndpoints.current,
-    school_id: 'nyuad'
+    school_id: NYUAD
   });
 
   useEffect(() => {

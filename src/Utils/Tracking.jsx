@@ -1,3 +1,5 @@
+import { CITIESair_HOST_NAME } from "./GlobalVariables";
+
 export const Events = {
   internalNavigation: 'internal_navigation',
   themeChange: 'theme_change',
@@ -12,5 +14,5 @@ export const Events = {
 };
 
 export const sendEventAnalytics = (eventName, options) => {
-  if (window.location.hostname === 'citiesair.com') window.gtag('event', eventName, options);
+  if (window.location.hostname === CITIESair_HOST_NAME) window.gtag('event', eventName, options);
 };

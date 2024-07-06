@@ -17,6 +17,7 @@ import PopupState, { bindHover, bindFocus, bindMenu } from 'material-ui-popup-st
 
 import LogOut from '../Account/Logout';
 import { UniqueRoutes } from '../../Utils/RoutesUtils';
+import { CITIESair, NYUAD } from '../../Utils/GlobalVariables';
 
 const StyledMenuList = styled(MenuList)(({ theme }) => ({
   // Make these items display on the same line on large display
@@ -104,20 +105,20 @@ const NavBar = (props) => {
 
   const nyuadDashboardNavLink = (
     <MenuItemAsNavLink
-      key="nyuad"
+      key={NYUAD}
       label={"NYUAD Dashboard (Public access)"}
       behavior={NavLinkBehavior.toNewPage}
       to={UniqueRoutes.nyuad}
       icon={<BarChartIcon />}
       analyticsOriginID="navbar"
-      school_id="nyuad"
+      school_id={NYUAD}
     />
   );
 
   const blogNavLink = (
     <MenuItemAsNavLink
       key="blog"
-      label={"CITIESair Blog"}
+      label={`${CITIESair} Blog`}
       behavior={NavLinkBehavior.toExternalPage}
       to={UniqueRoutes.blogSubdomain}
       icon={<MenuBookIcon />}

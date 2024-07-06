@@ -3,12 +3,13 @@
 import { useState, useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 
-import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper, useMediaQuery, Alert } from "@mui/material";
+import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper } from "@mui/material";
 
 import { UserContext } from '../../ContextProviders/UserContext';
 import { GeneralEndpoints, getApiUrl } from '../../Utils/ApiFunctions/ApiUtils';
 import { UniqueRoutes } from '../../Utils/RoutesUtils';
 import { AlertSeverity, useNotificationContext } from '../../ContextProviders/NotificationContext';
+import { CITIESair } from '../../Utils/GlobalVariables';
 
 export default function LogIn() {
   const { user, setUser } = useContext(UserContext);
@@ -148,7 +149,7 @@ export default function LogIn() {
           </Button>
           <Typography variant="caption">
             <i>
-              Login with the provided credentials to see your school's air quality dashboard, including indoor and outdoor devices. If you do not have the credentials, please contact your school admin or CITIESair.
+              Login with the provided credentials to see your school's air quality dashboard, including indoor and outdoor devices. If you do not have the credentials, please contact your school admin or {CITIESair}.
             </i>
           </Typography>
         </Box>
