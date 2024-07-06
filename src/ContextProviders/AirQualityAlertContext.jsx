@@ -27,7 +27,7 @@ export const getAlertPlaceholder = (alert_type = AlertTypes.daily.id) => {
     [AirQualityAlertKeys.alert_type]: localAlertType || alert_type,
     [AirQualityAlertKeys.sensor_id]: '',
     [AirQualityAlertKeys.datatypekey]: '',
-    [AirQualityAlertKeys.threshold_value]: 0,
+    [AirQualityAlertKeys.threshold_value]: -1,
     [AirQualityAlertKeys.minutespastmidnight]: ''
   }
 }

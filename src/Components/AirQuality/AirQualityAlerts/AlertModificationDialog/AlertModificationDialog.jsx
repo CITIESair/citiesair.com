@@ -26,6 +26,8 @@ import { HOURS } from './HOURS';
 import { ThresholdSlider } from './ThresholdSlider';
 import { AlertSeverity, useNotificationContext } from '../../../../ContextProviders/NotificationContext';
 
+import isEqual from 'lodash.isequal';
+
 const AlertModificationDialog = (props) => {
   const {
     alertTypeKey,
@@ -326,7 +328,6 @@ const AlertModificationDialog = (props) => {
           restMethod: RESTmethods.PUT,
           body: editingAlert
         }).then((data) => {
-          // setShouldDisableButton(true);
           setAlerts(prevAlerts =>
             prevAlerts.map(alert =>
               alert.id === alert_id ? data : alert
@@ -355,19 +356,36 @@ const AlertModificationDialog = (props) => {
     }
   }
 
-  // useEffect(() => {
-  //   switch (alertTypeKey) {
-  //     case AlertTypes.daily.id:
-  //       setShouldDisableButton(!currentSensorId || !currentDataTypeKey || !currentMinutesPastMidnight);
-  //       break;
-  //     case AlertTypes.threshold.id:
-  //       setShouldDisableButton(!currentSensorId || !currentDataTypeKey || !currentAlertThreshold);
-  //       break;
-  //     default:
-  //       setShouldDisableButton(false);
-  //       break;
-  //   }
-  // }, [crudType, currentSensorId, currentAlertThreshold, currentDataTypeKey, currentDataTypeKey, currentMinutesPastMidnight]);
+  // Disable / Enable save button depends on context
+  useEffect(() => {
+    switch (crudType) {
+      case CrudTypes.add:
+        const placeholder = getAlertPlaceholder(alertTypeKey);
+
+        if (editingAlert[AirQualityAlertKeys.sensor_id] === placeholder[AirQualityAlertKeys.sensor_id] ||
+          editingAlert[AirQualityAlertKeys.datatypekey] === placeholder[AirQualityAlertKeys.datatypekey]) {
+          if (alertTypeKey === AlertTypes.daily.id) {
+            setShouldDisableButton(editingAlert[AirQualityAlertKeys.minutespastmidnight] === placeholder[AirQualityAlertKeys.minutespastmidnight]);
+          } else {
+            setShouldDisableButton(true);
+          }
+        } else {
+          if (alertTypeKey === AlertTypes.daily.id) {
+            setShouldDisableButton(editingAlert[AirQualityAlertKeys.minutespastmidnight] === placeholder[AirQualityAlertKeys.minutespastmidnight]);
+          } else {
+            setShouldDisableButton(false);
+          }
+        }
+        break;
+
+      case CrudTypes.edit:
+        setShouldDisableButton(isEqual(selectedAlert, editingAlert));
+        break;
+      default:
+        setShouldDisableButton(false);
+        break;
+    }
+  }, [crudType, selectedAlert, editingAlert]);
 
   const smallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
