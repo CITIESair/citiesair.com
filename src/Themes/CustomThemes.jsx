@@ -102,6 +102,7 @@ const CustomThemes = {
       },
       background: {
         paper: '#202020',
+        paperBackgroundGradient: 'linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))',
         default: '#303030',
         NYUpurpleLight: 'rgba(169, 71, 235, 0.3)'
       },

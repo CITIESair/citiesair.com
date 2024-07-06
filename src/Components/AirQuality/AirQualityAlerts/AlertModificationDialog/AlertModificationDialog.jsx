@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText, Stack, Alert, useMediaQuery, Typography, Grid } from '@mui/material';
+import { Button, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText, Stack, useMediaQuery, Typography, Grid } from '@mui/material';
 import { useTheme } from '@emotion/react';
 import AlertTypes from '../AlertTypes';
 import { ThresholdAlertTypes } from '../AlertTypes';
