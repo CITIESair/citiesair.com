@@ -64,7 +64,7 @@ const EmailsInput = (props) => {
   }, [serverEmails]);
 
   const handleAddEmail = (passedEmail) => {
-    const email = passedEmail.toLowerCase();
+    const email = passedEmail.trim().toLowerCase();
 
     // If email address follows email format
     if (validateEmail(email)) {
@@ -205,7 +205,7 @@ const EmailsInput = (props) => {
                     value={currentEmail}
                     onChange={(e) => setCurrentEmail(e.target.value)}
                     onKeyUp={(e) => {
-                      if (e.key === 'Enter') {
+                      if (['Enter', 'Spacebar', ' '].includes(e.key)) {
                         handleAddEmail(currentEmail);
                       }
                     }}
