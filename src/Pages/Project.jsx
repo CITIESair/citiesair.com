@@ -306,7 +306,7 @@ const Project = () => {
             </Grid>
             {
               // only show Air Quality Alerts for schools other than nyuad at the moment
-              currentSchoolID !== NYUAD ? <Grid item>
+              (currentSchoolID && currentSchoolID !== NYUAD) ? <Grid item>
                 <AirQualityAlerts schoolContactEmail={schoolMetadata?.contactEmail} />
               </Grid> : null
             }
