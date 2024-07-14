@@ -25,7 +25,7 @@ const EmailsInput = (props) => {
   const [currentEmail, setCurrentEmail] = useState('');
   const [menuAnchor, setMenuAnchor] = useState(null);
 
-  const maxEmails = 10;
+  const maxEmails = 20;
   const validateEmail = (email) => {
     return String(email)
       .toLowerCase()

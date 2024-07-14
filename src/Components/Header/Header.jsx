@@ -22,10 +22,8 @@ import TemperatureUnitToggle from './TemperatureUnitToggle';
 import { UniqueRoutes } from '../../Utils/RoutesUtils';
 
 import { useTheme } from '@mui/material';
-import PromoAlert from '../Promo/PromoAlert';
-import PromoDialog from '../Promo/PromoDialog';
 import { CITIESair } from '../../Utils/GlobalVariables';
-
+import Promo from '../Promo/Promo';
 
 export const showInMobile = (defaultDisplay) => ({ display: { xs: (defaultDisplay || 'block'), lg: 'none' } });
 export const showInDesktop = (defaultDisplay) => ({ display: { xs: 'none', lg: (defaultDisplay || 'block') } });
@@ -181,23 +179,7 @@ export default function Header() {
         sx={{ backgroundColor: 'customAlternateBackground', height: `${toolBarHeightInRem * 1.5}rem` }}
       />
 
-      <PromoAlert message={parse(sectionData.promo.alert, {
-        replace: replacePlainHTMLWithMuiComponents,
-      })} />
-
-      <PromoDialog
-        chipLabel={parse(sectionData.promo.banner.chipLabel, {
-          replace: replacePlainHTMLWithMuiComponents,
-        })}
-        title={parse(sectionData.promo.banner.title, {
-          replace: replacePlainHTMLWithMuiComponents,
-        })}
-        subtitle={parse(sectionData.promo.banner.subtitle, {
-          replace: replacePlainHTMLWithMuiComponents,
-        })}
-        imgSrc={sectionData.promo.banner.imgSrc}
-        imgAlt={sectionData.promo.banner.imgAlt}
-      />
+      <Promo />
 
       {
         (
