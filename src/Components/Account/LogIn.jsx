@@ -14,12 +14,6 @@ import { CITIESair } from '../../Utils/GlobalVariables';
 export default function LogIn() {
   const { user, setUser } = useContext(UserContext);
 
-  useEffect(() => {
-    if (user.checkedAuthentication === true && user.authenticated === true) {
-      handleSuccessfulLogin()
-    }
-  }, [user]);
-
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
   const [rememberMe, setRememberMe] = useState(false);

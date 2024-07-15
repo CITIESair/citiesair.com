@@ -84,7 +84,7 @@ const Screen = ({ title }) => {
 
       fetchAndProcessCurrentSensorsData(url)
         .then((data) => {
-          setData(data)
+          setData(data);
         })
         .catch((error) => {
           console.log(error);
@@ -95,7 +95,7 @@ const Screen = ({ title }) => {
       const intervalId = setInterval(() => {
         fetchAndProcessCurrentSensorsData(url)
           .then((data) => {
-            setData(data)
+            setData(data);
           })
           .catch((error) => console.log(error))
       },
@@ -222,7 +222,8 @@ const Screen = ({ title }) => {
             />
           </Grid>
 
-          <List className='condensedFont'
+          <List
+            className='condensedFont'
             sx={{
               listStyleType: 'disclosure-closed',
               '& .MuiTypography-root': {
@@ -244,7 +245,7 @@ const Screen = ({ title }) => {
                 sensorData.current?.healthSuggestion &&
                 <ListItem
                   key={key}
-                  className={sensorData.current?.aqi >= AQIdatabase[2].aqiUS.low && 'flashingRed'}
+                  className={sensorData.current?.aqi >= AQIdatabase[2].aqiUS.low ? 'flashingRed' : ''}
                 >
                   <ListItemText
                     primary={sensorData.current?.healthSuggestion}

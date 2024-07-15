@@ -4,6 +4,9 @@ import AQIdatabase from "../AirQuality/AirQualityIndexHelper";
 import parse from 'html-react-parser';
 import AggregationType from "../../Components/DateRangePicker/AggregationType";
 import { API_CITIESair_URL } from "../GlobalVariables";
+import AggregationType from "../Components/DateRangePicker/AggregationType";
+
+const apiDomain = process.env.REACT_APP_ENV === 'local-backend' ? 'http://localhost:3001' : 'https://api.citiesair.com';
 
 export const GeneralEndpoints = {
   me: "me",
@@ -161,25 +164,6 @@ export const processCurrentSensorsData = (data) => {
         }
       }
     }
-
-    // Calculate AQI from raw measurements
-    // if (sensorData.current?.["pm2.5"]) {
-    //   const aqiObject = convertToAQI(sensorData.current["pm2.5"]);
-    //   if (aqiObject) {
-    //     const aqiCategory = AQIdatabase[aqiObject.aqi_category_index];
-    //     sensorData.current.aqi = aqiObject.aqi;
-    //     sensorData.current.category = aqiCategory.category;
-
-    //     // Only add color and healthSuggestion if the sensor is active
-    //     if (sensorData.current.sensor_status === SensorStatus.active) {
-    //       sensorData.current = {
-    //         ...sensorData.current,
-    //         color: aqiCategory.color.Light,
-    //         healthSuggestion: aqiCategory.healthSuggestions[sensorData.sensor?.location_type] && parse(aqiCategory.healthSuggestions[sensorData.sensor?.location_type])
-    //       };
-    //     }
-    //   }
-    // }
   });
   return data;
 }
