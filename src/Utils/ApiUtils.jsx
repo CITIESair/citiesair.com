@@ -4,7 +4,7 @@ import AQIdatabase from "./AirQuality/AirQualityIndexHelper";
 import parse from 'html-react-parser';
 import AggregationType from "../Components/DateRangePicker/AggregationType";
 
-const apiDomain = 'https://api.citiesair.com';
+const apiDomain = process.env.REACT_APP_ENV === 'local-backend' ? 'http://localhost:3001' : 'https://api.citiesair.com';
 
 export const GeneralEndpoints = {
   me: "me",

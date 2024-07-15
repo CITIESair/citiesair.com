@@ -2,14 +2,11 @@
 /* eslint-disable */
 export const fetchDataFromURL = async ({ url, extension, needsAuthorization }) => {
   try {
-    const dotIndex = url.lastIndexOf('.');
-    if (dotIndex === -1) {
-      throw new Error('Unsupported format');
+    const fetchParams = process.env.REACT_APP_ENV === 'local-backend' ? {} : {
+      credentials: needsAuthorization && 'include'
     }
 
-    const response = await fetch(url, {
-      credentials: needsAuthorization && 'include'
-    });
+    const response = await fetch(url, fetchParams);
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
