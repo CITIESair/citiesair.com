@@ -179,7 +179,12 @@ export default function Header() {
         sx={{ backgroundColor: 'customAlternateBackground', height: `${toolBarHeightInRem * 1.5}rem` }}
       />
 
-      <Promo />
+      <FullWidthBox sx={{
+        backgroundColor: "customAlternateBackground",
+        pt: 4
+      }}>
+        <Promo />
+      </FullWidthBox>
 
       {
         (
@@ -187,7 +192,7 @@ export default function Header() {
           && (
             <FullWidthBox sx={{
               width: '100%',
-              pt: 2,
+              pt: 1,
               pb: 3,
               backgroundColor: 'customAlternateBackground'
             }}

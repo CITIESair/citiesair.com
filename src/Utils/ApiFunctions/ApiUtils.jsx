@@ -4,9 +4,6 @@ import AQIdatabase from "../AirQuality/AirQualityIndexHelper";
 import parse from 'html-react-parser';
 import AggregationType from "../../Components/DateRangePicker/AggregationType";
 import { API_CITIESair_URL } from "../GlobalVariables";
-import AggregationType from "../Components/DateRangePicker/AggregationType";
-
-const apiDomain = process.env.REACT_APP_ENV === 'local-backend' ? 'http://localhost:3001' : 'https://api.citiesair.com';
 
 export const GeneralEndpoints = {
   me: "me",
@@ -120,26 +117,6 @@ export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {
     throw new Error(`Error fetching data: ${error.message}`);
   }
 }
-
-// export const fetchAlertEmails = async (apiUrl) => {
-//   try {
-//     const data = await fetchDataFromURL({ url: apiUrl });
-
-//     if (!data) {
-//       throw new Error('Returned data is empty');
-//     }
-
-//     try {
-//       return processCurrentSensorsData(data);
-//     } catch (error) {
-//       // Handle the case where data is not an iterable object
-//       console.error("Error: data is not iterable", error);
-//     }
-//   }
-//   catch (error) {
-//     throw new Error(`Error fetching data: ${error.message}`);
-//   }
-// }
 
 export const processCurrentSensorsData = (data) => {
   Object.entries(data).forEach(([_, sensorData]) => {

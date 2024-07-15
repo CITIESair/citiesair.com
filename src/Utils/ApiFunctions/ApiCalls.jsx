@@ -10,10 +10,6 @@ export const Extensions = {
   csv: 'csv'
 }
 
-const isUnsupportedFormat = (url) => {
-  return url.lastIndexOf('.') === -1;
-}
-
 export const fetchDataFromURL = async ({
   url,
   extension = Extensions.json,
@@ -23,8 +19,9 @@ export const fetchDataFromURL = async ({
   includesHeadersJSON = true
 }) => {
   try {
-    if (isUnsupportedFormat(url)) {
-      throw new Error('Unsupported format');
+    // overrides needsAuthorization if developing locally on local backend
+    if (process.env.REACT_APP_ENV === 'local-backend') {
+      needsAuthorization = false;
     }
 
     const fetchOptions = {

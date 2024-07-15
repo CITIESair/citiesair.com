@@ -4,8 +4,6 @@ import PromoDialogBanner from "./PromoDialogBanner";
 import { UserContext } from "../../ContextProviders/UserContext";
 
 import { Stack } from "@mui/material";
-import FullWidthBox from "../FullWidthBox";
-
 import sectionData from '../../section_data.json';
 
 const Promo = () => {
@@ -18,30 +16,22 @@ const Promo = () => {
 
   return (
     <>
-      <FullWidthBox sx={{
-        backgroundColor: "customAlternateBackground",
-        pt: 4
-      }}>
-        <Stack spacing={1} alignItems="center">
-
-          {sectionData.promos.map((e, index) => {
-            if (e.isPublic || (!e.isPublic && authenticated)) {
-              return (
-                <PromoAlert
-                  message={e.alertMessage}
-                  key={index}
-                />
-              );
-            }
-            return null;
-          })}
-
-        </Stack>
-      </FullWidthBox>
+      <Stack spacing={1} alignItems="center">
+        {sectionData.promos.map((e, index) => {
+          if (e.isPublic || (!e.isPublic && authenticated)) {
+            return (
+              <PromoAlert
+                message={e.alertMessage}
+                key={index}
+              />
+            );
+          }
+          return null;
+        })}
+      </Stack>
 
       <PromoDialogBanner promosForBanner={promosForBanner} />
     </>
-
   );
 }
 
