@@ -41,6 +41,7 @@ const CurrentAQIGrid = (props) => {
     }
   }
 
+
   const CurrentAQISingleSensor = (props) => {
     const { sensor, current, gridSizes } = props;
     const { themePreference } = useContext(PreferenceContext);
@@ -52,7 +53,7 @@ const CurrentAQIGrid = (props) => {
           { '& *': { color: CustomThemes.universal.palette.inactiveSensor } }
         }
       >
-        <Box sx={{ '& *': { color: current?.color[isScreen ? ThemePreferences.light : themePreference] } }}>
+        <Box sx={{ '& *': { color: current?.color?.[isScreen ? ThemePreferences.light : themePreference] } }}>
           <Typography variant={ElementSizes[size].locationAndCategory} fontWeight="500" className='condensedFont' textTransform="capitalize">
             {returnLocationName({
               useLocationShort,
