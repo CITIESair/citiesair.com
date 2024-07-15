@@ -118,7 +118,6 @@ export default function SubChart(props) {
           && chartData.subcharts[subchartIndex].dataArray)
         || null
         || null;
-      console.log(chartData.title, dataArray)
 
       if (!isValidArray(dataArray)) {
         setShouldRenderChart(false);
