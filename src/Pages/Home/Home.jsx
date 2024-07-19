@@ -14,7 +14,7 @@ import jsonData from '../../section_data.json';
 
 import * as Tracking from '../../Utils/Tracking';
 import parse from 'html-react-parser';
-import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
+import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 
 import AQImap, { TileOptions } from '../../Components/AirQuality/AQImap';
 

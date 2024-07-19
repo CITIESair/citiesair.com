@@ -6,7 +6,7 @@ import { styled } from '@mui/material/styles';
 import parse from 'html-react-parser';
 import jsonData from '../section_data.json';
 import UppercaseTitle from './UppercaseTitle';
-import { replacePlainHTMLWithMuiComponents, capitalizePhrase } from '../Utils/Utils';
+import { replacePlainHTMLWithMuiComponents, capitalizePhrase } from '../Utils/UtilFunctions';
 
 export const WEBSITE_ID = 9021; // Hyvor Talk's website ID
 export const AIR_QUALITY_PAGE_ID = 64327358; // Air Quality page ID in Hyvor Talk

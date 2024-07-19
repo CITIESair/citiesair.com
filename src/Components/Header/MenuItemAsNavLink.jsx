@@ -6,7 +6,7 @@ import NavLinkBehavior from './NavLinkBehavior';
 
 import * as Tracking from '../../Utils/Tracking';
 
-import { capitalizePhrase } from '../../Utils/Utils';
+import { capitalizePhrase } from '../../Utils/UtilFunctions';
 
 export const StyledMenuItem = styled(MenuItem)(({ theme, sx }) => ({
   ...sx,

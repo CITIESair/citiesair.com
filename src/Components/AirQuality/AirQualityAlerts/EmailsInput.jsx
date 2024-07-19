@@ -5,7 +5,7 @@ import { RESTmethods } from "../../../API/Utils";
 import { getApiUrl } from '../../../API/ApiUrls';
 import { GeneralAPIendpoints } from "../../../API/Utils";
 import { DashboardContext } from '../../../ContextProviders/DashboardContext';
-import { isValidArray } from '../../../Utils/Utils';
+import { isValidArray } from '../../../Utils/UtilFunctions';
 import { AlertSeverity, useNotificationContext } from '../../../ContextProviders/NotificationContext';
 
 const compareArrays = (arr1, arr2) => {

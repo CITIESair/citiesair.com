@@ -10,7 +10,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PlaceIcon from '@mui/icons-material/Place';
 import CategoryIcon from '@mui/icons-material/Category';
 
-import { capitalizePhrase } from '../../../../Utils/Utils';
+import { capitalizePhrase } from '../../../../Utils/UtilFunctions';
 import AQIDataTypes from '../../../../Utils/AirQuality/DataTypes';
 import { useContext, useEffect, useState } from 'react';
 import { DashboardContext } from '../../../../ContextProviders/DashboardContext';

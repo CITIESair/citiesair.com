@@ -6,7 +6,7 @@ import AlertsTable from './AlertsTable';
 
 import { alertPlaceholder, getAlertPlaceholder, useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
 import AlertTypes from './AlertTypes';
-import { isValidArray } from '../../../Utils/Utils';
+import { isValidArray } from '../../../Utils/UtilFunctions';
 
 function AlertTab(props) {
   const { children, value, index, alertTypeKey, alertsArray, ...other } = props;

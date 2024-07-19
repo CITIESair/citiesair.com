@@ -1,4 +1,4 @@
-import { isValidArray } from "../Utils";
+import { isValidArray } from "../UtilFunctions";
 
 const normalizeColorStopOffsets = ({ offsets, minOffset, maxOffset }) => {
   return offsets.map(offset => (offset - minOffset) / (maxOffset - minOffset));

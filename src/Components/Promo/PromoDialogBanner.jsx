@@ -3,7 +3,7 @@ import { useContext, useState } from "react";
 import { PreferenceContext } from "../../ContextProviders/PreferenceContext";
 import { LocalStorage } from "../../Utils/LocalStorage";
 import parse from 'html-react-parser';
-import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
+import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 
 const PromoDialogBanner = ({ promosForBanner }) => {
   const { showPromoDialogPreference, setShowPromoDialogPreference } = useContext(PreferenceContext);

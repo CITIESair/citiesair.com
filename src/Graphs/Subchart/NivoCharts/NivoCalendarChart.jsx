@@ -5,7 +5,7 @@ import { useTheme } from '@mui/material/styles';
 import { Box, Chip, Typography } from '@mui/material';
 
 import parse from 'html-react-parser';
-import { replacePlainHTMLWithMuiComponents } from '../../../Utils/Utils';
+import { replacePlainHTMLWithMuiComponents } from '../../../Utils/UtilFunctions';
 import { generateDiscreteColorGradientArray, generateCssBackgroundGradient } from '../../../Utils/Gradient/GradientUtils';
 
 export const yearSpacing = 40;

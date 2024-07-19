@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import parse from 'html-react-parser';
 import { useMediaQuery, useTheme } from '@mui/material';
-import { replacePlainHTMLWithMuiComponents } from '../Utils/Utils';
+import { replacePlainHTMLWithMuiComponents } from '../Utils/UtilFunctions';
 
 function CollapsibleSubtitle({ text, wordLimit = 40, reference }) {
   const [isExpanded, setIsExpanded] = useState(false);

@@ -15,7 +15,7 @@ import SubChart from './Subchart/SubChart';
 import CollapsibleSubtitle from '../Components/CollapsibleSubtitle';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DataTypeDropDownMenu from './Subchart/SubchartUtils/DataTypeDropDown';
-import { isValidArray } from '../Utils/Utils';
+import { isValidArray } from '../Utils/UtilFunctions';
 import { useDateRangePicker } from '../ContextProviders/DateRangePickerContext';
 import { returnFormattedDates } from '../Components/DateRangePicker/DateRangePickerUtils';
 import { useAxesPicker } from '../ContextProviders/AxesPickerContext';

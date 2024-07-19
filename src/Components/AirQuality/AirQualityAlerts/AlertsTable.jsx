@@ -11,7 +11,7 @@ import { AirQualityAlertKeys, alertPlaceholder, getAlertPlaceholder, useAirQuali
 import AlertTypes from './AlertTypes';
 import { ThresholdAlertTypes } from './AlertTypes';
 
-import { isValidArray } from '../../../Utils/Utils';
+import { isValidArray } from '../../../Utils/UtilFunctions';
 import AlertModificationDialog from './AlertModificationDialog/AlertModificationDialog';
 
 import { returnHoursFromMinutesPastMidnight, CrudTypes, SharedColumnHeader } from './Utils';

@@ -4,7 +4,7 @@ import { fetchDataFromURL } from '../API/ApiFetch';
 import { getAlertsApiUrl } from '../API/ApiUrls';
 import { GeneralAPIendpoints } from "../API/Utils";
 import AlertTypes, { ThresholdAlertTypes } from '../Components/AirQuality/AirQualityAlerts/AlertTypes';
-import { isValidArray } from '../Utils/Utils';
+import { isValidArray } from '../Utils/UtilFunctions';
 import AQIDataTypes from '../Utils/AirQuality/DataTypes';
 
 const AirQualityAlertContext = createContext();

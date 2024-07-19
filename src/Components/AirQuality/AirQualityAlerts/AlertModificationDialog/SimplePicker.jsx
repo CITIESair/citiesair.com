@@ -1,6 +1,6 @@
 import { Box, FormControl, InputLabel, Select, MenuItem, Stack } from '@mui/material';
 import { useTheme } from '@emotion/react';
-import { isValidArray } from '../../../../Utils/Utils';
+import { isValidArray } from '../../../../Utils/UtilFunctions';
 
 export const SimplePicker = (props) => {
   const { icon, label, value, options, handleChange, disabled } = props;

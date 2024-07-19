@@ -10,7 +10,7 @@ import { areDOMOverlapped } from './ScreenUtils';
 
 import CustomThemes from '../../../Themes/CustomThemes';
 import ThemePreferences from '../../../Themes/ThemePreferences';
-import { capitalizePhrase } from '../../../Utils/Utils';
+import { capitalizePhrase } from '../../../Utils/UtilFunctions';
 
 const numberOfHoursForHistoricalData = 6;
 

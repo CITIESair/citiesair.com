@@ -18,7 +18,7 @@ import { CalendarChart, getCalendarChartMargin, calculateCalendarChartHeight } f
 import { generateSvgFillGradient, BackgroundGradient } from '../../Utils/Gradient/GradientUtils';
 
 import CustomDateRangePicker from '../../Components/DateRangePicker/CustomDateRangePicker'
-import { isValidArray } from '../../Utils/Utils';
+import { isValidArray } from '../../Utils/UtilFunctions';
 import { returnSelectedDataType } from '../../Utils/AirQuality/DataTypes';
 
 import { useYearRange } from '../../ContextProviders/YearRangeContext';

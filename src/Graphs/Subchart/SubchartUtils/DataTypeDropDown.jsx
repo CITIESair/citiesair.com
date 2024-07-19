@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Menu, MenuItem, Typography } from "@mui/material";
-import { isValidArray } from "../../../Utils/Utils";
+import { isValidArray } from "../../../Utils/UtilFunctions";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { returnSelectedDataType } from "../../../Utils/AirQuality/DataTypes";
 

@@ -22,7 +22,7 @@ import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import CommentIcon from '@mui/icons-material/Comment';
 
-import { replacePlainHTMLWithMuiComponents } from '../Utils/Utils';
+import { replacePlainHTMLWithMuiComponents } from '../Utils/UtilFunctions';
 import DatasetDownloadDialog from '../Components/DatasetDownload/DatasetDownloadDialog';
 import ScreenDropDownMenu from '../Components/AirQuality/AirQualityScreen/ScreenDropDownMenu';
 

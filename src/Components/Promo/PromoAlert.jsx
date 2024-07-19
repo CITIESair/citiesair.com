@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Alert, Container } from '@mui/material';
 
 import parse from 'html-react-parser';
-import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
+import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 
 const PromoAlert = (props) => {
   const { message } = props;
