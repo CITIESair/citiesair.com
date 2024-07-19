@@ -6,7 +6,7 @@ import HomeIcon from '@mui/icons-material/Home';
 
 import MenuItemAsNavLink from './MenuItemAsNavLink';
 import NavLinkBehavior from './NavLinkBehavior';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
+// import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { UserContext } from '../../ContextProviders/UserContext';
 
 import BarChartIcon from '@mui/icons-material/BarChart';
@@ -17,7 +17,7 @@ import PopupState, { bindHover, bindFocus, bindMenu } from 'material-ui-popup-st
 
 import LogOut from '../Account/Logout';
 import { UniqueRoutes } from '../../Utils/RoutesUtils';
-import { CITIESair, NYUAD } from '../../Utils/GlobalVariables';
+import { NYUAD } from '../../Utils/GlobalVariables';
 
 const StyledMenuList = styled(MenuList)(({ theme }) => ({
   // Make these items display on the same line on large display
@@ -115,24 +115,24 @@ const NavBar = (props) => {
     />
   );
 
-  const blogNavLink = (
-    <MenuItemAsNavLink
-      key="blog"
-      label={`${CITIESair} Blog`}
-      behavior={NavLinkBehavior.toExternalPage}
-      to={UniqueRoutes.blogSubdomain}
-      icon={<MenuBookIcon />}
-      analyticsOriginID="navbar"
-    />
-  );
+  // const blogNavLink = (
+  //   <MenuItemAsNavLink
+  //     key="blog"
+  //     label={`${CITIESair} Blog`}
+  //     behavior={NavLinkBehavior.toExternalPage}
+  //     to={UniqueRoutes.blogSubdomain}
+  //     icon={<MenuBookIcon />}
+  //     analyticsOriginID="navbar"
+  //   />
+  // );
 
   useEffect(() => {
     switch (currentPage) {
       case UniqueRoutes.home:
-        setNavbar([nyuadDashboardNavLink, blogNavLink, reservedAreaMenu]);
+        setNavbar([nyuadDashboardNavLink, reservedAreaMenu]);
         break;
       default:
-        setNavbar([homeNavLink, blogNavLink, reservedAreaMenu]);
+        setNavbar([homeNavLink, reservedAreaMenu]);
         break;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

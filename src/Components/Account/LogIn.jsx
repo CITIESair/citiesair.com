@@ -1,6 +1,6 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 
 import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper } from "@mui/material";
@@ -10,9 +10,10 @@ import { GeneralEndpoints, getApiUrl } from '../../Utils/ApiFunctions/ApiUtils';
 import { UniqueRoutes } from '../../Utils/RoutesUtils';
 import { AlertSeverity, useNotificationContext } from '../../ContextProviders/NotificationContext';
 import { CITIESair } from '../../Utils/GlobalVariables';
+import { fetchDataFromURL, RESTmethods } from '../../Utils/ApiFunctions/ApiCalls';
 
 export default function LogIn() {
-  const { user, setUser } = useContext(UserContext);
+  const { setUser } = useContext(UserContext);
 
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
@@ -35,40 +36,27 @@ export default function LogIn() {
 
     setLoading(true);
 
-    const url = getApiUrl({ endpoint: GeneralEndpoints.login });
-
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        username, password, rememberMe
-      }),
-      credentials: 'include',
+    fetchDataFromURL({
+      url: getApiUrl({ endpoint: GeneralEndpoints.login }),
+      restMethod: RESTmethods.POST,
+      body: {
+        username,
+        password,
+        rememberMe
+      }
     })
-      .then((response) => {
-        if (response.ok) {
-          response.json().then((data) => {
-            setShowNotification(false)
-            setLoading(false);
+      .then((data) => {
+        setShowNotification(false)
+        setLoading(false);
 
-            setUser({
-              checkedAuthentication: true,
-              authenticated: true,
-              allowedSchools: data.allowedSchools,
-              username: data.username,
-            });
+        setUser({
+          checkedAuthentication: true,
+          authenticated: true,
+          allowedSchools: data.allowedSchools,
+          username: data.username,
+        });
 
-            navigate(redirectTo, { replace: true });
-          })
-        }
-        else {
-          setMessage("An unknown error has occurred, please try again.");
-          setSeverity(AlertSeverity.error);
-          setShowNotification(true);
-          setLoading(false);
-        }
+        navigate(redirectTo, { replace: true });
       })
       .catch((error) => {
         setMessage(prefabErrorMessage);

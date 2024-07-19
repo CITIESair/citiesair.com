@@ -10,6 +10,7 @@ import { StyledMenuItem } from '../Header/MenuItemAsNavLink';
 
 import { UserContext } from '../../ContextProviders/UserContext';
 import { GeneralEndpoints, getApiUrl } from '../../Utils/ApiFunctions/ApiUtils';
+import { fetchDataFromURL, RESTmethods } from '../../Utils/ApiFunctions/ApiCalls';
 
 export default function LogOut() {
   const { setUser } = useContext(UserContext);
@@ -19,26 +20,17 @@ export default function LogOut() {
   const logOut = async () => {
     setLoading(true);
 
-    const url = getApiUrl({ endpoint: GeneralEndpoints.logout })
-    fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include',
+    fetchDataFromURL({
+      url: getApiUrl({ endpoint: GeneralEndpoints.logout }),
+      restMethod: RESTmethods.GET
     })
-      .then((response) => {
-        if (response.ok) {
-          setUser({
-            checkedAuthentication: true,
-            authenticated: false,
-            username: null
-          });
-          navigate('/');
-        }
-        else {
-          throw new Error(`Error authenticating`);
-        }
+      .then(() => {
+        setUser({
+          checkedAuthentication: true,
+          authenticated: false,
+          username: null
+        });
+        navigate('/');
       })
       .catch((error) => {
         console.log(error);
