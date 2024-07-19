@@ -9,7 +9,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { StyledMenuItem } from '../Header/MenuItemAsNavLink';
 
 import { UserContext } from '../../ContextProviders/UserContext';
-import { GeneralEndpoints, getApiUrl } from '../../Utils/ApiFunctions/ApiUtils';
+import { GeneralEndpoints, getApiUrl } from '../../Utils/ApiFunctions/ApiUrls';
 import { fetchDataFromURL, RESTmethods } from '../../Utils/ApiFunctions/ApiCalls';
 
 export default function LogOut() {

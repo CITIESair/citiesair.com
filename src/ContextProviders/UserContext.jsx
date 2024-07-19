@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext, useMemo } from 'react';
 import { fetchDataFromURL } from '../Utils/ApiFunctions/ApiCalls';
-import { GeneralEndpoints, getApiUrl } from '../Utils/ApiFunctions/ApiUtils';
+import { GeneralEndpoints, getApiUrl } from '../Utils/ApiFunctions/ApiUrls';
 
 export const UserContext = createContext();
 

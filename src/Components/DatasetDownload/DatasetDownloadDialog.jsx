@@ -9,7 +9,7 @@ import DataObjectIcon from '@mui/icons-material/DataObject';
 
 import * as Tracking from '../../Utils/Tracking';
 import { Extensions, fetchDataFromURL } from '../../Utils/ApiFunctions/ApiCalls';
-import { RawDatasetType, getRawDatasetUrl } from '../../Utils/ApiFunctions/ApiUtils';
+import { RawDatasetType, getRawDatasetUrl } from '../../Utils/ApiFunctions/ApiUrls';
 import LoadingAnimation from '../LoadingAnimation';
 
 import { DashboardContext } from '../../ContextProviders/DashboardContext';

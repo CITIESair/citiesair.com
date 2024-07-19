@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Box, TextField, Chip, Menu, MenuItem, Grid, Typography, Button, Stack, useMediaQuery } from '@mui/material';
 import { RESTmethods, fetchDataFromURL } from "../../../Utils/ApiFunctions/ApiCalls";
-import { GeneralEndpoints, getApiUrl } from '../../../Utils/ApiFunctions/ApiUtils';
+import { GeneralEndpoints, getApiUrl } from '../../../Utils/ApiFunctions/ApiUrls';
 import { DashboardContext } from '../../../ContextProviders/DashboardContext';
 import { isValidArray } from '../../../Utils/Utils';
 import { AlertSeverity, useNotificationContext } from '../../../ContextProviders/NotificationContext';

@@ -15,7 +15,7 @@ import AQIDataTypes from '../../../../Utils/AirQuality/DataTypes';
 import { useContext, useEffect, useState } from 'react';
 import { DashboardContext } from '../../../../ContextProviders/DashboardContext';
 import { RESTmethods, fetchDataFromURL } from '../../../../Utils/ApiFunctions/ApiCalls';
-import { GeneralEndpoints, getAlertsApiUrl } from '../../../../Utils/ApiFunctions/ApiUtils';
+import { GeneralEndpoints, getAlertsApiUrl } from '../../../../Utils/ApiFunctions/ApiUrls';
 import { generateCssBackgroundGradient } from '../../../../Utils/Gradient/GradientUtils';
 import AQIdatabase, { vocDatabase } from '../../../../Utils/AirQuality/AirQualityIndexHelper';
 

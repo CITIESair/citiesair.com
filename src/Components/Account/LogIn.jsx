@@ -6,7 +6,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper } from "@mui/material";
 
 import { UserContext } from '../../ContextProviders/UserContext';
-import { GeneralEndpoints, getApiUrl } from '../../Utils/ApiFunctions/ApiUtils';
+import { GeneralEndpoints, getApiUrl } from '../../Utils/ApiFunctions/ApiUrls';
 import { UniqueRoutes } from '../../Utils/RoutesUtils';
 import { AlertSeverity, useNotificationContext } from '../../ContextProviders/NotificationContext';
 import { CITIESair } from '../../Utils/GlobalVariables';

@@ -19,7 +19,8 @@ import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
 import AQImap, { TileOptions } from '../../Components/AirQuality/AQImap';
 
 import CurrentAQIGrid from '../../Components/AirQuality/CurrentAQIGrid';
-import { GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiFunctions/ApiUtils';
+import { GeneralEndpoints, getApiUrl } from '../../Utils/ApiFunctions/ApiUrls';
+import { fetchAndProcessCurrentSensorsData } from '../../Utils/ApiFunctions/ApiCalls';
 
 import BarChartIcon from '@mui/icons-material/BarChart';
 import GetInTouch from './GetInTouch';

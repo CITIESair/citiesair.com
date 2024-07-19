@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Select, MenuItem, FormControl, InputLabel, Button, Stack, Grid, CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useAxesPicker } from '../../ContextProviders/AxesPickerContext';
-import { ChartEndpoints, getCorrelationChartApiUrl } from '../../Utils/ApiFunctions/ApiUtils';
+import { ChartEndpoints, getCorrelationChartApiUrl } from '../../Utils/ApiFunctions/ApiUrls';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
 import { fetchDataFromURL } from '../../Utils/ApiFunctions/ApiCalls';
 

@@ -6,7 +6,8 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { fetchDataFromURL } from "../Utils/ApiFunctions/ApiCalls";
 import Project from "./Project";
-import { ChartEndpointsOrder, GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl, getChartApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiFunctions/ApiUtils";
+import { ChartEndpointsOrder, GeneralEndpoints, getApiUrl, getChartApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiFunctions/ApiUrls";
+import { fetchAndProcessCurrentSensorsData } from "../Utils/ApiFunctions/ApiCalls";
 import { LinkContext } from "../ContextProviders/LinkContext";
 import { DashboardContext } from "../ContextProviders/DashboardContext";
 

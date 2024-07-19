@@ -2,9 +2,9 @@
 /* eslint-disable */
 import { useState, useEffect } from 'react';
 import FullWidthBox from '../../Components/FullWidthBox';
-import * as Tracking from '../../Utils/Tracking';
 import AQImap, { LocationTitle, TileOptions } from '../../Components/AirQuality/AQImap';
-import { GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiFunctions/ApiUtils';
+import { GeneralEndpoints, getApiUrl } from '../../Utils/ApiFunctions/ApiUrls';
+import { fetchAndProcessCurrentSensorsData } from '../../Utils/ApiFunctions/ApiCalls';
 import { NYUAD } from '../../Utils/GlobalVariables';
 
 const NYUADmap = () => {

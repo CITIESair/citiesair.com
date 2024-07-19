@@ -5,7 +5,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import AQIDataTypes from '../Utils/AirQuality/DataTypes';
 import { fetchDataFromURL } from '../Utils/ApiFunctions/ApiCalls';
-import { ChartEndpoints, ChartEndpointsOrder, getChartApiUrl, getCorrelationChartApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiFunctions/ApiUtils";
+import { ChartEndpoints, ChartEndpointsOrder, getChartApiUrl, getCorrelationChartApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiFunctions/ApiUrls";
 import { DashboardContext } from "../ContextProviders/DashboardContext";
 import { YearRangeProvider } from '../ContextProviders/YearRangeContext';
 

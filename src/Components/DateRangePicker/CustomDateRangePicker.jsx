@@ -10,7 +10,7 @@ import { CircularProgress, useMediaQuery, useTheme } from '@mui/material';
 import { Alert, Button, Stack } from '@mui/material';
 
 import { StyledDateRangePicker, returnCustomStaticRanges, returnFormattedDates } from './DateRangePickerUtils';
-import { ChartEndpoints, getHistoricalChartApiUrl } from '../../Utils/ApiFunctions/ApiUtils';
+import { ChartEndpoints, getHistoricalChartApiUrl } from '../../Utils/ApiFunctions/ApiUrls';
 import AggregationTypeToggle from './AggregationTypeToggle';
 import AggregationType from './AggregationType';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
