@@ -19,7 +19,7 @@ import LogIn from './Components/Account/LogIn';
 import NYUADmap from './Pages/Embeds/NYUADmap';
 import SpeedDialButton from './Components/SpeedDial/SpeedDialButton';
 
-import { UniqueRoutes } from './Utils/RoutesUtils';
+import { AppRoutes } from './Utils/AppRoutes';
 import NYUADbanner from './Pages/Embeds/NYUADbanner';
 
 import { DashboardProvider } from './ContextProviders/DashboardContext';
@@ -104,7 +104,7 @@ function App() {
           <Suspense fallback={<LoadingAnimation optionalText="Loading Dashboard" />}>
             <Routes>
               <Route
-                path={UniqueRoutes.home}
+                path={AppRoutes.home}
                 element={
                   <Box>
                     <Header />
@@ -115,7 +115,7 @@ function App() {
               />
 
               <Route
-                path={UniqueRoutes.login}
+                path={AppRoutes.login}
                 element={
                   <Box>
                     <Header />
@@ -126,7 +126,7 @@ function App() {
               />
 
               {
-                [UniqueRoutes.dashboard, UniqueRoutes.dashboardWithParam].map((path) =>
+                [AppRoutes.dashboard, AppRoutes.dashboardWithParam].map((path) =>
                 (
                   <Route
                     key={path}
@@ -148,22 +148,22 @@ function App() {
               }
 
               <Route
-                path={UniqueRoutes.anyScreen}
+                path={AppRoutes.anyScreen}
                 element={<Screen title={`${CITIESair} | Screen`} />}
               />
 
               <Route
-                path={UniqueRoutes.nyuadMap}
+                path={AppRoutes.nyuadMap}
                 element={<NYUADmap />}
               />
 
               <Route
-                path={UniqueRoutes.nyuadBanner}
+                path={AppRoutes.nyuadBanner}
                 element={<NYUADbanner isOnBannerPage={true} />}
               />
 
               <Route
-                path={UniqueRoutes[404]}
+                path={AppRoutes[404]}
                 element={
                   <FourOhFour title={`${CITIESair} | Page Not Found`} />
                 }
@@ -171,7 +171,7 @@ function App() {
               <Route
                 path="*"
                 element={
-                  <Navigate replace to={UniqueRoutes[404]} />
+                  <Navigate replace to={AppRoutes[404]} />
                 }
               />
 

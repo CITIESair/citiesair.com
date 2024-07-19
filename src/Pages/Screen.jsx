@@ -23,7 +23,7 @@ import CurrentAQIGrid from '../Components/AirQuality/CurrentAQIGrid';
 import { CurrentAQIGridSize } from '../Components/AirQuality/CurrentAQIGridSize';
 import { GeneralEndpoints, getApiUrl } from '../Utils/ApiFunctions/ApiUrls';
 import { fetchAndProcessCurrentSensorsData } from '../Utils/ApiFunctions/ApiCalls';
-import { UniqueRoutes } from '../Utils/RoutesUtils';
+import { AppRoutes } from '../Utils/AppRoutes';
 import { PreferenceContext } from '../ContextProviders/PreferenceContext';
 import { CITIESair } from '../Utils/GlobalVariables';
 
@@ -106,7 +106,7 @@ const Screen = ({ title }) => {
         clearInterval(intervalId);
       };
     } else {
-      navigate(`${UniqueRoutes.login}?${UniqueRoutes.redirectQuery}=${locationPath}`);
+      navigate(`${AppRoutes.login}?${AppRoutes.redirectQuery}=${locationPath}`);
     }
   }, [user]);
 

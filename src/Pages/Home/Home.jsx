@@ -24,7 +24,7 @@ import { fetchAndProcessCurrentSensorsData } from '../../Utils/ApiFunctions/ApiC
 
 import BarChartIcon from '@mui/icons-material/BarChart';
 import GetInTouch from './GetInTouch';
-import { UniqueRoutes } from '../../Utils/RoutesUtils';
+import { AppRoutes } from '../../Utils/AppRoutes';
 import { SensorStatus } from "../../Components/AirQuality/SensorStatus";
 import AQIexplanation from '../../Components/AirQuality/AQIexplanation';
 import { CITIESair, NYUAD } from '../../Utils/GlobalVariables';
@@ -50,7 +50,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
 
   // set underline link to home
   useEffect(() => {
-    setCurrentPage(UniqueRoutes.home);
+    setCurrentPage(AppRoutes.home);
     setChartsTitlesList([]);
   }, [setCurrentPage, setChartsTitlesList]);
 
@@ -119,14 +119,14 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
                   component={RouterLink}
                   variant='contained'
                   sx={{ width: "fit-content", mb: 1 }}
-                  to={UniqueRoutes.nyuad}
+                  to={AppRoutes.nyuad}
                   onClick={() => {
                     Tracking.sendEventAnalytics(
                       Tracking.Events.internalNavigation,
                       {
-                        destination_id: UniqueRoutes.nyuad,
+                        destination_id: AppRoutes.nyuad,
                         destination_school_id: NYUAD,
-                        origin_id: UniqueRoutes.home
+                        origin_id: AppRoutes.home
                       }
                     );
                   }}

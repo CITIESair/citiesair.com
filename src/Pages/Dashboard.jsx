@@ -13,7 +13,7 @@ import { DashboardContext } from "../ContextProviders/DashboardContext";
 
 import { UserContext } from "../ContextProviders/UserContext";
 import { LocalStorage } from "../Utils/LocalStorage";
-import { UniqueRoutes } from "../Utils/RoutesUtils";
+import { AppRoutes } from "../Utils/AppRoutes";
 import { CITIESair, NYUAD } from "../Utils/GlobalVariables";
 
 const numInitialCharts = 2;
@@ -35,7 +35,7 @@ const Dashboard = () => {
   // Update current page type
   const { setCurrentPage } = useContext(LinkContext);
   useEffect(() => {
-    setCurrentPage(UniqueRoutes.dashboard);
+    setCurrentPage(AppRoutes.dashboard);
   }, []);
 
   const {
@@ -56,7 +56,7 @@ const Dashboard = () => {
     };
 
     if (user.checkedAuthentication === true && user.authenticated === false) {
-      navigate(`${UniqueRoutes.login}?${UniqueRoutes.redirectQuery}=${locationPath}`);
+      navigate(`${AppRoutes.login}?${AppRoutes.redirectQuery}=${locationPath}`);
     }
 
     const allowedSchools = user.allowedSchools;

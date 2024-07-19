@@ -1,13 +1,13 @@
 // import libraries
 import { useState, createContext, useMemo } from 'react';
-import { UniqueRoutes } from '../Utils/RoutesUtils';
+import { AppRoutes } from '../Utils/AppRoutes';
 
 // create context
 export const LinkContext = createContext();
 
 // context provider
 export function LinkProvider({ children }) {
-  const [currentPage, setCurrentPage] = useState(UniqueRoutes.home);
+  const [currentPage, setCurrentPage] = useState(AppRoutes.home);
   const [chartsTitlesList, setChartsTitlesList] = useState([]);
 
   // Memoize the value to be provided to avoid unnecessary re-renders

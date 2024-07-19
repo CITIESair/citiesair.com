@@ -19,7 +19,7 @@ import NavBar from './NavBar';
 import sectionData from '../../section_data.json';
 import CITIESlogoLinkToHome from './CITIESlogoLinkToHome';
 import TemperatureUnitToggle from './TemperatureUnitToggle';
-import { UniqueRoutes } from '../../Utils/RoutesUtils';
+import { AppRoutes } from '../../Utils/AppRoutes';
 
 import { useTheme } from '@mui/material';
 import { CITIESair } from '../../Utils/GlobalVariables';
@@ -188,7 +188,7 @@ export default function Header() {
 
       {
         (
-          currentPage === UniqueRoutes.home
+          currentPage === AppRoutes.home
           && (
             <FullWidthBox sx={{
               width: '100%',

@@ -9,7 +9,7 @@ import { CustomChip } from "../Pages/Project";
 
 import PlaceIcon from '@mui/icons-material/Place';
 import { LocalStorage } from "../Utils/LocalStorage";
-import { UniqueRoutes } from "../Utils/RoutesUtils";
+import { AppRoutes } from "../Utils/AppRoutes";
 
 import * as Tracking from '../Utils/Tracking';
 
@@ -59,7 +59,7 @@ const SchoolSelector = () => {
           origin_id: 'school_selector'
         });
 
-      navigate(`${UniqueRoutes.dashboard}/${schoolID}`)
+      navigate(`${AppRoutes.dashboard}/${schoolID}`)
     }
     handleClose();
   };

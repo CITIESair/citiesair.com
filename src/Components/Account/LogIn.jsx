@@ -7,7 +7,7 @@ import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, T
 
 import { UserContext } from '../../ContextProviders/UserContext';
 import { GeneralEndpoints, getApiUrl } from '../../Utils/ApiFunctions/ApiUrls';
-import { UniqueRoutes } from '../../Utils/RoutesUtils';
+import { AppRoutes } from '../../Utils/AppRoutes';
 import { AlertSeverity, useNotificationContext } from '../../ContextProviders/NotificationContext';
 import { CITIESair } from '../../Utils/GlobalVariables';
 import { fetchDataFromURL, RESTmethods } from '../../Utils/ApiFunctions/ApiCalls';
@@ -29,7 +29,7 @@ export default function LogIn() {
   // After login succeeds, navigate to /dashboard if no redirectTo string query is detected
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const redirectTo = queryParams.get(UniqueRoutes.redirectQuery)?.toLowerCase() || UniqueRoutes.dashboard;
+  const redirectTo = queryParams.get(AppRoutes.redirectQuery)?.toLowerCase() || AppRoutes.dashboard;
 
   const handleSubmit = async (event) => {
     event.preventDefault();

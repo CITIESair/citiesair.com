@@ -16,7 +16,7 @@ import HoverMenu from 'material-ui-popup-state/HoverMenu';
 import PopupState, { bindHover, bindFocus, bindMenu } from 'material-ui-popup-state';
 
 import LogOut from '../Account/Logout';
-import { UniqueRoutes } from '../../Utils/RoutesUtils';
+import { AppRoutes } from '../../Utils/AppRoutes';
 import { NYUAD } from '../../Utils/GlobalVariables';
 
 const StyledMenuList = styled(MenuList)(({ theme }) => ({
@@ -38,7 +38,7 @@ const NavBar = (props) => {
     <MenuItemAsNavLink
       key="home"
       behavior={NavLinkBehavior.toNewPage}
-      to={UniqueRoutes.home}
+      to={AppRoutes.home}
       icon={<HomeIcon />}
       analyticsOriginID="navbar"
     />
@@ -58,7 +58,7 @@ const NavBar = (props) => {
           behavior={NavLinkBehavior.toNewPage}
           icon={<PersonIcon />}
           analyticsOriginID="navbar"
-          to={UniqueRoutes.dashboard}
+          to={AppRoutes.dashboard}
         />,
         <LogOut key="logout" />
       ]
@@ -71,7 +71,7 @@ const NavBar = (props) => {
               behavior={NavLinkBehavior.hoverMenu}
               icon={<PersonIcon />}
               analyticsOriginID="navbar"
-              to={UniqueRoutes.dashboard}
+              to={AppRoutes.dashboard}
               bindHoverProps={bindHover(popupState)}
               bindFocusProps={bindFocus(popupState)}
             />
@@ -99,7 +99,7 @@ const NavBar = (props) => {
       behavior={NavLinkBehavior.toNewPage}
       icon={<PersonIcon />}
       analyticsOriginID="navbar"
-      to={UniqueRoutes.login}
+      to={AppRoutes.login}
     />
   );
 
@@ -108,7 +108,7 @@ const NavBar = (props) => {
       key={NYUAD}
       label={"NYUAD Dashboard (Public access)"}
       behavior={NavLinkBehavior.toNewPage}
-      to={UniqueRoutes.nyuad}
+      to={AppRoutes.nyuad}
       icon={<BarChartIcon />}
       analyticsOriginID="navbar"
       school_id={NYUAD}
@@ -128,7 +128,7 @@ const NavBar = (props) => {
 
   useEffect(() => {
     switch (currentPage) {
-      case UniqueRoutes.home:
+      case AppRoutes.home:
         setNavbar([nyuadDashboardNavLink, reservedAreaMenu]);
         break;
       default:

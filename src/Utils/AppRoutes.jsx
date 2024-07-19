@@ -1,6 +1,6 @@
 import { BLOG_CITIESair_URL } from "./GlobalVariables";
 
-export const UniqueRoutes = {
+export const AppRoutes = {
   nyuad: '/dashboard/nyuad',
   nyuadMap: '/nyuadMap',
   nyuadBanner: '/nyuadBanner',
