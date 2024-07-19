@@ -9,8 +9,10 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { StyledMenuItem } from '../Header/MenuItemAsNavLink';
 
 import { UserContext } from '../../ContextProviders/UserContext';
-import { GeneralEndpoints, getApiUrl } from '../../Utils/ApiFunctions/ApiUrls';
-import { fetchDataFromURL, RESTmethods } from '../../Utils/ApiFunctions/ApiCalls';
+import { getApiUrl } from '../../API/ApiUrls';
+import { GeneralAPIendpoints } from "../../API/Utils";
+import { fetchDataFromURL } from '../../API/ApiFetch';
+import { RESTmethods } from "../../API/Utils";
 
 export default function LogOut() {
   const { setUser } = useContext(UserContext);
@@ -21,7 +23,7 @@ export default function LogOut() {
     setLoading(true);
 
     fetchDataFromURL({
-      url: getApiUrl({ endpoint: GeneralEndpoints.logout }),
+      url: getApiUrl({ endpoint: GeneralAPIendpoints.logout }),
       restMethod: RESTmethods.GET
     })
       .then(() => {

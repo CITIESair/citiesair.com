@@ -4,10 +4,11 @@
 import { useEffect, useContext } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { fetchDataFromURL } from "../Utils/ApiFunctions/ApiCalls";
+import { fetchDataFromURL } from "../API/ApiFetch";
 import Project from "./Project";
-import { ChartEndpointsOrder, GeneralEndpoints, getApiUrl, getChartApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiFunctions/ApiUrls";
-import { fetchAndProcessCurrentSensorsData } from "../Utils/ApiFunctions/ApiCalls";
+import { getApiUrl, getChartApiUrl, getHistoricalChartApiUrl } from "../API/ApiUrls";
+import { ChartAPIendpointsOrder, GeneralAPIendpoints } from "../API/Utils";
+import { fetchAndProcessCurrentSensorsData } from "../API/ApiFetch";
 import { LinkContext } from "../ContextProviders/LinkContext";
 import { DashboardContext } from "../ContextProviders/DashboardContext";
 
@@ -100,12 +101,12 @@ const Dashboard = () => {
       const response = await Promise.all([
         fetchDataFromURL({
           url: getApiUrl({
-            endpoint: GeneralEndpoints.schoolmetadata,
+            endpoint: GeneralAPIendpoints.schoolmetadata,
             school_id: school_id
           })
         }),
         fetchAndProcessCurrentSensorsData(getApiUrl({
-          endpoint: GeneralEndpoints.current,
+          endpoint: GeneralAPIendpoints.current,
           school_id: school_id
         }))
       ])
@@ -117,7 +118,7 @@ const Dashboard = () => {
       console.log(error);
     }
 
-    const chartsToFetch = loadMoreCharts ? ChartEndpointsOrder : ChartEndpointsOrder.slice(0, numInitialCharts);
+    const chartsToFetch = loadMoreCharts ? ChartAPIendpointsOrder : ChartAPIendpointsOrder.slice(0, numInitialCharts);
     chartsToFetch.forEach((endpoint, index) => {
       setIndividualChartData(index, {}); // set empty chartData to create a placeholder for this chart
 
@@ -138,7 +139,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (loadMoreCharts === true) {
-      const restOfCharts = ChartEndpointsOrder.slice(numInitialCharts);
+      const restOfCharts = ChartAPIendpointsOrder.slice(numInitialCharts);
       restOfCharts.forEach((endpoint, index) => {
         const chartIndexInPage = numInitialCharts + index;
         setIndividualChartData(chartIndexInPage, {}); // set empty chartData to create a placeholder for this chart

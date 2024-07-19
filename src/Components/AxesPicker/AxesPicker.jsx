@@ -2,9 +2,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Select, MenuItem, FormControl, InputLabel, Button, Stack, Grid, CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useAxesPicker } from '../../ContextProviders/AxesPickerContext';
-import { ChartEndpoints, getCorrelationChartApiUrl } from '../../Utils/ApiFunctions/ApiUrls';
+import { getCorrelationChartApiUrl } from '../../API/ApiUrls';
+import { ChartAPIendpoints } from "../../API/Utils";
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
-import { fetchDataFromURL } from '../../Utils/ApiFunctions/ApiCalls';
+import { fetchDataFromURL } from '../../API/ApiFetch';
 
 // Define custom styled components for shared border radius
 const LeftSelect = styled(FormControl)(({ theme }) => ({
@@ -88,7 +89,7 @@ const AxesPicker = (props) => {
     if (!(vAxis && hAxis)) return;
 
     const newUrl = getCorrelationChartApiUrl({
-      endpoint: ChartEndpoints.correlationDailyAverage,
+      endpoint: ChartAPIendpoints.correlationDailyAverage,
       school_id: currentSchoolID,
       dataType: dataType,
       sensorX: hAxis,

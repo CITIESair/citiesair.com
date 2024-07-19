@@ -1,49 +1,13 @@
-import AggregationType from "../../Components/DateRangePicker/AggregationType";
-import { API_CITIESair_URL } from "../GlobalVariables";
-
-export const GeneralEndpoints = {
-  me: "me",
-  current: "current",
-  raw: "raw",
-  schoolmetadata: "schoolmetadata",
-  chartdata: "chartdata",
-  screen: "screen",
-  login: "login",
-  logout: "logout",
-  map: "map_public_outdoors_stations",
-  alerts: "alerts",
-  alertsEmails: "alerts/emails"
-}
-
-export const ChartEndpoints = {
-  historical: "chart/historicalAQI",
-  dailyAverageAllTime: "chart/dailyAverageAllTime",
-  percentageByMonth: "chart/percentageByMonth",
-  yearlyAverageByDoW: "chart/yearlyAverageByDoW",
-  hourlyAverageByMonth: "chart/hourlyAverageByMonth",
-  correlationDailyAverage: "chart/correlationDailyAverage"
-}
-
-export const ChartEndpointsOrder = [
-  ChartEndpoints.historical,
-  ChartEndpoints.dailyAverageAllTime,
-  ChartEndpoints.percentageByMonth,
-  ChartEndpoints.yearlyAverageByDoW,
-  ChartEndpoints.hourlyAverageByMonth,
-  ChartEndpoints.correlationDailyAverage
-]
-
-export const RawDatasetType = {
-  daily: "daily",
-  hourly: "hourly"
-}
+import AggregationType from "../Components/DateRangePicker/AggregationType";
+import { API_CITIESair_URL } from "../Utils/GlobalVariables";
+import { GeneralAPIendpoints } from "./Utils";
 
 export const getAlertsApiUrl = ({
   endpoint,
   school_id,
   alert_id
 }) => {
-  if (endpoint !== GeneralEndpoints.alerts) return;
+  if (endpoint !== GeneralAPIendpoints.alerts) return;
 
   return `${API_CITIESair_URL}/${endpoint}/${school_id}${alert_id ? `/${alert_id}` : ''}`;
 }
@@ -54,13 +18,13 @@ export const getApiUrl = ({
 }) => {
 
   switch (endpoint) {
-    case GeneralEndpoints.current:
-    case GeneralEndpoints.schoolmetadata:
-    case GeneralEndpoints.chartdata:
-    case GeneralEndpoints.alertsEmails:
+    case GeneralAPIendpoints.current:
+    case GeneralAPIendpoints.schoolmetadata:
+    case GeneralAPIendpoints.chartdata:
+    case GeneralAPIendpoints.alertsEmails:
       return `${API_CITIESair_URL}/${endpoint}/${school_id}`;
 
-    case GeneralEndpoints.screen:
+    case GeneralAPIendpoints.screen:
       const currentUrl = window.location.href;
       const regex = /\/screen\/(.+)/;
       const match = currentUrl.match(regex);
@@ -91,5 +55,5 @@ export const getCorrelationChartApiUrl = ({ endpoint, school_id, dataType, senso
 }
 
 export const getRawDatasetUrl = ({ school_id, sensor_location_short, datasetType, isSample }) => {
-  return `${API_CITIESair_URL}/${GeneralEndpoints.raw}/${school_id}/${sensor_location_short}/${datasetType}?isSample=${isSample === true ? true : false}`;
+  return `${API_CITIESair_URL}/${GeneralAPIendpoints.raw}/${school_id}/${sensor_location_short}/${datasetType}?isSample=${isSample === true ? true : false}`;
 }

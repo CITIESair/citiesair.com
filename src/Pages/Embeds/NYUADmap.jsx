@@ -3,15 +3,16 @@
 import { useState, useEffect } from 'react';
 import FullWidthBox from '../../Components/FullWidthBox';
 import AQImap, { LocationTitle, TileOptions } from '../../Components/AirQuality/AQImap';
-import { GeneralEndpoints, getApiUrl } from '../../Utils/ApiFunctions/ApiUrls';
-import { fetchAndProcessCurrentSensorsData } from '../../Utils/ApiFunctions/ApiCalls';
+import { getApiUrl } from '../../API/ApiUrls';
+import { GeneralAPIendpoints } from "../../API/Utils";
+import { fetchAndProcessCurrentSensorsData } from '../../API/ApiFetch';
 import { NYUAD } from '../../Utils/GlobalVariables';
 
 const NYUADmap = () => {
   const [nyuadCurrentData, setNYUADcurrentData] = useState();
 
   const url = getApiUrl({
-    endpoint: GeneralEndpoints.current,
+    endpoint: GeneralAPIendpoints.current,
     school_id: NYUAD
   });
 

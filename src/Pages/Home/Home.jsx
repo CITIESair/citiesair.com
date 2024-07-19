@@ -19,8 +19,9 @@ import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
 import AQImap, { TileOptions } from '../../Components/AirQuality/AQImap';
 
 import CurrentAQIGrid from '../../Components/AirQuality/CurrentAQIGrid';
-import { GeneralEndpoints, getApiUrl } from '../../Utils/ApiFunctions/ApiUrls';
-import { fetchAndProcessCurrentSensorsData } from '../../Utils/ApiFunctions/ApiCalls';
+import { getApiUrl } from '../../API/ApiUrls';
+import { GeneralAPIendpoints } from "../../API/Utils";
+import { fetchAndProcessCurrentSensorsData } from '../../API/ApiFetch';
 
 import BarChartIcon from '@mui/icons-material/BarChart';
 import GetInTouch from './GetInTouch';
@@ -63,7 +64,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
   const [rawMapData, setRawMapData] = useState();
 
   useEffect(() => {
-    const nyuadUrl = getApiUrl({ endpoint: GeneralEndpoints.current, school_id: NYUAD });
+    const nyuadUrl = getApiUrl({ endpoint: GeneralAPIendpoints.current, school_id: NYUAD });
     fetchAndProcessCurrentSensorsData(nyuadUrl)
       .then((data) => {
         // Only display 3 sensors in the homepage
@@ -81,7 +82,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
       })
       .catch((error) => console.log(error));
 
-    const mapUrl = getApiUrl({ endpoint: GeneralEndpoints.map });
+    const mapUrl = getApiUrl({ endpoint: GeneralAPIendpoints.map });
     fetchAndProcessCurrentSensorsData(mapUrl)
       .then((data) => {
         setRawMapData(data)

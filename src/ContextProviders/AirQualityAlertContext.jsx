@@ -1,7 +1,8 @@
 import { createContext, useMemo, useState, useContext, useEffect } from 'react';
 import { DashboardContext } from './DashboardContext';
-import { fetchDataFromURL } from '../Utils/ApiFunctions/ApiCalls';
-import { GeneralEndpoints, getAlertsApiUrl } from '../Utils/ApiFunctions/ApiUrls';
+import { fetchDataFromURL } from '../API/ApiFetch';
+import { getAlertsApiUrl } from '../API/ApiUrls';
+import { GeneralAPIendpoints } from "../API/Utils";
 import AlertTypes, { ThresholdAlertTypes } from '../Components/AirQuality/AirQualityAlerts/AlertTypes';
 import { isValidArray } from '../Utils/Utils';
 import AQIDataTypes from '../Utils/AirQuality/DataTypes';
@@ -78,7 +79,7 @@ export function AirQualityAlertProvider({ children }) {
 
     fetchDataFromURL({
       url: getAlertsApiUrl({
-        endpoint: GeneralEndpoints.alerts,
+        endpoint: GeneralAPIendpoints.alerts,
         school_id: currentSchoolID
       })
     }).then((data) => {

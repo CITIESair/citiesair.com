@@ -1,7 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Box, TextField, Chip, Menu, MenuItem, Grid, Typography, Button, Stack, useMediaQuery } from '@mui/material';
-import { RESTmethods, fetchDataFromURL } from "../../../Utils/ApiFunctions/ApiCalls";
-import { GeneralEndpoints, getApiUrl } from '../../../Utils/ApiFunctions/ApiUrls';
+import { fetchDataFromURL } from "../../../API/ApiFetch";
+import { RESTmethods } from "../../../API/Utils";
+import { getApiUrl } from '../../../API/ApiUrls';
+import { GeneralAPIendpoints } from "../../../API/Utils";
 import { DashboardContext } from '../../../ContextProviders/DashboardContext';
 import { isValidArray } from '../../../Utils/Utils';
 import { AlertSeverity, useNotificationContext } from '../../../ContextProviders/NotificationContext';
@@ -38,7 +40,7 @@ const EmailsInput = (props) => {
   useEffect(() => {
     fetchDataFromURL({
       url: getApiUrl({
-        endpoint: GeneralEndpoints.alertsEmails,
+        endpoint: GeneralAPIendpoints.alertsEmails,
         school_id: currentSchoolID
       }),
       extension: 'json',
@@ -127,7 +129,7 @@ const EmailsInput = (props) => {
 
     fetchDataFromURL({
       url: getApiUrl({
-        endpoint: GeneralEndpoints.alertsEmails,
+        endpoint: GeneralAPIendpoints.alertsEmails,
         school_id: currentSchoolID
       }),
       restMethod: RESTmethods.POST,

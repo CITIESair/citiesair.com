@@ -14,8 +14,10 @@ import { capitalizePhrase } from '../../../../Utils/Utils';
 import AQIDataTypes from '../../../../Utils/AirQuality/DataTypes';
 import { useContext, useEffect, useState } from 'react';
 import { DashboardContext } from '../../../../ContextProviders/DashboardContext';
-import { RESTmethods, fetchDataFromURL } from '../../../../Utils/ApiFunctions/ApiCalls';
-import { GeneralEndpoints, getAlertsApiUrl } from '../../../../Utils/ApiFunctions/ApiUrls';
+import { fetchDataFromURL } from '../../../../API/ApiFetch';
+import { RESTmethods } from "../../../../API/Utils";
+import { getAlertsApiUrl } from '../../../../API/ApiUrls';
+import { GeneralAPIendpoints } from "../../../../API/Utils";
 import { generateCssBackgroundGradient } from '../../../../Utils/Gradient/GradientUtils';
 import AQIdatabase, { vocDatabase } from '../../../../Utils/AirQuality/AirQualityIndexHelper';
 
@@ -302,7 +304,7 @@ const AlertModificationDialog = (props) => {
       case CrudTypes.add:
         fetchDataFromURL({
           url: getAlertsApiUrl({
-            endpoint: GeneralEndpoints.alerts,
+            endpoint: GeneralAPIendpoints.alerts,
             school_id: currentSchoolID
           }),
           restMethod: RESTmethods.POST,
@@ -321,7 +323,7 @@ const AlertModificationDialog = (props) => {
         const alert_id = selectedAlert[AirQualityAlertKeys.id];
         fetchDataFromURL({
           url: getAlertsApiUrl({
-            endpoint: GeneralEndpoints.alerts,
+            endpoint: GeneralAPIendpoints.alerts,
             school_id: currentSchoolID,
             alert_id: alert_id
           }),
@@ -340,7 +342,7 @@ const AlertModificationDialog = (props) => {
       case CrudTypes.delete:
         fetchDataFromURL({
           url: getAlertsApiUrl({
-            endpoint: GeneralEndpoints.alerts,
+            endpoint: GeneralAPIendpoints.alerts,
             school_id: currentSchoolID,
             alert_id: selectedAlert.id
           }),

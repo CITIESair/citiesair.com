@@ -21,8 +21,9 @@ import QRCode from "react-qr-code";
 
 import CurrentAQIGrid from '../Components/AirQuality/CurrentAQIGrid';
 import { CurrentAQIGridSize } from '../Components/AirQuality/CurrentAQIGridSize';
-import { GeneralEndpoints, getApiUrl } from '../Utils/ApiFunctions/ApiUrls';
-import { fetchAndProcessCurrentSensorsData } from '../Utils/ApiFunctions/ApiCalls';
+import { getApiUrl } from '../API/ApiUrls';
+import { GeneralAPIendpoints } from "../API/Utils";
+import { fetchAndProcessCurrentSensorsData } from '../API/ApiFetch';
 import { AppRoutes } from '../Utils/AppRoutes';
 import { PreferenceContext } from '../ContextProviders/PreferenceContext';
 import { CITIESair } from '../Utils/GlobalVariables';
@@ -80,7 +81,7 @@ const Screen = ({ title }) => {
       // Do nothing if the data has been fetched before
       if (Object.keys(data).length != 0) return;
 
-      const url = getApiUrl({ endpoint: GeneralEndpoints.screen });
+      const url = getApiUrl({ endpoint: GeneralAPIendpoints.screen });
       if (!url) return;
 
       fetchAndProcessCurrentSensorsData(url)

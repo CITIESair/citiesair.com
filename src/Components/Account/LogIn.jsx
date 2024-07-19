@@ -6,11 +6,13 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper } from "@mui/material";
 
 import { UserContext } from '../../ContextProviders/UserContext';
-import { GeneralEndpoints, getApiUrl } from '../../Utils/ApiFunctions/ApiUrls';
+import { getApiUrl } from '../../API/ApiUrls';
+import { GeneralAPIendpoints } from "../../API/Utils";
 import { AppRoutes } from '../../Utils/AppRoutes';
 import { AlertSeverity, useNotificationContext } from '../../ContextProviders/NotificationContext';
 import { CITIESair } from '../../Utils/GlobalVariables';
-import { fetchDataFromURL, RESTmethods } from '../../Utils/ApiFunctions/ApiCalls';
+import { fetchDataFromURL } from '../../API/ApiFetch';
+import { RESTmethods } from "../../API/Utils";
 
 export default function LogIn() {
   const { setUser } = useContext(UserContext);
@@ -37,7 +39,7 @@ export default function LogIn() {
     setLoading(true);
 
     fetchDataFromURL({
-      url: getApiUrl({ endpoint: GeneralEndpoints.login }),
+      url: getApiUrl({ endpoint: GeneralAPIendpoints.login }),
       restMethod: RESTmethods.POST,
       body: {
         username,

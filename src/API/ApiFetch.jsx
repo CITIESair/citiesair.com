@@ -1,22 +1,11 @@
-import { calculateSensorStatus } from "../../Components/AirQuality/AirQualityScreen/ScreenUtils";
-import AQIdatabase from "../AirQuality/AirQualityIndexHelper";
+import { calculateSensorStatus } from "../Components/AirQuality/AirQualityScreen/ScreenUtils";
+import AQIdatabase from "../Utils/AirQuality/AirQualityIndexHelper";
 import parse from 'html-react-parser';
-
-export const RESTmethods = {
-  GET: "GET",
-  POST: "POST",
-  PUT: "PUT",
-  DELETE: "DELETE"
-}
-
-export const Extensions = {
-  json: 'json',
-  csv: 'csv'
-}
+import { SupportedFetchExtensions, RESTmethods } from "./Utils";
 
 export const fetchDataFromURL = async ({
   url,
-  extension = Extensions.json,
+  extension = SupportedFetchExtensions.json,
   needsAuthorization = true,
   restMethod = RESTmethods.GET,
   body = null,
@@ -32,7 +21,7 @@ export const fetchDataFromURL = async ({
       method: restMethod,
       credentials: needsAuthorization ? 'include' : 'omit',
       ...(body && { body: JSON.stringify(body) }),
-      ...(Extensions.json && includesHeadersJSON && {
+      ...(SupportedFetchExtensions.json && includesHeadersJSON && {
         headers: {
           "Content-type": "application/json; charset=UTF-8"
         }
@@ -50,9 +39,9 @@ export const fetchDataFromURL = async ({
     }
 
     switch (extension) {
-      case Extensions.json:
+      case SupportedFetchExtensions.json:
         return await response.json();
-      case Extensions.csv:
+      case SupportedFetchExtensions.csv:
         return await response.text();
       default:
         return response;

@@ -5,8 +5,9 @@ import { Container, Box, Grid, Typography, Stack, Tooltip } from '@mui/material/
 import { useMediaQuery, useTheme } from '@mui/material';
 
 import AQImap, { LocationTitle, TileOptions } from '../../Components/AirQuality/AQImap';
-import { GeneralEndpoints, getApiUrl } from '../../Utils/ApiFunctions/ApiUrls';
-import { fetchAndProcessCurrentSensorsData } from '../../Utils/ApiFunctions/ApiCalls';
+import { getApiUrl } from '../../API/ApiUrls';
+import { GeneralAPIendpoints } from "../../API/Utils";
+import { fetchAndProcessCurrentSensorsData } from '../../API/ApiFetch';
 import CurrentAQIGrid, { SimpleCurrentAQIlist } from '../../Components/AirQuality/CurrentAQIGrid';
 import { CurrentAQIGridSize } from '../../Components/AirQuality/CurrentAQIGridSize';
 import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
@@ -44,7 +45,7 @@ const NYUADbanner = (props) => {
   const [otherIndoorLocations, setOtherIndoorLocations] = useState();
 
   const url = getApiUrl({
-    endpoint: GeneralEndpoints.current,
+    endpoint: GeneralAPIendpoints.current,
     school_id: NYUAD
   });
 

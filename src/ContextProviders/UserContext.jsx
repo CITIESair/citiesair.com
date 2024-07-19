@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext, useMemo } from 'react';
-import { fetchDataFromURL } from '../Utils/ApiFunctions/ApiCalls';
-import { GeneralEndpoints, getApiUrl } from '../Utils/ApiFunctions/ApiUrls';
+import { fetchDataFromURL } from '../API/ApiFetch';
+import { getApiUrl } from '../API/ApiUrls';
+import { GeneralAPIendpoints } from "../API/Utils";
 
 export const UserContext = createContext();
 
@@ -13,7 +14,7 @@ export function UserProvider({ children }) {
   });
 
   useEffect(() => {
-    const url = getApiUrl({ endpoint: GeneralEndpoints.me });
+    const url = getApiUrl({ endpoint: GeneralAPIendpoints.me });
     fetchDataFromURL({ url })
       .then((data) => {
         if (data.username) {

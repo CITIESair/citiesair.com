@@ -1,5 +1,5 @@
 import React, { useState, createContext, useMemo } from 'react';
-import { fetchDataFromURL } from '../Utils/ApiFunctions/ApiCalls';
+import { fetchDataFromURL } from '../API/ApiFetch';
 import { WEBSITE_ID, AIR_QUALITY_PAGE_ID } from '../Components/CommentSection';
 
 // create context

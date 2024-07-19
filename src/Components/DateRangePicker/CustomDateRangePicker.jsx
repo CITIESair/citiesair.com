@@ -10,13 +10,14 @@ import { CircularProgress, useMediaQuery, useTheme } from '@mui/material';
 import { Alert, Button, Stack } from '@mui/material';
 
 import { StyledDateRangePicker, returnCustomStaticRanges, returnFormattedDates } from './DateRangePickerUtils';
-import { ChartEndpoints, getHistoricalChartApiUrl } from '../../Utils/ApiFunctions/ApiUrls';
+import { getHistoricalChartApiUrl } from '../../API/ApiUrls';
+import { ChartAPIendpoints } from "../../API/Utils";
 import AggregationTypeToggle from './AggregationTypeToggle';
 import AggregationType from './AggregationType';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
 
 import { differenceInDays, isSameDay } from 'date-fns';
-import { fetchDataFromURL } from '../../Utils/ApiFunctions/ApiCalls';
+import { fetchDataFromURL } from '../../API/ApiFetch';
 import { useDateRangePicker } from '../../ContextProviders/DateRangePickerContext';
 
 const InvalidRangeMessages = {
@@ -113,7 +114,7 @@ const CustomDateRangePicker = (props) => {
       endDateObject: dateRange.endDate
     });
     const newUrl = getHistoricalChartApiUrl({
-      endpoint: ChartEndpoints.historical,
+      endpoint: ChartAPIendpoints.historical,
       school_id: currentSchoolID,
       aggregationType: aggregationType,
       dataType: dataType,

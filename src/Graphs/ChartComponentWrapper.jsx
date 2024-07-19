@@ -4,8 +4,9 @@ import { Box, Tab, useMediaQuery, Typography, Menu, MenuItem, Stack, Skeleton } 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import AQIDataTypes from '../Utils/AirQuality/DataTypes';
-import { fetchDataFromURL } from '../Utils/ApiFunctions/ApiCalls';
-import { ChartEndpoints, ChartEndpointsOrder, getChartApiUrl, getCorrelationChartApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiFunctions/ApiUrls";
+import { fetchDataFromURL } from '../API/ApiFetch';
+import { getChartApiUrl, getCorrelationChartApiUrl, getHistoricalChartApiUrl } from "../API/ApiUrls";
+import { ChartAPIendpoints, ChartAPIendpointsOrder } from "../API/Utils";
 import { DashboardContext } from "../ContextProviders/DashboardContext";
 import { YearRangeProvider } from '../ContextProviders/YearRangeContext';
 
@@ -120,9 +121,9 @@ function ChartComponentWrapper(props) {
   }, [chartData]);
 
   const fetchChartDataType = async (dataType) => {
-    const endpoint = ChartEndpointsOrder[chartID];
+    const endpoint = ChartAPIendpointsOrder[chartID];
     let url;
-    if (endpoint === ChartEndpoints.historical) {
+    if (endpoint === ChartAPIendpoints.historical) {
       const { startDate, endDate } = dateRange || {};
       if (!startDate || !endDate) return;
 
@@ -139,9 +140,9 @@ function ChartComponentWrapper(props) {
         dataType: dataType
       })
     }
-    else if (endpoint === ChartEndpoints.correlationDailyAverage) {
+    else if (endpoint === ChartAPIendpoints.correlationDailyAverage) {
       url = getCorrelationChartApiUrl({
-        endpoint: ChartEndpoints.correlationDailyAverage,
+        endpoint: ChartAPIendpoints.correlationDailyAverage,
         school_id: currentSchoolID,
         dataType: dataType,
         sensorX: hAxis,
