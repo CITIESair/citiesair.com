@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Tooltip } from '@mui/material';
 import * as Tracking from '../../Utils/Tracking';
-import citiesLogo from '../../cities-logo.png';
 import { useTheme } from '@mui/material';
 import { CITIESair } from '../../Utils/GlobalVariables';
 
@@ -27,7 +26,7 @@ function CITIESlogoLinkToHome() {
           style={{
             height: '100%', width: 'auto', borderRadius: theme.shape.borderRadius
           }}
-          src={citiesLogo}
+          src="/images/cities-logo.png"
           title={`${CITIESair} Logo`}
           alt={`${CITIESair} Logo`}
         />

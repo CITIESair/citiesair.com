@@ -9,8 +9,6 @@ import L from 'leaflet';
 
 import LaunchIcon from '@mui/icons-material/Launch';
 
-import IQAir_Logo from '../../IQAir_logo.svg';
-
 import { calculateSensorStatus, getFormattedElapsedTimeFromNow } from './AirQualityScreen/ScreenUtils';
 import { SensorStatus } from "./SensorStatus";
 
@@ -48,8 +46,8 @@ const Tiles = {
         dark: 'jawg-dark'
     },
     nyuad: {
-        light: '/images/nyuadMapLight.svg',
-        dark: '/images/nyuadMapDark.svg'
+        light: '/images/nyuad-campus-map/light.svg',
+        dark: '/images/nyuad-campus-map/dark.svg'
     }
 }
 
@@ -408,7 +406,7 @@ const AQImap = (props) => {
                                                         height: smallScreen ? "50%" : 'unset'
                                                     }
                                                 }}>
-                                                    <img src={IQAir_Logo} />
+                                                    <img src="/images/iqair_logo.svg" />
                                                 </Box>
                                             </Stack>
                                             :
