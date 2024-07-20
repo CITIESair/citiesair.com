@@ -6,16 +6,19 @@ import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 
 const PromoDialogBanner = ({ promosForBanner }) => {
-  const { showPromoDialogPreference, setShowPromoDialogPreference } = useContext(PreferenceContext);
-  const [open, setOpen] = useState(showPromoDialogPreference);
+  const { hiddenPromos, setHiddenPromos } = useContext(PreferenceContext);
+  const [open, setOpen] = useState(hiddenPromos);
 
   const handleClose = (event, reason) => {
     if (reason && reason === "backdropClick")
       return;
 
     setOpen(false);
-    setShowPromoDialogPreference(false);
-    localStorage.setItem(LocalStorage.showPromoDialog, false);
+
+    const existingHiddenPromos = hiddenPromos || [];
+    const newHiddenPromos = [...new Set([...existingHiddenPromos, ...promosForBanner.map((promo) => promo.id)])];
+    setHiddenPromos(newHiddenPromos);
+    localStorage.setItem(LocalStorage.hiddenPromos, JSON.stringify(newHiddenPromos));
   }
 
   const Content = ({ title, subtitle, img }) => {

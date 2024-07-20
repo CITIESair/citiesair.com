@@ -5,14 +5,24 @@ import { UserContext } from "../../ContextProviders/UserContext";
 
 import { Stack } from "@mui/material";
 import sectionData from '../../section_data.json';
+import { PreferenceContext } from "../../ContextProviders/PreferenceContext";
+import { isValidArray } from "../../Utils/UtilFunctions";
 
 const Promo = () => {
   const { user } = useContext(UserContext);
   const authenticated = user.authenticated && user.checkedAuthentication;
 
+  const { hiddenPromos } = useContext(PreferenceContext);
+
   const promosForBanner = sectionData.promos
-    .filter((promo) => promo.isPublic || (!promo.isPublic && authenticated))
-    .map((promo) => promo.banner);
+    .filter((promo) => promo.isPublic || (!promo.isPublic && authenticated)) // only show promo depends on if it is public or private
+    .filter((promo) => !hiddenPromos.includes(promo.id)) // only show promo not hidden before
+    .map((promo) => {
+      return {
+        ...promo.banner,
+        id: promo.id
+      }
+    });
 
   return (
     <>
@@ -30,7 +40,9 @@ const Promo = () => {
         })}
       </Stack>
 
-      <PromoDialogBanner promosForBanner={promosForBanner} />
+      {
+        isValidArray(promosForBanner) ? <PromoDialogBanner promosForBanner={promosForBanner} /> : null
+      }
     </>
   );
 }

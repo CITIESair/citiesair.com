@@ -40,6 +40,7 @@
     },
     "promos": [
         {
+            "id": "july2024",
             "isPublic": false,
             "alertMessage": "<b>[NEW] Email Alert</b> Get notified when air quality passes certain threshold or set up a daily email alert",
             "banner": {
@@ -53,6 +54,7 @@
             }
         },
         {
+            "id": "june2024",
             "isPublic": true,
             "alertMessage": "<b>[NEW] Data Types</b> Switch between different data types (AQI, PM2.5, PM10, temperature...) in the data visualizations",
             "banner": {

@@ -24,10 +24,17 @@ export function PreferenceProvider({ children }) {
 
 
   // Set promo dialog display preference state based on localStorage
-  const [showPromoDialogPreference, setShowPromoDialogPreference] = useState(
+  // It is an array containing unique IDs of promos that have already been shown before
+  // initiate it as an empty array []
+  const [hiddenPromos, setHiddenPromos] = useState(
     () => {
-      const storedValue = localStorage.getItem(LocalStorage.showPromoDialog);
-      return storedValue !== null ? JSON.parse(storedValue) : true;
+      const storedValue = localStorage.getItem(LocalStorage.hiddenPromos);
+      if (storedValue === null) {
+        localStorage.setItem(LocalStorage.hiddenPromos, JSON.stringify([]));
+        return [];
+      } else {
+        return JSON.parse(storedValue)
+      }
     }
   );
 
@@ -35,8 +42,8 @@ export function PreferenceProvider({ children }) {
   const providerValue = useMemo(() => ({
     themePreference, setThemePreference,
     temperatureUnitPreference, setTemperatureUnitPreference,
-    showPromoDialogPreference, setShowPromoDialogPreference
-  }), [themePreference, temperatureUnitPreference, showPromoDialogPreference]);
+    hiddenPromos, setHiddenPromos
+  }), [themePreference, temperatureUnitPreference, hiddenPromos]);
 
   // return context provider
   return (
