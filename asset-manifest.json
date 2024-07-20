@@ -1,10 +1,10 @@
 {
   "files": {
     "main.css": "/static/css/main.5da02c21.css",
-    "main.js": "/static/js/main.9ca6d9c6.js",
+    "main.js": "/static/js/main.4fb44ca3.js",
     "static/js/871.3a81c751.chunk.js": "/static/js/871.3a81c751.chunk.js",
     "static/css/822.458086a6.chunk.css": "/static/css/822.458086a6.chunk.css",
-    "static/js/822.5ba84552.chunk.js": "/static/js/822.5ba84552.chunk.js",
+    "static/js/822.f781dac4.chunk.js": "/static/js/822.f781dac4.chunk.js",
     "static/js/262.cfcf2065.chunk.js": "/static/js/262.cfcf2065.chunk.js",
     "static/js/630.c3fc7216.chunk.js": "/static/js/630.c3fc7216.chunk.js",
     "static/js/928.4846980c.chunk.js": "/static/js/928.4846980c.chunk.js",
@@ -13,10 +13,10 @@
     "index.html": "/index.html",
     "static/media/IQAir_logo.svg": "/static/media/IQAir_logo.6664e0a790249b05f736fb791effaaf3.svg",
     "main.5da02c21.css.map": "/static/css/main.5da02c21.css.map",
-    "main.9ca6d9c6.js.map": "/static/js/main.9ca6d9c6.js.map",
+    "main.4fb44ca3.js.map": "/static/js/main.4fb44ca3.js.map",
     "871.3a81c751.chunk.js.map": "/static/js/871.3a81c751.chunk.js.map",
     "822.458086a6.chunk.css.map": "/static/css/822.458086a6.chunk.css.map",
-    "822.5ba84552.chunk.js.map": "/static/js/822.5ba84552.chunk.js.map",
+    "822.f781dac4.chunk.js.map": "/static/js/822.f781dac4.chunk.js.map",
     "262.cfcf2065.chunk.js.map": "/static/js/262.cfcf2065.chunk.js.map",
     "630.c3fc7216.chunk.js.map": "/static/js/630.c3fc7216.chunk.js.map",
     "928.4846980c.chunk.js.map": "/static/js/928.4846980c.chunk.js.map",
@@ -24,6 +24,6 @@
   },
   "entrypoints": [
     "static/css/main.5da02c21.css",
-    "static/js/main.9ca6d9c6.js"
+    "static/js/main.4fb44ca3.js"
   ]
 }
