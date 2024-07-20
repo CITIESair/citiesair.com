@@ -52,7 +52,7 @@ export default function LogOut() {
         )
         : (
           <>
-            <LogoutIcon />&nbsp;Log Out
+            <LogoutIcon />&nbsp;Logout
           </>
         )
       }

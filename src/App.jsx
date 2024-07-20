@@ -15,7 +15,7 @@ import Header from './Components/Header/Header';
 import Footer from './Components/Footer';
 import FourOhFour from './Pages/404';
 import LoadingAnimation from './Components/LoadingAnimation';
-import LogIn from './Components/Account/LogIn';
+import Login from './Components/Account/Login';
 import NYUADmap from './Pages/Embeds/NYUADmap';
 import SpeedDialButton from './Components/SpeedDial/SpeedDialButton';
 
@@ -119,7 +119,7 @@ function App() {
                 element={
                   <Box>
                     <Header />
-                    <LogIn />
+                    <Login />
                     <Footer />
                   </Box>
                 }

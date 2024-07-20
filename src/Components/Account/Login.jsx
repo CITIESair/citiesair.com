@@ -14,7 +14,7 @@ import { CITIESair } from '../../Utils/GlobalVariables';
 import { fetchDataFromURL } from '../../API/ApiFetch';
 import { RESTmethods } from "../../API/Utils";
 
-export default function LogIn() {
+export default function Login() {
   const { setUser } = useContext(UserContext);
 
   const [username, setUserName] = useState();
