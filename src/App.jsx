@@ -23,7 +23,6 @@ import { AppRoutes } from './Utils/AppRoutes';
 import NYUADbanner from './Pages/Embeds/NYUADbanner';
 
 import { DashboardProvider } from './ContextProviders/DashboardContext';
-import { CommentCountsProvider } from './ContextProviders/CommentCountsContext';
 import { PreferenceContext } from './ContextProviders/PreferenceContext';
 import { LinkContext } from './ContextProviders/LinkContext';
 
@@ -135,9 +134,7 @@ function App() {
                       <Box>
                         <Header />
                         <DashboardProvider>
-                          <CommentCountsProvider>
-                            <Dashboard />
-                          </CommentCountsProvider>
+                          <Dashboard />
                         </DashboardProvider>
                         <Footer />
                       </Box>

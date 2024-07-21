@@ -1,7 +1,9 @@
-import { calculateSensorStatus } from "../Components/AirQuality/AirQualityScreen/ScreenUtils";
+import { calculateSensorStatus } from "../Components/AirQuality/SensorStatus";
 import AQIdatabase from "../Utils/AirQuality/AirQualityIndexHelper";
 import parse from 'html-react-parser';
 import { SupportedFetchExtensions, RESTmethods } from "./Utils";
+import { SensorStatus } from "../Components/AirQuality/SensorStatus";
+import CustomThemes from "../Themes/CustomThemes";
 
 export const fetchDataFromURL = async ({
   url,
@@ -64,11 +66,10 @@ export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {
         // Calculate if the sensor is currently active or not
         const now = new Date();
         const currentTimestamp = new Date(sensorData.current?.timestamp);
-        const lastSeenInHours = Math.round((now - currentTimestamp) / 1000 / 3600);
-        if (sensorData.current) {
-          sensorData.current.lastSeenInHours = lastSeenInHours;
-          sensorData.current.sensor_status = calculateSensorStatus(lastSeenInHours);
+        const lastSeenInMinutes = Math.round((now - currentTimestamp) / 1000 / 60);
+        const sensor_status = calculateSensorStatus(lastSeenInMinutes);
 
+        if (sensorData.current) {
           const aqi = sensorData.current.aqi;
           if (typeof aqi?.categoryIndex === 'number' && !isNaN(aqi?.categoryIndex)) {
             const { color, category, healthSuggestions } = AQIdatabase[aqi.categoryIndex];
@@ -76,9 +77,12 @@ export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {
 
             sensorData.current = {
               ...sensorData.current,
-              color,
+              color: sensor_status === SensorStatus.active ? color
+                : CustomThemes.universal.palette.inactiveSensor, // only assign AQI color if the sensor is active
               category,
-              healthSuggestion
+              healthSuggestion,
+              lastSeenInMinutes,
+              sensor_status
             }
           }
         }

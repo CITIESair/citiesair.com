@@ -123,7 +123,7 @@ const NYUADbanner = (props) => {
             locationTitle={LocationTitle.short}
             fullSizeMap={true}
             showAttribution={false}
-            rawMapData={nyuadCurrentData}
+            mapData={nyuadCurrentData}
             markerSizeInRem={isSmallScreen ? 0.75 : 0.9}
             ariaLabel={"A map of all air quality sensors at NYU Abu Dhabi"}
           />
@@ -144,12 +144,12 @@ const NYUADbanner = (props) => {
           sm={12}
           justifyContent="center"
           textAlign="center"
-          spacing={isOnBannerPage === false && 1}
+          spacing={isOnBannerPage === false ? 1 : 0}
         >
           <Grid item xs={12} >
             <CurrentAQIGrid
               currentSensorsData={outdoorLocations}
-              showHeatIndex={false}
+              showHeatIndex={!isOnBannerPage}
               showRawMeasurements={!isOnBannerPage}
               useLocationShort={true}
               roundTemperature={isOnBannerPage && true}

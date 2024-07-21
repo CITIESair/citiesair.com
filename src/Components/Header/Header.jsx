@@ -188,55 +188,55 @@ export default function Header() {
 
       {
         (
-          currentPage === AppRoutes.home
-          && (
-            <FullWidthBox sx={{
-              width: '100%',
-              pt: 1,
-              pb: 3,
-              backgroundColor: 'customAlternateBackground'
-            }}
-            >
-              <Container>
-                <Typography
-                  variant="h3"
-                  color="text.primary"
-                  fontWeight="medium"
-                >
-                  CITIESair
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  {parse(sectionData.siteDescription, {
-                    replace: replacePlainHTMLWithMuiComponents,
-                  })}
-                  <br />
-                </Typography>
-                <Link
-                  href={`#${sectionData.getInTouch.id}`}
-                  underline="hover"
-                  onClick={(e) => {
-                    // Smooth scrolling
-                    e.preventDefault();
-                    const section = document.getElementById(sectionData.getInTouch.id);
-                    if (section) {
-                      section.scrollIntoView({ behavior: 'smooth' });
-                    }
-
-                    Tracking.sendEventAnalytics(
-                      Tracking.Events.internalNavigation,
-                      {
-                        destination_id: sectionData.getInTouch.id,
-                        origin_id: 'header'
+          [AppRoutes.home, AppRoutes.login].includes(currentPage)
+            ? (
+              <FullWidthBox sx={{
+                width: '100%',
+                pt: 1,
+                pb: 3,
+                backgroundColor: 'customAlternateBackground'
+              }}
+              >
+                <Container>
+                  <Typography
+                    variant="h3"
+                    color="text.primary"
+                    fontWeight="medium"
+                  >
+                    CITIESair
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary">
+                    {parse(sectionData.siteDescription, {
+                      replace: replacePlainHTMLWithMuiComponents,
+                    })}
+                    <br />
+                  </Typography>
+                  <Link
+                    href={`#${sectionData.getInTouch.id}`}
+                    underline="hover"
+                    onClick={(e) => {
+                      // Smooth scrolling
+                      e.preventDefault();
+                      const section = document.getElementById(sectionData.getInTouch.id);
+                      if (section) {
+                        section.scrollIntoView({ behavior: 'smooth' });
                       }
-                    );
-                  }}
-                  sx={{ mt: 1, display: 'block' }}
-                >
-                  Reach out to get involved!
-                </Link>
-              </Container>
-            </FullWidthBox>
-          )
+
+                      Tracking.sendEventAnalytics(
+                        Tracking.Events.internalNavigation,
+                        {
+                          destination_id: sectionData.getInTouch.id,
+                          origin_id: 'header'
+                        }
+                      );
+                    }}
+                    sx={{ mt: 1, display: 'block' }}
+                  >
+                    Reach out to get involved!
+                  </Link>
+                </Container>
+              </FullWidthBox>
+            ) : null
         )
       }
 

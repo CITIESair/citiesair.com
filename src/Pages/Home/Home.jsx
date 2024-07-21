@@ -29,6 +29,7 @@ import { AppRoutes } from '../../Utils/AppRoutes';
 import { SensorStatus } from "../../Components/AirQuality/SensorStatus";
 import AQIexplanation from '../../Components/AirQuality/AQIexplanation';
 import { CITIESair, NYUAD } from '../../Utils/GlobalVariables';
+import AtAGlance from './AtAGlance';
 
 const displayNyuadSensorCounts = (nyuadSensorCounts) => {
   if (nyuadSensorCounts.active && nyuadSensorCounts.total) {
@@ -49,7 +50,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
 
   const { setCurrentPage, setChartsTitlesList } = useContext(LinkContext);
 
-  // set underline link to home
+  // set current page to home
   useEffect(() => {
     setCurrentPage(AppRoutes.home);
     setChartsTitlesList([]);
@@ -61,7 +62,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
     active: null,
     total: null
   });
-  const [rawMapData, setRawMapData] = useState();
+  const [mapData, setMapData] = useState();
 
   useEffect(() => {
     const nyuadUrl = getApiUrl({ endpoint: GeneralAPIendpoints.current, school_id: NYUAD });
@@ -85,7 +86,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
     const mapUrl = getApiUrl({ endpoint: GeneralAPIendpoints.map });
     fetchAndProcessCurrentSensorsData(mapUrl)
       .then((data) => {
-        setRawMapData(data)
+        setMapData(data)
       })
       .catch((error) => console.log(error));
   }, []);
@@ -150,7 +151,13 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
 
       <FullWidthBox sx={{ backgroundColor: 'customAlternateBackground' }}>
         <Container sx={{ py: 3 }}>
-          <UppercaseTitle text="public outdoor stations" />
+          <UppercaseTitle text="at a glance" />
+          <AtAGlance />
+        </Container>
+      </FullWidthBox>
+
+      <FullWidthBox sx={{ backgroundColor: 'customAlternateBackground' }}>
+        <Container sx={{ py: 3, pt: 0 }}>
           <Typography variant="body1" color="text.secondary">
             {parse(jsonData.publicOutdoorStations.content, {
               replace: replacePlainHTMLWithMuiComponents,
@@ -166,7 +173,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
             [22.608292, 51.105185],
             [26.407575, 56.456571],
           ]}
-          rawMapData={rawMapData}
+          mapData={mapData}
           ariaLabel={`Map of ${CITIESair} public outdoor air quality stations in Abu Dhabi`}
 
         />

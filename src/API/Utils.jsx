@@ -9,7 +9,8 @@ export const GeneralAPIendpoints = {
   logout: "logout",
   map: "map_public_outdoors_stations",
   alerts: "alerts",
-  alertsEmails: "alerts/emails"
+  alertsEmails: "alerts/emails",
+  stats: "stats"
 };
 
 export const ChartAPIendpoints = {

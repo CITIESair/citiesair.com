@@ -38,7 +38,7 @@ const NYUADmap = () => {
         displayMinimap={false}
         fullSizeMap={true}
         showAttribution={false}
-        rawMapData={nyuadCurrentData}
+        mapData={nyuadCurrentData}
         locationTitle={LocationTitle.short}
         markerSizeInRem={0.65}
         ariaLabel={"A map of all air quality sensors at NYU Abu Dhabi"}

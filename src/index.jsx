@@ -8,22 +8,26 @@ import { GoogleProvider } from './ContextProviders/GoogleContext';
 import { LinkProvider } from './ContextProviders/LinkContext';
 import { PreferenceProvider } from './ContextProviders/PreferenceContext';
 import { NotificationProvider } from './ContextProviders/NotificationContext';
+import { MetadataProvider } from './ContextProviders/MetadataContext';
 
 const container = document.getElementById('root');
 const root = createRoot(container);
 
 root.render(
   <React.StrictMode>
-    <UserProvider>
-      <GoogleProvider>
-        <LinkProvider>
-          <PreferenceProvider>
-            <NotificationProvider>
-              <App />
-            </NotificationProvider>
-          </PreferenceProvider>
-        </LinkProvider>
-      </GoogleProvider>
-    </UserProvider>
+    <GoogleProvider>
+      <LinkProvider>
+        <MetadataProvider>
+          <NotificationProvider>
+            <PreferenceProvider>
+              <UserProvider>
+                <App />
+              </UserProvider>
+            </PreferenceProvider>
+          </NotificationProvider>
+        </MetadataProvider>
+      </LinkProvider>
+    </GoogleProvider>
   </React.StrictMode>
 );
+// these are no logic behind the order of encapsulation of the ContextProviders, they are sorted by alphabetical order

@@ -22,7 +22,6 @@ export function PreferenceProvider({ children }) {
     || TemperatureUnits.celsius
   );
 
-
   // Set promo dialog display preference state based on localStorage
   // It is an array containing unique IDs of promos that have already been shown before
   // initiate it as an empty array []

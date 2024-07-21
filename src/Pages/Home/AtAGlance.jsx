@@ -1,49 +1,95 @@
 import { Grid, Typography, Container, Stack } from '@mui/material';
+import { useContext, useEffect } from 'react';
+import { MetadataContext } from '../../ContextProviders/MetadataContext';
+import { fetchDataFromURL } from '../../API/ApiFetch';
+import { GeneralAPIendpoints } from '../../API/Utils';
+import { isValidArray } from '../../Utils/UtilFunctions';
+import { getApiUrl } from '../../API/ApiUrls';
 
-import BarChartIcon from '@mui/icons-material/BarChart';
 import GroupsIcon from '@mui/icons-material/Groups';
-import ScatterPlotIcon from '@mui/icons-material/ScatterPlot';
-import homeJsonData from '../../section_data.json';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import SensorsIcon from '@mui/icons-material/Sensors';
+import SchoolIcon from '@mui/icons-material/School';
 
-function ByTheNumber(props) {
-  const { icon: Icon, number, text } = props;
+const IconLoader = ({ iconString }) => {
+  switch (iconString) {
+    case 'GroupsIcon':
+      return <GroupsIcon color="primary" fontSize='large' />;
+    case 'TimelineIcon':
+      return <TimelineIcon color="primary" fontSize='large' />;
+    case 'SensorsIcon':
+      return <SensorsIcon color="primary" fontSize='large' />;
+    case 'SchoolIcon':
+      return <SchoolIcon color="primary" fontSize='large' />;
+    default:
+      return null;
+  }
+}
+
+const ByTheNumber = (props) => {
+  const { iconString, value, text } = props;
 
   return (
-    <Grid justifyContent="center" alignItems="center" item sm={3} xs={6}>
-      <Stack direction="column" alignItems="center">
-        <Icon fontSize="large" color="primary" />
-        <Typography color="text.primary" variant="h4" fontWeight="500">
-          {number}
-        </Typography>
-        <Typography color="text.secondary" variant="h6" fontWeight="400" textTransform="uppercase">
-          {text}
-        </Typography>
-      </Stack>
-    </Grid>
+    <Stack direction="column" alignItems="center">
+      {
+        iconString ? <IconLoader iconString={iconString} /> : null
+      }
+
+      <Typography color="text.primary" variant="h4" fontWeight="500">
+        {value}
+      </Typography>
+
+      <Typography color="text.secondary" variant="h6" fontWeight="400" textTransform="uppercase">
+        {text}
+      </Typography>
+    </Stack>
   );
 }
 
-function AtAGlance(props) {
-  const { numberOfActiveDataset } = props;
+const AtAGlance = () => {
+  const { stats, setStats } = useContext(MetadataContext);
+
+  useEffect(() => {
+    if (!stats) {
+      fetchDataFromURL({
+        url: getApiUrl({ endpoint: GeneralAPIendpoints.stats })
+      })
+        .then((data) => {
+          setStats(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+    }
+  }, [stats, setStats]);
 
   return (
     <Container>
-      <Grid container direction="row" justifyContent="center" textAlign="center" m={0}>
-        <ByTheNumber
-          icon={BarChartIcon}
-          number={numberOfActiveDataset}
-          text="active datasets"
-        />
-        <ByTheNumber
-          icon={GroupsIcon}
-          number={homeJsonData.statistics.partners}
-          text="partners"
-        />
-        <ByTheNumber
-          icon={ScatterPlotIcon}
-          number={homeJsonData.statistics.datapoints}
-          text="datapoints"
-        />
+      <Grid
+        container
+        justifyContent="center"
+        textAlign="center"
+        spacing={1}
+        m={0}
+      >
+        {
+          isValidArray(stats) ? stats.map((stat, index) => (
+            <Grid
+              key={`by-the-number-${index}`}
+              item
+              justifyContent="center"
+              alignItems="center"
+              sm={3}
+              xs={6}
+            >
+              <ByTheNumber
+                iconString={stat.icon}
+                value={stat.value || 0}
+                text={stat.text || "--"}
+              />
+            </Grid>
+          )) : null
+        }
       </Grid>
     </Container>
   );

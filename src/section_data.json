@@ -28,15 +28,11 @@
     },
     "publicOutdoorStations": {
         "id": "public-outdoor-stations",
-        "content": "Below is a map of CITIESair's public outdoor air quality monitoring stations. This map <u><b>does not</b></u> display indoor stations in participating schools to protect their privacy. That said, we publish schools' outdoor monitoring stations on IQAir, the world's most popular air quality monitoring platform, to make the data publicly available to the surrounding community, school teachers, staff, and parents."
+        "content": "Below is a map of CITIESair's <b>public outdoor air quality sensors</b>. This map <u><b>does not</b></u> display indoor stations in participating schools to protect their privacy. That said, we publish schools' outdoor monitoring stations on IQAir, the world's most popular air quality monitoring platform, to make the data publicly available to the surrounding community, school teachers, staff, and parents."
     },
     "getInTouch": {
         "id": "get-in-touch",
         "content": "<b>CITIESair</b> is expanding its monitoring network to encompass more schools in Abu Dhabi. If you are interested in joining our network, please contact us:<br/><ul><li><b>Dr. Federico Bernardini</b> (CITIES Investigator): <a href='mailto:bernardini@nyu.edu'>bernardini@nyu.edu</a></li><li><b>Vince Nguyen</b> (CITIES Research Assistant): <a href='mailto:bernardini@nyu.edu'>vince.nguyen@nyu.edu</a></li></ul>"
-    },
-    "statistics": {
-        "partners": 3,
-        "datapoints": "16K"
     },
     "promos": [
         {

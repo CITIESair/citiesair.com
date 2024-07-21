@@ -5,7 +5,8 @@ import ThermostatIcon from '@mui/icons-material/Thermostat';
 import WaterDropIcon from '@mui/icons-material/WaterDrop';
 import ErrorIcon from '@mui/icons-material/Error';
 
-import { returnSensorStatus, getFormattedElapsedTimeFromNow } from './AirQualityScreen/ScreenUtils';
+import { returnSensorStatusString } from "./SensorStatus";
+import { getFormattedLastSeen } from "./SensorStatus";
 import { SensorStatus } from "./SensorStatus";
 import { TemperatureUnits, getFormattedTemperature, calculateHeatIndex } from "../../Utils/AirQuality/TemperatureUtils";
 
@@ -123,7 +124,7 @@ const CurrentAQIGrid = (props) => {
         {
           current?.sensor_status !== SensorStatus.active &&
           <Typography variant={ElementSizes[size].sensorStatus} className="condensedFont">
-            {returnSensorStatus(current)}
+            {returnSensorStatusString(current)}
           </Typography>
         }
       </Grid>
@@ -293,7 +294,7 @@ const displayLastUpdateAndSensorStatus = ({ sensor, size, current, isScreen }) =
         }
         Last update:
         {(current?.timestamp || sensor?.last_seen)
-          ? ` ${getFormattedElapsedTimeFromNow(current?.timestamp || sensor?.last_seen)} ago`
+          ? ` ${getFormattedLastSeen(current?.lastSeenInMinutes)}`
           : '--'}
       </Typography>
     )

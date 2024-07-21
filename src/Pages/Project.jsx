@@ -36,7 +36,7 @@ import SchoolSelector from '../Components/SchoolSelector';
 
 import LoadingAnimation from '../Components/LoadingAnimation';
 
-import { CommentCountsContext } from '../ContextProviders/CommentCountsContext';
+import { MetadataContext } from '../ContextProviders/MetadataContext';
 
 import NYUADbanner from './Embeds/NYUADbanner';
 
@@ -67,7 +67,7 @@ const Project = () => {
   let lastUpdate;
 
   const { setChartsTitlesList } = useContext(LinkContext);
-  const { commentCounts, fetchCommentCounts, setCommentCounts } = useContext(CommentCountsContext);
+  const { commentCounts, fetchCommentCounts, setCommentCounts } = useContext(MetadataContext);
   const { schoolMetadata, current, allChartsData, loadMoreCharts, currentSchoolID } = useContext(DashboardContext);
   const { themePreference, temperatureUnitPreference } = useContext(PreferenceContext);
 

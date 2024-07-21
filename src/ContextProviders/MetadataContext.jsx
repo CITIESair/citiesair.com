@@ -1,14 +1,14 @@
-import React, { useState, createContext, useMemo } from 'react';
+import React, { useState, createContext, useMemo, useEffect } from 'react';
 import { fetchDataFromURL } from '../API/ApiFetch';
 import { WEBSITE_ID, AIR_QUALITY_PAGE_ID } from '../Components/CommentSection';
 
 // create context
-export const CommentCountsContext = createContext();
+export const MetadataContext = createContext();
 
 const hyvorTalkApiUrl = `https://talk.hyvor.com/api/v1/pages?website_id=${WEBSITE_ID}&id=${AIR_QUALITY_PAGE_ID}`;
 
 // context provider
-export function CommentCountsProvider({ children }) {
+export function MetadataProvider({ children }) {
   // state to store data
   const [commentCounts, setCommentCounts] = useState(null);
 
@@ -30,13 +30,18 @@ export function CommentCountsProvider({ children }) {
     }
   };
 
+  const [stats, setStats] = useState(null);
+
   // Memoize the value to be provided to avoid unnecessary re-renders
-  const providerValue = useMemo(() => ({ commentCounts, fetchCommentCounts, setCommentCounts }), [commentCounts]);
+  const providerValue = useMemo(() => ({
+    commentCounts, fetchCommentCounts, setCommentCounts,
+    stats, setStats
+  }), [commentCounts, stats]);
 
   // return context provider
   return (
-    <CommentCountsContext.Provider value={providerValue}>
+    <MetadataContext.Provider value={providerValue}>
       {children}
-    </CommentCountsContext.Provider>
+    </MetadataContext.Provider>
   );
 }

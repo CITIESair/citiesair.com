@@ -1,6 +1,6 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 
 import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper } from "@mui/material";
@@ -13,9 +13,16 @@ import { AlertSeverity, useNotificationContext } from '../../ContextProviders/No
 import { CITIESair } from '../../Utils/GlobalVariables';
 import { fetchDataFromURL } from '../../API/ApiFetch';
 import { RESTmethods } from "../../API/Utils";
+import { LinkContext } from '../../ContextProviders/LinkContext';
 
 export default function Login() {
   const { setUser } = useContext(UserContext);
+  const { setCurrentPage } = useContext(LinkContext);
+
+  // set current page to login
+  useEffect(() => {
+    setCurrentPage(AppRoutes.login);
+  }, [setCurrentPage]);
 
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
