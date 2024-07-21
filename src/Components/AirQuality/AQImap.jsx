@@ -461,8 +461,8 @@ const AQImap = (props) => {
                                         <Typography variant='caption' fontWeight="500">Status:</Typography>
                                         &nbsp;
                                         {location.current?.sensor_status}
-                                        {location.current?.timestamp
-                                            ? ` (${getFormattedElapsedTimeFromNow(location.current.timestamp)} ago)`
+                                        {location.current?.last_seen
+                                            ? ` (${getFormattedElapsedTimeFromNow(location.current.last_seen)} ago)`
                                             : ''}
                                     </Typography>
                                 </StyledLeafletPopup>
