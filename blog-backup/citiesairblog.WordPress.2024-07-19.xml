@@ -16,7 +16,7 @@
 <!-- 7. WordPress will then import each of the posts, pages, comments, categories, etc. -->
 <!--    contained in this file into your site. -->
 
-	<!-- generator="WordPress/6.4.3" created="2024-03-12 07:13" -->
+	<!-- generator="WordPress/6.6" created="2024-07-19 14:20" -->
 <rss version="2.0"
 	xmlns:excerpt="http://wordpress.org/export/1.2/excerpt/"
 	xmlns:content="http://purl.org/rss/1.0/modules/content/"
@@ -29,7 +29,7 @@
 	<title>CITIESair Blog</title>
 	<link>https://blog.citiesair.com</link>
 	<description>We provide real-time air quality data and visualization tools to schools in Abu Dhabi</description>
-	<pubDate>Tue, 12 Mar 2024 07:13:01 +0000</pubDate>
+	<pubDate>Fri, 19 Jul 2024 14:20:16 +0000</pubDate>
 	<language>en-US</language>
 	<wp:wxr_version>1.2</wp:wxr_version>
 	<wp:base_site_url>https://blog.citiesair.com</wp:base_site_url>
@@ -81,7 +81,7 @@
 			<wp:term><wp:term_id>6</wp:term_id><wp:term_taxonomy>nav_menu</wp:term_taxonomy><wp:term_slug><![CDATA[new-menu]]></wp:term_slug><wp:term_name><![CDATA[new-menu]]></wp:term_name>
 </wp:term>
 
-	<generator>https://wordpress.org/?v=6.4.3</generator>
+	<generator>https://wordpress.org/?v=6.6</generator>
 
 		<item>
 		<title><![CDATA[nyuadair-favicon]]></title>
@@ -752,73 +752,6 @@
 		</wp:postmeta>
 							</item>
 					<item>
-		<title><![CDATA[Hello world!]]></title>
-		<link>https://blog.citiesair.com/?p=1</link>
-		<pubDate>Sun, 24 Sep 2023 18:27:51 +0000</pubDate>
-		<dc:creator><![CDATA[citiesair]]></dc:creator>
-		<guid isPermaLink="false">https://blog.citiesair.com/?p=1</guid>
-		<description></description>
-		<content:encoded><![CDATA[<!-- wp:paragraph -->
-<p>Welcome to WordPress. This is your first post. Edit or delete it, then start writing!</p>
-<!-- /wp:paragraph -->]]></content:encoded>
-		<excerpt:encoded><![CDATA[]]></excerpt:encoded>
-		<wp:post_id>1</wp:post_id>
-		<wp:post_date><![CDATA[2023-09-24 18:27:51]]></wp:post_date>
-		<wp:post_date_gmt><![CDATA[2023-09-24 18:27:51]]></wp:post_date_gmt>
-		<wp:post_modified><![CDATA[2024-03-11 18:29:04]]></wp:post_modified>
-		<wp:post_modified_gmt><![CDATA[2024-03-11 14:29:04]]></wp:post_modified_gmt>
-		<wp:comment_status><![CDATA[open]]></wp:comment_status>
-		<wp:ping_status><![CDATA[open]]></wp:ping_status>
-		<wp:post_name><![CDATA[hello-world__trashed]]></wp:post_name>
-		<wp:status><![CDATA[trash]]></wp:status>
-		<wp:post_parent>0</wp:post_parent>
-		<wp:menu_order>0</wp:menu_order>
-		<wp:post_type><![CDATA[post]]></wp:post_type>
-		<wp:post_password><![CDATA[]]></wp:post_password>
-		<wp:is_sticky>0</wp:is_sticky>
-										<category domain="category" nicename="uncategorized"><![CDATA[Uncategorized]]></category>
-						<wp:postmeta>
-		<wp:meta_key><![CDATA[_wp_trash_meta_status]]></wp:meta_key>
-		<wp:meta_value><![CDATA[publish]]></wp:meta_value>
-		</wp:postmeta>
-							<wp:postmeta>
-		<wp:meta_key><![CDATA[_wp_trash_meta_time]]></wp:meta_key>
-		<wp:meta_value><![CDATA[1710167344]]></wp:meta_value>
-		</wp:postmeta>
-							<wp:postmeta>
-		<wp:meta_key><![CDATA[_wp_desired_post_slug]]></wp:meta_key>
-		<wp:meta_value><![CDATA[hello-world]]></wp:meta_value>
-		</wp:postmeta>
-							<wp:postmeta>
-		<wp:meta_key><![CDATA[_wp_trash_meta_comments_status]]></wp:meta_key>
-		<wp:meta_value><![CDATA[a:1:{i:1;s:5:"trash";}]]></wp:meta_value>
-		</wp:postmeta>
-							<wp:comment>
-			<wp:comment_id>1</wp:comment_id>
-			<wp:comment_author><![CDATA[A WordPress Commenter]]></wp:comment_author>
-			<wp:comment_author_email><![CDATA[wapuu@wordpress.example]]></wp:comment_author_email>
-			<wp:comment_author_url>https://wordpress.org/</wp:comment_author_url>
-			<wp:comment_author_IP><![CDATA[]]></wp:comment_author_IP>
-			<wp:comment_date><![CDATA[2023-09-24 18:27:51]]></wp:comment_date>
-			<wp:comment_date_gmt><![CDATA[2023-09-24 18:27:51]]></wp:comment_date_gmt>
-			<wp:comment_content><![CDATA[Hi, this is a comment.
-To get started with moderating, editing, and deleting comments, please visit the Comments screen in the dashboard.
-Commenter avatars come from <a href="https://en.gravatar.com/">Gravatar</a>.]]></wp:comment_content>
-			<wp:comment_approved><![CDATA[post-trashed]]></wp:comment_approved>
-			<wp:comment_type><![CDATA[comment]]></wp:comment_type>
-			<wp:comment_parent>0</wp:comment_parent>
-			<wp:comment_user_id>0</wp:comment_user_id>
-						<wp:commentmeta>
-	<wp:meta_key><![CDATA[_wp_trash_meta_status]]></wp:meta_key>
-			<wp:meta_value><![CDATA[1]]></wp:meta_value>
-			</wp:commentmeta>
-						<wp:commentmeta>
-	<wp:meta_key><![CDATA[_wp_trash_meta_time]]></wp:meta_key>
-			<wp:meta_value><![CDATA[1710166572]]></wp:meta_value>
-			</wp:commentmeta>
-							</wp:comment>
-					</item>
-					<item>
 		<title><![CDATA[Navigation]]></title>
 		<link>https://blog.citiesair.com/navigation/</link>
 		<pubDate>Sun, 24 Sep 2023 18:27:53 +0000</pubDate>
@@ -1286,7 +1219,7 @@ font-size: 1.1rem
 		<guid isPermaLink="false">https://nyuadair.com/?page_id=45</guid>
 		<description></description>
 		<content:encoded><![CDATA[<!-- wp:html -->
-<div class="alignfull" style="background-image:url('http://bqf.lmn.temporary.site/wp-content/uploads/2023/01/skyline-cropped-scaled-1.jpg');
+<div class="alignfull" style="background-image:url('/wp-content/uploads/2023/01/skyline-cropped-scaled-1.jpg');
   height: 100vh;
   background-position: center;
   background-repeat: no-repeat;
@@ -1298,7 +1231,7 @@ font-size: 1.1rem
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"align":"wide"} -->
-<h2 class="alignwide">1. The Good</h2>
+<h2 class="wp-block-heading alignwide">1. The Good</h2>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
@@ -1306,7 +1239,7 @@ font-size: 1.1rem
 <!-- /wp:paragraph -->
 
 <!-- wp:list -->
-<ul><!-- wp:list-item -->
+<ul class="wp-block-list"><!-- wp:list-item -->
 <li>Particulate matter (PM)</li>
 <!-- /wp:list-item -->
 
@@ -1332,12 +1265,12 @@ font-size: 1.1rem
 <!-- /wp:paragraph -->
 
 <!-- wp:gallery {"linkTo":"none","align":"wide"} -->
-<figure class="wp-block-gallery alignwide has-nested-images columns-default is-cropped"><!-- wp:image {"id":55,"sizeSlug":"large","linkDestination":"none"} -->
-<figure class="wp-block-image size-large"><img src="http://bqf.lmn.temporary.site/wp-content/uploads/2021/04/image-3.png" alt="" class="wp-image-55"/></figure>
+<figure class="wp-block-gallery alignwide has-nested-images columns-default is-cropped"><!-- wp:image {"id":55,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://blog.citiesair.com/wp-content/uploads/2021/04/image-3.png" alt="" class="wp-image-55"/></figure>
 <!-- /wp:image -->
 
-<!-- wp:image {"id":53,"sizeSlug":"large","linkDestination":"none"} -->
-<figure class="wp-block-image size-large"><img src="http://bqf.lmn.temporary.site/wp-content/uploads/2021/04/image-2.png" alt="" class="wp-image-53"/></figure>
+<!-- wp:image {"id":52,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://blog.citiesair.com/wp-content/uploads/2021/04/image-1.png" alt="" class="wp-image-52"/></figure>
 <!-- /wp:image --><figcaption class="blocks-gallery-caption wp-element-caption">Source: <a href="https://www.ead.gov.ae/-/media/Project/EAD/EAD/Documents/Resources/Air-Quality-Annual-Report-2019.pdf" target="_blank" rel="noreferrer noopener">Air Quality Annual Summary Report Abu Dhabi 2019 Environment Agency Abu Dhabi, 2019</a>.<br></figcaption></figure>
 <!-- /wp:gallery -->
 
@@ -1345,7 +1278,7 @@ font-size: 1.1rem
 <p>Independently, the US Embassy at Abu Dhabi and US Consulate at Dubai also measures PM2.5 level and provides public access to the data via <a rel="noreferrer noopener" href="https://www.airnow.gov/international/us-embassies-and-consulates/" data-type="URL" data-id="https://www.airnow.gov/international/us-embassies-and-consulates/" target="_blank">AirNow</a> program. It is evident that there has been a recent downward trend in PM2.5 level between 2019 and 2020 from this data source:</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"align":"center","id":49,"sizeSlug":"large","linkDestination":"none"} -->
+<!-- wp:image {"id":49,"sizeSlug":"large","linkDestination":"none","align":"center"} -->
 <figure class="wp-block-image aligncenter size-large"><img src="http://bqf.lmn.temporary.site/wp-content/uploads/2021/04/image-1024x191.png" alt="" class="wp-image-49"/><figcaption class="wp-element-caption">PM2.5 raw concentration in Abu Dhabi and Dubai <br>Source: IQ Air <a rel="noreferrer noopener" href="https://www.iqair.com/us/world-most-polluted-cities?continent=&amp;country=&amp;state=&amp;page=1&amp;perPage=50&amp;cities=cxZKhW7CswiwJtEb5,ddb9n6wJjtYneTR4n," data-type="URL" data-id="https://www.iqair.com/us/world-most-polluted-cities?continent=&amp;country=&amp;state=&amp;page=1&amp;perPage=50&amp;cities=cxZKhW7CswiwJtEb5,ddb9n6wJjtYneTR4n," target="_blank">World's most polluted cities 2020 (PM2.5)</a></figcaption></figure>
 <!-- /wp:image -->
 
@@ -1357,12 +1290,12 @@ font-size: 1.1rem
 <p>On top of that, particulate matter concentration in the UAE exhibits a strong seasonal fluctuation, with highest peaks in the summer and lower levels in winter months. This phenomenon likely linked to  frequent dust storm in the summer coupled with increased energy demand<sup>[2]</sup>. As most people stay indoors during the summer, they inadvertently lower their exposure to the highest PM concentrations.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"align":"center","id":244,"sizeSlug":"large","linkDestination":"none"} -->
+<!-- wp:image {"id":244,"sizeSlug":"large","linkDestination":"none","align":"center"} -->
 <figure class="wp-block-image aligncenter size-large"><img src="http://bqf.lmn.temporary.site/wp-content/uploads/2021/04/image-7-1024x531.png" alt="" class="wp-image-244"/><figcaption class="wp-element-caption">Al-Taani et. al. "Fig. 4 Monthly average of ambient PM2.5 in UAE from 1980 to 2016"<sup>[2]</sup><br>[Y-axis: Raw concentration of PM2.5 (μg/m<sup>3</sup>)</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading {"align":"wide"} -->
-<h2 class="alignwide"><br>2. The Bad</h2>
+<h2 class="wp-block-heading alignwide"><br>2. The Bad</h2>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
@@ -1389,7 +1322,7 @@ font-size: 1.1rem
 <p>The photo below shows particulate matter collected on Teflon filters during different occasions in the UAE. On days with dust storms, the color is noticeably yellow. However, on "clearer" days whiteout dust stroms, the color is much darker, which can be attributed to black (elemental) carbon and anthropogenic emissions:</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"align":"center","id":186,"sizeSlug":"large","linkDestination":"none"} -->
+<!-- wp:image {"id":186,"sizeSlug":"large","linkDestination":"none","align":"center"} -->
 <figure class="wp-block-image aligncenter size-large"><img src="http://bqf.lmn.temporary.site/wp-content/uploads/2021/04/image-4.png" alt="" class="wp-image-186"/><figcaption class="wp-element-caption">Hamdan et. al. "Fig 1. Images for three samples showing the variation of color due to different sources of pollutants", 2016<sup>[4]</sup></figcaption></figure>
 <!-- /wp:image -->
 
@@ -1398,7 +1331,7 @@ font-size: 1.1rem
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"align":"wide"} -->
-<h2 class="alignwide">3. The Future</h2>
+<h2 class="wp-block-heading alignwide">3. The Future</h2>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
@@ -1414,11 +1347,11 @@ font-size: 1.1rem
 <!-- /wp:separator -->
 
 <!-- wp:heading {"align":"wide"} -->
-<h2 class="alignwide">Citation</h2>
+<h2 class="wp-block-heading alignwide">Citation</h2>
 <!-- /wp:heading -->
 
 <!-- wp:list {"ordered":true} -->
-<ol><!-- wp:list-item -->
+<ol class="wp-block-list"><!-- wp:list-item -->
 <li>Gardiner, Beth. "Why COVID-19 Will End Up Harming The Environment".&nbsp;<em>Science</em>, 2021, <a href="https://www.nationalgeographic.com/science/article/why-covid-19-will-end-up-harming-the-environment" target="_blank" rel="noreferrer noopener">https://www.nationalgeographic.com/science/article/why-covid-19-will-end-up-harming-the-environment</a>. Accessed 11 Apr 2021.</li>
 <!-- /wp:list-item -->
 
@@ -1452,19 +1385,19 @@ font-size: 1.1rem
 <!-- /wp:list -->
 
 <!-- wp:heading {"textAlign":"right","level":3} -->
-<h3 class="has-text-align-right">Next Articles</h3>
+<h3 class="wp-block-heading has-text-align-right">Next Articles</h3>
 <!-- /wp:heading -->
 
 <!-- wp:heading {"textAlign":"right","level":4} -->
-<h4 class="has-text-align-right"><a href="/ways-to-protect-yourself/" data-type="URL" data-id="../ways-to-protect-yourself/">3. Ways to protect yourself</a></h4>
+<h4 class="wp-block-heading has-text-align-right"><a href="/ways-to-protect-yourself/" data-type="URL" data-id="../ways-to-protect-yourself/">3. Ways to protect yourself</a></h4>
 <!-- /wp:heading -->
 
 <!-- wp:heading {"level":3} -->
-<h3>Previous Articles</h3>
+<h3 class="wp-block-heading">Previous Articles</h3>
 <!-- /wp:heading -->
 
 <!-- wp:heading {"level":4} -->
-<h4><a href="/what-is-particulate-matter/">1. What is particulate matter air pollution?</a></h4>
+<h4 class="wp-block-heading"><a href="/what-is-particulate-matter/">1. What is particulate matter air pollution?</a></h4>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
@@ -1474,8 +1407,8 @@ font-size: 1.1rem
 		<wp:post_id>45</wp:post_id>
 		<wp:post_date><![CDATA[2021-04-10 09:09:34]]></wp:post_date>
 		<wp:post_date_gmt><![CDATA[2021-04-10 09:09:34]]></wp:post_date_gmt>
-		<wp:post_modified><![CDATA[2021-04-10 09:09:34]]></wp:post_modified>
-		<wp:post_modified_gmt><![CDATA[2021-04-10 09:09:34]]></wp:post_modified_gmt>
+		<wp:post_modified><![CDATA[2024-07-19 18:02:17]]></wp:post_modified>
+		<wp:post_modified_gmt><![CDATA[2024-07-19 14:02:17]]></wp:post_modified_gmt>
 		<wp:comment_status><![CDATA[closed]]></wp:comment_status>
 		<wp:ping_status><![CDATA[closed]]></wp:ping_status>
 		<wp:post_name><![CDATA[particulate-matter-in-abu-dhabi]]></wp:post_name>
