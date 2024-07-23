@@ -3,9 +3,11 @@ import { Select, MenuItem, FormControl, InputLabel, Button, Stack, Grid, Circula
 import { styled } from '@mui/material/styles';
 import { useAxesPicker } from '../../ContextProviders/AxesPickerContext';
 import { getCorrelationChartApiUrl } from '../../API/ApiUrls';
-import { ChartAPIendpoints } from "../../API/Utils";
+import { ChartAPIendpoints, ChartAPIendpointsOrder } from "../../API/Utils";
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
 import { fetchDataFromURL } from '../../API/ApiFetch';
+
+const correlationChartIndex = ChartAPIendpointsOrder.findIndex(endpoint => endpoint === ChartAPIendpoints.correlationDailyAverage);
 
 // Define custom styled components for shared border radius
 const LeftSelect = styled(FormControl)(({ theme }) => ({
@@ -103,7 +105,7 @@ const AxesPicker = (props) => {
         url: newUrl
       })
         .then((data) => {
-          setIndividualChartData(5, data); // last chart -> chartIndex = 5
+          setIndividualChartData(correlationChartIndex, data);
           setChartUrl(newUrl);
           setIsFetchingData(false);
         })

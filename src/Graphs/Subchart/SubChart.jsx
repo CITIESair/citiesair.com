@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState, useCallback } from 'react';
 
 import { GoogleContext } from '../../ContextProviders/GoogleContext';
 
@@ -49,7 +49,7 @@ const NoChartToRender = ({ dataType, height, selectableAxes }) => {
 
 export default function SubChart(props) {
   // Props
-  const { chartData, subchartIndex, windowSize, isPortrait, isHomepage, height, maxHeight, selectedDataType, allowedDataTypes, currentSubchart } = props;
+  const { chartData, subchartIndex, windowSize, isPortrait, height, maxHeight, selectedDataType, allowedDataTypes, currentSubchart } = props;
 
   // Use GoogleContext for loading and manipulating the Google Charts
   const google = useContext(GoogleContext);
@@ -259,7 +259,7 @@ export default function SubChart(props) {
   // It exists in the database (either for all subcharts or just for a particular subchart)
   // And if the chart is currently not shown on homePage
   let chartControl = chartData.control || chartData.subcharts?.[subchartIndex].control;
-  if (chartControl && (isHomepage !== true)) {
+  if (chartControl) {
     hasChartControl = true;
 
     // Get the options for chartControl if hasChartControl
@@ -424,7 +424,7 @@ export default function SubChart(props) {
     return { min: vAxisMin, max: vAxisMax };
   }
 
-  const handleSeriesSelection = ({
+  const handleSeriesSelection = useCallback(({
     newDataColumns,
     _allInitialColumns = allInitialColumns,
     _chartWrapper = chartWrapper,
@@ -538,7 +538,7 @@ export default function SubChart(props) {
     if (hasChartControl) {
       _controlWrapper?.draw();
     }
-  };
+  }, [allInitialColumns, options, seriesSelector, chartWrapper, controlWrapper, initialVAxisRange, hasChartControl]);
 
   const reconstructFunctionFromJSONstring = (columns) => {
     if (!columns) return;

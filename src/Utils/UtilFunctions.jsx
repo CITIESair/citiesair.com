@@ -7,6 +7,8 @@ export const isValidArray = (array) => Array.isArray(array) && array.length > 0 
 
 // Function to replace characters like "-" with " " from a string and capitalize it
 export const capitalizePhrase = (str) => {
+  if (!str) return "";
+
   const words = str.split(/[\s-]+/);
   const capitalizedWords = words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
   const capitalizedString = capitalizedWords.join(' ');

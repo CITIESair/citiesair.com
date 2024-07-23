@@ -11,7 +11,7 @@ import { Alert, Button, Stack } from '@mui/material';
 
 import { StyledDateRangePicker, returnCustomStaticRanges, returnFormattedDates } from './DateRangePickerUtils';
 import { getHistoricalChartApiUrl } from '../../API/ApiUrls';
-import { ChartAPIendpoints } from "../../API/Utils";
+import { ChartAPIendpoints, ChartAPIendpointsOrder } from "../../API/Utils";
 import AggregationTypeToggle from './AggregationTypeToggle';
 import AggregationType from './AggregationType';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
@@ -24,6 +24,8 @@ const InvalidRangeMessages = {
   tooLong: "HOURLY data is limited to max 30d",
   sameDay: "Start and end dates must be different"
 }
+
+const historicalChartIndex = ChartAPIendpointsOrder.findIndex(endpoint => endpoint === ChartAPIendpoints.historical);
 
 const CustomDateRangePicker = (props) => {
   const { minDateOfDataset, dataType } = props;
@@ -129,7 +131,7 @@ const CustomDateRangePicker = (props) => {
         url: newUrl
       })
         .then((data) => {
-          setIndividualChartData(0, data); // first chart -> chartIndex = 0
+          setIndividualChartData(historicalChartIndex, data);
           setChartUrl(newUrl);
           setIsFetchingData(false);
           setShowPickerPanel(false);

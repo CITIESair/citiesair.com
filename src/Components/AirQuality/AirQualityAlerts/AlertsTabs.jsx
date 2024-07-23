@@ -4,7 +4,7 @@ import { Box, Tab, useMediaQuery } from '@mui/material';
 import StyledTabs from '../../StyledTabs';
 import AlertsTable from './AlertsTable';
 
-import { alertPlaceholder, getAlertPlaceholder, useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
+import { getAlertPlaceholder, useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
 import AlertTypes from './AlertTypes';
 import { isValidArray } from '../../../Utils/UtilFunctions';
 

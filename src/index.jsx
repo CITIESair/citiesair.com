@@ -5,7 +5,6 @@ import './index.css';
 import App from './App';
 import { UserProvider } from './ContextProviders/UserContext';
 import { GoogleProvider } from './ContextProviders/GoogleContext';
-import { LinkProvider } from './ContextProviders/LinkContext';
 import { PreferenceProvider } from './ContextProviders/PreferenceContext';
 import { NotificationProvider } from './ContextProviders/NotificationContext';
 import { MetadataProvider } from './ContextProviders/MetadataContext';
@@ -16,17 +15,15 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <GoogleProvider>
-      <LinkProvider>
-        <MetadataProvider>
-          <NotificationProvider>
-            <PreferenceProvider>
-              <UserProvider>
-                <App />
-              </UserProvider>
-            </PreferenceProvider>
-          </NotificationProvider>
-        </MetadataProvider>
-      </LinkProvider>
+      <MetadataProvider>
+        <NotificationProvider>
+          <PreferenceProvider>
+            <UserProvider>
+              <App />
+            </UserProvider>
+          </PreferenceProvider>
+        </NotificationProvider>
+      </MetadataProvider>
     </GoogleProvider>
   </React.StrictMode>
 );

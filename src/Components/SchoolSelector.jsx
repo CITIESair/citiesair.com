@@ -28,13 +28,12 @@ const SchoolSelector = () => {
     return (
       <CustomChip
         icon={<PlaceIcon />}
-        label={schoolMetadata?.name || "N/A"}
+        label={schoolMetadata?.name || "No School Name Given"}
         tooltipTitle={"School"}
       />
     );
 
   // Else, display a drop down menu that allows choosing between different schools
-  const [schoolID, setSchoolID] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -47,19 +46,18 @@ const SchoolSelector = () => {
 
   const navigate = useNavigate();
 
-  const handleItemSelect = (schoolID) => () => {
-    if (currentSchoolID !== schoolID) {
-      localStorage.setItem(LocalStorage.schoolID, schoolID)
-      setSchoolID(schoolID);
+  const handleItemSelect = (newSchoolID) => () => {
+    if (currentSchoolID !== newSchoolID) {
+      localStorage.setItem(LocalStorage.schoolID, newSchoolID)
 
       Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
         {
           origin_school: currentSchoolID,
-          destination_school_id: schoolID,
+          destination_school_id: newSchoolID,
           origin_id: 'school_selector'
         });
 
-      navigate(`${AppRoutes.dashboard}/${schoolID}`)
+      navigate(`${AppRoutes.dashboard}/${newSchoolID}`)
     }
     handleClose();
   };
@@ -72,7 +70,7 @@ const SchoolSelector = () => {
         }
       }
       }>
-        {schoolMetadata?.name || "N/A"}
+        {schoolMetadata?.name || "Loading..."}
         {Boolean(anchorEl) ? (
           <ArrowDropUpIcon />
         ) : (

@@ -14,17 +14,17 @@ import SubChart from './Subchart/SubChart';
 
 import CollapsibleSubtitle from '../Components/CollapsibleSubtitle';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import DataTypeDropDownMenu from './Subchart/SubchartUtils/DataTypeDropDown';
+import DataTypeDropDownMenu from './DataTypeDropDown';
 import { isValidArray } from '../Utils/UtilFunctions';
 import { useDateRangePicker } from '../ContextProviders/DateRangePickerContext';
 import { returnFormattedDates } from '../Components/DateRangePicker/DateRangePickerUtils';
 import { useAxesPicker } from '../ContextProviders/AxesPickerContext';
 import StyledTabs from '../Components/StyledTabs';
 
-const debounceMilliseconds = 100;
+const DEBOUNCE_IN_MILLISECONDS = 100;
 
-const maxTabsToDisplay = 3;
-const initialDropdownMenuTabIndex = -1;
+const MAX_NUM_TABS_TO_DISPLAY = 3;
+const INITIAL_DROPDOWN_MENU_TAB_INDEX = -1;
 
 const ChartStyleWrapper = styled(Box)(({ theme }) => ({
   // CSS for dark theme only
@@ -66,8 +66,7 @@ function ChartComponentWrapper(props) {
     chartData: passedChartData,
     chartHeight: passedChartHeight,
     chartID,
-    chartIndex,
-    isHomepage
+    chartIndex
   } = props;
 
   const { currentSchoolID, setIndividualChartData } = useContext(DashboardContext);
@@ -86,8 +85,8 @@ function ChartComponentWrapper(props) {
 
   // Props for tab panels (multiple data visualizations in the same chart area, navigate with tab panels)
   const [currentTab, setCurrentTab] = useState(0); // start with the first tab
-  const [previousTab, setPreviousTab] = useState(0); // keep tracking of previous tab to keep displaying it if the currentTab = -1 (selecting the dropdown menu tab)
-  const [dropdownMenuTabIndex, setDropdownMenuTabIndex] = useState(initialDropdownMenuTabIndex);
+  const [previousTab, setPreviousTab] = useState(0); // keep tracking of previous tab to keep displaying it if the currentTab = initialDropdownMenuTabIndex (selecting the dropdown menu tab)
+  const [dropdownMenuTabIndex, setDropdownMenuTabIndex] = useState(INITIAL_DROPDOWN_MENU_TAB_INDEX);
   const [dropdownMenuCurrentTitle, setDropdownMenuCurrentTitle] = useState();
   const [anchorEl, setAnchorEl] = useState(null); // Define anchorEl state for dropdown menu of the tabs
 
@@ -190,7 +189,7 @@ function ChartComponentWrapper(props) {
 
         // Redraw all charts on window resized
         setWindowSize([window.innerWidth, window.innerHeight]);
-      }, debounceMilliseconds);
+      }, DEBOUNCE_IN_MILLISECONDS);
     };
 
     // listen to window resize events
@@ -221,7 +220,6 @@ function ChartComponentWrapper(props) {
         allowedDataTypes={allowedDataTypes}
         chartData={chartData}
         isPortrait={isPortrait}
-        isHomepage={isHomepage}
         windowSize={windowSize}
         height={chartData.height ? chartData.height : chartHeight}
       />
@@ -235,27 +233,27 @@ function ChartComponentWrapper(props) {
       setPreviousTab(currentTab);
       setCurrentTab(newIndex);
 
-      if (needsDropdownMenu && newIndex < maxTabsToDisplay && newIndex !== dropdownMenuTabIndex) {
+      if (needsDropdownMenu && newIndex < MAX_NUM_TABS_TO_DISPLAY && newIndex !== dropdownMenuTabIndex) {
         setDropdownMenuCurrentTitle();
-        setDropdownMenuTabIndex(initialDropdownMenuTabIndex);
+        setDropdownMenuTabIndex(INITIAL_DROPDOWN_MENU_TAB_INDEX);
       }
     };
 
     // Determine if dropdown menu is needed
-    const needsDropdownMenu = chartData.subcharts.length > maxTabsToDisplay + 1; // maxTabsToDisplay = 3 by default, but here +1 for some leeway, some schools have 4 sensors which is still okay. But if > 4, then only display max 3
+    const needsDropdownMenu = chartData.subcharts.length > MAX_NUM_TABS_TO_DISPLAY + 1; // maxTabsToDisplay = 3 by default, but here +1 for some leeway, some schools have 4 sensors which is still okay. But if > 4, then only display max 3
 
-    const subchartsDataForTabs = needsDropdownMenu ? chartData.subcharts.slice(0, maxTabsToDisplay) : chartData.subcharts;
-    const subchartsDataForDropDownMenu = needsDropdownMenu ? chartData.subcharts.slice(maxTabsToDisplay) : null;
+    const subchartsDataForTabs = needsDropdownMenu ? chartData.subcharts.slice(0, MAX_NUM_TABS_TO_DISPLAY) : chartData.subcharts;
+    const subchartsDataForDropDownMenu = needsDropdownMenu ? chartData.subcharts.slice(MAX_NUM_TABS_TO_DISPLAY) : null;
 
     // Function to handle selection from dropdown menu
     const handleDropdownMenuSelection = (index) => {
       setPreviousTab(currentTab);
 
       // Because the original chartData.subcharts array was split in subchartsDataForTabs (length maxTabsToDisplay) and subchartsDataForDropDownMenu (the remaining item), the selected subcharts index is the sum of the length of subchartsDataForTabs array and the index of the selected item from subchartsDataForDropDownMenu
-      setCurrentTab(maxTabsToDisplay + index);
+      setCurrentTab(MAX_NUM_TABS_TO_DISPLAY + index);
 
       // Same index with the one above to keep the dropdown menu tab highlighted  
-      setDropdownMenuTabIndex(maxTabsToDisplay + index);
+      setDropdownMenuTabIndex(MAX_NUM_TABS_TO_DISPLAY + index);
 
       // Set title of the selected item in the dropdown menu to display it
       setDropdownMenuCurrentTitle(subchartsDataForDropDownMenu[index].subchartTitleShort);
@@ -280,7 +278,7 @@ function ChartComponentWrapper(props) {
     }
 
     const shouldDisplayThisSubchart = (index) => {
-      if (currentTab === initialDropdownMenuTabIndex) {
+      if (currentTab === INITIAL_DROPDOWN_MENU_TAB_INDEX) {
         return previousTab === index;
       } else {
         return currentTab === index;
@@ -323,8 +321,8 @@ function ChartComponentWrapper(props) {
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
             onClose={() => {
-              // Reset currentTab to the previous valid tab if the user opened the menu (clicked on the drop down menu tab), but didn't select any menu item
-              if (currentTab === initialDropdownMenuTabIndex) {
+              // Reset currentTab to the previous valid tab if the user opened the menu (clicked on the drop down menu tab, if shown), but didn't select any menu item
+              if (currentTab === INITIAL_DROPDOWN_MENU_TAB_INDEX) {
                 setPreviousTab(currentTab);
                 setCurrentTab(previousTab);
               };
@@ -337,12 +335,12 @@ function ChartComponentWrapper(props) {
             {subchartsDataForDropDownMenu.map((_, index) => (
               <StyledMenuItem
                 key={index}
-                selected={index === currentTab - maxTabsToDisplay}
+                selected={index === currentTab - MAX_NUM_TABS_TO_DISPLAY}
                 onClick={() => handleDropdownMenuSelection(index)}
                 sx={{
                   // If this subchart doesn't have a valid dataArray to render chart
                   // Make the Tab's text line-through to let user know
-                  textDecoration: !isValidArray(chartData.subcharts[index + maxTabsToDisplay].dataArray) && 'line-through'
+                  textDecoration: !isValidArray(chartData.subcharts[index + MAX_NUM_TABS_TO_DISPLAY].dataArray) && 'line-through'
                 }}
               >
                 <Stack direction="row" alignItems="center" gap={1}>
@@ -350,7 +348,7 @@ function ChartComponentWrapper(props) {
                     {subchartsDataForDropDownMenu[index].subchartTitle}
                   </Box>
                   {
-                    (index === currentTab - maxTabsToDisplay) &&
+                    (index === currentTab - MAX_NUM_TABS_TO_DISPLAY) &&
                     <VisibilityIcon fontSize="1rem" sx={{ color: 'text.secondary' }} />
                   }
                 </Stack>
@@ -390,7 +388,6 @@ function ChartComponentWrapper(props) {
                 chartData={chartData}
                 subchartIndex={index}
                 isPortrait={isPortrait}
-                isHomepage={isHomepage}
                 windowSize={windowSize}
                 height={chartData.height ? chartData.height : chartHeight}
                 maxHeight={
@@ -411,7 +408,7 @@ function ChartComponentWrapper(props) {
   const getSubtitles = () => {
     let text = generalChartSubtitle || '';
     if (chartData.subcharts && chartData.subcharts[currentTab]?.subchartSubtitle) {
-      text += '<br/>'
+      text += '<br/>';
       text += chartData.subcharts[currentTab].subchartSubtitle;
     }
     return text;
@@ -419,7 +416,7 @@ function ChartComponentWrapper(props) {
   const getReferences = () => {
     let text = generalChartReference || '';
     if (chartData.subcharts && chartData.subcharts[currentTab]?.reference) {
-      text += '<br/>'
+      text += '<br/>';
       text += chartData.subcharts[currentTab].reference;
     }
     return text;
@@ -441,7 +438,6 @@ function ChartComponentWrapper(props) {
             />
           </Box>
         </Box>
-
 
         <ChartStyleWrapper height="100%">
           <YearRangeProvider>

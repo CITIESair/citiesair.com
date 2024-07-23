@@ -7,10 +7,7 @@ import parse from 'html-react-parser';
 import jsonData from '../section_data.json';
 import UppercaseTitle from './UppercaseTitle';
 import { replacePlainHTMLWithMuiComponents, capitalizePhrase } from '../Utils/UtilFunctions';
-
-export const WEBSITE_ID = 9021; // Hyvor Talk's website ID
-export const AIR_QUALITY_PAGE_ID = 64327358; // Air Quality page ID in Hyvor Talk
-export const PAGE_NAME = 'air-quality';
+import { HYVOR_WEBSITE_ID } from '../Utils/GlobalVariables';
 
 const StyledHyvorTalk = styled(Box)(({ theme }) => ({
   paddingBottom: theme.spacing(2),
@@ -40,7 +37,7 @@ function CommentSection({ pageID }) {
           </Typography>
           <StyledHyvorTalk>
             <Comments
-              website-id={WEBSITE_ID}
+              website-id={HYVOR_WEBSITE_ID}
               page-id={pageID}
               loading="lazy"
             />
