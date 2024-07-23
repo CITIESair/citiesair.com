@@ -9,15 +9,14 @@ import Project from "./Project";
 import { getApiUrl, getChartApiUrl, getHistoricalChartApiUrl } from "../API/ApiUrls";
 import { ChartAPIendpointsOrder, GeneralAPIendpoints } from "../API/Utils";
 import { fetchAndProcessCurrentSensorsData } from "../API/ApiFetch";
-import { LinkContext } from "../ContextProviders/LinkContext";
+import { MetadataContext } from "../ContextProviders/MetadataContext";
 import { DashboardContext } from "../ContextProviders/DashboardContext";
 
 import { UserContext } from "../ContextProviders/UserContext";
 import { LocalStorage } from "../Utils/LocalStorage";
 import { AppRoutes } from "../Utils/AppRoutes";
-import { CITIESair, NYUAD } from "../Utils/GlobalVariables";
-
-const numInitialCharts = 2;
+import { CITIESair, NUMBER_OF_CHARTS_TO_LOAD_INITIALLY, NYUAD } from "../Utils/GlobalVariables";
+import { AlertSeverity, useNotificationContext } from "../ContextProviders/NotificationContext";
 
 const Dashboard = () => {
   const { school_id_param } = useParams();
@@ -34,7 +33,7 @@ const Dashboard = () => {
   }, [school_id_param]);
 
   // Update current page type
-  const { setCurrentPage } = useContext(LinkContext);
+  const { setCurrentPage } = useContext(MetadataContext);
   useEffect(() => {
     setCurrentPage(AppRoutes.dashboard);
   }, []);
@@ -47,6 +46,8 @@ const Dashboard = () => {
     loadMoreCharts
   } = useContext(DashboardContext);
   const { user } = useContext(UserContext);
+
+  const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
 
   useEffect(() => {
     // NYUAD is public --> skip authentication and just fetch data
@@ -69,7 +70,10 @@ const Dashboard = () => {
 
         // If there has been a previouslySelectedSchoolID, then load dashboard data for this one
         const previouslySelectedSchoolID = localStorage.getItem(LocalStorage.schoolID);
-        if (allowedSchools.map((school) => school.school_id).includes(previouslySelectedSchoolID)) school_id = previouslySelectedSchoolID;
+
+        if (allowedSchools.map((school) => school.school_id).includes(previouslySelectedSchoolID)) {
+          school_id = previouslySelectedSchoolID;
+        }
         // If not existed yet, then just get the first school in the list
         else {
           school_id = allowedSchools[0].school_id;
@@ -82,13 +86,20 @@ const Dashboard = () => {
         // If there is no schoolMetadata or current or chartData, then fetch them
         if (!(!schoolMetadata && !current && !allChartsData)) fetchInitialDataForDashboard(school_id);
       }
-
       // If there is school_id_param, check if school_id_param is in the allowedSchools
-      if (allowedSchools.map((school) => school.school_id).includes(school_id_param)) {
-        setCurrentSchoolID(school_id_param);
-        fetchInitialDataForDashboard(school_id_param);
-        localStorage.setItem(LocalStorage.schoolID, school_id_param);
-        return;
+      else {
+        if (allowedSchools.map((school) => school.school_id).includes(school_id_param)) {
+          setCurrentSchoolID(school_id_param);
+          fetchInitialDataForDashboard(school_id_param);
+          localStorage.setItem(LocalStorage.schoolID, school_id_param);
+        }
+        // If the school_id_param is not in the allowedSchools
+        else {
+          navigate(AppRoutes[404], { replace: true });
+          setShowNotification(true);
+          setMessage("You don't have permission to view this school or this school does not exist.");
+          setSeverity(AlertSeverity.error);
+        }
       }
     }
   }, [user, school_id_param]);
@@ -118,7 +129,7 @@ const Dashboard = () => {
       console.log(error);
     }
 
-    const chartsToFetch = loadMoreCharts ? ChartAPIendpointsOrder : ChartAPIendpointsOrder.slice(0, numInitialCharts);
+    const chartsToFetch = loadMoreCharts ? ChartAPIendpointsOrder : ChartAPIendpointsOrder.slice(0, NUMBER_OF_CHARTS_TO_LOAD_INITIALLY);
     chartsToFetch.forEach((endpoint, index) => {
       setIndividualChartData(index, {}); // set empty chartData to create a placeholder for this chart
 
@@ -139,9 +150,9 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (loadMoreCharts === true) {
-      const restOfCharts = ChartAPIendpointsOrder.slice(numInitialCharts);
+      const restOfCharts = ChartAPIendpointsOrder.slice(NUMBER_OF_CHARTS_TO_LOAD_INITIALLY);
       restOfCharts.forEach((endpoint, index) => {
-        const chartIndexInPage = numInitialCharts + index;
+        const chartIndexInPage = NUMBER_OF_CHARTS_TO_LOAD_INITIALLY + index;
         setIndividualChartData(chartIndexInPage, {}); // set empty chartData to create a placeholder for this chart
 
         fetchDataFromURL({
@@ -162,9 +173,7 @@ const Dashboard = () => {
   }, [loadMoreCharts]);
 
   return (
-    <>
-      <Project />
-    </>
+    <Project />
   )
 };
 

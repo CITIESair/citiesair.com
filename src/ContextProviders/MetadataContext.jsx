@@ -1,22 +1,18 @@
-import React, { useState, createContext, useMemo, useEffect } from 'react';
+import React, { useState, createContext, useMemo } from 'react';
 import { fetchDataFromURL } from '../API/ApiFetch';
-import { WEBSITE_ID, AIR_QUALITY_PAGE_ID } from '../Components/CommentSection';
+import { HYVOR_API_URL } from '../Utils/GlobalVariables';
 
-// create context
 export const MetadataContext = createContext();
 
-const hyvorTalkApiUrl = `https://talk.hyvor.com/api/v1/pages?website_id=${WEBSITE_ID}&id=${AIR_QUALITY_PAGE_ID}`;
-
-// context provider
 export function MetadataProvider({ children }) {
-  // state to store data
+  // ------ Hyvor Talk's comment section metadata ------
   const [commentCounts, setCommentCounts] = useState(null);
 
   const fetchCommentCounts = async () => {
     const commentCountsForAllPages = {};
     try {
       const jsonData = await fetchDataFromURL({
-        url: hyvorTalkApiUrl,
+        url: HYVOR_API_URL,
         needsAuthorization: false,
         includesHeadersJSON: false
       });
@@ -30,13 +26,19 @@ export function MetadataProvider({ children }) {
     }
   };
 
+  // ------ At a Glance's statistics metadata -------
   const [stats, setStats] = useState(null);
 
-  // Memoize the value to be provided to avoid unnecessary re-renders
+  // ------ Current page and chart title list metadata -----
+  const [currentPage, setCurrentPage] = useState(null);
+  const [chartsTitlesList, setChartsTitlesList] = useState([]);
+
   const providerValue = useMemo(() => ({
     commentCounts, fetchCommentCounts, setCommentCounts,
-    stats, setStats
-  }), [commentCounts, stats]);
+    stats, setStats,
+    currentPage, setCurrentPage,
+    chartsTitlesList, setChartsTitlesList
+  }), [commentCounts, stats, currentPage, chartsTitlesList]);
 
   // return context provider
   return (

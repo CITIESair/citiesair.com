@@ -1,7 +1,7 @@
 import { useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Typography, Container } from '@mui/material';
-import { LinkContext } from '../ContextProviders/LinkContext';
+import { MetadataContext } from '../ContextProviders/MetadataContext';
 import { AppRoutes } from '../Utils/AppRoutes';
 import { CITIESair } from '../Utils/GlobalVariables';
 
@@ -11,7 +11,7 @@ export default function FourOhFour({ title }) {
     document.title = title;
   }, [title]);
 
-  const { setCurrentPage } = useContext(LinkContext);
+  const { setCurrentPage } = useContext(MetadataContext);
 
   // set underline link to 404 (to undo any other underlined links)
   useEffect(() => {

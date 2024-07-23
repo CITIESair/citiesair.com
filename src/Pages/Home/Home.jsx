@@ -2,7 +2,7 @@ import { useEffect, useContext, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 import { Button, Box, Grid, Typography, Container, Divider } from '@mui/material';
-import { LinkContext } from '../../ContextProviders/LinkContext';
+import { MetadataContext } from '../../ContextProviders/MetadataContext';
 
 import UppercaseTitle from '../../Components/UppercaseTitle';
 import FullWidthBox from '../../Components/FullWidthBox';
@@ -48,7 +48,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
     document.title = title;
   }, [title]);
 
-  const { setCurrentPage, setChartsTitlesList } = useContext(LinkContext);
+  const { setCurrentPage, setChartsTitlesList } = useContext(MetadataContext);
 
   // set current page to home
   useEffect(() => {

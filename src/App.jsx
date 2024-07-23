@@ -24,7 +24,7 @@ import NYUADbanner from './Pages/Embeds/NYUADbanner';
 
 import { DashboardProvider } from './ContextProviders/DashboardContext';
 import { PreferenceContext } from './ContextProviders/PreferenceContext';
-import { LinkContext } from './ContextProviders/LinkContext';
+import { MetadataContext } from './ContextProviders/MetadataContext';
 
 import jsonData from './section_data.json';
 
@@ -56,7 +56,7 @@ const getDesignTokens = (themePreference) => ({
 
 function App() {
   const { themePreference, setThemePreference } = useContext(PreferenceContext);
-  const { chartsTitlesList } = useContext(LinkContext);
+  const { chartsTitlesList } = useContext(MetadataContext);
 
   // Create theme using getDesignTokens
   const theme = useMemo(

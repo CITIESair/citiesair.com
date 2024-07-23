@@ -13,11 +13,11 @@ import { AlertSeverity, useNotificationContext } from '../../ContextProviders/No
 import { CITIESair } from '../../Utils/GlobalVariables';
 import { fetchDataFromURL } from '../../API/ApiFetch';
 import { RESTmethods } from "../../API/Utils";
-import { LinkContext } from '../../ContextProviders/LinkContext';
+import { MetadataContext } from '../../ContextProviders/MetadataContext';
 
 export default function Login() {
   const { setUser } = useContext(UserContext);
-  const { setCurrentPage } = useContext(LinkContext);
+  const { setCurrentPage } = useContext(MetadataContext);
 
   // set current page to login
   useEffect(() => {
