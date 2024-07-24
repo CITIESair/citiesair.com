@@ -7,16 +7,6 @@ export const ChartControlType = {
   NumberRangeFilter: { position: 'top', stackDirection: 'column' }
 }
 
-export const getDateRangeForCalendarChart = (dateStrings) => {
-  return {
-    min: dateStrings.reduce((min, current) => (current < min ? current : min)),
-    max: dateStrings.reduce((max, current) => (current > max ? current : max))
-  }
-}
-export const getValueRangeForCalendarChart = (values) => {
-  return { min: Math.min(...values), max: Math.max(...values) }
-}
-
 // Function to generate a random ID for the google chart container
 export const generateRandomID = () => {
   return Math.random().toString(36).substr(2, 9); // Generates a random string of length 9
@@ -218,24 +208,6 @@ export const returnGenericOptions = (props) => {
   };
 
   return options;
-}
-
-export const returnCalendarChartOptions = (existingOptions) => {
-  const calendarDimensions = calculateCalendarDimensions({ cellSizeMin: 14, cellSizeMax: 18 });
-  return {
-    ...existingOptions,
-    width: calendarDimensions.chartWidth,
-    calendar: {
-      cellSize: calendarDimensions.cellSize,
-      yearLabel: {
-        fontSize: calendarDimensions.yearLabelFontSize
-      }
-    },
-    noDataPattern: {
-      backgroundColor: 'none',
-      color: 'none',
-    },
-  }
 }
 
 export const returnChartControlUI = (props) => {
