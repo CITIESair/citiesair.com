@@ -106,7 +106,7 @@ const CurrentAQIGrid = (props) => {
           }, mt: ElementSizes[size].meteroDataMarginTop
         }} className='condensedFont'>
           {
-            showWeather && displayMetero({ size, current, temperatureUnitPreference, roundTemperature })
+            showWeather && displayWeather({ size, current, temperatureUnitPreference, roundTemperature })
           }
           {
             // Show heat index for selected location types
@@ -300,7 +300,7 @@ const displayLastUpdateAndSensorStatus = ({ sensor, size, current, isScreen }) =
     )
 }
 
-const displayMetero = ({ size, current, temperatureUnitPreference, roundTemperature }) => {
+const displayWeather = ({ size, current, temperatureUnitPreference, roundTemperature }) => {
   return (
     <Typography variant={ElementSizes[size].metero}>
       <ThermostatIcon />

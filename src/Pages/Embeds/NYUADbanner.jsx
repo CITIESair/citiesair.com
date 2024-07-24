@@ -4,7 +4,7 @@ import { useState, useEffect, useContext } from 'react';
 import { Container, Box, Grid, Typography, Stack, Tooltip } from '@mui/material/';
 import { useMediaQuery, useTheme } from '@mui/material';
 
-import AQImap, { LocationTitle, TileOptions } from '../../Components/AirQuality/AQImap';
+import AQImap, { LocationTitles, TileOptions } from '../../Components/AirQuality/AQImap';
 import { getApiUrl } from '../../API/ApiUrls';
 import { GeneralAPIendpoints } from "../../API/Utils";
 import { fetchAndProcessCurrentSensorsData } from '../../API/ApiFetch';
@@ -120,7 +120,7 @@ const NYUADbanner = (props) => {
             maxZoom={isOnBannerPage ? zoomLevel : Math.round(zoomLevel + 1)}
             disableInteraction={isOnBannerPage}
             displayMinimap={false}
-            locationTitle={LocationTitle.short}
+            locationTitle={LocationTitles.short}
             fullSizeMap={true}
             showAttribution={false}
             mapData={nyuadCurrentData}

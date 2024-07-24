@@ -1,6 +1,6 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useState, useEffect, useMemo, useCallback, useContext } from 'react';
+import { useState, useMemo, useCallback, useContext } from 'react';
 import { Box, Typography, Stack, Link } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { MapContainer, TileLayer, Marker, Popup, useMap, AttributionControl, useMapEvent, Rectangle, CircleMarker, Tooltip, ImageOverlay } from 'react-leaflet';
@@ -96,7 +96,7 @@ export const TypeOfAQImap = {
     nyuadSensors: 'nyuadSensors'
 }
 
-export const LocationTitle = {
+export const LocationTitles = {
     short: 'short',
     long: 'long'
 }
@@ -351,11 +351,11 @@ const AQImap = (props) => {
                                     <Tooltip
                                         permanent={tileOption === TileOptions.nyuad ? true : false}
                                         direction="bottom"
-                                        offset={locationTitle === LocationTitle.short ?
+                                        offset={locationTitle === LocationTitles.short ?
                                             [7.5, -35] : [15, -40]}
                                     >
                                         <Box aria-hidden={true}>
-                                            {locationTitle === LocationTitle.short ?
+                                            {locationTitle === LocationTitles.short ?
                                                 location.sensor?.location_short : location.sensor?.location_long}
                                         </Box>
                                     </Tooltip>

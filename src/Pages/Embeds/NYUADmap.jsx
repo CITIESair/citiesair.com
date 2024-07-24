@@ -2,7 +2,7 @@
 /* eslint-disable */
 import { useState, useEffect } from 'react';
 import FullWidthBox from '../../Components/FullWidthBox';
-import AQImap, { LocationTitle, TileOptions } from '../../Components/AirQuality/AQImap';
+import AQImap, { LocationTitles, TileOptions } from '../../Components/AirQuality/AQImap';
 import { getApiUrl } from '../../API/ApiUrls';
 import { GeneralAPIendpoints } from "../../API/Utils";
 import { fetchAndProcessCurrentSensorsData } from '../../API/ApiFetch';
@@ -39,7 +39,7 @@ const NYUADmap = () => {
         fullSizeMap={true}
         showAttribution={false}
         mapData={nyuadCurrentData}
-        locationTitle={LocationTitle.short}
+        locationTitle={LocationTitles.short}
         markerSizeInRem={0.65}
         ariaLabel={"A map of all air quality sensors at NYU Abu Dhabi"}
       />
