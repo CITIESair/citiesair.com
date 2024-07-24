@@ -101,7 +101,7 @@ export const CalendarChart = (props) => {
     return (
         <>
             {options?.legend?.position !== "none" && showLegend()}
-            {showLegend()}
+
             <ResponsiveCalendar
                 data={data}
                 from={dynamicFrom}
