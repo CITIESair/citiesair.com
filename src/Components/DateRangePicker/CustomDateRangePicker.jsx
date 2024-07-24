@@ -31,6 +31,7 @@ const CustomDateRangePicker = (props) => {
   const { minDateOfDataset, dataType } = props;
   const { currentSchoolID, setIndividualChartData } = useContext(DashboardContext);
   const [invalidRangeMessage, setInvalidRangeMessage] = useState();
+  const [shouldDisableApplyButton, setShouldDisableApplyButton] = useState(true);
 
   const today = new Date();
   const theme = useTheme();
@@ -75,20 +76,31 @@ const CustomDateRangePicker = (props) => {
     // Start date and end date can't be the same date
     if (isSameDay(startDate, endDate)) {
       setInvalidRangeMessage(InvalidRangeMessages.sameDay);
+      setShouldDisableApplyButton(true);
       return;
     }
     else {
       setInvalidRangeMessage(null);
+      setShouldDisableApplyButton(false);
     }
 
     // Restrict the selection to only 30 days if aggregationType is hourly
     if (aggregationType === AggregationType.hourly) {
       const diff = differenceInDays(endDate, startDate);
-      setInvalidRangeMessage((diff > 30) ? InvalidRangeMessages.tooLong : null);
+      const invalidRange = diff > 30;
+
+      setInvalidRangeMessage(invalidRange ? InvalidRangeMessages.tooLong : null);
+      setShouldDisableApplyButton(invalidRange);
     }
     // No restriction for daily aggregationType
     else {
-      if (invalidRangeMessage !== null) setInvalidRangeMessage(null);
+      if (invalidRangeMessage !== null) {
+        setInvalidRangeMessage(null);
+      }
+
+      if (shouldDisableApplyButton === true) {
+        setShouldDisableApplyButton(false);
+      }
     }
   }
 
@@ -140,7 +152,6 @@ const CustomDateRangePicker = (props) => {
           console.log(error);
         });
     }
-
   };
 
   const renderApplyButtonLabel = () => {
@@ -203,7 +214,7 @@ const CustomDateRangePicker = (props) => {
               <Button
                 variant="contained"
                 size="small"
-                disabled={invalidRangeMessage === null ? false : true}
+                disabled={shouldDisableApplyButton}
                 onClick={handleApplyButtonClick}
                 sx={{
                   transform: "translateY(-1px)"
