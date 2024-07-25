@@ -250,15 +250,6 @@ export const returnChartControlUI = (props) => {
   return chartControlUI;
 }
 
-const calculateCalendarDimensions = ({ cellSizeMin, cellSizeMax }) => {
-  const cellSize = Math.min(Math.max((window.innerWidth * 0.9) / 58, cellSizeMin), cellSizeMax);
-  return {
-    chartWidth: cellSize * 56, // fixed ratio
-    cellSize,
-    yearLabelFontSize: cellSize * 2
-  };
-};
-
 export const addTouchEventListenerForChartControl = ({ controlWrapper, chartID }) => {
   const touchHandler = (event) => {
     var touches = event.changedTouches,

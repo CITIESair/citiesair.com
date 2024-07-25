@@ -2,7 +2,7 @@ import { useTheme } from '@mui/material/styles';
 import { Box, Typography } from '@mui/material';
 import { generateCssBackgroundGradient } from '../../../../Utils/Gradient/GradientUtils';
 
-const ValueRangeBox = ({ title, filteredValueRange, valueRange, colorAxis, isPortrait }) => {
+const ValueRangeBox = ({ title, valueRange, colorAxis, isPortrait }) => {
   const theme = useTheme();
 
   if (valueRange?.min === null || valueRange?.max === null) return null;
@@ -61,7 +61,7 @@ const ValueRangeBox = ({ title, filteredValueRange, valueRange, colorAxis, isPor
     <Box sx={{
       position: 'sticky',
       width: 'fit-content',
-      marginTop: '1.5rem',
+      my: 4,
       float: 'right',
       right: (isPortrait ? '0' : '50px')
     }}>
@@ -86,10 +86,10 @@ const ValueRangeBox = ({ title, filteredValueRange, valueRange, colorAxis, isPor
         position: 'relative',
         justifyContent: 'space-between',
       }}>
-        <span style={{ ...labelStyle, ...topLabelStyle, left: calculateMarkerPositionOnRangeBox(filteredValueRange.min) }}>min: {Math.round(filteredValueRange.min)}</span>
-        <span style={{ ...labelStyle, ...bottomLabelStyle, left: calculateMarkerPositionOnRangeBox(filteredValueRange.max) }}>max: {Math.round(filteredValueRange.max)}</span>
-        <div style={{ ...triangleStyle, ...topTriangleStyle, left: calculateMarkerPositionOnRangeBox(filteredValueRange.min) }}></div>
-        <div style={{ ...triangleStyle, ...bottomTriangleStyle, left: calculateMarkerPositionOnRangeBox(filteredValueRange.max) }}></div>
+        <span style={{ ...labelStyle, ...topLabelStyle, left: calculateMarkerPositionOnRangeBox(valueRange.min) }}>min: {Math.round(valueRange.min)}</span>
+        <span style={{ ...labelStyle, ...bottomLabelStyle, left: calculateMarkerPositionOnRangeBox(valueRange.max) }}>max: {Math.round(valueRange.max)}</span>
+        <div style={{ ...triangleStyle, ...topTriangleStyle, left: calculateMarkerPositionOnRangeBox(valueRange.min) }}></div>
+        <div style={{ ...triangleStyle, ...bottomTriangleStyle, left: calculateMarkerPositionOnRangeBox(valueRange.max) }}></div>
       </Box>
     </Box>
   );

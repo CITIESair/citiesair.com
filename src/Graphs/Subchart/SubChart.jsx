@@ -119,6 +119,7 @@ export default function SubChart(props) {
           valueRangeBoxTitle={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes, showUnit: true })}
           isPortrait={isPortrait}
           options={options}
+          windowSize={windowSize}
         />
       ) : <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />
     );

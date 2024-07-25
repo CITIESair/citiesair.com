@@ -8,7 +8,6 @@ import { fetchDataFromURL } from '../API/ApiFetch';
 import { getChartApiUrl, getCorrelationChartApiUrl, getHistoricalChartApiUrl } from "../API/ApiUrls";
 import { ChartAPIendpoints, ChartAPIendpointsOrder } from "../API/Utils";
 import { DashboardContext } from "../ContextProviders/DashboardContext";
-import { YearRangeProvider } from '../ContextProviders/YearRangeContext';
 
 import SubChart from './Subchart/SubChart';
 
@@ -440,9 +439,7 @@ function ChartComponentWrapper(props) {
         </Box>
 
         <ChartStyleWrapper height="100%">
-          <YearRangeProvider>
-            {chartData.subcharts ? renderMultipleSubcharts() : renderOnlyOneChart()}
-          </YearRangeProvider>
+          {chartData.subcharts ? renderMultipleSubcharts() : renderOnlyOneChart()}
 
           {/* Render subtitle and reference below */}
           <Box sx={{ my: 3 }}>
