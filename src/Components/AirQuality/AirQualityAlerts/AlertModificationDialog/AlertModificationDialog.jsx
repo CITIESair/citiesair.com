@@ -49,7 +49,7 @@ const AlertModificationDialog = (props) => {
   useEffect(() => {
     setMessage();
     setShowNotification(false);
-  }, [crudType]);
+  }, [crudType, setMessage, setShowNotification]);
 
   const handleCurrentSensorChange = (event) => {
     const newSensor = event.target.value;
@@ -164,7 +164,7 @@ const AlertModificationDialog = (props) => {
 
           if (dataType === AQIDataTypes.voc) {
             database = vocDatabase;
-          } else if ([AQIDataTypes.aqi, AQIDataTypes['pm2.5'], AQIDataTypes.pm10_raw].includes(dataType)) {
+          } else if ([AQIDataTypes.aqi, AQIDataTypes['pm2.5'], AQIDataTypes.pm10_raw, AQIDataTypes.co2].includes(dataType)) {
             database = AQIdatabase;
           }
           if (database) {
@@ -387,7 +387,7 @@ const AlertModificationDialog = (props) => {
         setShouldDisableButton(false);
         break;
     }
-  }, [crudType, selectedAlert, editingAlert]);
+  }, [crudType, selectedAlert, editingAlert, alertTypeKey]);
 
   const smallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 

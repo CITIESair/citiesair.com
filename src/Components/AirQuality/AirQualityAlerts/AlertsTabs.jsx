@@ -22,7 +22,8 @@ function AlertTab(props) {
     >
       <AlertsTable
         alertTypeKey={alertTypeKey}
-        alertsForTable={alertsArray} />
+        alertsForTable={alertsArray}
+      />
     </Box>
   );
 }
@@ -46,6 +47,7 @@ export default function AlertsTabs(props) {
     const filteredAlerts = alerts.filter((alert) => {
       const alertType = alert?.alert_type?.toLowerCase();
       if (alertType.includes(alertTypeKey)) return alert;
+      else return null;
     });
 
     const alertsLength = isValidArray(filteredAlerts) ? filteredAlerts.length : "0";

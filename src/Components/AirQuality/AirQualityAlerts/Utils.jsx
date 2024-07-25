@@ -4,9 +4,9 @@ export const returnHoursFromMinutesPastMidnight = (minutes) => {
 }
 
 export const CrudTypes = {
-  add: 'add',
-  edit: 'edit',
-  delete: 'delete'
+  add: 'ADD',
+  edit: 'EDIT',
+  delete: 'DELETE'
 }
 
 export const SharedColumnHeader = {

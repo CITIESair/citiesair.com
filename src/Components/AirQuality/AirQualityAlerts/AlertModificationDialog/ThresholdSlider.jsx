@@ -35,7 +35,7 @@ export const ThresholdSlider = (props) => {
     setSliderRangeMax(localSliderRangeMax);
 
     setNearestDataIndex(findNearestDataIndex(invertSelection ? localSliderRangeMin : localSliderRangeMax));
-  }, [invertSelection, value]);
+  }, [invertSelection, value, max, min]);
 
   const handleSliderChange = (event, newValue) => {
     const val = newValue[invertSelection ? 0 : 1];
