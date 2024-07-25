@@ -10,7 +10,7 @@ import { GeneralAPIendpoints } from "../../API/Utils";
 import { fetchAndProcessCurrentSensorsData } from '../../API/ApiFetch';
 import CurrentAQIGrid, { SimpleCurrentAQIlist } from '../../Components/AirQuality/CurrentAQIGrid';
 import { CurrentAQIGridSize } from '../../Components/AirQuality/CurrentAQIGridSize';
-import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
+import { AQI_Database } from '../../Utils/AirQuality/AirQualityIndexHelper';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import ThemePreferences from '../../Themes/ThemePreferences';
 import { NYUAD } from '../../Utils/GlobalVariables';
@@ -183,7 +183,7 @@ const NYUADbanner = (props) => {
             justifyContent="center"
             flex={1}
           >
-            {AQIdatabase.map((element, index) => (
+            {AQI_Database.map((element, index) => (
               <Tooltip
                 key={index}
                 title={!isOnBannerPage && isSmallScreen && element.category}

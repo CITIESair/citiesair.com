@@ -5,7 +5,7 @@ import { getAlertsApiUrl } from '../API/ApiUrls';
 import { GeneralAPIendpoints } from "../API/Utils";
 import AlertTypes, { ThresholdAlertTypes } from '../Components/AirQuality/AirQualityAlerts/AlertTypes';
 import { isValidArray } from '../Utils/UtilFunctions';
-import AQIDataTypes from '../Utils/AirQuality/DataTypes';
+import { DataTypes } from '../Utils/AirQuality/DataTypes';
 
 const AirQualityAlertContext = createContext();
 
@@ -68,7 +68,7 @@ export function AirQualityAlertProvider({ children }) {
 
     if (allowedDataTypesForThisSensor) {
       return allowedDataTypesForThisSensor
-        .map(dataType => ({ value: dataType, label: AQIDataTypes[dataType].name_title }));
+        .map(dataType => ({ value: dataType, label: DataTypes[dataType].name_title }));
     }
     else return [];
   }

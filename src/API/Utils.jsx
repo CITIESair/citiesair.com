@@ -10,7 +10,8 @@ export const GeneralAPIendpoints = {
   map: "map_public_outdoors_stations",
   alerts: "alerts",
   alertsEmails: "alerts/emails",
-  stats: "stats"
+  stats: "stats",
+  dataTypes: "datatypes"
 };
 
 export const ChartAPIendpoints = {

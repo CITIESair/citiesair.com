@@ -11,7 +11,7 @@ import PlaceIcon from '@mui/icons-material/Place';
 import CategoryIcon from '@mui/icons-material/Category';
 
 import { capitalizePhrase } from '../../../../Utils/UtilFunctions';
-import AQIDataTypes from '../../../../Utils/AirQuality/DataTypes';
+import { DataTypeKeys, DataTypes } from '../../../../Utils/AirQuality/DataTypes';
 import { useContext, useEffect, useState } from 'react';
 import { DashboardContext } from '../../../../ContextProviders/DashboardContext';
 import { fetchDataFromURL } from '../../../../API/ApiFetch';
@@ -19,7 +19,7 @@ import { RESTmethods } from "../../../../API/Utils";
 import { getAlertsApiUrl } from '../../../../API/ApiUrls';
 import { GeneralAPIendpoints } from "../../../../API/Utils";
 import { generateCssBackgroundGradient } from '../../../../Utils/Gradient/GradientUtils';
-import AQIdatabase, { vocDatabase } from '../../../../Utils/AirQuality/AirQualityIndexHelper';
+import { AQI_Database, VOC_Database } from '../../../../Utils/AirQuality/AirQualityIndexHelper';
 
 import { DialogData } from './DialogData';
 import { ThresholdTypeToggle } from './ThresholdTypeToggle';
@@ -62,7 +62,7 @@ const AlertModificationDialog = (props) => {
 
   const handleCurrentDataTypeChange = (event) => {
     const selectedDataTypeKey = event.target.value;
-    const dataType = AQIDataTypes[selectedDataTypeKey];
+    const dataType = DataTypes[selectedDataTypeKey];
     const dataTypeColorAxis = theme.palette.chart.colorAxes[dataType.color_axis];
     const { defaultValueForAlert } = dataTypeColorAxis;
 
@@ -148,7 +148,7 @@ const AlertModificationDialog = (props) => {
 
         const currentDataTypeKey = editingAlert[AirQualityAlertKeys.datatypekey];
         if (currentDataTypeKey && currentDataTypeKey !== "") {
-          const dataType = AQIDataTypes[currentDataTypeKey];
+          const dataType = DataTypes[currentDataTypeKey];
           const dataTypeColorAxis = theme.palette.chart.colorAxes[dataType.color_axis];
           const { colors, minValue, maxValue, defaultValueForAlert, stepsForThreshold } = dataTypeColorAxis;
 
@@ -157,16 +157,17 @@ const AlertModificationDialog = (props) => {
             colors: colors
           });
 
-          // Check if this dataType exists in the AQIdatabase
+          // Check if this dataType exists in the AQI_Database
           // If yes, return value and label accordingly to the marks
           let marks, database;
           const invertSelection = editingAlert[AirQualityAlertKeys.alert_type] === ThresholdAlertTypes.below_threshold.id;
 
-          if (dataType === AQIDataTypes.voc) {
-            database = vocDatabase;
-          } else if ([AQIDataTypes.aqi, AQIDataTypes['pm2.5'], AQIDataTypes.pm10_raw, AQIDataTypes.co2].includes(dataType)) {
-            database = AQIdatabase;
+          if (currentDataTypeKey === DataTypeKeys.voc) {
+            database = VOC_Database;
+          } else if ([DataTypeKeys.aqi, DataTypeKeys.pm2_5, DataTypeKeys.pm10_raw, DataTypeKeys.co2].includes(currentDataTypeKey)) {
+            database = AQI_Database;
           }
+
           if (database) {
             marks = database
               .filter((_, index) => index !== 0) // do not return the lowest category
@@ -179,9 +180,9 @@ const AlertModificationDialog = (props) => {
               })
           }
 
-          const inputUnit = Object.keys(AQIDataTypes)
+          const inputUnit = Object.keys(DataTypes)
             .filter(key => key === editingAlert[AirQualityAlertKeys.datatypekey])
-            .map(key => AQIDataTypes[key].unit)[0]
+            .map(key => DataTypes[key].unit)[0]
 
           thresholdSlider = (
             <ThresholdSlider
@@ -223,7 +224,7 @@ const AlertModificationDialog = (props) => {
                 color="text.secondary"
                 sx={{ mb: 1 }}
               >
-                Alert me if {AQIDataTypes[currentDataTypeKey]?.name_title || 'selected data type'} is:
+                Alert me if {DataTypes[currentDataTypeKey]?.name_title || 'selected data type'} is:
               </Typography>
             </Grid>
 

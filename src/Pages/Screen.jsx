@@ -13,7 +13,7 @@ import { getDomainName, getUrlAfterScreen } from '../Components/AirQuality/AirQu
 
 import RecentHistoricalGraph from '../Components/AirQuality/AirQualityScreen/RecentHistoricalGraph';
 
-import AQIdatabase from '../Utils/AirQuality/AirQualityIndexHelper';
+import { AQI_Database } from '../Utils/AirQuality/AirQualityIndexHelper';
 
 import CustomThemes from '../Themes/CustomThemes';
 
@@ -121,7 +121,7 @@ const Screen = ({ title }) => {
       const sensorData = Object.values(data)[i];
       if (sensorData.sensor?.location_type === "outdoors") {
         outdoorsAQI = sensorData.current.aqi;
-        if (outdoorsAQI <= AQIdatabase[0].aqiUS.high) return null;
+        if (outdoorsAQI <= AQI_Database[0].aqiUS.high) return null;
       }
       else indoorsAQI = sensorData.current.aqi;
     }
@@ -138,7 +138,7 @@ const Screen = ({ title }) => {
           <>Indoors air is
             <Typography
               component="span"
-              color={`${AQIdatabase[0].color[themePreference]} !important`}
+              color={`${AQI_Database[0].color[themePreference]} !important`}
             >
               {` ${comparison} `}
             </Typography>
@@ -168,10 +168,10 @@ const Screen = ({ title }) => {
         },
         '& .flashingRed': {
           '& .MuiTypography-root ': {
-            color: `${AQIdatabase[3].color.Light} !important`,
+            color: `${AQI_Database[3].color.Light} !important`,
             opacity: 0.8
           },
-          color: `${AQIdatabase[3].color.Light} !important`,
+          color: `${AQI_Database[3].color.Light} !important`,
           animation: 'flashingRed 3s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite',
           '@keyframes flashingRed': {
             '0%': {
@@ -247,7 +247,7 @@ const Screen = ({ title }) => {
                 sensorData.current?.healthSuggestion &&
                 <ListItem
                   key={key}
-                  className={sensorData.current?.aqi >= AQIdatabase[2].aqiUS.low ? 'flashingRed' : ''}
+                  className={sensorData.current?.aqi >= AQI_Database[2].aqiUS.low ? 'flashingRed' : ''}
                 >
                   <ListItemText
                     primary={sensorData.current?.healthSuggestion}

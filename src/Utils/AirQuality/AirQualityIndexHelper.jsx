@@ -1,9 +1,9 @@
 import { lightShade, darkShade, maroon } from '../../Themes/CustomColors';
 import { colors } from '@mui/material';
 import ThemePreferences from '../../Themes/ThemePreferences';
-import AQIDataTypes from './DataTypes';
+import { DataTypeKeys, DataTypes } from './DataTypes';
 
-const AQIdatabase = [
+export const AQI_Database = [
   {
     id: 0,
     category: 'Good',
@@ -198,7 +198,7 @@ const AQIdatabase = [
 ];
 
 // From https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme680-ds001.pdf
-export const vocDatabase = [
+export const VOC_Database = [
   {
     id: 0,
     category: 'Excellent',
@@ -285,10 +285,12 @@ export const vocDatabase = [
   }
 ];
 
-export const getCategoryColors = ({ themePreference, dataType, isGradient }) => {
+export const getCategoryColors = ({ themePreference, dataTypeKey, isGradient }) => {
   let database;
-  if (dataType === AQIDataTypes.voc) database = vocDatabase;
-  else database = AQIdatabase;
+  if (dataTypeKey === DataTypeKeys.voc) database = VOC_Database;
+  else database = AQI_Database;
+
+  const dataType = DataTypes[dataTypeKey];
 
   const thresholdMappingName = dataType.threshold_mapping_name;
 
@@ -334,5 +336,3 @@ export const getCategoryColors = ({ themePreference, dataType, isGradient }) => 
     return colorArray;
   }
 }
-
-export default AQIdatabase;

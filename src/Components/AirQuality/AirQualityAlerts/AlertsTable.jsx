@@ -1,12 +1,12 @@
-import { useContext, useState } from 'react';
-import { Box, Button, IconButton, Stack, useMediaQuery, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, ToggleButtonGroup, ToggleButton, Select, FormControl, InputLabel, MenuItem, Alert, Collapse, Fade, Slide, Grow } from '@mui/material';
+import { useState } from 'react';
+import { Box, Button, IconButton, Stack, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, Alert, Grow } from '@mui/material';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddAlarmIcon from '@mui/icons-material/AddAlarm';
 
 import { useTheme } from '@emotion/react';
-import { AirQualityAlertKeys, alertPlaceholder, getAlertPlaceholder, useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
+import { AirQualityAlertKeys, getAlertPlaceholder, useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
 
 import AlertTypes from './AlertTypes';
 import { ThresholdAlertTypes } from './AlertTypes';
@@ -16,7 +16,7 @@ import AlertModificationDialog from './AlertModificationDialog/AlertModification
 
 import { returnHoursFromMinutesPastMidnight, CrudTypes, SharedColumnHeader } from './Utils';
 import { TransitionGroup } from 'react-transition-group';
-import AQIDataTypes from '../../../Utils/AirQuality/DataTypes';
+import { DataTypes } from '../../../Utils/AirQuality/DataTypes';
 
 const AlertsTable = (props) => {
 
@@ -80,9 +80,9 @@ const AlertsTable = (props) => {
 
                           <TableCell>
                             {
-                              Object.keys(AQIDataTypes)
+                              Object.keys(DataTypes)
                                 .filter(key => key === alert?.[AirQualityAlertKeys.datatypekey])
-                                .map(key => AQIDataTypes[key].name_title)[0]
+                                .map(key => DataTypes[key].name_title)[0]
                             }
                           </TableCell>
 
@@ -91,9 +91,9 @@ const AlertsTable = (props) => {
                               {ThresholdAlertTypes[alert?.alert_type].sign}{alert?.threshold_value}
                               &nbsp;
                               {
-                                Object.keys(AQIDataTypes)
+                                Object.keys(DataTypes)
                                   .filter(key => key === alert?.[AirQualityAlertKeys.datatypekey])
-                                  .map(key => AQIDataTypes[key].unit)[0]
+                                  .map(key => DataTypes[key].unit)[0]
                               }
                             </TableCell>
                           ) : null}

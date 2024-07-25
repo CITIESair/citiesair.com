@@ -1,7 +1,7 @@
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, styled } from '@mui/material';
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
-import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
+import { AQI_Database } from '../../Utils/AirQuality/AirQualityIndexHelper';
 import { useContext } from 'react';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import { CITIESair } from '../../Utils/GlobalVariables';
@@ -63,7 +63,7 @@ function AirQualityIndexTable(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {AQIdatabase.map((element, index) => (
+            {AQI_Database.map((element, index) => (
               <TableRow
                 key={index}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}

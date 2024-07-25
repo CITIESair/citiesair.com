@@ -10,7 +10,7 @@ import { getFormattedLastSeen } from "./SensorStatus";
 import { SensorStatus } from "./SensorStatus";
 import { TemperatureUnits, getFormattedTemperature, calculateHeatIndex } from "../../Utils/AirQuality/TemperatureUtils";
 
-import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
+import { AQI_Database } from '../../Utils/AirQuality/AirQualityIndexHelper';
 
 import CustomThemes from '../../Themes/CustomThemes';
 import { useContext } from 'react';
@@ -285,7 +285,7 @@ const displayLastUpdateAndSensorStatus = ({ sensor, size, current, isScreen }) =
             <ErrorIcon
               sx={{
                 '& *': {
-                  color: `${AQIdatabase[3].color[isScreen ? ThemePreferences.light : themePreference]} !important` // red
+                  color: `${AQI_Database[3].color[isScreen ? ThemePreferences.light : themePreference]} !important` // red
                 },
                 mr: 0.5
               }} />

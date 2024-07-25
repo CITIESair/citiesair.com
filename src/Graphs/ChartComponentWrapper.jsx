@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import { Box, Tab, useMediaQuery, Typography, Menu, MenuItem, Stack, Skeleton } from '@mui/material/';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-import AQIDataTypes from '../Utils/AirQuality/DataTypes';
+import { DataTypes } from '../Utils/AirQuality/DataTypes';
 import { fetchDataFromURL } from '../API/ApiFetch';
 import { getChartApiUrl, getCorrelationChartApiUrl, getHistoricalChartApiUrl } from "../API/ApiUrls";
 import { ChartAPIendpoints, ChartAPIendpointsOrder } from "../API/Utils";
@@ -102,11 +102,11 @@ function ChartComponentWrapper(props) {
 
   useEffect(() => {
     // Using keys returned from backend,
-    // generate the allowedDataTypes object from AQIDataTypes
+    // generate the allowedDataTypes object from DataTypes
     if (chartData.allowedDataTypes) {
       const dataTypesArr = [];
       for (let dataType of chartData.allowedDataTypes) {
-        const { name_title, name_short, unit } = AQIDataTypes[dataType];
+        const { name_title, name_short, unit } = DataTypes[dataType];
         dataTypesArr.push({
           key: dataType,
           name_title,

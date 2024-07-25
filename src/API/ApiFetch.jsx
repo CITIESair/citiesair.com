@@ -1,5 +1,5 @@
 import { calculateSensorStatus } from "../Components/AirQuality/SensorStatus";
-import AQIdatabase from "../Utils/AirQuality/AirQualityIndexHelper";
+import { AQI_Database } from "../Utils/AirQuality/AirQualityIndexHelper";
 import parse from 'html-react-parser';
 import { SupportedFetchExtensions, RESTmethods } from "./Utils";
 import { SensorStatus } from "../Components/AirQuality/SensorStatus";
@@ -72,7 +72,7 @@ export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {
         if (sensorData.current) {
           const aqi = sensorData.current.aqi;
           if (typeof aqi?.categoryIndex === 'number' && !isNaN(aqi?.categoryIndex)) {
-            const { color, category, healthSuggestions } = AQIdatabase[aqi.categoryIndex];
+            const { color, category, healthSuggestions } = AQI_Database[aqi.categoryIndex];
             const healthSuggestion = parse(healthSuggestions[sensorData.sensor?.location_type] || "");
 
             sensorData.current = {

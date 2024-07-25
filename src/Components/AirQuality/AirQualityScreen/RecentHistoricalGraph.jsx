@@ -2,7 +2,7 @@
 /* eslint-disable */
 import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
-import AQIdatabase from '../../../Utils/AirQuality/AirQualityIndexHelper';
+import { AQI_Database } from '../../../Utils/AirQuality/AirQualityIndexHelper';
 import { SensorStatus } from '../SensorStatus';
 import { Box } from '@mui/material';
 
@@ -81,7 +81,7 @@ const RecentHistoricalGraph = (props) => {
     // Calculate the maximum AQI for the y-axis to display
     maxAQItoDisplay = Math.ceil(maxAQItoDisplay / 50) * 50; // round to the nearest 50 points
 
-    for (let category of AQIdatabase) {
+    for (let category of AQI_Database) {
       if (maxAQItoDisplay >= category.aqiUS.low && maxAQItoDisplay <= category.aqiUS.high) {
         maxAQItoDisplay = category.aqiUS.high === Infinity ? maxAQItoDisplay : category.aqiUS.high;
         break;
@@ -99,13 +99,13 @@ const RecentHistoricalGraph = (props) => {
 
     // 7. Add the background category layer and the AQI levels (rectangles) and the grids
     let font_size = Math.max(
-      Math.floor(((AQIdatabase[1].aqiUS.high - AQIdatabase[0].aqiUS.high) / maxAQItoDisplay) * height / 2),
+      Math.floor(((AQI_Database[1].aqiUS.high - AQI_Database[0].aqiUS.high) / maxAQItoDisplay) * height / 2),
       20);
 
     let marginText = Math.floor(font_size / 5);
     // Loop through all the aqi_category and add each category into the graph
-    for (let i = 0; i < AQIdatabase.length; i++) {
-      const category = AQIdatabase[i];
+    for (let i = 0; i < AQI_Database.length; i++) {
+      const category = AQI_Database[i];
       const upper = category.aqiUS.high === Infinity ? maxAQItoDisplay : category.aqiUS.high;
       const lower = category.aqiUS.low;
 
@@ -197,7 +197,7 @@ const RecentHistoricalGraph = (props) => {
       // Append the circle marker at the end of this line chart to denote its liveness
       const mostRecentData = sensorData.historical?.length > 0 ? sensorData.historical?.[0] : null;
       if (mostRecentData) {
-        const category = AQIdatabase[mostRecentData?.aqi?.categoryIndex];
+        const category = AQI_Database[mostRecentData?.aqi?.categoryIndex];
         let color;
         if (category) color = category.color[ThemePreferences.light];
 
