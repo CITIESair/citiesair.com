@@ -74,7 +74,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
 
         // Count the number of active sensors at NYUAD to display it
         const activeSensorCount = data.reduce((count, obj) => {
-          return obj?.current?.sensor_status === SensorStatus.active ? count + 1 : count;
+          return obj?.sensor?.sensor_status === SensorStatus.active ? count + 1 : count;
         }, 0);
         setNyuadSensorCounts({
           active: activeSensorCount,

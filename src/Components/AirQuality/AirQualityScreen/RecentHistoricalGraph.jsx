@@ -212,12 +212,12 @@ const RecentHistoricalGraph = (props) => {
             ")"
           )
           .attr("fill",
-            sensorData.current?.sensor_status === SensorStatus.active
+            sensorData.sensor?.sensor_status === SensorStatus.active
               ? color
               : CustomThemes.universal.palette.inactiveSensor)
           ;
 
-        sensorData.current?.sensor_status === SensorStatus.active &&
+        sensorData.sensor?.sensor_status === SensorStatus.active &&
           markerWrapper.append("circle")
             .attr("cx", 0)
             .attr("cy", 0)
@@ -229,7 +229,7 @@ const RecentHistoricalGraph = (props) => {
           .attr("cx", 0)
           .attr("cy", 0)
           .attr("stroke", "#666")
-          .attr("class", sensorData.current?.sensor_status === SensorStatus.active && "pulse-dot")
+          .attr("class", sensorData.sensor?.sensor_status === SensorStatus.active && "pulse-dot")
           .attr("r", dotRadius);
 
         markerWrapper.append("text")

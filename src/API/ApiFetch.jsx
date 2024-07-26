@@ -65,10 +65,11 @@ export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {
       Object.entries(data).forEach(([_, sensorData]) => {
         // Calculate if the sensor is currently active or not
         const now = new Date();
-        const currentTimestamp = new Date(sensorData.current?.timestamp);
-        const lastSeenInMinutes = Math.round((now - currentTimestamp) / 1000 / 60);
+        const lastSeenTimestamp = new Date(sensorData.sensor?.last_seen || sensorData.current?.timestamp);
+        const lastSeenInMinutes = Math.round((now - lastSeenTimestamp) / 1000 / 60);
         const sensor_status = calculateSensorStatus(lastSeenInMinutes);
 
+        // Update current data
         if (sensorData.current) {
           const aqi = sensorData.current.aqi;
           if (typeof aqi?.categoryIndex === 'number' && !isNaN(aqi?.categoryIndex)) {
@@ -80,11 +81,16 @@ export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {
               color: sensor_status === SensorStatus.active ? color
                 : CustomThemes.universal.palette.inactiveSensor, // only assign AQI color if the sensor is active
               category,
-              healthSuggestion,
-              lastSeenInMinutes,
-              sensor_status
+              healthSuggestion
             }
           }
+        }
+
+        // Update sensor metadata
+        sensorData.sensor = {
+          ...sensorData.sensor,
+          lastSeenInMinutes,
+          sensor_status
         }
       });
       return data;

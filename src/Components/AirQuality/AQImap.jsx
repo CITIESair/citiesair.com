@@ -441,10 +441,9 @@ const AQImap = (props) => {
                                         <Typography variant="caption">
                                             <Typography variant='caption' fontWeight="500">Status:</Typography>
                                             &nbsp;
-                                            {location.current?.sensor_status}
-                                            {location.current?.timestamp
-                                                ? ` (${getFormattedLastSeen(location.current.lastSeenInMinutes)})`
-                                                : ''}
+                                            {
+                                                `${location.sensor?.sensor_status} (${getFormattedLastSeen(location.sensor?.lastSeenInMinutes)})`
+                                            }
                                         </Typography>
                                     </StyledLeafletPopup>
                                 }

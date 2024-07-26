@@ -113,7 +113,7 @@ const Screen = ({ title }) => {
 
   const AirQualityComparison = () => {
     // Only display air quality comparison if every sensor is currently active
-    if (!Object.values(data).every((sensorData) => sensorData.current?.sensor_status === SensorStatus.active)) return null;
+    if (!Object.values(data).every((sensorData) => sensorData.sensor?.sensor_status === SensorStatus.active)) return null;
 
     let outdoorsAQI, indoorsAQI;
     // Don't display comparison if outdoor air is good

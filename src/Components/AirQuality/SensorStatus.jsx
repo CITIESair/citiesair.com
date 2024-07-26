@@ -1,7 +1,8 @@
 export const SensorStatus = {
   active: "active",
   temporaryOffline: "temporaryOffline",
-  offline: "offline"
+  offline: "offline",
+  unknown: "unknown"
 };
 
 export const SensorStatusCriteria = [
@@ -29,11 +30,17 @@ export const SensorStatusCriteria = [
 ];
 
 export const calculateSensorStatus = (lastSeenInMinutes) => {
-  for (let i = 0; i < SensorStatusCriteria.length; i++) {
-    const category = SensorStatusCriteria[i];
-    if (category.cutoffInMinutes.low <= lastSeenInMinutes && lastSeenInMinutes <= category.cutoffInMinutes.high) {
-      return category.name;
+  try {
+    for (let i = 0; i < SensorStatusCriteria.length; i++) {
+      const category = SensorStatusCriteria[i];
+      if (category.cutoffInMinutes.low <= lastSeenInMinutes && lastSeenInMinutes <= category.cutoffInMinutes.high) {
+        return category.name;
+      }
     }
+    return SensorStatus.unknown;
+
+  } catch {
+    return SensorStatus.unknown;
   }
 };
 

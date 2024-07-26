@@ -52,7 +52,7 @@ const CurrentAQIGrid = (props) => {
         item
         {...gridSizes}
         sx={{
-          ...(current?.sensor_status !== SensorStatus.active && {
+          ...(sensor?.sensor_status !== SensorStatus.active && {
             '& *': { color: CustomThemes.universal.palette.inactiveSensor }
           })
         }}
@@ -99,7 +99,7 @@ const CurrentAQIGrid = (props) => {
           '& *': {
             color:
               isScreen ? (
-                current?.sensor_status === SensorStatus.active ?
+                sensor?.sensor_status === SensorStatus.active ?
                   '#c8dcff' : CustomThemes.universal.palette.inactiveSensor
               )
                 : 'text.secondary'
@@ -122,7 +122,7 @@ const CurrentAQIGrid = (props) => {
         </Box>
 
         {
-          current?.sensor_status !== SensorStatus.active &&
+          sensor?.sensor_status !== SensorStatus.active &&
           <Typography variant={ElementSizes[size].sensorStatus} className="condensedFont">
             {returnSensorStatusString(current)}
           </Typography>
@@ -220,7 +220,7 @@ export const SimpleCurrentAQIlist = (props) => {
               key={index}
               xs={6}
               sx={{
-                ...(sensorData.current?.sensor_status !== SensorStatus.active && {
+                ...(sensorData.sensor?.sensor_status !== SensorStatus.active && {
                   '& *': { color: CustomThemes.universal.palette.inactiveSensor }
                 })
               }}
@@ -267,7 +267,7 @@ export const SimpleCurrentAQIlist = (props) => {
 const displayLastUpdateAndSensorStatus = ({ sensor, size, current, isScreen }) => {
   const { themePreference } = useContext(PreferenceContext);
 
-  if (isScreen && current.sensor_status === SensorStatus.active) return null;
+  if (isScreen && sensor?.sensor_status === SensorStatus.active) return null;
   else
     return (
       <Typography
@@ -279,7 +279,7 @@ const displayLastUpdateAndSensorStatus = ({ sensor, size, current, isScreen }) =
         }}
       >
         {
-          current?.sensor_status !== SensorStatus.active
+          sensor?.sensor_status !== SensorStatus.active
           &&
           <>
             <ErrorIcon
@@ -292,10 +292,7 @@ const displayLastUpdateAndSensorStatus = ({ sensor, size, current, isScreen }) =
             Offline.&nbsp;
           </>
         }
-        Last update:
-        {(current?.timestamp || sensor?.last_seen)
-          ? ` ${getFormattedLastSeen(current?.lastSeenInMinutes)}`
-          : '--'}
+        {`Last update: ${getFormattedLastSeen(sensor?.lastSeenInMinutes)}`}
       </Typography>
     )
 }
