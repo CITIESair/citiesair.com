@@ -27,6 +27,7 @@ import { fetchAndProcessCurrentSensorsData } from '../API/ApiFetch';
 import { AppRoutes } from '../Utils/AppRoutes';
 import { PreferenceContext } from '../ContextProviders/PreferenceContext';
 import { CITIESair } from '../Utils/GlobalVariables';
+import { INACTIVE_SENSOR_COLORS } from '../Themes/CustomColors';
 
 const Screen = ({ title }) => {
   const { temperatureUnitPreference, themePreference } = useContext(PreferenceContext);
@@ -207,7 +208,7 @@ const Screen = ({ title }) => {
             <Typography variant="h3" fontWeight="500" color="white">
               AIR QUALITY INDEX
             </Typography>
-            <Typography variant="h4" className='condensedFont' color={CustomThemes.universal.palette.inactiveSensor}>
+            <Typography variant="h4" className='condensedFont' color={INACTIVE_SENSOR_COLORS.screen}>
               Particulate Matter PM2.5
             </Typography>
           </Box>
@@ -238,7 +239,7 @@ const Screen = ({ title }) => {
                 pr: 3,
               },
               '& .MuiTypography-root, .MuiListItem-root': {
-                color: CustomThemes.universal.palette.inactiveSensor
+                color: INACTIVE_SENSOR_COLORS.screen
               }
             }}>
             <AirQualityComparison />

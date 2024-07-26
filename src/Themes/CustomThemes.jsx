@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import { colors } from '@mui/material';
 import ThemePreferences from './ThemePreferences';
-import { getCategoryColors } from '../Utils/AirQuality/AirQualityIndexHelper';
+import { getCategoryColorAxis, getTextColorsForAQI } from '../Utils/AirQuality/AirQualityIndexHelper';
 import { darkShade, lightShade, maroon, darkShadeColorAxis } from './CustomColors';
 import { DataTypeKeys, DataTypes } from '../Utils/AirQuality/DataTypes';
 
@@ -54,7 +54,7 @@ const getColorAxisForDataTypesWithCategorization = ({ isGradient, themePreferenc
   [
     DataTypeKeys.aqi, DataTypeKeys.pm2_5, DataTypeKeys.pm10_raw, DataTypeKeys.co2, DataTypeKeys.voc
   ].reduce((acc, dataTypeKey) => {
-    acc[DataTypes[dataTypeKey].color_axis] = getCategoryColors({
+    acc[DataTypes[dataTypeKey].color_axis] = getCategoryColorAxis({
       themePreference,
       dataTypeKey,
       isGradient
@@ -78,7 +78,8 @@ const CustomThemes = {
       customBackground: '#202020',
       customAlternateBackground: '#303030',
       text: {
-        secondaryRGB: '#c1c1c1'
+        secondaryRGB: '#c1c1c1',
+        aqi: getTextColorsForAQI({ themePreference: ThemePreferences.dark })
       },
       chart: {
         optionsColors: {
@@ -117,7 +118,8 @@ const CustomThemes = {
       customBackground: '#f6f6f6',
       customAlternateBackground: '#ffffff',
       text: {
-        secondaryRGB: '#666666'
+        secondaryRGB: '#666666',
+        aqi: getTextColorsForAQI({ themePreference: ThemePreferences.light })
       },
       chart: {
         optionsColors: {
@@ -147,13 +149,13 @@ const CustomThemes = {
   universal: {
     palette: {
       NYUpurple: '#57068c',
-      backgroundColorForNavLink: 'rgba(0, 0, 0, 0.2)',
-      inactiveSensor: '#bbbbbb'
+      backgroundColorForNavLink: 'rgba(0, 0, 0, 0.2)'
     },
     typography: {
       fontFamily: "'IBM Plex Sans', sans-serif !important"
     }
   }
 };
+
 
 export default CustomThemes;

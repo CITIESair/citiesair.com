@@ -73,13 +73,11 @@ export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {
         if (sensorData.current) {
           const aqi = sensorData.current.aqi;
           if (typeof aqi?.categoryIndex === 'number' && !isNaN(aqi?.categoryIndex)) {
-            const { color, category, healthSuggestions } = AQI_Database[aqi.categoryIndex];
+            const { category, healthSuggestions } = AQI_Database[aqi.categoryIndex];
             const healthSuggestion = parse(healthSuggestions[sensorData.sensor?.location_type] || "");
 
             sensorData.current = {
               ...sensorData.current,
-              color: sensor_status === SensorStatus.active ? color
-                : CustomThemes.universal.palette.inactiveSensor, // only assign AQI color if the sensor is active
               category,
               healthSuggestion
             }

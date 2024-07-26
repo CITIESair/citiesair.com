@@ -11,12 +11,11 @@ import { SensorStatus } from "./SensorStatus";
 import { TemperatureUnits, getFormattedTemperature, calculateHeatIndex } from "../../Utils/AirQuality/TemperatureUtils";
 
 import { AQI_Database } from '../../Utils/AirQuality/AirQualityIndexHelper';
-
-import CustomThemes from '../../Themes/CustomThemes';
 import { useContext } from 'react';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import { CurrentAQIGridSize, ElementSizes } from './CurrentAQIGridSize';
-import ThemePreferences from '../../Themes/ThemePreferences';
+import { useTheme } from '@emotion/react';
+import { INACTIVE_SENSOR_COLORS } from '../../Themes/CustomColors';
 
 const CurrentAQIGrid = (props) => {
   const {
@@ -44,20 +43,20 @@ const CurrentAQIGrid = (props) => {
 
 
   const CurrentAQISingleSensor = (props) => {
-    const { sensor, current, gridSizes } = props;
-    const { themePreference } = useContext(PreferenceContext);
+    const { sensor, current, gridSizes, isScreen } = props;
+    const theme = useTheme();
 
     return (
       <Grid
         item
         {...gridSizes}
-        sx={{
-          ...(sensor?.sensor_status !== SensorStatus.active && {
-            '& *': { color: CustomThemes.universal.palette.inactiveSensor }
-          })
-        }}
       >
-        <Box sx={{ '& *': { color: current?.color?.[isScreen ? ThemePreferences.light : themePreference] } }}>
+        <Box sx={{
+          '& .MuiTypography-root': {
+            color: current?.category ? theme.palette.text.aqi[current.category]
+              : (isScreen ? INACTIVE_SENSOR_COLORS.screen : 'text.secondary')
+          }
+        }}>
           <Typography variant={ElementSizes[size].locationAndCategory} fontWeight="500" className='condensedFont' textTransform="capitalize">
             {returnLocationName({
               useLocationShort,
@@ -89,7 +88,7 @@ const CurrentAQIGrid = (props) => {
             display="block"
             fontWeight="500"
             className='condensedFont'
-            color={isScreen ? CustomThemes.universal.palette.inactiveSensor : 'text.secondary'}
+            color={isScreen ? INACTIVE_SENSOR_COLORS.screen : 'text.secondary'}
           >
             {`PM2.5: ${current?.["pm2.5"] || "--"} μg/m3`}
           </Typography> : null
@@ -100,7 +99,7 @@ const CurrentAQIGrid = (props) => {
             color:
               isScreen ? (
                 sensor?.sensor_status === SensorStatus.active ?
-                  '#c8dcff' : CustomThemes.universal.palette.inactiveSensor
+                  '#c8dcff' : INACTIVE_SENSOR_COLORS.screen
               )
                 : 'text.secondary'
           }, mt: ElementSizes[size].meteroDataMarginTop
@@ -117,7 +116,7 @@ const CurrentAQIGrid = (props) => {
             </Typography>
           }
           {
-            showLastUpdate && displayLastUpdateAndSensorStatus({ sensor, size, current, isScreen })
+            showLastUpdate && displayLastUpdateAndSensorStatus({ sensor, size, isScreen })
           }
         </Box>
 
@@ -159,6 +158,7 @@ const CurrentAQIGrid = (props) => {
               key={index}
               sensor={sensorData.sensor}
               current={sensorData.current}
+              isScreen={isScreen}
               gridSizes={getGridItemSizes({
                 itemIndex: index,
                 numOfItems: Object.keys(currentSensorsData).length
@@ -190,7 +190,7 @@ export const SimpleCurrentAQIlist = (props) => {
     size = CurrentAQIGridSize.medium
   } = props;
 
-  const { themePreference } = useContext(PreferenceContext);
+  const theme = useTheme();
 
   const displayAQI = ({ aqi, category }) => {
     if (!aqi) return "--";
@@ -219,11 +219,6 @@ export const SimpleCurrentAQIlist = (props) => {
               item
               key={index}
               xs={6}
-              sx={{
-                ...(sensorData.sensor?.sensor_status !== SensorStatus.active && {
-                  '& *': { color: CustomThemes.universal.palette.inactiveSensor }
-                })
-              }}
               display="block"
             >
               <Typography
@@ -244,7 +239,12 @@ export const SimpleCurrentAQIlist = (props) => {
                 })}
                 :
                 &nbsp;
-                <Box component="span" color={sensorData.current?.color[themePreference]}>
+                <Box
+                  component="span"
+                  color={
+                    sensorData?.current?.category ? theme.palette.text.aqi[sensorData.current.category] : 'text.secondary'
+                  }
+                >
                   {displayAQI({ aqi: sensorData.current?.aqi?.val, category: sensorData.current?.category })}
                 </Box>
               </Typography>
@@ -264,8 +264,8 @@ export const SimpleCurrentAQIlist = (props) => {
   );
 }
 
-const displayLastUpdateAndSensorStatus = ({ sensor, size, current, isScreen }) => {
-  const { themePreference } = useContext(PreferenceContext);
+const displayLastUpdateAndSensorStatus = ({ sensor, size, isScreen }) => {
+  const theme = useTheme();
 
   if (isScreen && sensor?.sensor_status === SensorStatus.active) return null;
   else
@@ -285,7 +285,7 @@ const displayLastUpdateAndSensorStatus = ({ sensor, size, current, isScreen }) =
             <ErrorIcon
               sx={{
                 '& *': {
-                  color: `${AQI_Database[3].color[isScreen ? ThemePreferences.light : themePreference]} !important` // red
+                  color: `${theme.palette.text.aqi[AQI_Database[3].category]} !important` // red
                 },
                 mr: 0.5
               }} />

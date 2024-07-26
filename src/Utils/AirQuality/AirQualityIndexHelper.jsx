@@ -1,7 +1,8 @@
-import { lightShade, darkShade, maroon } from '../../Themes/CustomColors';
+import { lightShade, darkShade, maroon, INACTIVE_SENSOR_COLORS } from '../../Themes/CustomColors';
 import { colors } from '@mui/material';
 import ThemePreferences from '../../Themes/ThemePreferences';
 import { DataTypeKeys, DataTypes } from './DataTypes';
+import { SensorStatus } from '../../Components/AirQuality/SensorStatus';
 
 export const AQI_Database = [
   {
@@ -285,7 +286,7 @@ export const VOC_Database = [
   }
 ];
 
-export const getCategoryColors = ({ themePreference, dataTypeKey, isGradient }) => {
+export const getCategoryColorAxis = ({ themePreference = ThemePreferences.light, dataTypeKey, isGradient }) => {
   let database;
   if (dataTypeKey === DataTypeKeys.voc) database = VOC_Database;
   else database = AQI_Database;
@@ -335,4 +336,19 @@ export const getCategoryColors = ({ themePreference, dataTypeKey, isGradient }) 
 
     return colorArray;
   }
+}
+
+export const getTextColorsForAQI = ({ themePreference = ThemePreferences.light }) => {
+  const obj = AQI_Database
+    .reduce((acc, category) => {
+      return ({
+        ...acc,
+        [category.category]: category.color[themePreference]
+      })
+    }, {});
+
+  obj[SensorStatus.offline] = INACTIVE_SENSOR_COLORS[themePreference];
+  obj.screen = INACTIVE_SENSOR_COLORS.screen;
+
+  return obj;
 }

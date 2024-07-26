@@ -9,7 +9,7 @@ import L from 'leaflet';
 
 import LaunchIcon from '@mui/icons-material/Launch';
 
-import { getFormattedLastSeen } from "./SensorStatus";
+import { getFormattedLastSeen, SensorStatus } from "./SensorStatus";
 
 import { getFormattedTemperature, TemperatureUnits } from '../../Utils/AirQuality/TemperatureUtils';
 
@@ -181,6 +181,7 @@ const AQImap = (props) => {
     const MinimapControl = ({ position, zoom, mapData }) => {
         const parentMap = useMap();
         const mapZoom = zoom || minZoom - 2;
+        const theme = useTheme();
 
         // Memoize the minimap so it's not affected by position changes
         const minimap = useMemo(
@@ -204,7 +205,7 @@ const AQImap = (props) => {
                                 key={key}
                                 center={[location.sensor?.coordinates?.latitude, location.sensor?.coordinates?.longitude]}
                                 pathOptions={{
-                                    fillColor: location.current?.color?.[themePreference] || CustomThemes.universal.palette.inactiveSensor,
+                                    fillColor: theme.palette.text.aqi[location?.current?.category || SensorStatus.offline],
                                     radius: 3,
                                     weight: 0,
                                     fillOpacity: 1
@@ -336,7 +337,7 @@ const AQImap = (props) => {
                     mapData ? Object.entries(mapData).map(([key, location]) => {
                         const markerIcon = new L.DivIcon({
                             className: aqiMarkerIconClass,
-                            html: `<div aria-hidden={true} style="background-color: ${location?.current?.color?.[themePreference] || CustomThemes.universal.palette.inactiveSensor}">${displayAqiValue(location)}</div>`
+                            html: `<div aria-hidden={true} style="background-color: ${theme.palette.text.aqi[location?.current?.category || SensorStatus.offline]}">${displayAqiValue(location)}</div>`
                         });
 
                         return (
@@ -404,7 +405,7 @@ const AQImap = (props) => {
                                         }
 
 
-                                        <Box sx={{ '& *': { color: location.current?.color?.[themePreference] || CustomThemes.universal.palette.inactiveSensor }, mb: 2 }}>
+                                        <Box sx={{ '& *': { color: theme.palette.text.aqi[location?.current?.category || SensorStatus.offline] }, mb: 2 }}>
                                             <Typography variant={smallScreen ? 'h4' : 'h3'} fontWeight="500" lineHeight={0.9}>
                                                 {displayAqiValue(location)}
                                                 <Typography variant='caption' fontWeight="500">(US AQI)</Typography>

@@ -1,3 +1,5 @@
+import { colors } from "@mui/material";
+import ThemePreferences from "./ThemePreferences";
 
 export const darkShade = 400;
 export const lightShade = 600;
@@ -19,3 +21,9 @@ export const maroon = {
   A400: '#ff1b2a',
   A700: '#ff0212'
 };
+
+export const INACTIVE_SENSOR_COLORS = {
+  [ThemePreferences.light]: colors.grey[600],
+  [ThemePreferences.dark]: colors.grey[300],
+  screen: colors.grey.A400
+}
