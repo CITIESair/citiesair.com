@@ -53,8 +53,9 @@ const CurrentAQIGrid = (props) => {
       >
         <Box sx={{
           '& .MuiTypography-root': {
-            color: current?.category ? theme.palette.text.aqi[current.category]
-              : (isScreen ? INACTIVE_SENSOR_COLORS.screen : 'text.secondary')
+            color: (current?.category && sensor.sensor_status === SensorStatus.active) ?
+              theme.palette.text.aqi[current.category]
+              : (isScreen ? INACTIVE_SENSOR_COLORS.screen : theme.palette.text.aqi[SensorStatus.offline])
           }
         }}>
           <Typography variant={ElementSizes[size].locationAndCategory} fontWeight="500" className='condensedFont' textTransform="capitalize">
@@ -242,7 +243,9 @@ export const SimpleCurrentAQIlist = (props) => {
                 <Box
                   component="span"
                   color={
-                    sensorData?.current?.category ? theme.palette.text.aqi[sensorData.current.category] : 'text.secondary'
+                    (sensorData?.current?.category && sensorData.sensor?.sensor_status) ?
+                      theme.palette.text.aqi[sensorData.current.category] :
+                      'text.secondary'
                   }
                 >
                   {displayAQI({ aqi: sensorData.current?.aqi?.val, category: sensorData.current?.category })}

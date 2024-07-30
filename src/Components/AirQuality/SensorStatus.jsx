@@ -1,6 +1,6 @@
 export const SensorStatus = {
   active: "active",
-  temporaryOffline: "temporaryOffline",
+  temporaryOffline: "temporarily offline",
   offline: "offline",
   unknown: "unknown"
 };
@@ -16,14 +16,14 @@ export const SensorStatusCriteria = [
   {
     name: SensorStatus.temporaryOffline,
     cutoffInMinutes: {
-      low: 3 * 60,
+      low: 2 * 60 + 1,
       high: 6 * 60
     }
   },
   {
     name: SensorStatus.offline,
     cutoffInMinutes: {
-      low: 7 * 60,
+      low: 6 * 60 + 1,
       high: Infinity
     }
   }

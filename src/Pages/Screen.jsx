@@ -15,8 +15,6 @@ import RecentHistoricalGraph from '../Components/AirQuality/AirQualityScreen/Rec
 
 import { AQI_Database } from '../Utils/AirQuality/AirQualityIndexHelper';
 
-import CustomThemes from '../Themes/CustomThemes';
-
 import QRCode from "react-qr-code";
 
 import CurrentAQIGrid from '../Components/AirQuality/CurrentAQIGrid';

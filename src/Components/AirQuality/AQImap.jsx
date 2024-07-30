@@ -19,6 +19,7 @@ import { styled } from '@mui/material/styles';
 import CustomThemes from '../../Themes/CustomThemes';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import { NYUAD } from '../../Utils/GlobalVariables';
+import { INACTIVE_SENSOR_COLORS } from '../../Themes/CustomColors';
 
 const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
     '& .leaflet-popup-tip-container': {
@@ -205,7 +206,8 @@ const AQImap = (props) => {
                                 key={key}
                                 center={[location.sensor?.coordinates?.latitude, location.sensor?.coordinates?.longitude]}
                                 pathOptions={{
-                                    fillColor: theme.palette.text.aqi[location?.current?.category || SensorStatus.offline],
+                                    fillColor: (location?.current?.category && location?.sensor?.sensor_status === SensorStatus.active) ?
+                                        theme.palette.text.aqi[location.current.category] : theme.palette.text.aqi[SensorStatus.offline],
                                     radius: 3,
                                     weight: 0,
                                     fillOpacity: 1
@@ -335,9 +337,12 @@ const AQImap = (props) => {
                 <AttributionControl position="bottomright" prefix={false} />
                 {
                     mapData ? Object.entries(mapData).map(([key, location]) => {
+                        const markerColor = (location?.current?.category && location?.sensor?.sensor_status === SensorStatus.active) ?
+                            theme.palette.text.aqi[location.current.category] : theme.palette.text.aqi[SensorStatus.offline];
+
                         const markerIcon = new L.DivIcon({
                             className: aqiMarkerIconClass,
-                            html: `<div aria-hidden={true} style="background-color: ${theme.palette.text.aqi[location?.current?.category || SensorStatus.offline]}">${displayAqiValue(location)}</div>`
+                            html: `<div aria-hidden={true} style="background-color: ${markerColor}">${displayAqiValue(location)}</div>`
                         });
 
                         return (
@@ -405,7 +410,7 @@ const AQImap = (props) => {
                                         }
 
 
-                                        <Box sx={{ '& *': { color: theme.palette.text.aqi[location?.current?.category || SensorStatus.offline] }, mb: 2 }}>
+                                        <Box sx={{ '& *': { color: markerColor }, mb: 2 }}>
                                             <Typography variant={smallScreen ? 'h4' : 'h3'} fontWeight="500" lineHeight={0.9}>
                                                 {displayAqiValue(location)}
                                                 <Typography variant='caption' fontWeight="500">(US AQI)</Typography>
