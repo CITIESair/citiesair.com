@@ -20,7 +20,7 @@ This directory contains files that deal with RestAPI calls to the backend (api.c
     - `EDIT`
     - `DELETE`
 
-      The later 3 methods are only really used to CRUD [alerts](src/Components/AirQuality/AirQualityAlerts) and [emails](src/Components/AirQuality/AirQualityAlerts/EmailsInput.jsx) for the alerts.
+      The later 3 methods are only really used to CRUD [alerts](../../API/src/Components/AirQuality/AirQualityAlerts) and [emails](../../API/src/Components/AirQuality/AirQualityAlerts/EmailsInput.jsx) for the alerts.
 
       `POST` is also used for Login
 
@@ -34,4 +34,8 @@ This directory contains files that deal with RestAPI calls to the backend (api.c
 
 - **ApiUrls.jsx**
 
-  This file contains enumerations and functions to return the correct `url` for all API calls to the backend, such as getting chart data, TV screen data, and so on.
+  This file contains functions to return the correct `url` for all API calls to the backend, such as getting chart data, TV screen data, and so on.
+
+- **Utils.jsx**
+
+  This file contains enumerations used in the previous two files and several other components in the application to avoid hardcoding variables.
