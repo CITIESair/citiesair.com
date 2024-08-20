@@ -4,17 +4,19 @@
 import { useEffect, useContext } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { fetchDataFromURL } from "../Components/DatasetDownload/DatasetFetcher";
+import { fetchDataFromURL } from "../API/ApiFetch";
 import Project from "./Project";
-import { ChartEndpointsOrder, GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl, getChartApiUrl, getHistoricalChartApiUrl } from "../Utils/ApiUtils";
-import { LinkContext } from "../ContextProviders/LinkContext";
+import { getApiUrl, getChartApiUrl, getHistoricalChartApiUrl } from "../API/ApiUrls";
+import { ChartAPIendpointsOrder, GeneralAPIendpoints } from "../API/Utils";
+import { fetchAndProcessCurrentSensorsData } from "../API/ApiFetch";
+import { MetadataContext } from "../ContextProviders/MetadataContext";
 import { DashboardContext } from "../ContextProviders/DashboardContext";
 
 import { UserContext } from "../ContextProviders/UserContext";
 import { LocalStorage } from "../Utils/LocalStorage";
-import { UniqueRoutes } from "../Utils/RoutesUtils";
-
-const numInitialCharts = 2;
+import { AppRoutes } from "../Utils/AppRoutes";
+import { CITIESair, NUMBER_OF_CHARTS_TO_LOAD_INITIALLY, NYUAD } from "../Utils/GlobalVariables";
+import { AlertSeverity, useNotificationContext } from "../ContextProviders/NotificationContext";
 
 const Dashboard = () => {
   const { school_id_param } = useParams();
@@ -27,13 +29,13 @@ const Dashboard = () => {
   useEffect(() => {
     if (!school_id_param) return;
 
-    document.title = `CITIESair | ${school_id_param.toUpperCase()}`;
+    document.title = `${CITIESair} | ${school_id_param.toUpperCase()}`;
   }, [school_id_param]);
 
   // Update current page type
-  const { setCurrentPage } = useContext(LinkContext);
+  const { setCurrentPage } = useContext(MetadataContext);
   useEffect(() => {
-    setCurrentPage(UniqueRoutes.dashboard);
+    setCurrentPage(AppRoutes.dashboard);
   }, []);
 
   const {
@@ -45,16 +47,18 @@ const Dashboard = () => {
   } = useContext(DashboardContext);
   const { user } = useContext(UserContext);
 
+  const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
+
   useEffect(() => {
     // NYUAD is public --> skip authentication and just fetch data
-    if (school_id_param === "nyuad") {
-      fetchInitialDataForDashboard('nyuad');
-      setCurrentSchoolID('nyuad');
+    if (school_id_param === NYUAD) {
+      fetchInitialDataForDashboard(NYUAD);
+      setCurrentSchoolID(NYUAD);
       return;
     };
 
     if (user.checkedAuthentication === true && user.authenticated === false) {
-      navigate(`${UniqueRoutes.login}?${UniqueRoutes.redirectQuery}=${locationPath}`);
+      navigate(`${AppRoutes.login}?${AppRoutes.redirectQuery}=${locationPath}`);
     }
 
     const allowedSchools = user.allowedSchools;
@@ -66,7 +70,10 @@ const Dashboard = () => {
 
         // If there has been a previouslySelectedSchoolID, then load dashboard data for this one
         const previouslySelectedSchoolID = localStorage.getItem(LocalStorage.schoolID);
-        if (allowedSchools.map((school) => school.school_id).includes(previouslySelectedSchoolID)) school_id = previouslySelectedSchoolID;
+
+        if (allowedSchools.map((school) => school.school_id).includes(previouslySelectedSchoolID)) {
+          school_id = previouslySelectedSchoolID;
+        }
         // If not existed yet, then just get the first school in the list
         else {
           school_id = allowedSchools[0].school_id;
@@ -79,13 +86,20 @@ const Dashboard = () => {
         // If there is no schoolMetadata or current or chartData, then fetch them
         if (!(!schoolMetadata && !current && !allChartsData)) fetchInitialDataForDashboard(school_id);
       }
-
       // If there is school_id_param, check if school_id_param is in the allowedSchools
-      if (allowedSchools.map((school) => school.school_id).includes(school_id_param)) {
-        setCurrentSchoolID(school_id_param);
-        fetchInitialDataForDashboard(school_id_param);
-        localStorage.setItem(LocalStorage.schoolID, school_id_param);
-        return;
+      else {
+        if (allowedSchools.map((school) => school.school_id).includes(school_id_param)) {
+          setCurrentSchoolID(school_id_param);
+          fetchInitialDataForDashboard(school_id_param);
+          localStorage.setItem(LocalStorage.schoolID, school_id_param);
+        }
+        // If the school_id_param is not in the allowedSchools
+        else {
+          navigate(AppRoutes[404], { replace: true });
+          setShowNotification(true);
+          setMessage("You don't have permission to view this school or this school does not exist.");
+          setSeverity(AlertSeverity.error);
+        }
       }
     }
   }, [user, school_id_param]);
@@ -94,18 +108,16 @@ const Dashboard = () => {
     try {
       setSchoolMetadata();
       setCurrent();
-      
+
       const response = await Promise.all([
         fetchDataFromURL({
           url: getApiUrl({
-            endpoint: GeneralEndpoints.schoolmetadata,
+            endpoint: GeneralAPIendpoints.schoolmetadata,
             school_id: school_id
-          }),
-          extension: 'json',
-          needsAuthorization: true
+          })
         }),
         fetchAndProcessCurrentSensorsData(getApiUrl({
-          endpoint: GeneralEndpoints.current,
+          endpoint: GeneralAPIendpoints.current,
           school_id: school_id
         }))
       ])
@@ -117,7 +129,7 @@ const Dashboard = () => {
       console.log(error);
     }
 
-    const chartsToFetch = loadMoreCharts ? ChartEndpointsOrder : ChartEndpointsOrder.slice(0, numInitialCharts);
+    const chartsToFetch = loadMoreCharts ? ChartAPIendpointsOrder : ChartAPIendpointsOrder.slice(0, NUMBER_OF_CHARTS_TO_LOAD_INITIALLY);
     chartsToFetch.forEach((endpoint, index) => {
       setIndividualChartData(index, {}); // set empty chartData to create a placeholder for this chart
 
@@ -125,9 +137,7 @@ const Dashboard = () => {
         url: getHistoricalChartApiUrl({
           endpoint: endpoint,
           school_id: school_id
-        }),
-        extension: 'json',
-        needsAuthorization: true
+        })
       })
         .then(data => {
           setIndividualChartData(index, data);
@@ -140,18 +150,16 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (loadMoreCharts === true) {
-      const restOfCharts = ChartEndpointsOrder.slice(numInitialCharts);
+      const restOfCharts = ChartAPIendpointsOrder.slice(NUMBER_OF_CHARTS_TO_LOAD_INITIALLY);
       restOfCharts.forEach((endpoint, index) => {
-        const chartIndexInPage = numInitialCharts + index;
+        const chartIndexInPage = NUMBER_OF_CHARTS_TO_LOAD_INITIALLY + index;
         setIndividualChartData(chartIndexInPage, {}); // set empty chartData to create a placeholder for this chart
-        
+
         fetchDataFromURL({
           url: getChartApiUrl({
             endpoint: endpoint,
             school_id: currentSchoolID
-          }),
-          extension: 'json',
-          needsAuthorization: true
+          })
         })
           .then(data => {
             setIndividualChartData(chartIndexInPage, data);
@@ -165,9 +173,7 @@ const Dashboard = () => {
   }, [loadMoreCharts]);
 
   return (
-    <>
-      <Project />
-    </>
+    <Project />
   )
 };
 

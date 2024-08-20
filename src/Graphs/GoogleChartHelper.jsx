@@ -6,100 +6,6 @@ export const ChartControlType = {
   ChartRangeFilter: { position: 'bottom', stackDirection: 'column-reverse' },
   NumberRangeFilter: { position: 'top', stackDirection: 'column' }
 }
-// Async function to fetch data from sheet using Google Visualization query language
-export const fetchDataFromSheet = ({ chartData, subchartIndex }) => {
-  const urlParams =
-    subchartIndex == null
-      ? {
-        headers: chartData.headers || 1,
-        query: chartData.query,
-        gid: chartData.gid,
-      }
-      : {
-        headers:
-          chartData.headers
-          || chartData.subcharts[subchartIndex].headers
-          || null,
-        query:
-          chartData.query
-          || chartData.subcharts[subchartIndex].query
-          || null,
-        gid:
-          chartData.gid
-          || chartData.subcharts[subchartIndex].gid
-          || null,
-      };
-
-  const url = `https://docs.google.com/spreadsheets/d/${chartData.sheetId}/gviz/tq?gid=${urlParams.gid}&headers=${urlParams.headers}&tqx${urlParams.query ? `&tq=${encodeURIComponent(urlParams.query)}` : ''}`;
-  const query = new google.visualization.Query(url);
-
-  return new Promise((resolve, reject) => {
-    query.send(response => {
-      if (response.isError()) {
-        reject(response.getMessage() + ' ' + response.getDetailedMessage());
-      } else {
-        resolve(response);
-      }
-    });
-  });
-};
-
-export const transformDataForNivo = (dataTable, dataColumn, tooltipColumn) => {
-  const data = JSON.parse(dataTable.toJSON())
-  const transformed = [];
-
-  const parseDate = (dateString) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    const formattedDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
-    return formattedDate;
-  }
-
-  data.rows.forEach(row => {
-    // Get the date string from the first column 
-    const dateString = row.c[0].f;
-    // Parse and convert the date string to a 'YYYY-MM-DD' format
-    const formattedDate = parseDate(dateString);
-    // Get the data from the appropriate column
-    const value = row.c[dataColumn]?.v;
-    // Get the tooltip from the appropriate column
-    const tooltip = row.c[tooltipColumn]?.v;
-
-    // If the date string and value are both valid, push them into the result array
-    if (dateString && value !== undefined && value !== null) {
-      transformed.push({
-        day: formattedDate,
-        value: value,
-        tooltip: tooltip
-      });
-    }
-  });
-
-  // Get dateRange (from - to)
-  const dateStrings = transformed.map(item => item.day);
-  const dateRange = getDateRangeForCalendarChart(dateStrings);
-
-  // Get valueRange (min - max)
-  const values = transformed.map(item => item.value);
-  const valueRange = getValueRangeForCalendarChart(values);
-
-  return {
-    data: transformed,
-    dateRange: dateRange,
-    valueRange: valueRange
-  };
-};
-export const getDateRangeForCalendarChart = (dateStrings) => {
-  return {
-    min: dateStrings.reduce((min, current) => (current < min ? current : min)),
-    max: dateStrings.reduce((max, current) => (current > max ? current : max))
-  }
-}
-export const getValueRangeForCalendarChart = (values) => {
-  return { min: Math.min(...values), max: Math.max(...values) }
-}
 
 // Function to generate a random ID for the google chart container
 export const generateRandomID = () => {
@@ -125,7 +31,7 @@ const returnResponsiveFontSizeInPixels = ({ isPortrait, isSmaller }) => {
 }
 
 export const returnGenericOptions = (props) => {
-  const { chartData, subchartIndex, isPortrait, isHomepage, theme } = props;
+  const { chartData, subchartIndex, isPortrait, theme } = props;
 
   // Define some shared styling rules for the chart
   const axisTitleTextStyle = {
@@ -301,61 +207,7 @@ export const returnGenericOptions = (props) => {
     },
   };
 
-  // 5. If the chart is displayed on the homepage, override the options with:
-  if (isHomepage) {
-    options = {
-      ...options,
-      chartArea: {
-        ...options.chartArea,
-        width: '80%',
-        height: '80%'
-      },
-      seriesSelector: false,
-      pointSize: 0,
-      enableInteractivity: false,
-      annotations: hideAnnotations,
-      legend: 'none',
-      vAxis: {
-        ...options.vAxis,
-        textPosition: 'none',
-        titleTextStyle: {
-          ...options.vAxis.titleTextStyle,
-          bold: false
-        },
-        gridlines: { color: 'transparent', count: 0 },
-        viewWindowMode: 'maximized'
-      },
-      hAxis: {
-        ...options.hAxis,
-        textPosition: 'none',
-        gridlines: { color: 'transparent', count: 0 },
-        titleTextStyle: {
-          ...options.hAxis.titleTextStyle,
-          bold: false
-        }
-      },
-    };
-  }
-
   return options;
-}
-
-export const returnCalendarChartOptions = (existingOptions) => {
-  const calendarDimensions = calculateCalendarDimensions({ cellSizeMin: 14, cellSizeMax: 18 });
-  return {
-    ...existingOptions,
-    width: calendarDimensions.chartWidth,
-    calendar: {
-      cellSize: calendarDimensions.cellSize,
-      yearLabel: {
-        fontSize: calendarDimensions.yearLabelFontSize
-      }
-    },
-    noDataPattern: {
-      backgroundColor: 'none',
-      color: 'none',
-    },
-  }
 }
 
 export const returnChartControlUI = (props) => {
@@ -397,15 +249,6 @@ export const returnChartControlUI = (props) => {
   }
   return chartControlUI;
 }
-
-const calculateCalendarDimensions = ({ cellSizeMin, cellSizeMax }) => {
-  const cellSize = Math.min(Math.max((window.innerWidth * 0.9) / 58, cellSizeMin), cellSizeMax);
-  return {
-    chartWidth: cellSize * 56, // fixed ratio
-    cellSize,
-    yearLabelFontSize: cellSize * 2
-  };
-};
 
 export const addTouchEventListenerForChartControl = ({ controlWrapper, chartID }) => {
   const touchHandler = (event) => {

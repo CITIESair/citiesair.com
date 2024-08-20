@@ -1,12 +1,12 @@
 // disable eslint for this file
 /* eslint-disable */
 import { useState, useEffect, useContext } from 'react';
-import { LinkContext } from '../ContextProviders/LinkContext';
 import parse from 'html-react-parser';
 import ChartComponentWrapper from '../Graphs/ChartComponentWrapper';
 import UppercaseTitle from '../Components/UppercaseTitle';
-import CommentSection, { PAGE_NAME } from '../Components/CommentSection';
-import { Box, Typography, Container, Divider, Chip, Grid, Tooltip, Stack, Skeleton } from '@mui/material';
+import CommentSection from '../Components/CommentSection';
+import { HYVOR_PAGE_NAME } from '../Utils/GlobalVariables';
+import { Button, Box, Typography, Container, Divider, Chip, Grid, Tooltip, Stack, Skeleton } from '@mui/material';
 
 import { useTheme } from '@mui/material/styles';
 
@@ -22,7 +22,7 @@ import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import CommentIcon from '@mui/icons-material/Comment';
 
-import { replacePlainHTMLWithMuiComponents } from '../Utils/Utils';
+import { replacePlainHTMLWithMuiComponents } from '../Utils/UtilFunctions';
 import DatasetDownloadDialog from '../Components/DatasetDownload/DatasetDownloadDialog';
 import ScreenDropDownMenu from '../Components/AirQuality/AirQualityScreen/ScreenDropDownMenu';
 
@@ -36,16 +36,20 @@ import SchoolSelector from '../Components/SchoolSelector';
 
 import LoadingAnimation from '../Components/LoadingAnimation';
 
-import { CommentCountsContext } from '../ContextProviders/CommentCountsContext';
+import { MetadataContext } from '../ContextProviders/MetadataContext';
 
 import NYUADbanner from './Embeds/NYUADbanner';
 
 import { DashboardContext } from '../ContextProviders/DashboardContext';
 import { PreferenceContext } from '../ContextProviders/PreferenceContext';
-import LoadMoreChartsButton from '../Components/LoadMoreChartsButton';
+
 import AQIexplanation from '../Components/AirQuality/AQIexplanation';
 import { DateRangePickerProvider } from '../ContextProviders/DateRangePickerContext';
 import { AxesPickerProvider } from '../ContextProviders/AxesPickerContext';
+import AirQualityAlerts from '../Components/AirQuality/AirQualityAlerts/AirQualityAlert';
+import { NYUAD } from '../Utils/GlobalVariables';
+
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 // Custom Chip component to display metadata
 export const CustomChip = (props) => {
@@ -64,9 +68,9 @@ export const CustomChip = (props) => {
 const Project = () => {
   let lastUpdate;
 
-  const { setChartsTitlesList } = useContext(LinkContext);
-  const { commentCounts, fetchCommentCounts, setCommentCounts } = useContext(CommentCountsContext);
-  const { schoolMetadata, current, allChartsData, loadMoreCharts } = useContext(DashboardContext);
+  const { commentCounts, fetchCommentCounts, setCommentCounts, setChartsTitlesList } = useContext(MetadataContext);
+
+  const { schoolMetadata, current, allChartsData, loadMoreCharts, currentSchoolID, setLoadMoreCharts } = useContext(DashboardContext);
   const { themePreference, temperatureUnitPreference } = useContext(PreferenceContext);
 
   const [displayCommentSection, setDisplayCommentSection] = useState(false);
@@ -76,7 +80,7 @@ const Project = () => {
   useEffect(() => {
     if (!schoolMetadata) return;
 
-    const isNYUAD = schoolMetadata.school_id === 'nyuad';
+    const isNYUAD = schoolMetadata.school_id === NYUAD;
     setDisplayCommentSection(isNYUAD);
     setDisplayMapOfSensors(isNYUAD);
 
@@ -90,9 +94,10 @@ const Project = () => {
 
   // Update the chart title list for quick navigation
   useEffect(() => {
-    if (!allChartsData?.charts) return;
+    if (!allChartsData) return;
 
-    const chartsTitles = allChartsData?.charts.map((element, index) => ({ chartTitle: element.title, chartID: `chart-${index + 1}` }));
+    const chartsTitles = Object.keys(allChartsData).map((key, index) => ({ chartTitle: allChartsData[key]?.title || "", chartID: `chart-${index + 1}` }));
+
     setChartsTitlesList(chartsTitles);
   }, [allChartsData]);
 
@@ -182,7 +187,18 @@ const Project = () => {
 
   const displayLoadMoreButton = (isLastChartInList) => {
     if (isLastChartInList === true && loadMoreCharts === false) {
-      return <LoadMoreChartsButton />;
+      return (
+        <Stack sx={{ mt: 6, mx: 'auto', maxWidth: 'sm' }}>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setLoadMoreCharts(true);
+            }}
+          >
+            <KeyboardArrowDownIcon sx={{ fontSize: '1rem' }} />&nbsp;Load More Charts
+          </Button>
+        </Stack>
+      )
     }
     else {
       return null;
@@ -246,7 +262,7 @@ const Project = () => {
           <Grid item>
             <CustomChip
               icon={<CommentIcon />}
-              label={`${commentCounts[PAGE_NAME]} Comment${commentCounts[PAGE_NAME] > 1 ? "s" : ""}`}
+              label={`${commentCounts[HYVOR_PAGE_NAME]} Comment${commentCounts[HYVOR_PAGE_NAME] > 1 ? "s" : ""}`}
               tooltipTitle="Number of Comments"
               onClick={() => {
                 scrollToSection(jsonData.commentSection.id);
@@ -295,10 +311,21 @@ const Project = () => {
 
           {displayProjectDescription()}
 
-          <Stack direction="row" spacing={2}>
-            <ScreenDropDownMenu />
-            <DatasetDownloadDialog />
-          </Stack>
+          <Grid container spacing={1}>
+            <Grid item>
+              <ScreenDropDownMenu />
+            </Grid>
+            <Grid item>
+              <DatasetDownloadDialog />
+            </Grid>
+            {
+              // only show Air Quality Alerts for schools other than nyuad at the moment
+              (currentSchoolID && currentSchoolID !== NYUAD) ? <Grid item>
+                <AirQualityAlerts schoolContactEmail={schoolMetadata?.contactEmail} />
+              </Grid> : null
+            }
+
+          </Grid>
 
           <AQIexplanation />
 
@@ -312,7 +339,7 @@ const Project = () => {
 
       {displayCommentSection === true &&
         <FullWidthBox id={jsonData.commentSection.id} sx={{ pt: 3, pb: 4 }}>
-          <CommentSection pageID={PAGE_NAME} />
+          <CommentSection pageID={HYVOR_PAGE_NAME} />
         </FullWidthBox>
       }
     </Box >

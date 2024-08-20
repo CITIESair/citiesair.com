@@ -2,7 +2,7 @@ import { useEffect, useContext, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 import { Button, Box, Grid, Typography, Container, Divider } from '@mui/material';
-import { LinkContext } from '../../ContextProviders/LinkContext';
+import { MetadataContext } from '../../ContextProviders/MetadataContext';
 
 import UppercaseTitle from '../../Components/UppercaseTitle';
 import FullWidthBox from '../../Components/FullWidthBox';
@@ -14,18 +14,22 @@ import jsonData from '../../section_data.json';
 
 import * as Tracking from '../../Utils/Tracking';
 import parse from 'html-react-parser';
-import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
+import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 
 import AQImap, { TileOptions } from '../../Components/AirQuality/AQImap';
 
 import CurrentAQIGrid from '../../Components/AirQuality/CurrentAQIGrid';
-import { GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
+import { getApiUrl } from '../../API/ApiUrls';
+import { GeneralAPIendpoints } from "../../API/Utils";
+import { fetchAndProcessCurrentSensorsData } from '../../API/ApiFetch';
 
 import BarChartIcon from '@mui/icons-material/BarChart';
 import GetInTouch from './GetInTouch';
-import { UniqueRoutes } from '../../Utils/RoutesUtils';
+import { AppRoutes } from '../../Utils/AppRoutes';
 import { SensorStatus } from "../../Components/AirQuality/SensorStatus";
 import AQIexplanation from '../../Components/AirQuality/AQIexplanation';
+import { CITIESair, NYUAD } from '../../Utils/GlobalVariables';
+import AtAGlance from './AtAGlance';
 
 const displayNyuadSensorCounts = (nyuadSensorCounts) => {
   if (nyuadSensorCounts.active && nyuadSensorCounts.total) {
@@ -44,11 +48,11 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
     document.title = title;
   }, [title]);
 
-  const { setCurrentPage, setChartsTitlesList } = useContext(LinkContext);
+  const { setCurrentPage, setChartsTitlesList } = useContext(MetadataContext);
 
-  // set underline link to home
+  // set current page to home
   useEffect(() => {
-    setCurrentPage(UniqueRoutes.home);
+    setCurrentPage(AppRoutes.home);
     setChartsTitlesList([]);
   }, [setCurrentPage, setChartsTitlesList]);
 
@@ -58,10 +62,10 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
     active: null,
     total: null
   });
-  const [rawMapData, setRawMapData] = useState();
+  const [mapData, setMapData] = useState();
 
   useEffect(() => {
-    const nyuadUrl = getApiUrl({ endpoint: GeneralEndpoints.current, school_id: 'nyuad' });
+    const nyuadUrl = getApiUrl({ endpoint: GeneralAPIendpoints.current, school_id: NYUAD });
     fetchAndProcessCurrentSensorsData(nyuadUrl)
       .then((data) => {
         // Only display 3 sensors in the homepage
@@ -70,7 +74,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
 
         // Count the number of active sensors at NYUAD to display it
         const activeSensorCount = data.reduce((count, obj) => {
-          return obj?.current?.sensor_status === SensorStatus.active ? count + 1 : count;
+          return obj?.sensor?.sensor_status === SensorStatus.active ? count + 1 : count;
         }, 0);
         setNyuadSensorCounts({
           active: activeSensorCount,
@@ -79,10 +83,10 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
       })
       .catch((error) => console.log(error));
 
-    const mapUrl = getApiUrl({ endpoint: GeneralEndpoints.map });
+    const mapUrl = getApiUrl({ endpoint: GeneralAPIendpoints.map });
     fetchAndProcessCurrentSensorsData(mapUrl)
       .then((data) => {
-        setRawMapData(data)
+        setMapData(data)
       })
       .catch((error) => console.log(error));
   }, []);
@@ -117,14 +121,14 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
                   component={RouterLink}
                   variant='contained'
                   sx={{ width: "fit-content", mb: 1 }}
-                  to={UniqueRoutes.nyuad}
+                  to={AppRoutes.nyuad}
                   onClick={() => {
                     Tracking.sendEventAnalytics(
                       Tracking.Events.internalNavigation,
                       {
-                        destination_id: UniqueRoutes.nyuad,
-                        destination_school_id: "nyuad",
-                        origin_id: UniqueRoutes.home
+                        destination_id: AppRoutes.nyuad,
+                        destination_school_id: NYUAD,
+                        origin_id: AppRoutes.home
                       }
                     );
                   }}
@@ -147,7 +151,13 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
 
       <FullWidthBox sx={{ backgroundColor: 'customAlternateBackground' }}>
         <Container sx={{ py: 3 }}>
-          <UppercaseTitle text="public outdoor stations" />
+          <UppercaseTitle text="at a glance" />
+          <AtAGlance />
+        </Container>
+      </FullWidthBox>
+
+      <FullWidthBox sx={{ backgroundColor: 'customAlternateBackground' }}>
+        <Container sx={{ py: 3, pt: 0 }}>
           <Typography variant="body1" color="text.secondary">
             {parse(jsonData.publicOutdoorStations.content, {
               replace: replacePlainHTMLWithMuiComponents,
@@ -163,8 +173,8 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
             [22.608292, 51.105185],
             [26.407575, 56.456571],
           ]}
-          rawMapData={rawMapData}
-          ariaLabel={"Map of CITIESair public outdoor air quality stations in Abu Dhabi"}
+          mapData={mapData}
+          ariaLabel={`Map of ${CITIESair} public outdoor air quality stations in Abu Dhabi`}
 
         />
 

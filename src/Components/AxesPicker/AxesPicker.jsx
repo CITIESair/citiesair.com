@@ -2,9 +2,12 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Select, MenuItem, FormControl, InputLabel, Button, Stack, Grid, CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useAxesPicker } from '../../ContextProviders/AxesPickerContext';
-import { ChartEndpoints, getCorrelationChartApiUrl } from '../../Utils/ApiUtils';
+import { getCorrelationChartApiUrl } from '../../API/ApiUrls';
+import { ChartAPIendpoints, ChartAPIendpointsOrder } from "../../API/Utils";
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
-import { fetchDataFromURL } from '../DatasetDownload/DatasetFetcher';
+import { fetchDataFromURL } from '../../API/ApiFetch';
+
+const correlationChartIndex = ChartAPIendpointsOrder.findIndex(endpoint => endpoint === ChartAPIendpoints.correlationDailyAverage);
 
 // Define custom styled components for shared border radius
 const LeftSelect = styled(FormControl)(({ theme }) => ({
@@ -88,7 +91,7 @@ const AxesPicker = (props) => {
     if (!(vAxis && hAxis)) return;
 
     const newUrl = getCorrelationChartApiUrl({
-      endpoint: ChartEndpoints.correlationDailyAverage,
+      endpoint: ChartAPIendpoints.correlationDailyAverage,
       school_id: currentSchoolID,
       dataType: dataType,
       sensorX: hAxis,
@@ -99,12 +102,10 @@ const AxesPicker = (props) => {
       setIsFetchingData(true);
 
       fetchDataFromURL({
-        url: newUrl,
-        extension: 'json',
-        needsAuthorization: true
+        url: newUrl
       })
         .then((data) => {
-          setIndividualChartData(5, data); // last chart -> chartIndex = 5
+          setIndividualChartData(correlationChartIndex, data);
           setChartUrl(newUrl);
           setIsFetchingData(false);
         })

@@ -13,17 +13,19 @@ import { getDomainName, getUrlAfterScreen } from '../Components/AirQuality/AirQu
 
 import RecentHistoricalGraph from '../Components/AirQuality/AirQualityScreen/RecentHistoricalGraph';
 
-import AQIdatabase from '../Utils/AirQuality/AirQualityIndexHelper';
-
-import CustomThemes from '../Themes/CustomThemes';
+import { AQI_Database } from '../Utils/AirQuality/AirQualityIndexHelper';
 
 import QRCode from "react-qr-code";
 
 import CurrentAQIGrid from '../Components/AirQuality/CurrentAQIGrid';
 import { CurrentAQIGridSize } from '../Components/AirQuality/CurrentAQIGridSize';
-import { GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../Utils/ApiUtils';
-import { UniqueRoutes } from '../Utils/RoutesUtils';
+import { getApiUrl } from '../API/ApiUrls';
+import { GeneralAPIendpoints } from "../API/Utils";
+import { fetchAndProcessCurrentSensorsData } from '../API/ApiFetch';
+import { AppRoutes } from '../Utils/AppRoutes';
 import { PreferenceContext } from '../ContextProviders/PreferenceContext';
+import { CITIESair } from '../Utils/GlobalVariables';
+import { INACTIVE_SENSOR_COLORS } from '../Themes/CustomColors';
 
 const Screen = ({ title }) => {
   const { temperatureUnitPreference, themePreference } = useContext(PreferenceContext);
@@ -78,7 +80,7 @@ const Screen = ({ title }) => {
       // Do nothing if the data has been fetched before
       if (Object.keys(data).length != 0) return;
 
-      const url = getApiUrl({ endpoint: GeneralEndpoints.screen });
+      const url = getApiUrl({ endpoint: GeneralAPIendpoints.screen });
       if (!url) return;
 
       fetchAndProcessCurrentSensorsData(url)
@@ -104,13 +106,13 @@ const Screen = ({ title }) => {
         clearInterval(intervalId);
       };
     } else {
-      navigate(`${UniqueRoutes.login}?${UniqueRoutes.redirectQuery}=${locationPath}`);
+      navigate(`${AppRoutes.login}?${AppRoutes.redirectQuery}=${locationPath}`);
     }
   }, [user]);
 
   const AirQualityComparison = () => {
     // Only display air quality comparison if every sensor is currently active
-    if (!Object.values(data).every((sensorData) => sensorData.current?.sensor_status === SensorStatus.active)) return null;
+    if (!Object.values(data).every((sensorData) => sensorData.sensor?.sensor_status === SensorStatus.active)) return null;
 
     let outdoorsAQI, indoorsAQI;
     // Don't display comparison if outdoor air is good
@@ -118,7 +120,7 @@ const Screen = ({ title }) => {
       const sensorData = Object.values(data)[i];
       if (sensorData.sensor?.location_type === "outdoors") {
         outdoorsAQI = sensorData.current.aqi;
-        if (outdoorsAQI <= AQIdatabase[0].aqiUS.high) return null;
+        if (outdoorsAQI <= AQI_Database[0].aqiUS.high) return null;
       }
       else indoorsAQI = sensorData.current.aqi;
     }
@@ -135,7 +137,7 @@ const Screen = ({ title }) => {
           <>Indoors air is
             <Typography
               component="span"
-              color={`${AQIdatabase[0].color[themePreference]} !important`}
+              color={`${AQI_Database[0].color[themePreference]} !important`}
             >
               {` ${comparison} `}
             </Typography>
@@ -165,10 +167,10 @@ const Screen = ({ title }) => {
         },
         '& .flashingRed': {
           '& .MuiTypography-root ': {
-            color: `${AQIdatabase[3].color.Light} !important`,
+            color: `${AQI_Database[3].color.Light} !important`,
             opacity: 0.8
           },
-          color: `${AQIdatabase[3].color.Light} !important`,
+          color: `${AQI_Database[3].color.Light} !important`,
           animation: 'flashingRed 3s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite',
           '@keyframes flashingRed': {
             '0%': {
@@ -204,7 +206,7 @@ const Screen = ({ title }) => {
             <Typography variant="h3" fontWeight="500" color="white">
               AIR QUALITY INDEX
             </Typography>
-            <Typography variant="h4" className='condensedFont' color={CustomThemes.universal.palette.inactiveSensor}>
+            <Typography variant="h4" className='condensedFont' color={INACTIVE_SENSOR_COLORS.screen}>
               Particulate Matter PM2.5
             </Typography>
           </Box>
@@ -235,7 +237,7 @@ const Screen = ({ title }) => {
                 pr: 3,
               },
               '& .MuiTypography-root, .MuiListItem-root': {
-                color: CustomThemes.universal.palette.inactiveSensor
+                color: INACTIVE_SENSOR_COLORS.screen
               }
             }}>
             <AirQualityComparison />
@@ -244,7 +246,7 @@ const Screen = ({ title }) => {
                 sensorData.current?.healthSuggestion &&
                 <ListItem
                   key={key}
-                  className={sensorData.current?.aqi >= AQIdatabase[2].aqiUS.low ? 'flashingRed' : ''}
+                  className={sensorData.current?.aqi >= AQI_Database[2].aqiUS.low ? 'flashingRed' : ''}
                 >
                   <ListItemText
                     primary={sensorData.current?.healthSuggestion}
@@ -279,7 +281,7 @@ const Screen = ({ title }) => {
         >
           <Grid item xs={12} sx={{ pt: 3, px: 2 }}>
             <Typography variant="h3" fontWeight="500" sx={{ color: 'black' }}>
-              CITIESair
+              {CITIESair}
             </Typography>
           </Grid>
           <Grid item xs={2}>

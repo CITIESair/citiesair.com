@@ -1,27 +1,26 @@
 /* eslint-disable */
 
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useContext, useEffect, useMemo, useState, useCallback } from 'react';
 
 import { GoogleContext } from '../../ContextProviders/GoogleContext';
 
-import { Alert, Box, Grid, Slider, Stack } from '@mui/material/';
+import { Alert, Box, Grid, Stack } from '@mui/material/';
 
 import { useTheme } from '@mui/material/styles';
 import SeriesSelector from './SubchartUtils/SeriesSelector';
-import { generateRandomID, returnGenericOptions, returnCalendarChartOptions, returnChartControlUI, ChartControlType, addTouchEventListenerForChartControl, getDateRangeForCalendarChart, getValueRangeForCalendarChart } from '../GoogleChartHelper';
+import { generateRandomID, returnGenericOptions, returnChartControlUI, ChartControlType, addTouchEventListenerForChartControl } from '../GoogleChartHelper';
 
 import GoogleChartStyleWrapper from './SubchartUtils/GoogleChartStyleWrapper';
 
 import LoadingAnimation from '../../Components/LoadingAnimation';
 
-import { CalendarChart, getCalendarChartMargin, calculateCalendarChartHeight } from './NivoCharts/NivoCalendarChart'
+import NivoCalendarChart from './NivoCharts/NivoCalendarChart/NivoCalendarChart';
 import { generateSvgFillGradient, BackgroundGradient } from '../../Utils/Gradient/GradientUtils';
 
 import CustomDateRangePicker from '../../Components/DateRangePicker/CustomDateRangePicker'
-import { isValidArray } from '../../Utils/Utils';
+import { isValidArray } from '../../Utils/UtilFunctions';
 import { returnSelectedDataType } from '../../Utils/AirQuality/DataTypes';
 
-import { useYearRange } from '../../ContextProviders/YearRangeContext';
 import AxesPicker from '../../Components/AxesPicker/AxesPicker';
 
 const NoChartToRender = ({ dataType, height, selectableAxes }) => {
@@ -49,7 +48,7 @@ const NoChartToRender = ({ dataType, height, selectableAxes }) => {
 
 export default function SubChart(props) {
   // Props
-  const { chartData, subchartIndex, windowSize, isPortrait, isHomepage, height, maxHeight, selectedDataType, allowedDataTypes, currentSubchart } = props;
+  const { chartData, subchartIndex, windowSize, isPortrait, height, maxHeight, selectedDataType, allowedDataTypes } = props;
 
   // Use GoogleContext for loading and manipulating the Google Charts
   const google = useContext(GoogleContext);
@@ -57,7 +56,6 @@ export default function SubChart(props) {
   // States of the Google Charts
   const [dataTable, setDataTable] = useState();
   const [chartWrapper, setChartWrapper] = useState();
-  const [dashboardWrapper, setDashboardWrapper] = useState();
   const [controlWrapper, setControlWrapper] = useState();
 
   const [previousChartData, setPreviousChartData] = useState();
@@ -80,36 +78,14 @@ export default function SubChart(props) {
   // Define the DOM container's ID for drawing the google chart inside
   const [chartID, __] = useState(generateRandomID());
 
-  // Calendar chart's properties
-  const [chartTotalHeight, setChartTotalHeight] = useState(200);
-
   // Get the options object for chart
-  let options = useMemo(() => {
-    let opts = returnGenericOptions({ ...props, theme });
-    if (chartData.chartType === 'Calendar') {
-      opts = returnCalendarChartOptions(opts);
-    }
-    return opts;
+  const options = useMemo(() => {
+    return returnGenericOptions({ ...props, theme });
   }, [props, theme, chartData.chartType]);
 
-  // Debounce function to prevent ResizeObserver loop
-  // (from MUI Slider) from crashing the app
-  const debounce = (func, wait) => {
-    let timeout;
-    return (...args) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func.apply(this, args), wait);
-    };
-  };
-
   // State to store transformed data for CalendarChart
-  const [calendarData, setCalendarData] = useState(null);
-  const { yearRange, setYearRange } = useYearRange();
-  const [calendarHeight, setCalendarHeight] = useState(200);
-  const [containerWidth, setContainerWidth] = useState(1200); // max width of the chart container
-  const [shouldDisplaySlider, setshouldDisplaySlider] = useState(false);
-  const [sliderMarks, setSliderMarks] = useState([]);
-  const calendarRef = useRef(null);
+  const [calendarDataArray, setCalendarDataArray] = useState(null);
+
   // Early exit for 'Calendar' chartType
   if (chartData.chartType === 'Calendar') {
     useEffect(() => {
@@ -124,75 +100,11 @@ export default function SubChart(props) {
         return; // early return if there is no data to render
       }
 
-      const dateStrings = dataArray.map(item => item.day);
-      const values = dataArray.map(item => item.value);
-      const dateRange = getDateRangeForCalendarChart(dateStrings);
-
-      setCalendarData({
-        data: dataArray,
-        dateRange: dateRange,
-        valueRange: getValueRangeForCalendarChart(values)
-      });
-
-      // Get the number of years we have data for and the number of years to display
-      const lastYear = new Date(dateRange.max).getFullYear();
-      const firstYear = new Date(dateRange.min).getFullYear();
-      const firstVisibleYear = isPortrait ? lastYear - 3 : lastYear - 2;
-
-      setYearRange([firstVisibleYear, lastYear]);
-
-      const marks = Array.from(
-        { length: lastYear - firstYear + 1 },
-        (_, i) => ({ value: firstYear + i, label: firstYear + i })
-      );
-      setSliderMarks(marks);
-
-      setshouldDisplaySlider((firstYear <= lastYear - 2));
+      setCalendarDataArray(dataArray)
       setShouldRenderChart(true);
     }, [chartData]);
 
-    const updateHeight = () => {
-      if (calendarData) {
-        const calendarChartMargin = getCalendarChartMargin(isPortrait);
-        const cellSize = Math.min(containerWidth / 60, 20); // max cell size of 20
-        const yearHeight = cellSize * 7; // Height for one year
-        const totalHeight = calculateCalendarChartHeight(yearRange, yearHeight, calendarChartMargin);
-        setCalendarHeight(totalHeight);
-
-        if (calendarRef.current) {
-          let element = calendarRef.current; // Start with the current ref
-          let targetElement = null;
-
-          while (element) {
-            if (element.classList.contains('MuiBox-root')) {
-              let sibling = element.parentElement.firstChild;
-              while (sibling) {
-                if (sibling !== element && sibling.classList.contains('MuiTabs-root')) {
-                  targetElement = element; // Found the target element
-                  break;
-                }
-                sibling = sibling.nextSibling;
-              }
-            }
-
-            if (targetElement) break;
-            element = element.parentElement;
-          }
-
-          if (targetElement) {
-            targetElement.style.height = `${totalHeight + 125}px`;
-          }
-        }
-      }
-    };
-
-    const debouncedUpdateHeight = debounce(updateHeight, 100);
-
-    useEffect(() => {
-      debouncedUpdateHeight();
-    }, [yearRange, isPortrait, calendarData]);
-
-    if (!calendarData) {
+    if (!calendarDataArray) {
       return (
         <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
           <LoadingAnimation />
@@ -202,53 +114,14 @@ export default function SubChart(props) {
 
     return (
       shouldRenderChart ? (
-        <>
-          {shouldDisplaySlider && (
-            <Box
-              sx={{
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                mt: isPortrait ? 1 : 2,
-                mb: isPortrait ? 3 : 4,
-                position: 'sticky',
-                left: 0,
-              }}>
-              <Slider
-                value={yearRange}
-                min={new Date(calendarData.dateRange.min).getFullYear()}
-                max={new Date(calendarData.dateRange.max).getFullYear()}
-                onChange={(event, newValue) => setYearRange(newValue)}
-                valueLabelDisplay="off"
-                aria-labelledby="calendar-chart-year-slider"
-                marks={sliderMarks}
-                size='small'
-                sx={{ width: '75%' }}
-              />
-            </Box>
-          )}
-          <GoogleChartStyleWrapper
-            ref={calendarRef}
-            isPortrait={isPortrait}
-            className={chartData.chartType}
-            position="relative"
-            minWidth="700px"
-            height={calendarHeight + 'px'}
-            minHeight={isPortrait ? '200px' : calendarHeight + 'px'}
-            maxHeight={isPortrait && '550px'}
-          >
-            <CalendarChart
-              data={calendarData.data}
-              dateRange={calendarData.dateRange}
-              valueRangeBoxTitle={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes, showUnit: true })}
-              valueRange={calendarData.valueRange}
-              yearRange={shouldDisplaySlider ? yearRange : [new Date(calendarData.dateRange.min), new Date(calendarData.dateRange.max)]}
-              isPortrait={isPortrait}
-              options={options}
-            />
-          </GoogleChartStyleWrapper>
-        </>
-      ) : <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} height={calendarHeight} />
+        <NivoCalendarChart
+          dataArray={calendarDataArray}
+          valueRangeBoxTitle={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes, showUnit: true })}
+          isPortrait={isPortrait}
+          options={options}
+          windowSize={windowSize}
+        />
+      ) : <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />
     );
   }
 
@@ -259,7 +132,7 @@ export default function SubChart(props) {
   // It exists in the database (either for all subcharts or just for a particular subchart)
   // And if the chart is currently not shown on homePage
   let chartControl = chartData.control || chartData.subcharts?.[subchartIndex].control;
-  if (chartControl && (isHomepage !== true)) {
+  if (chartControl) {
     hasChartControl = true;
 
     // Get the options for chartControl if hasChartControl
@@ -307,8 +180,7 @@ export default function SubChart(props) {
     if (seriesSelector) handleSeriesSelection({ newDataColumns: dataColumns }); // this function set new options, too
     else {
       chartWrapper?.setOptions({
-        ...options,
-        ...(chartData.chartType === 'Calendar' && { height: chartTotalHeight })
+        ...options
       });
 
       chartWrapper?.draw();
@@ -317,7 +189,7 @@ export default function SubChart(props) {
         controlWrapper?.draw();
       }
     }
-  }, [theme, isPortrait, windowSize, chartTotalHeight]);
+  }, [theme, isPortrait, windowSize]);
 
   // Set new initialColumnsColors if the theme changes
   // This only applies to when seriesSelector.method == "setViewColumn"
@@ -424,7 +296,7 @@ export default function SubChart(props) {
     return { min: vAxisMin, max: vAxisMax };
   }
 
-  const handleSeriesSelection = ({
+  const handleSeriesSelection = useCallback(({
     newDataColumns,
     _allInitialColumns = allInitialColumns,
     _chartWrapper = chartWrapper,
@@ -538,7 +410,7 @@ export default function SubChart(props) {
     if (hasChartControl) {
       _controlWrapper?.draw();
     }
-  };
+  }, [allInitialColumns, options, seriesSelector, chartWrapper, controlWrapper, initialVAxisRange, hasChartControl]);
 
   const reconstructFunctionFromJSONstring = (columns) => {
     if (!columns) return;
@@ -628,7 +500,6 @@ export default function SubChart(props) {
       if (hasChartControl) {
         const thisDashboardWrapper = new google.visualization.Dashboard(
           document.getElementById(`dashboard-${chartID}`));
-        setDashboardWrapper(thisDashboardWrapper);
 
         google.visualization.events.addListener(thisDashboardWrapper, 'ready', onChartReady);
 

@@ -1,17 +1,20 @@
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, styled } from '@mui/material';
 import parse from 'html-react-parser';
-import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
-import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
+import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
+import { AQI_Database } from '../../Utils/AirQuality/AirQualityIndexHelper';
 import { useContext } from 'react';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
+import { CITIESair } from '../../Utils/GlobalVariables';
 
-export const StyledTable = styled(Table)(({ theme, isTiny }) => ({
-  minWidth: isTiny || 700,
+export const StyledTable = styled(Table, {
+  shouldForwardProp: (prop) => prop !== 'tiny',
+})(({ theme, tiny }) => ({
+  minWidth: tiny || 700,
   '& th, td': {
-    fontSize: isTiny ? '0.625rem' : '0.6875rem',
+    fontSize: tiny ? '0.625rem' : '0.6875rem',
     color: theme.palette.text.secondary,
     [theme.breakpoints.down('sm')]: {
-      fontSize: isTiny ? '0.5rem' : '0.6875rem',
+      fontSize: tiny ? '0.5rem' : '0.6875rem',
     },
   },
   '& th': {
@@ -24,7 +27,7 @@ export const StyledTable = styled(Table)(({ theme, isTiny }) => ({
 function AirQualityIndexTable(props) {
   const { themePreference } = useContext(PreferenceContext);
 
-  const { isTiny, hideAQIDescription } = props;
+  const { tiny, hideAQIDescription } = props;
 
   const returnFormattedBreakpoints = (low, high) => {
     if (high === Infinity) return `${low}+`;
@@ -34,7 +37,7 @@ function AirQualityIndexTable(props) {
   return (
     <>
       <Box overflow="auto">
-        <StyledTable size="small" isTiny={isTiny}>
+        <StyledTable size="small" tiny={tiny}>
           <TableHead>
             <TableRow>
               <TableCell sx={{ pr: 0 }}>
@@ -51,11 +54,16 @@ function AirQualityIndexTable(props) {
                 )
               </TableCell>
               {!hideAQIDescription && <TableCell align="left">Description</TableCell>}
-              {!hideAQIDescription && <TableCell align="left">CITIESair&apos; Suggested Actions</TableCell>}
+
+              {!hideAQIDescription &&
+                <TableCell align="left">
+                  {CITIESair}&apos; Suggested Actions
+                </TableCell>
+              }
             </TableRow>
           </TableHead>
           <TableBody>
-            {AQIdatabase.map((element, index) => (
+            {AQI_Database.map((element, index) => (
               <TableRow
                 key={index}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}

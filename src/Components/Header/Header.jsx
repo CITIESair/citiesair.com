@@ -6,11 +6,11 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 import parse from 'html-react-parser';
-import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
+import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 
 import * as Tracking from '../../Utils/Tracking';
 
-import { LinkContext } from '../../ContextProviders/LinkContext';
+import { MetadataContext } from '../../ContextProviders/MetadataContext';
 import FullWidthBox from '../FullWidthBox';
 
 import ThemeSelector from './ThemeSelector';
@@ -19,12 +19,11 @@ import NavBar from './NavBar';
 import sectionData from '../../section_data.json';
 import CITIESlogoLinkToHome from './CITIESlogoLinkToHome';
 import TemperatureUnitToggle from './TemperatureUnitToggle';
-import { UniqueRoutes } from '../../Utils/RoutesUtils';
+import { AppRoutes } from '../../Utils/AppRoutes';
 
 import { useTheme } from '@mui/material';
-import PromoAlert from '../Promo/PromoAlert';
-import PromoDialog from '../Promo/PromoDialog';
-
+import { CITIESair } from '../../Utils/GlobalVariables';
+import Promo from '../Promo/Promo';
 
 export const showInMobile = (defaultDisplay) => ({ display: { xs: (defaultDisplay || 'block'), lg: 'none' } });
 export const showInDesktop = (defaultDisplay) => ({ display: { xs: 'none', lg: (defaultDisplay || 'block') } });
@@ -48,7 +47,7 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
 }));
 
 export default function Header() {
-  const { currentPage } = useContext(LinkContext);
+  const { currentPage } = useContext(MetadataContext);
 
   // trigger for hiding/showing the AppBar
   const triggerHideAppBar = useScrollTrigger({
@@ -146,7 +145,7 @@ export default function Header() {
             <Box sx={showInMobile('block')}>
               <Container sx={{ py: 2 }}>
                 <Typography variant="h6" color="text.secondary" fontWeight="medium" gutterBottom>
-                  CITIESair
+                  {CITIESair}
                 </Typography>
                 <NavBar currentPage={currentPage} isMobile={true} />
               </Container>
@@ -180,75 +179,64 @@ export default function Header() {
         sx={{ backgroundColor: 'customAlternateBackground', height: `${toolBarHeightInRem * 1.5}rem` }}
       />
 
-      <PromoAlert message={parse(sectionData.promo.alert, {
-        replace: replacePlainHTMLWithMuiComponents,
-      })} />
-
-      <PromoDialog
-        chipLabel={parse(sectionData.promo.banner.chipLabel, {
-          replace: replacePlainHTMLWithMuiComponents,
-        })}
-        title={parse(sectionData.promo.banner.title, {
-          replace: replacePlainHTMLWithMuiComponents,
-        })}
-        subtitle={parse(sectionData.promo.banner.subtitle, {
-          replace: replacePlainHTMLWithMuiComponents,
-        })}
-        imgSrc={sectionData.promo.banner.imgSrc}
-        imgAlt={sectionData.promo.banner.imgAlt}
-      />
+      <FullWidthBox sx={{
+        backgroundColor: "customAlternateBackground",
+        pt: 4
+      }}>
+        <Promo />
+      </FullWidthBox>
 
       {
         (
-          currentPage === UniqueRoutes.home
-          && (
-            <FullWidthBox sx={{
-              width: '100%',
-              pt: 2,
-              pb: 3,
-              backgroundColor: 'customAlternateBackground'
-            }}
-            >
-              <Container>
-                <Typography
-                  variant="h3"
-                  color="text.primary"
-                  fontWeight="medium"
-                >
-                  CITIESair
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  {parse(sectionData.siteDescription, {
-                    replace: replacePlainHTMLWithMuiComponents,
-                  })}
-                  <br />
-                </Typography>
-                <Link
-                  href={`#${sectionData.getInTouch.id}`}
-                  underline="hover"
-                  onClick={(e) => {
-                    // Smooth scrolling
-                    e.preventDefault();
-                    const section = document.getElementById(sectionData.getInTouch.id);
-                    if (section) {
-                      section.scrollIntoView({ behavior: 'smooth' });
-                    }
-
-                    Tracking.sendEventAnalytics(
-                      Tracking.Events.internalNavigation,
-                      {
-                        destination_id: sectionData.getInTouch.id,
-                        origin_id: 'header'
+          [AppRoutes.home, AppRoutes.login].includes(currentPage)
+            ? (
+              <FullWidthBox sx={{
+                width: '100%',
+                pt: 1,
+                pb: 3,
+                backgroundColor: 'customAlternateBackground'
+              }}
+              >
+                <Container>
+                  <Typography
+                    variant="h3"
+                    color="text.primary"
+                    fontWeight="medium"
+                  >
+                    CITIESair
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary">
+                    {parse(sectionData.siteDescription, {
+                      replace: replacePlainHTMLWithMuiComponents,
+                    })}
+                    <br />
+                  </Typography>
+                  <Link
+                    href={`#${sectionData.getInTouch.id}`}
+                    underline="hover"
+                    onClick={(e) => {
+                      // Smooth scrolling
+                      e.preventDefault();
+                      const section = document.getElementById(sectionData.getInTouch.id);
+                      if (section) {
+                        section.scrollIntoView({ behavior: 'smooth' });
                       }
-                    );
-                  }}
-                  sx={{ mt: 1, display: 'block' }}
-                >
-                  Reach out to get involved!
-                </Link>
-              </Container>
-            </FullWidthBox>
-          )
+
+                      Tracking.sendEventAnalytics(
+                        Tracking.Events.internalNavigation,
+                        {
+                          destination_id: sectionData.getInTouch.id,
+                          origin_id: 'header'
+                        }
+                      );
+                    }}
+                    sx={{ mt: 1, display: 'block' }}
+                  >
+                    Reach out to get involved!
+                  </Link>
+                </Container>
+              </FullWidthBox>
+            ) : null
         )
       }
 

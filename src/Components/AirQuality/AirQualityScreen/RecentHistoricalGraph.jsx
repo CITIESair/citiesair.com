@@ -2,21 +2,22 @@
 /* eslint-disable */
 import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
-
-import convertToAQI from '../../../Utils/AirQuality/AirQualityIndexCalculator';
-import AQIdatabase from '../../../Utils/AirQuality/AirQualityIndexHelper';
+import { AQI_Database } from '../../../Utils/AirQuality/AirQualityIndexHelper';
 import { SensorStatus } from '../SensorStatus';
 import { Box } from '@mui/material';
 
-import { capitalizeFirstCharacter, areDOMOverlapped } from './ScreenUtils';
+import { areDOMOverlapped } from './ScreenUtils';
 
-import CustomThemes from '../../../Themes/CustomThemes';
 import ThemePreferences from '../../../Themes/ThemePreferences';
+import { capitalizePhrase } from '../../../Utils/UtilFunctions';
+import { INACTIVE_SENSOR_COLORS } from '../../../Themes/CustomColors';
+import { useTheme } from '@emotion/react';
 
 const numberOfHoursForHistoricalData = 6;
 
 const RecentHistoricalGraph = (props) => {
   const { data } = props;
+  const theme = useTheme();
 
   const graphContainer = useRef();
   const layerBackground = useRef();
@@ -82,7 +83,7 @@ const RecentHistoricalGraph = (props) => {
     // Calculate the maximum AQI for the y-axis to display
     maxAQItoDisplay = Math.ceil(maxAQItoDisplay / 50) * 50; // round to the nearest 50 points
 
-    for (let category of AQIdatabase) {
+    for (let category of AQI_Database) {
       if (maxAQItoDisplay >= category.aqiUS.low && maxAQItoDisplay <= category.aqiUS.high) {
         maxAQItoDisplay = category.aqiUS.high === Infinity ? maxAQItoDisplay : category.aqiUS.high;
         break;
@@ -98,15 +99,15 @@ const RecentHistoricalGraph = (props) => {
     // 2. Set up the yAxis domain and range
     yAxis = d3.scaleLinear().domain([0, maxAQItoDisplay]).range([height + margin.top, margin.top]); // height is already exclusive of margin
 
-    // 7. Add the background category layer and the AQI levels (rectangles) and the grids
+    // 3. Add the background category layer and the AQI levels (rectangles) and the grids
     let font_size = Math.max(
-      Math.floor(((AQIdatabase[1].aqiUS.high - AQIdatabase[0].aqiUS.high) / maxAQItoDisplay) * height / 2),
+      Math.floor(((AQI_Database[1].aqiUS.high - AQI_Database[0].aqiUS.high) / maxAQItoDisplay) * height / 2),
       20);
 
     let marginText = Math.floor(font_size / 5);
-    // Loop through all the aqi_category and add each category into the graph
-    for (let i = 0; i < AQIdatabase.length; i++) {
-      const category = AQIdatabase[i];
+    // 4. Loop through all the aqi_category and add each category into the graph
+    for (let i = 0; i < AQI_Database.length; i++) {
+      const category = AQI_Database[i];
       const upper = category.aqiUS.high === Infinity ? maxAQItoDisplay : category.aqiUS.high;
       const lower = category.aqiUS.low;
 
@@ -149,7 +150,7 @@ const RecentHistoricalGraph = (props) => {
         .text(category.category);
     };
 
-    // Add the xAxisWrapper and its texts
+    // 5. Add the xAxisWrapper and its texts
     d3.select(layerXaxisWrapper.current)
       .append("rect")
       .attr("x", 0)
@@ -158,7 +159,7 @@ const RecentHistoricalGraph = (props) => {
       .attr("height", margin.top)
       .attr("fill", "white");
 
-    // 9.2. Add the X Axis on top of the graph, as well as ticks
+    // 6. Add the X Axis on top of the graph, as well as ticks
     let formatHour = d3.timeFormat("%H:%M");
     d3.select(layerXaxisWrapper.current)
       .append("g")
@@ -173,7 +174,7 @@ const RecentHistoricalGraph = (props) => {
           })
       )
       .attr("font-size", height / 20)
-      .attr("color", CustomThemes.universal.palette.inactiveSensor)
+      .attr("color", INACTIVE_SENSOR_COLORS.screen)
       .select(".domain")
       .remove();
     d3.select(layerXaxisWrapper.current)
@@ -183,7 +184,7 @@ const RecentHistoricalGraph = (props) => {
       .attr('opacity', 0.5);
 
     Object.entries(data).forEach(([key, sensorData]) => {
-      // Append the line chart for this location
+      // 7.1. Append the line chart for this location
       d3.select(layerLines.current)
         .append("path")
         .datum(sensorData.historical || [])
@@ -195,13 +196,9 @@ const RecentHistoricalGraph = (props) => {
         .attr("stroke-width", "5px")
         .attr("opacity", sensorData.sensor?.location_type === "outdoors" ? 1 : 0.5);
 
-      // Append the circle marker at the end of this line chart to denote its liveness
+      // 7.2. Append the circle marker at the end of this line chart to denote its liveness
       const mostRecentData = sensorData.historical?.length > 0 ? sensorData.historical?.[0] : null;
-      if (mostRecentData) {
-        const category = AQIdatabase[mostRecentData?.aqi?.categoryIndex];
-        let color;
-        if (category) color = category.color[ThemePreferences.light];
-
+      if (mostRecentData && mostRecentData.aqi.val && mostRecentData.timestamp) {
         const markerWrapper = d3.select(layerLines.current)
           .append("g")
           .attr(
@@ -213,12 +210,13 @@ const RecentHistoricalGraph = (props) => {
             ")"
           )
           .attr("fill",
-            sensorData.current?.sensor_status === SensorStatus.active
-              ? color
-              : CustomThemes.universal.palette.inactiveSensor)
+            sensorData?.current?.category ?
+              theme.palette.text.aqi[sensorData.current.category] :
+              INACTIVE_SENSOR_COLORS.screen
+          )
           ;
 
-        sensorData.current?.sensor_status === SensorStatus.active &&
+        sensorData.sensor?.sensor_status === SensorStatus.active &&
           markerWrapper.append("circle")
             .attr("cx", 0)
             .attr("cy", 0)
@@ -230,7 +228,7 @@ const RecentHistoricalGraph = (props) => {
           .attr("cx", 0)
           .attr("cy", 0)
           .attr("stroke", "#666")
-          .attr("class", sensorData.current?.sensor_status === SensorStatus.active && "pulse-dot")
+          .attr("class", sensorData.sensor?.sensor_status === SensorStatus.active && "pulse-dot")
           .attr("r", dotRadius);
 
         markerWrapper.append("text")
@@ -241,7 +239,7 @@ const RecentHistoricalGraph = (props) => {
           .attr("alignment-baseline", "middle")
           .attr("text-anchor", "left")
           .attr("font-size", height / 25)
-          .text(capitalizeFirstCharacter(sensorData.sensor?.location_short));
+          .text(capitalizePhrase(sensorData.sensor?.location_short));
 
         const locationLabels = document.getElementsByClassName("location-label");
         for (let i = 1; i < locationLabels.length; i++) {

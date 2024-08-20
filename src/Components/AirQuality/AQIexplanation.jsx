@@ -1,9 +1,9 @@
 import { useContext } from 'react';
-import { Typography } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 import parse from 'html-react-parser';
-import { replacePlainHTMLWithMuiComponents } from '../../Utils/Utils';
+import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 import AirQualityIndexTable from './AirQualityIndexTable';
-import ExpandableSection from '../ExpandableSection';
+import ExpandableSection from '../ExpandableSection/ExpandableSection';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 
 const Explanation = {
@@ -19,7 +19,7 @@ const AQIexplanation = () => {
     <ExpandableSection
       title={Explanation.title}
       content={(
-        <>
+        <Box>
           <AirQualityIndexTable themePreference={themePreference} />
           <Typography
             component="div"
@@ -41,7 +41,7 @@ const AQIexplanation = () => {
               </Typography>
             )}
           />
-        </>
+        </Box>
       )}
     />
   )

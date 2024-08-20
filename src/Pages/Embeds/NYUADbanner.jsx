@@ -4,13 +4,16 @@ import { useState, useEffect, useContext } from 'react';
 import { Container, Box, Grid, Typography, Stack, Tooltip } from '@mui/material/';
 import { useMediaQuery, useTheme } from '@mui/material';
 
-import AQImap, { LocationTitle, TileOptions } from '../../Components/AirQuality/AQImap';
-import { GeneralEndpoints, fetchAndProcessCurrentSensorsData, getApiUrl } from '../../Utils/ApiUtils';
+import AQImap, { LocationTitles, TileOptions } from '../../Components/AirQuality/AQImap';
+import { getApiUrl } from '../../API/ApiUrls';
+import { GeneralAPIendpoints } from "../../API/Utils";
+import { fetchAndProcessCurrentSensorsData } from '../../API/ApiFetch';
 import CurrentAQIGrid, { SimpleCurrentAQIlist } from '../../Components/AirQuality/CurrentAQIGrid';
 import { CurrentAQIGridSize } from '../../Components/AirQuality/CurrentAQIGridSize';
-import AQIdatabase from '../../Utils/AirQuality/AirQualityIndexHelper';
+import { AQI_Database } from '../../Utils/AirQuality/AirQualityIndexHelper';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import ThemePreferences from '../../Themes/ThemePreferences';
+import { NYUAD } from '../../Utils/GlobalVariables';
 
 const NYUADbanner = (props) => {
   const { themePreference } = useContext(PreferenceContext);
@@ -42,8 +45,8 @@ const NYUADbanner = (props) => {
   const [otherIndoorLocations, setOtherIndoorLocations] = useState();
 
   const url = getApiUrl({
-    endpoint: GeneralEndpoints.current,
-    school_id: 'nyuad'
+    endpoint: GeneralAPIendpoints.current,
+    school_id: NYUAD
   });
 
   useEffect(() => {
@@ -117,10 +120,10 @@ const NYUADbanner = (props) => {
             maxZoom={isOnBannerPage ? zoomLevel : Math.round(zoomLevel + 1)}
             disableInteraction={isOnBannerPage}
             displayMinimap={false}
-            locationTitle={LocationTitle.short}
+            locationTitle={LocationTitles.short}
             fullSizeMap={true}
             showAttribution={false}
-            rawMapData={nyuadCurrentData}
+            mapData={nyuadCurrentData}
             markerSizeInRem={isSmallScreen ? 0.75 : 0.9}
             ariaLabel={"A map of all air quality sensors at NYU Abu Dhabi"}
           />
@@ -141,12 +144,12 @@ const NYUADbanner = (props) => {
           sm={12}
           justifyContent="center"
           textAlign="center"
-          spacing={isOnBannerPage === false && 1}
+          spacing={isOnBannerPage === false ? 1 : 0}
         >
           <Grid item xs={12} >
             <CurrentAQIGrid
               currentSensorsData={outdoorLocations}
-              showHeatIndex={false}
+              showHeatIndex={!isOnBannerPage}
               showRawMeasurements={!isOnBannerPage}
               useLocationShort={true}
               roundTemperature={isOnBannerPage && true}
@@ -180,7 +183,7 @@ const NYUADbanner = (props) => {
             justifyContent="center"
             flex={1}
           >
-            {AQIdatabase.map((element, index) => (
+            {AQI_Database.map((element, index) => (
               <Tooltip
                 key={index}
                 title={!isOnBannerPage && isSmallScreen && element.category}

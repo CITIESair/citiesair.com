@@ -157,23 +157,30 @@ export default function SeriesSelector(props) {
           ))}
 
           {/* Show the option to select all if multiSelect is true*/}
-          {allowMultiple && <MenuItem key={SELECT_ALL} value={SELECT_ALL} sx={{
-            borderTop: 'solid 0.5px', borderColor: theme.palette.text.secondary,
-            position: 'sticky', bottom: 0, zIndex: 99999, marginBottom: theme.spacing(-1),
-            background: theme.palette.customAlternateBackground,
-            "&:hover": {
-              background: theme.palette.customAlternateBackground
-            }
-          }}>
-            <Stack direction='row' width='100%' alignItems='center' justifyContent='space-between'>
-              <Typography fontWeight={500} variant='caption' sx={{ pl: 1 }}>{SELECT_ALL}</Typography>
-              <Switch
-                checked={selectAll}
-                onClick={() => handleItemToggle(SELECT_ALL)}
-                sx={{ transform: 'scale(0.8)' }}
-              />
-            </Stack>
-          </MenuItem>
+          {allowMultiple ?
+            (
+              <MenuItem
+                key={SELECT_ALL}
+                value={SELECT_ALL}
+                sx={{
+                  borderTop: 'solid 0.5px', borderColor: theme.palette.text.secondary,
+                  position: 'sticky', bottom: 0, zIndex: 1, marginBottom: theme.spacing(-1),
+                  background: theme.palette.customAlternateBackground,
+                  "&:hover": {
+                    background: theme.palette.customAlternateBackground
+                  }
+                }}
+              >
+                <Stack direction='row' width='100%' alignItems='center' justifyContent='space-between'>
+                  <Typography fontWeight={500} variant='caption' sx={{ pl: 1 }}>{SELECT_ALL}</Typography>
+                  <Switch
+                    checked={selectAll}
+                    onClick={() => handleItemToggle(SELECT_ALL)}
+                    sx={{ transform: 'scale(0.8)' }}
+                  />
+                </Stack>
+              </MenuItem>
+            ) : null
           }
         </Select>
       </FormControl>

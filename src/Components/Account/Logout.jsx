@@ -9,7 +9,10 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { StyledMenuItem } from '../Header/MenuItemAsNavLink';
 
 import { UserContext } from '../../ContextProviders/UserContext';
-import { GeneralEndpoints, getApiUrl } from '../../Utils/ApiUtils';
+import { getApiUrl } from '../../API/ApiUrls';
+import { GeneralAPIendpoints } from "../../API/Utils";
+import { fetchDataFromURL } from '../../API/ApiFetch';
+import { RESTmethods } from "../../API/Utils";
 
 export default function LogOut() {
   const { setUser } = useContext(UserContext);
@@ -19,26 +22,17 @@ export default function LogOut() {
   const logOut = async () => {
     setLoading(true);
 
-    const url = getApiUrl({ endpoint: GeneralEndpoints.logout })
-    fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include',
+    fetchDataFromURL({
+      url: getApiUrl({ endpoint: GeneralAPIendpoints.logout }),
+      restMethod: RESTmethods.GET
     })
-      .then((response) => {
-        if (response.ok) {
-          setUser({
-            checkedAuthentication: true,
-            authenticated: false,
-            username: null
-          });
-          navigate('/');
-        }
-        else {
-          throw new Error(`Error authenticating`);
-        }
+      .then(() => {
+        setUser({
+          checkedAuthentication: true,
+          authenticated: false,
+          username: null
+        });
+        navigate('/');
       })
       .catch((error) => {
         console.log(error);
@@ -58,7 +52,7 @@ export default function LogOut() {
         )
         : (
           <>
-            <LogoutIcon />&nbsp;Log Out
+            <LogoutIcon />&nbsp;Logout
           </>
         )
       }

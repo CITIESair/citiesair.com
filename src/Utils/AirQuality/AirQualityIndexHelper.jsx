@@ -1,9 +1,10 @@
-import { lightShade, darkShade, maroon } from '../../Themes/CustomColors';
+import { lightShade, darkShade, maroon, INACTIVE_SENSOR_COLORS } from '../../Themes/CustomColors';
 import { colors } from '@mui/material';
 import ThemePreferences from '../../Themes/ThemePreferences';
-import AQIDataTypes from './DataTypes';
+import { DataTypeKeys, DataTypes } from './DataTypes';
+import { SensorStatus } from '../../Components/AirQuality/SensorStatus';
 
-const AQIdatabase = [
+export const AQI_Database = [
   {
     id: 0,
     category: 'Good',
@@ -198,7 +199,7 @@ const AQIdatabase = [
 ];
 
 // From https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme680-ds001.pdf
-const vocDatabase = [
+export const VOC_Database = [
   {
     id: 0,
     category: 'Excellent',
@@ -285,10 +286,12 @@ const vocDatabase = [
   }
 ];
 
-export const getCategoryColors = ({ themePreference, dataType, isGradient }) => {
+export const getCategoryColorAxis = ({ themePreference = ThemePreferences.light, dataTypeKey, isGradient }) => {
   let database;
-  if (dataType === AQIDataTypes.voc) database = vocDatabase;
-  else database = AQIdatabase;
+  if (dataTypeKey === DataTypeKeys.voc) database = VOC_Database;
+  else database = AQI_Database;
+
+  const dataType = DataTypes[dataTypeKey];
 
   const thresholdMappingName = dataType.threshold_mapping_name;
 
@@ -308,6 +311,7 @@ export const getCategoryColors = ({ themePreference, dataType, isGradient }) => 
       {
         minValue,
         maxValue,
+        defaultValueForAlert: database[3][thresholdMappingName].high,
         gradientSteps: dataType.gradient_steps,
         colors: database.flatMap(category => {
           const lowOffset = category[thresholdMappingName].low;
@@ -334,4 +338,17 @@ export const getCategoryColors = ({ themePreference, dataType, isGradient }) => 
   }
 }
 
-export default AQIdatabase;
+export const getTextColorsForAQI = ({ themePreference = ThemePreferences.light }) => {
+  const obj = AQI_Database
+    .reduce((acc, category) => {
+      return ({
+        ...acc,
+        [category.category]: category.color[themePreference]
+      })
+    }, {});
+
+  obj[SensorStatus.offline] = INACTIVE_SENSOR_COLORS[themePreference];
+  obj.screen = INACTIVE_SENSOR_COLORS.screen;
+
+  return obj;
+}

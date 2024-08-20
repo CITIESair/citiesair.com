@@ -1,3 +1,5 @@
+import { CITIESair_HOST_NAME } from "./GlobalVariables";
+
 export const Events = {
   internalNavigation: 'internal_navigation',
   themeChange: 'theme_change',
@@ -8,8 +10,9 @@ export const Events = {
   collapseSection: 'collapse_section',
   openContactFormInExternalTab: 'open_contact_form_in_external_tab',
   airQualityIndexLegendQuickGlance: 'air_quality_index_legend_quick_glance',
+  airQualityAlertButtonClicked: 'air_quality_alert_button_clicked',
 };
 
 export const sendEventAnalytics = (eventName, options) => {
-  if (window.location.hostname === 'citiesair.com') window.gtag('event', eventName, options);
+  if (window.location.hostname === CITIESair_HOST_NAME) window.gtag('event', eventName, options);
 };

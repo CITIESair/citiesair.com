@@ -1,6 +1,6 @@
 // React components
 import { React, useMemo, lazy, Suspense, useContext, useEffect } from 'react';
-import { BrowserRouter, Route, Routes, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 
 // MUI components
 import { Box } from '@mui/material/';
@@ -15,19 +15,21 @@ import Header from './Components/Header/Header';
 import Footer from './Components/Footer';
 import FourOhFour from './Pages/404';
 import LoadingAnimation from './Components/LoadingAnimation';
-import LogIn from './Components/Account/LogIn';
+import Login from './Components/Account/Login';
 import NYUADmap from './Pages/Embeds/NYUADmap';
 import SpeedDialButton from './Components/SpeedDial/SpeedDialButton';
 
-import { UniqueRoutes } from './Utils/RoutesUtils';
+import { AppRoutes } from './Utils/AppRoutes';
 import NYUADbanner from './Pages/Embeds/NYUADbanner';
 
 import { DashboardProvider } from './ContextProviders/DashboardContext';
-import { CommentCountsProvider } from './ContextProviders/CommentCountsContext';
 import { PreferenceContext } from './ContextProviders/PreferenceContext';
-import { LinkContext } from './ContextProviders/LinkContext';
+import { MetadataContext } from './ContextProviders/MetadataContext';
 
 import jsonData from './section_data.json';
+
+import SnackbarNotification from './Components/SnackbarNotification';
+import { CITIESair } from './Utils/GlobalVariables';
 
 // Lazy load pages
 const Home = lazy(() => import('./Pages/Home/Home'));
@@ -54,7 +56,7 @@ const getDesignTokens = (themePreference) => ({
 
 function App() {
   const { themePreference, setThemePreference } = useContext(PreferenceContext);
-  const { chartsTitlesList } = useContext(LinkContext);
+  const { chartsTitlesList } = useContext(MetadataContext);
 
   // Create theme using getDesignTokens
   const theme = useMemo(
@@ -96,32 +98,34 @@ function App() {
         >
           <SpeedDialButton chartsTitlesList={chartsTitlesList} topAnchorID={jsonData.topAnchor.id} />
 
+          <SnackbarNotification />
+
           <Suspense fallback={<LoadingAnimation optionalText="Loading Dashboard" />}>
             <Routes>
               <Route
-                path={UniqueRoutes.home}
+                path={AppRoutes.home}
                 element={
                   <Box>
                     <Header />
-                    <Home title="CITIESair" />
+                    <Home title={CITIESair} />
                     <Footer />
                   </Box>
                 }
               />
 
               <Route
-                path={UniqueRoutes.login}
+                path={AppRoutes.login}
                 element={
                   <Box>
                     <Header />
-                    <LogIn />
+                    <Login />
                     <Footer />
                   </Box>
                 }
               />
 
               {
-                [UniqueRoutes.dashboard, UniqueRoutes.dashboardWithParam].map((path) =>
+                [AppRoutes.dashboard, AppRoutes.dashboardWithParam].map((path) =>
                 (
                   <Route
                     key={path}
@@ -130,9 +134,7 @@ function App() {
                       <Box>
                         <Header />
                         <DashboardProvider>
-                          <CommentCountsProvider>
-                            <Dashboard />
-                          </CommentCountsProvider>
+                          <Dashboard />
                         </DashboardProvider>
                         <Footer />
                       </Box>
@@ -143,22 +145,32 @@ function App() {
               }
 
               <Route
-                path={UniqueRoutes.anyScreen}
-                element={<Screen title="CITIESair | Screen" />}
+                path={AppRoutes.anyScreen}
+                element={<Screen title={`${CITIESair} | Screen`} />}
               />
 
               <Route
-                path={UniqueRoutes.nyuadMap}
+                path={AppRoutes.nyuadMap}
                 element={<NYUADmap />}
               />
 
               <Route
-                path={UniqueRoutes.nyuadBanner}
+                path={AppRoutes.nyuadBanner}
                 element={<NYUADbanner isOnBannerPage={true} />}
               />
 
-              <Route path={UniqueRoutes[404]} element={<FourOhFour title="Page Not Found | CITIESair" />} />
-              <Route path="*" element={<Navigate replace to={UniqueRoutes[404]} />} />
+              <Route
+                path={AppRoutes[404]}
+                element={
+                  <FourOhFour title={`${CITIESair} | Page Not Found`} />
+                }
+              />
+              <Route
+                path="*"
+                element={
+                  <Navigate replace to={AppRoutes[404]} />
+                }
+              />
 
             </Routes>
           </Suspense>

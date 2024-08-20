@@ -2,7 +2,7 @@ import { ToggleButton, ToggleButtonGroup, Typography, Stack } from '@mui/materia
 
 import AggregationType from './AggregationType';
 
-export default function AggregationTypeToggle({ aggregationType, setAggregationType, smallScreen }) {
+export default function AggregationTypeToggle({ aggregationType, setAggregationType }) {
   const handleChange = (event, newType) => {
     if (newType !== null) {
       setAggregationType(newType);

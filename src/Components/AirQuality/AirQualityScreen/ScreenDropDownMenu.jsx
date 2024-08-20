@@ -1,13 +1,11 @@
 // disable eslint for this file
 /* eslint-disable */
 import { useState, useContext } from "react";
-import { Button, Menu } from "@mui/material";
+import { Button, Menu, MenuItem } from "@mui/material";
 import { Link } from 'react-router-dom';
 import TvIcon from '@mui/icons-material/Tv';
-import MenuItemAsNavLink from "../../Header/MenuItemAsNavLink";
-import NavLinkBehavior from "../../Header/NavLinkBehavior";
 import { DashboardContext } from "../../../ContextProviders/DashboardContext";
-import { isValidArray } from "../../../Utils/Utils";
+import { isValidArray } from "../../../Utils/UtilFunctions";
 
 const ScreenDropDownMenu = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -52,7 +50,7 @@ const ScreenDropDownMenu = () => {
       >
         <TvIcon sx={{ fontSize: '1rem' }} />
         &nbsp;
-        TV Screens List
+        TV Screens
       </Button>
       <Menu
         id="tv-screen-list-menu"
@@ -65,13 +63,15 @@ const ScreenDropDownMenu = () => {
       >
         {
           screens.map((screen, index) => (
-            <MenuItemAsNavLink
+            <MenuItem
               key={index}
-              behavior={NavLinkBehavior.toNewPage}
+              component={Link}
               to={`/screen/${currentSchoolID}/${screen.screen_name}`}
-              label={screen.location_long}
+              onClick={handleClose}
               sx={{ fontSize: '0.8rem' }}
-            />
+            >
+              {screen.location_long}
+            </MenuItem>
           ))}
       </Menu>
     </>

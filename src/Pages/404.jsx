@@ -1,8 +1,9 @@
 import { useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Typography, Container } from '@mui/material';
-import { LinkContext } from '../ContextProviders/LinkContext';
-import { UniqueRoutes } from '../Utils/RoutesUtils';
+import { MetadataContext } from '../ContextProviders/MetadataContext';
+import { AppRoutes } from '../Utils/AppRoutes';
+import { CITIESair } from '../Utils/GlobalVariables';
 
 export default function FourOhFour({ title }) {
   // Update the page's title
@@ -10,11 +11,11 @@ export default function FourOhFour({ title }) {
     document.title = title;
   }, [title]);
 
-  const { setCurrentPage } = useContext(LinkContext);
+  const { setCurrentPage } = useContext(MetadataContext);
 
   // set underline link to 404 (to undo any other underlined links)
   useEffect(() => {
-    setCurrentPage(UniqueRoutes[404]);
+    setCurrentPage(AppRoutes[404]);
   }, [setCurrentPage]);
 
   return (
@@ -28,7 +29,7 @@ export default function FourOhFour({ title }) {
         Page not found
       </Typography>
       <Typography variant="h5" color="text.secondary" gutterBottom>
-        Please contact CITIESair if you think this is a mistake.
+        Please contact {CITIESair} if you think this is a mistake.
       </Typography>
       <Button component={Link} to="/" variant="contained" sx={{ mt: 3 }}>
         <Typography>Return home</Typography>

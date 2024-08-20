@@ -28,24 +28,40 @@
     },
     "publicOutdoorStations": {
         "id": "public-outdoor-stations",
-        "content": "Below is a map of CITIESair's public outdoor air quality monitoring stations. This map <u><b>does not</b></u> display indoor stations in participating schools to protect their privacy. That said, we publish schools' outdoor monitoring stations on IQAir, the world's most popular air quality monitoring platform, to make the data publicly available to the surrounding community, school teachers, staff, and parents."
+        "content": "Below is a map of CITIESair's <b>public outdoor air quality sensors</b>. This map <u><b>does not</b></u> display indoor stations in participating schools to protect their privacy. That said, we publish schools' outdoor monitoring stations on IQAir, the world's most popular air quality monitoring platform, to make the data publicly available to the surrounding community, school teachers, staff, and parents."
     },
     "getInTouch": {
         "id": "get-in-touch",
         "content": "<b>CITIESair</b> is expanding its monitoring network to encompass more schools in Abu Dhabi. If you are interested in joining our network, please contact us:<br/><ul><li><b>Dr. Federico Bernardini</b> (CITIES Investigator): <a href='mailto:bernardini@nyu.edu'>bernardini@nyu.edu</a></li><li><b>Vince Nguyen</b> (CITIES Research Assistant): <a href='mailto:bernardini@nyu.edu'>vince.nguyen@nyu.edu</a></li></ul>"
     },
-    "statistics": {
-        "partners": 3,
-        "datapoints": "16K"
-    },
-    "promo": {
-        "alert": "<b>NEW FEATURE: </b>Switch between different data types (AQI, PM2.5, PM10, temperature...) in the dashboard's data visualizations",
-        "banner": {
-            "chipLabel": "<b>NEW FEATURE</b>",
-            "title": "[JUNE 2024 UPDATE]: Visualize Different Data Types",
-            "subtitle": "CITIESair is excited to announce that you can now <b>visualize all data types</b> provided by the sensors:<ul><li>United States' Air Quality Index (US AQI)</li><li>PM2.5</li><li>PM10</li><li>Volatile Organic Compounds index (VOC)</li><li>Temperature, Humidity, and Pressure</li><li>CO2 (supported sensors)</li></ul>",
-            "imgSrc": "/images/selecting-data-types.gif",
-            "imgAtl": "GIF of new feature showing the ability to switch between different data types"
+    "promos": [
+        {
+            "id": "july2024",
+            "isPublic": false,
+            "alertMessage": "<b>[NEW] Email Alert</b> Get notified when air quality passes certain threshold or set up a daily email alert",
+            "banner": {
+                "title": "[JULY 2024 UPDATE]: Email Alerts",
+                "subtitle": "CITIESair is excited to announce you can <b>subscribe to email alerts:</b> <ul><li>Threshold alert</li><li>Daily alert</li><li>Sensor down alert (always activated)</li></ul>",
+                "img": {
+                    "width": "60%",
+                    "src": "/images/promos/email-alert.png",
+                    "atl": "An example email alert sent to the user"
+                }
+            }
+        },
+        {
+            "id": "june2024",
+            "isPublic": true,
+            "alertMessage": "<b>[NEW] Data Types</b> Switch between different data types (AQI, PM2.5, PM10, temperature...) in the data visualizations",
+            "banner": {
+                "title": "[JUNE 2024 UPDATE]: Visualize Different Data Types",
+                "subtitle": "You can now <b>visualize all data types</b> provided by the sensors in the dashboard:<ul><li>United States' Air Quality Index (US AQI), raw PM2.5, raw PM10<li>Temperature, Humidity, and Pressure</li><li>Volatile Organic Compounds, CO2 (only supported sensors)</li></ul>",
+                "img": {
+                    "width": "100%",
+                    "src": "/images/promos/selecting-data-types.gif",
+                    "atl": "GIF of new feature showing the ability to switch between different data types"
+                }
+            }
         }
-    }
+    ]
 }

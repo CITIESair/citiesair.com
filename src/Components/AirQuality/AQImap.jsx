@@ -1,6 +1,6 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useState, useEffect, useMemo, useCallback, useContext } from 'react';
+import { useState, useMemo, useCallback, useContext } from 'react';
 import { Box, Typography, Stack, Link } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { MapContainer, TileLayer, Marker, Popup, useMap, AttributionControl, useMapEvent, Rectangle, CircleMarker, Tooltip, ImageOverlay } from 'react-leaflet';
@@ -9,10 +9,7 @@ import L from 'leaflet';
 
 import LaunchIcon from '@mui/icons-material/Launch';
 
-import IQAir_Logo from '../../IQAir_logo.svg';
-
-import { calculateSensorStatus, getFormattedElapsedTimeFromNow } from './AirQualityScreen/ScreenUtils';
-import { SensorStatus } from "./SensorStatus";
+import { getFormattedLastSeen, SensorStatus } from "./SensorStatus";
 
 import { getFormattedTemperature, TemperatureUnits } from '../../Utils/AirQuality/TemperatureUtils';
 
@@ -21,6 +18,8 @@ import ThemePreferences from '../../Themes/ThemePreferences';
 import { styled } from '@mui/material/styles';
 import CustomThemes from '../../Themes/CustomThemes';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
+import { NYUAD } from '../../Utils/GlobalVariables';
+import { INACTIVE_SENSOR_COLORS } from '../../Themes/CustomColors';
 
 const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
     '& .leaflet-popup-tip-container': {
@@ -38,7 +37,7 @@ const MapPlaceholder = ({ placeholderText }) => {
 }
 export const TileOptions = {
     default: 'default',
-    nyuad: 'nyuad'
+    nyuad: NYUAD
 };
 
 const Tiles = {
@@ -47,8 +46,8 @@ const Tiles = {
         dark: 'jawg-dark'
     },
     nyuad: {
-        light: '/images/nyuadMapLight.svg',
-        dark: '/images/nyuadMapDark.svg'
+        light: '/images/nyuad-campus-map/light.svg',
+        dark: '/images/nyuad-campus-map/dark.svg'
     }
 }
 
@@ -98,12 +97,14 @@ export const TypeOfAQImap = {
     nyuadSensors: 'nyuadSensors'
 }
 
-export const LocationTitle = {
+export const LocationTitles = {
     short: 'short',
     long: 'long'
 }
 
 const aqiMarkerIconClass = 'aqi-marker-icons';
+
+const emptyValue = "--";
 
 const AQImap = (props) => {
     const { themePreference, temperatureUnitPreference } = useContext(PreferenceContext);
@@ -119,7 +120,7 @@ const AQImap = (props) => {
         fullSizeMap = false,
         showAttribution = true,
         locationTitle,
-        rawMapData,
+        mapData,
         markerSizeInRem = 1,
         ariaLabel = "A map of air quality sensors"
     } = props;
@@ -137,40 +138,11 @@ const AQImap = (props) => {
         tap: false
     }
 
-    const [mapData, setMapData] = useState({});
+    // const [mapData, setMapData] = useState({});
     const theme = useTheme();
     const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     const nyuadMapBounds = [[24.521723, 54.43135], [24.52609, 54.43779]];
-
-    useEffect(() => {
-        if (!Array.isArray(rawMapData) || rawMapData.length === 0) return;
-
-        const transformedData = rawMapData.map(location => {
-            // Calculate if the sensor is currently active or not
-            const now = new Date();
-            const currentTimestamp = new Date(location.current?.timestamp);
-            const lastSeenInHours = Math.round((now - currentTimestamp) / 1000 / 3600);
-            if (location.current) {
-                location.current.lastSeenInHours = lastSeenInHours;
-                location.current.sensor_status = calculateSensorStatus(lastSeenInHours);
-            }
-
-            let color = CustomThemes.universal.palette.inactiveSensor;
-            if (location.current?.aqi?.val) {
-                color = location.current?.color?.[themePreference];
-            }
-            // Create the marker icon on the map
-            location.markerIcon = new L.DivIcon({
-                className: aqiMarkerIconClass,
-                html: `<div aria-hidden={true} style="background-color: ${color}">${displayAqiValue(location)}</div>`
-            });
-
-            return location;
-        });
-        setMapData(transformedData);
-    }, [rawMapData]);
-
 
     const MinimapBounds = ({ parentMap, zoom }) => {
         const minimap = useMap()
@@ -210,6 +182,7 @@ const AQImap = (props) => {
     const MinimapControl = ({ position, zoom, mapData }) => {
         const parentMap = useMap();
         const mapZoom = zoom || minZoom - 2;
+        const theme = useTheme();
 
         // Memoize the minimap so it's not affected by position changes
         const minimap = useMemo(
@@ -228,12 +201,13 @@ const AQImap = (props) => {
                         accessToken={tileAccessToken}
                     />
                     {
-                        Object.entries(mapData).map(([key, location]) => (
+                        mapData ? Object.entries(mapData).map(([key, location]) => (
                             <CircleMarker
                                 key={key}
                                 center={[location.sensor?.coordinates?.latitude, location.sensor?.coordinates?.longitude]}
                                 pathOptions={{
-                                    fillColor: location.current?.color?.[themePreference] || CustomThemes.universal.palette.inactiveSensor,
+                                    fillColor: (location?.current?.category && location?.sensor?.sensor_status === SensorStatus.active) ?
+                                        theme.palette.text.aqi[location.current.category] : theme.palette.text.aqi[SensorStatus.offline],
                                     radius: 3,
                                     weight: 0,
                                     fillOpacity: 1
@@ -242,7 +216,7 @@ const AQImap = (props) => {
                             >
                             </CircleMarker>
 
-                        ))
+                        )) : null
                     }
                     <MinimapBounds parentMap={parentMap} zoom={mapZoom} />
                 </MapContainer>
@@ -260,21 +234,25 @@ const AQImap = (props) => {
     }
 
     const displayAqiValue = (location) => {
-        const emptyValue = "--";
-        if (!location.current) return emptyValue;
-        if (!location.current?.aqi.val) return emptyValue;
-        if (location.current.sensor_status === SensorStatus.offline) return emptyValue;
+        if (!location.current || !location.current?.aqi.val) return emptyValue;
 
         return location.current?.aqi.val;
     };
 
     const displayAqiCategory = (location) => {
-        const emptyValue = "--";
-        if (!location.current) return emptyValue;
-        if (!location.current?.aqi) return emptyValue;
-        if (location.current.sensor_status === SensorStatus.offline) return emptyValue;
+        if (!location.current || !location.current?.aqi) return emptyValue;
 
         return location.current.category;
+    }
+
+    const displayPM2_5 = (location) => {
+        if (!location.current || !location.current?.["pm2.5"]) return emptyValue;
+
+        return (
+            <>
+                {location.current["pm2.5"]} µg/m<sup>3</sup>
+            </>
+        )
     }
 
     return (
@@ -358,119 +336,127 @@ const AQImap = (props) => {
                 )}
                 <AttributionControl position="bottomright" prefix={false} />
                 {
-                    Object.entries(mapData).map(([key, location]) => (
-                        <Marker
-                            key={key}
-                            position={[location.sensor?.coordinates?.latitude, location.sensor?.coordinates?.longitude]}
-                            icon={location.markerIcon}
-                            keyboard={false}
-                        >
-                            {
-                                locationTitle &&
-                                <Tooltip
-                                    permanent={tileOption === TileOptions.nyuad ? true : false}
-                                    direction="bottom"
-                                    offset={locationTitle === LocationTitle.short ?
-                                        [7.5, -35] : [15, -40]}
-                                >
-                                    <Box aria-hidden={true}>
-                                        {locationTitle === LocationTitle.short ?
-                                            location.sensor?.location_short : location.sensor?.location_long}
-                                    </Box>
-                                </Tooltip>
+                    mapData ? Object.entries(mapData).map(([key, location]) => {
+                        const markerColor = (location?.current?.category && location?.sensor?.sensor_status === SensorStatus.active) ?
+                            theme.palette.text.aqi[location.current.category] : theme.palette.text.aqi[SensorStatus.offline];
 
-                            }
+                        const markerIcon = new L.DivIcon({
+                            className: aqiMarkerIconClass,
+                            html: `<div aria-hidden={true} style="background-color: ${markerColor}">${displayAqiValue(location)}</div>`
+                        });
 
-                            {
-                                disableInteraction === false &&
-                                <StyledLeafletPopup>
-                                    {
-                                        location.sensor?.public_iqAir_station_link ?
-                                            <Stack direction="row" spacing={smallScreen ? 1 : 3}>
-                                                <Link
+                        return (
+                            <Marker
+                                key={key}
+                                position={[location.sensor?.coordinates?.latitude, location.sensor?.coordinates?.longitude]}
+                                icon={markerIcon}
+                                keyboard={false}
+                            >
+                                {
+                                    locationTitle &&
+                                    <Tooltip
+                                        permanent={tileOption === TileOptions.nyuad ? true : false}
+                                        direction="bottom"
+                                        offset={locationTitle === LocationTitles.short ?
+                                            [7.5, -35] : [15, -40]}
+                                    >
+                                        <Box aria-hidden={true}>
+                                            {locationTitle === LocationTitles.short ?
+                                                location.sensor?.location_short : location.sensor?.location_long}
+                                        </Box>
+                                    </Tooltip>
+
+                                }
+
+                                {
+                                    disableInteraction === false &&
+                                    <StyledLeafletPopup>
+                                        {
+                                            location.sensor?.public_iqAir_station_link ?
+                                                <Stack direction="row" spacing={smallScreen ? 1 : 3}>
+                                                    <Link
+                                                        variant={smallScreen ? 'body2' : 'body1'}
+                                                        fontWeight={500}
+                                                        href={location.sensor.public_iqAir_station_link}
+                                                        target='_blank'
+                                                        rel="noopener noreferrer"
+                                                        color={`${theme.palette.primary.main}!important`}
+                                                        underline="hover"
+                                                    >
+                                                        {location.sensor?.location_long}
+                                                        &nbsp;
+                                                        <sup>
+                                                            <LaunchIcon fontSize='0.8rem' />
+                                                        </sup>
+                                                    </Link>
+                                                    <Box sx={{
+                                                        '& img': {
+                                                            height: smallScreen ? "50%" : 'unset'
+                                                        }
+                                                    }}>
+                                                        <img src="/images/iqair_logo.svg" />
+                                                    </Box>
+                                                </Stack>
+                                                :
+                                                <Typography
                                                     variant={smallScreen ? 'body2' : 'body1'}
-                                                    fontWeight={500}
-                                                    href={location.sensor.public_iqAir_station_link}
-                                                    target='_blank'
-                                                    rel="noopener noreferrer"
-                                                    color={`${theme.palette.primary.main}!important`}
-                                                    underline="hover"
-                                                >
+                                                    fontWeight="500"
+                                                    sx={{
+                                                        margin: '0!important',
+                                                        marginBottom: smallScreen === false && '0.25rem !important'
+                                                    }}>
                                                     {location.sensor?.location_long}
-                                                    &nbsp;
-                                                    <sup>
-                                                        <LaunchIcon fontSize='0.8rem' />
-                                                    </sup>
-                                                </Link>
-                                                <Box sx={{
-                                                    '& img': {
-                                                        height: smallScreen ? "50%" : 'unset'
-                                                    }
-                                                }}>
-                                                    <img src={IQAir_Logo} />
-                                                </Box>
-                                            </Stack>
-                                            :
-                                            <Typography
-                                                variant={smallScreen ? 'body2' : 'body1'}
-                                                fontWeight="500"
-                                                sx={{
-                                                    margin: '0!important',
-                                                    marginBottom: smallScreen === false && '0.25rem !important'
-                                                }}>
-                                                {location.sensor?.location_long}
+                                                </Typography>
+                                        }
+
+
+                                        <Box sx={{ '& *': { color: markerColor }, mb: 2 }}>
+                                            <Typography variant={smallScreen ? 'h4' : 'h3'} fontWeight="500" lineHeight={0.9}>
+                                                {displayAqiValue(location)}
+                                                <Typography variant='caption' fontWeight="500">(US AQI)</Typography>
                                             </Typography>
-                                    }
 
+                                            <Typography variant={smallScreen ? 'body2' : 'body1'} component="span" fontWeight="500">
+                                                {displayAqiCategory(location)}
+                                            </Typography>
+                                        </Box>
 
-                                    <Box sx={{ '& *': { color: location.current?.color?.[themePreference] || CustomThemes.universal.palette.inactiveSensor }, mb: 2 }}>
-                                        <Typography variant={smallScreen ? 'h4' : 'h3'} fontWeight="500" lineHeight={0.9}>
-                                            {displayAqiValue(location)}
-                                            <Typography variant='caption' fontWeight="500">(US AQI)</Typography>
+                                        <Typography
+                                            variant="caption"
+                                            sx={{ display: 'block' }}
+                                        >
+                                            <Typography variant='caption' fontWeight="500">PM2.5:</Typography>
+                                            &nbsp;
+                                            {displayPM2_5(location)}
                                         </Typography>
 
-                                        <Typography variant={smallScreen ? 'body2' : 'body1'} component="span" fontWeight="500">
-                                            {displayAqiCategory(location)}
+                                        <Typography
+                                            variant="caption"
+                                            sx={{ display: 'block' }}
+                                        >
+                                            <Typography variant='caption' fontWeight="500">Weather: </Typography>
+                                            {getFormattedTemperature({
+                                                rawTemp: location.current?.temperature,
+                                                currentUnit: TemperatureUnits.celsius,
+                                                returnUnit: temperatureUnitPreference
+                                            })}
+                                            &nbsp;-&nbsp;
+                                            {location.current?.rel_humidity ? Math.round(location.current?.rel_humidity) : "--"}%
                                         </Typography>
-                                    </Box>
 
-                                    <Typography
-                                        variant="caption"
-                                        sx={{ display: 'block' }}
-                                    >
-                                        <Typography variant='caption' fontWeight="500">PM2.5:</Typography>
-                                        &nbsp;
-                                        {location.current?.["pm2.5"] || '--'}µg/m<sup>3</sup>
-                                    </Typography>
+                                        <Typography variant="caption">
+                                            <Typography variant='caption' fontWeight="500">Status:</Typography>
+                                            &nbsp;
+                                            {
+                                                `${location.sensor?.sensor_status} (${getFormattedLastSeen(location.sensor?.lastSeenInMinutes)})`
+                                            }
+                                        </Typography>
+                                    </StyledLeafletPopup>
+                                }
 
-                                    <Typography
-                                        variant="caption"
-                                        sx={{ display: 'block' }}
-                                    >
-                                        <Typography variant='caption' fontWeight="500">Weather: </Typography>
-                                        {getFormattedTemperature({
-                                            rawTemp: location.current?.temperature,
-                                            currentUnit: TemperatureUnits.celsius,
-                                            returnUnit: temperatureUnitPreference
-                                        })}
-                                        &nbsp;-&nbsp;
-                                        {location.current?.rel_humidity ? Math.round(location.current?.rel_humidity) : "--"}%
-                                    </Typography>
-
-                                    <Typography variant="caption">
-                                        <Typography variant='caption' fontWeight="500">Status:</Typography>
-                                        &nbsp;
-                                        {location.current?.sensor_status}
-                                        {location.current?.last_seen
-                                            ? ` (${getFormattedElapsedTimeFromNow(location.current.last_seen)} ago)`
-                                            : ''}
-                                    </Typography>
-                                </StyledLeafletPopup>
-                            }
-
-                        </Marker>
-
-                    ))
+                            </Marker>)
+                    }
+                    ) : null
                 }
 
             </MapContainer>

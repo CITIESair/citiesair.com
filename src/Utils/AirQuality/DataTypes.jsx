@@ -1,4 +1,4 @@
-const AQIDataTypes = {
+const DataTypesObj = {
   aqi: {
     name: "Air Quality Index (US)",
     name_short: "AQI",
@@ -95,6 +95,23 @@ const AQIDataTypes = {
   }
 }
 
+export const DataTypeKeys = {
+  aqi: "aqi",
+  pm2_5: "pm2.5",
+  pm10_raw: "pm10_raw",
+  co2: "co2",
+  voc: "voc",
+  temperature_C: "temperature_C",
+  pressure: "pressure",
+  rel_humidity: "rel_humidity",
+}
+
+// map DataTypeKeys to DataTypesObj
+export const DataTypes = Object.entries(DataTypeKeys).reduce((acc, [key, value]) => {
+  acc[value] = DataTypesObj[value];
+  return acc;
+}, {});
+
 export const returnSelectedDataType = ({ dataTypeKey, dataTypes, showUnit = false }) => {
   return (dataTypes
     .filter(dataType => dataType.key === dataTypeKey)
@@ -107,5 +124,3 @@ export const returnSelectedDataType = ({ dataTypeKey, dataTypes, showUnit = fals
     })
   )
 }
-
-export default AQIDataTypes;

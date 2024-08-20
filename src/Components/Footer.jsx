@@ -2,6 +2,7 @@ import { Typography, Container, Box, Stack } from '@mui/material';
 import { Facebook, LinkedIn, Twitter } from '@mui/icons-material/';
 import { AiFillInstagram } from 'react-icons/ai';
 import CustomLink from './CustomLink';
+import { CITIESair } from '../Utils/GlobalVariables';
 
 function getYear() {
   const d = new Date();
@@ -14,7 +15,7 @@ export default function Footer() {
       <Container maxWidth="lg">
         <Stack direction="column" textAlign="center">
           <Typography variant="body1" fontWeight="bold" color="text.primary" pb={2}>
-            CITIESair | Center for Interacting Urban Networks (CITIES)
+            {CITIESair} | Center for Interacting Urban Networks (CITIES)
             <br />
             {getYear()}
           </Typography>
