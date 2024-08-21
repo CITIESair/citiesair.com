@@ -2,8 +2,6 @@ import { calculateSensorStatus } from "../Components/AirQuality/SensorStatus";
 import { AQI_Database } from "../Utils/AirQuality/AirQualityIndexHelper";
 import parse from 'html-react-parser';
 import { SupportedFetchExtensions, RESTmethods } from "./Utils";
-import { SensorStatus } from "../Components/AirQuality/SensorStatus";
-import CustomThemes from "../Themes/CustomThemes";
 
 export const fetchDataFromURL = async ({
   url,
@@ -14,11 +12,6 @@ export const fetchDataFromURL = async ({
   includesHeadersJSON = true
 }) => {
   try {
-    // overrides needsAuthorization if developing locally on local backend
-    if (process.env.REACT_APP_ENV === 'local-backend') {
-      needsAuthorization = false;
-    }
-
     const fetchOptions = {
       method: restMethod,
       credentials: needsAuthorization ? 'include' : 'omit',
