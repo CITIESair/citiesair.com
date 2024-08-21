@@ -16,8 +16,8 @@ export function MetadataProvider({ children }) {
         needsAuthorization: false,
         includesHeadersJSON: false
       });
-      jsonData.data.forEach((item) => {
-        commentCountsForAllPages[item.page_identifier] = item.comments_count;
+      jsonData.forEach((item) => {
+        commentCountsForAllPages[item.identifier] = item.comments_count;
       });
       return commentCountsForAllPages;
     } catch (error) {

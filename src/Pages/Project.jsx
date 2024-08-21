@@ -258,23 +258,25 @@ const Project = () => {
           </Grid>
         }
 
-        {(displayCommentSection === true && commentCounts !== null) &&
-          <Grid item>
-            <CustomChip
-              icon={<CommentIcon />}
-              label={`${commentCounts[HYVOR_PAGE_NAME]} Comment${commentCounts[HYVOR_PAGE_NAME] > 1 ? "s" : ""}`}
-              tooltipTitle="Number of Comments"
-              onClick={() => {
-                scrollToSection(jsonData.commentSection.id);
-                Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
-                  {
-                    destination_id: jsonData.commentSection.id,
-                    destination_label: jsonData.commentSection.toString(),
-                    origin_id: 'chip'
-                  })
-              }}
-            />
-          </Grid>}
+        {(displayCommentSection === true && commentCounts !== null) ?
+          (
+            <Grid item>
+              <CustomChip
+                icon={<CommentIcon />}
+                label={`${commentCounts[HYVOR_PAGE_NAME]} Comment${commentCounts[HYVOR_PAGE_NAME] > 1 ? "s" : ""}`}
+                tooltipTitle="Number of Comments"
+                onClick={() => {
+                  scrollToSection(jsonData.commentSection.id);
+                  Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
+                    {
+                      destination_id: jsonData.commentSection.id,
+                      destination_label: jsonData.commentSection.toString(),
+                      origin_id: 'chip'
+                    })
+                }}
+              />
+            </Grid>
+          ) : null}
       </Grid>
     )
   }
