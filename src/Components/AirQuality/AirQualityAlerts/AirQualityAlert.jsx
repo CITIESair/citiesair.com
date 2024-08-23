@@ -8,9 +8,7 @@ import EmailsInput from './EmailsInput';
 import AlertsTabs from './AlertsTabs';
 import { AirQualityAlertProvider } from '../../../ContextProviders/AirQualityAlertContext';
 
-export default function AirQualityAlerts(props) {
-  const { schoolContactEmail } = props;
-
+export default function AirQualityAlerts() {
   return (
     <CustomDialog
       buttonIcon={<NotificationImportantIcon sx={{ fontSize: '1rem' }} />}
@@ -23,7 +21,7 @@ export default function AirQualityAlerts(props) {
           <AlertsTabs />
         </AirQualityAlertProvider>
 
-        <EmailsInput schoolContactEmail={schoolContactEmail} />
+        <EmailsInput />
       </Stack>
 
     </CustomDialog>

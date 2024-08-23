@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Box, TextField, Chip, Menu, MenuItem, Grid, Typography, Button, Stack, useMediaQuery } from '@mui/material';
+import { Box, TextField, Chip, Menu, MenuItem, Grid, Typography, Button, Stack, useMediaQuery, Alert } from '@mui/material';
 import { fetchDataFromURL } from "../../../API/ApiFetch";
 import { RESTmethods } from "../../../API/Utils";
 import { getApiUrl } from '../../../API/ApiUrls';
@@ -12,9 +12,7 @@ const compareArrays = (arr1, arr2) => {
   return JSON.stringify(arr1) === JSON.stringify(arr2);
 }
 
-const EmailsInput = (props) => {
-  const { schoolContactEmail } = props;
-
+const EmailsInput = () => {
   const { currentSchoolID } = useContext(DashboardContext);
 
   const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
@@ -27,7 +25,7 @@ const EmailsInput = (props) => {
   const [currentEmail, setCurrentEmail] = useState('');
   const [menuAnchor, setMenuAnchor] = useState(null);
 
-  const maxEmails = 20;
+  const maxEmails = 50;
   const validateEmail = (email) => {
     return String(email)
       .toLowerCase()
@@ -47,12 +45,6 @@ const EmailsInput = (props) => {
       needsAuthorization: true
     }).then((data) => {
       setServerEmails(data);
-
-      // If no email recipient has been added before, add the admin email as the default one first
-      // then save to backend
-      if (data.length === 0 && schoolContactEmail) {
-        handleSaveEmails([schoolContactEmail]);
-      }
     })
       .catch((error) => {
         setMessage("There was an error loading the email list, please try again.");
@@ -228,7 +220,7 @@ const EmailsInput = (props) => {
         </Grid>
       </Grid>
 
-      <Stack sx={{ mt: 1 }} spacing={0.5} alignItems={smallScreen ? "stretch" : "end"}>
+      <Stack sx={{ mt: 1 }} spacing={1} alignItems={smallScreen ? "stretch" : "end"}>
         <Typography
           variant="caption"
           display="block"
@@ -237,6 +229,19 @@ const EmailsInput = (props) => {
         >
           {localEmails.length} / {maxEmails} recipient{localEmails.length > 1 ? 's' : null} added
         </Typography>
+
+        {
+          serverEmails.length === 0 ?
+            (
+              <Alert
+                severity='warning'
+                sx={{
+                  mt: 1
+                }}>
+                The alerts set up above will not be sent unless at least one email recipient is added
+              </Alert>
+            ) : null
+        }
 
         <Button
           onClick={handleSaveEmails}
