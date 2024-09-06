@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback, useContext } from 'react';
 import { Box, Typography, Stack, Link } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
-import { MapContainer, TileLayer, Marker, Popup, useMap, AttributionControl, useMapEvent, Rectangle, CircleMarker, Tooltip, ImageOverlay } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, AttributionControl, useMapEvent, Rectangle, CircleMarker, ImageOverlay } from 'react-leaflet';
 import { useEventHandlers } from '@react-leaflet/core';
 import L from 'leaflet';
 
@@ -16,10 +16,8 @@ import { getFormattedTemperature, TemperatureUnits } from '../../Utils/AirQualit
 import ThemePreferences from '../../Themes/ThemePreferences';
 
 import { styled } from '@mui/material/styles';
-import CustomThemes from '../../Themes/CustomThemes';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import { NYUAD } from '../../Utils/GlobalVariables';
-import { INACTIVE_SENSOR_COLORS } from '../../Themes/CustomColors';
 
 const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
     '& .leaflet-popup-tip-container': {
@@ -103,6 +101,7 @@ export const LocationTitles = {
 }
 
 const aqiMarkerIconClass = 'aqi-marker-icons';
+const circleMarkerWithLabelClass = 'circle-marker-with-label';
 
 const emptyValue = "--";
 
@@ -273,23 +272,10 @@ const AQImap = (props) => {
                 '& .leaflet-control-attribution': {
                     ...(showAttribution ? { fontSize: '0.5rem' } : { display: 'none' }),
                 },
-                '& .leaflet-tooltip': {
-                    border: 'unset',
-                    color: theme.palette.text.primary,
-                    backgroundColor: "transparent !important",
-                    opacity: 1,
-                    boxShadow: 'unset',
-                    fontWeight: 500,
-                    fontSize: `${markerSizeInRem}rem`,
-                    textTransform: 'capitalize'
-                },
-                '& .leaflet-tooltip-bottom:before': {
-                    borderBottomColor: 'transparent !important',
-                },
                 '& .leaflet-marker-icon': {
                     cursor: disableInteraction ? 'auto' : 'pointer'
                 },
-                [`& .${aqiMarkerIconClass} > div`]: {
+                [`& .${aqiMarkerIconClass} .${circleMarkerWithLabelClass}`]: {
                     width: `${2.25 * markerSizeInRem}rem`,
                     height: `${2.25 * markerSizeInRem}rem`,
                     borderRadius: '50%',
@@ -342,7 +328,22 @@ const AQImap = (props) => {
 
                         const markerIcon = new L.DivIcon({
                             className: aqiMarkerIconClass,
-                            html: `<div aria-hidden={true} style="background-color: ${markerColor}">${displayAqiValue(location)}</div>`
+                            html: `
+                            <div
+                                aria-hidden="true" 
+                                style="display: flex; flex-direction: column; width: fit-content"
+                            >
+                                <div 
+                                    class=${circleMarkerWithLabelClass}
+                                    style="background-color: ${markerColor}"
+                                >${displayAqiValue(location)}</div>
+
+                                ${locationTitle ?
+                                    `<div style="font-weight: 500;text-transform: capitalize;margin: auto;color: ${theme.palette.text.primary};font-size: ${markerSizeInRem}rem;">${locationTitle === LocationTitles.short ?
+                                        location.sensor?.location_short : location.sensor?.location_long}</div>` : ""
+                                }
+                            </div>
+                            `
                         });
 
                         return (
@@ -351,23 +352,8 @@ const AQImap = (props) => {
                                 position={[location.sensor?.coordinates?.latitude, location.sensor?.coordinates?.longitude]}
                                 icon={markerIcon}
                                 keyboard={false}
+                                iconAnchor={[0, 0]}
                             >
-                                {
-                                    locationTitle &&
-                                    <Tooltip
-                                        permanent={tileOption === TileOptions.nyuad ? true : false}
-                                        direction="bottom"
-                                        offset={locationTitle === LocationTitles.short ?
-                                            [7.5, -35] : [15, -40]}
-                                    >
-                                        <Box aria-hidden={true}>
-                                            {locationTitle === LocationTitles.short ?
-                                                location.sensor?.location_short : location.sensor?.location_long}
-                                        </Box>
-                                    </Tooltip>
-
-                                }
-
                                 {
                                     disableInteraction === false &&
                                     <StyledLeafletPopup>
