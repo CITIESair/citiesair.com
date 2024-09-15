@@ -134,7 +134,7 @@ const Dashboard = () => {
       setIndividualChartData(index, {}); // set empty chartData to create a placeholder for this chart
 
       fetchDataFromURL({
-        url: getHistoricalChartApiUrl({
+        url: getChartApiUrl({
           endpoint: endpoint,
           school_id: school_id
         })
