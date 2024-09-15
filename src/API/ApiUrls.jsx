@@ -2,15 +2,14 @@ import AggregationType from "../Components/DateRangePicker/AggregationType";
 import { API_CITIESair_URL } from "../Utils/GlobalVariables";
 import { GeneralAPIendpoints } from "./Utils";
 
-export const getAlertsApiUrl = ({
-  endpoint,
-  school_id,
-  alert_id
-}) => {
+export const getAlertsApiUrl = ({ endpoint, school_id, alert_id }) => {
   if (endpoint !== GeneralAPIendpoints.alerts) return;
 
-  return `${API_CITIESair_URL}/${endpoint}/${school_id}${alert_id ? `/${alert_id}` : ''}`;
-}
+  // Build the base URL and optionally append the alert_id if provided
+  const baseUrl = `${API_CITIESair_URL}/${endpoint}/${school_id}`;
+  return alert_id ? `${baseUrl}/${alert_id}` : baseUrl;
+};
+
 
 export const getApiUrl = ({
   endpoint,
@@ -37,23 +36,35 @@ export const getApiUrl = ({
 }
 
 export const getHistoricalChartApiUrl = ({ endpoint, school_id, aggregationType = AggregationType.hourly, startDate, endDate, dataType }) => {
-  let baseUrl = `${API_CITIESair_URL}/${endpoint}/${school_id}?dataType=${dataType}&aggregationType=${aggregationType}`;
+  const params = new URLSearchParams();
 
-  if (startDate && endDate) {
-    baseUrl = `${baseUrl}&startDate=${startDate}&endDate=${endDate}`;
-  }
+  if (dataType) params.append('dataType', dataType);
+  if (aggregationType) params.append('aggregationType', aggregationType);
+  if (startDate) params.append('startDate', startDate);
+  if (endDate) params.append('endDate', endDate);
 
-  return baseUrl;
+  return `${API_CITIESair_URL}/${endpoint}/${school_id}${params.toString() ? '?' + params : ''}`;
 };
 
+
 export const getChartApiUrl = ({ endpoint, school_id, dataType }) => {
-  return `${API_CITIESair_URL}/${endpoint}/${school_id}?dataType=${dataType}`;
-}
+  const params = new URLSearchParams();
+  if (dataType) params.append('dataType', dataType);
+
+  return `${API_CITIESair_URL}/${endpoint}/${school_id}${params.toString() ? '?' + params : ''}`;
+};
+
 
 export const getCorrelationChartApiUrl = ({ endpoint, school_id, dataType, sensorX, sensorY }) => {
-  return `${API_CITIESair_URL}/${endpoint}/${school_id}?dataType=${dataType}&sensorX=${sensorX}&sensorY=${sensorY}`;
-}
+  const params = new URLSearchParams();
+  if (dataType) params.append('dataType', dataType);
+  if (sensorX) params.append('sensorX', sensorX);
+  if (sensorY) params.append('sensorY', sensorY);
 
-export const getRawDatasetUrl = ({ school_id, sensor_location_short, datasetType, isSample }) => {
-  return `${API_CITIESair_URL}/${GeneralAPIendpoints.raw}/${school_id}/${sensor_location_short}/${datasetType}?isSample=${isSample === true ? true : false}`;
+  return `${API_CITIESair_URL}/${endpoint}/${school_id}${params.toString() ? '?' + params : ''}`;
+};
+
+
+export const getRawDatasetUrl = ({ school_id, sensor_location_short, datasetType, isSample = true }) => {
+  return `${API_CITIESair_URL}/${GeneralAPIendpoints.raw}/${school_id}/${sensor_location_short}/${datasetType}?isSample=${isSample}`;
 }
