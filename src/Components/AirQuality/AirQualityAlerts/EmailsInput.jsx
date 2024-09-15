@@ -197,7 +197,7 @@ const EmailsInput = () => {
                     fullWidth
                     variant="standard"
                     value={currentEmail}
-                    onChange={(e) => setCurrentEmail(e.target.value)}
+                    onChange={(e) => { setCurrentEmail(e.target.value) }}
                     onKeyUp={(e) => {
                       if (['Enter', 'Spacebar', ' '].includes(e.key)) {
                         handleAddEmail(currentEmail);
@@ -234,11 +234,11 @@ const EmailsInput = () => {
           serverEmails.length === 0 ?
             (
               <Alert
-                severity='warning'
+                severity='error'
                 sx={{
                   mt: 1
                 }}>
-                The alerts set up above will not be sent unless at least one email recipient is added
+                The alert(s) above will not be sent unless at least one email recipient is saved
               </Alert>
             ) : null
         }
