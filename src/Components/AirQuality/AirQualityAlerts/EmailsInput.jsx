@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Box, TextField, Chip, Menu, MenuItem, Grid, Typography, Button, Stack, useMediaQuery, Alert } from '@mui/material';
+import { Box, TextField, Chip, Menu, MenuItem, Grid, Typography, Button, Stack, useMediaQuery, Alert, Tooltip } from '@mui/material';
 import { fetchDataFromURL } from "../../../API/ApiFetch";
 import { RESTmethods } from "../../../API/Utils";
 import { getApiUrl } from '../../../API/ApiUrls';
@@ -21,9 +21,12 @@ const EmailsInput = () => {
 
   const [serverEmails, setServerEmails] = useState([]);
   const [localEmails, setLocalEmails] = useState([]);
+  const [emailsListChanged, setEmailsListChanged] = useState(false);
 
   const [currentEmail, setCurrentEmail] = useState('');
   const [menuAnchor, setMenuAnchor] = useState(null);
+
+  const [saveButtonTooltipTitle, setSaveButtonTooltipTitle] = useState('');
 
   const maxEmails = 50;
   const validateEmail = (email) => {
@@ -56,6 +59,14 @@ const EmailsInput = () => {
   useEffect(() => {
     setLocalEmails(serverEmails);
   }, [serverEmails]);
+
+  useEffect(() => {
+    setEmailsListChanged(!compareArrays(localEmails, serverEmails));
+  }, [localEmails]);
+
+  useEffect(() => {
+    setSaveButtonTooltipTitle(emailsListChanged ? "Click to save new changes on server" : "No changes detected to save");
+  }, [emailsListChanged]);
 
   const handleAddEmail = (passedEmail) => {
     const email = passedEmail.trim().toLowerCase();
@@ -197,7 +208,13 @@ const EmailsInput = () => {
                     fullWidth
                     variant="standard"
                     value={currentEmail}
-                    onChange={(e) => { setCurrentEmail(e.target.value) }}
+                    onChange={(e) => {
+                      const tmp = e.target.value;
+                      setCurrentEmail(tmp);
+                      if (tmp !== '') {
+                        setSaveButtonTooltipTitle("Finalize currently edited email by pressing Enter/Return")
+                      }
+                    }}
                     onKeyUp={(e) => {
                       if (['Enter', 'Spacebar', ' '].includes(e.key)) {
                         handleAddEmail(currentEmail);
@@ -243,14 +260,20 @@ const EmailsInput = () => {
             ) : null
         }
 
-        <Button
-          onClick={handleSaveEmails}
-          variant="contained"
-          sx={{ width: smallScreen ? "100%" : "fit-content" }}
-          disabled={compareArrays(localEmails, serverEmails)}
-        >
-          SAVE EMAIL LIST
-        </Button>
+        <Tooltip title={saveButtonTooltipTitle} enterTouchDelay={0}>
+          {/* Span is needed to display Tooltip on a disabled Button */}
+          <span>
+            <Button
+              onClick={handleSaveEmails}
+              variant="contained"
+              sx={{ width: smallScreen ? "100%" : "fit-content" }}
+              disabled={!emailsListChanged}
+            >
+              SAVE EMAIL LIST
+            </Button>
+          </span>
+        </Tooltip>
+
       </Stack>
 
       <Menu
