@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Box, TextField, Chip, Menu, MenuItem, Grid, Typography, Button, Stack, useMediaQuery, Alert, Tooltip } from '@mui/material';
+import { Box, TextField, Chip, Menu, MenuItem, Grid, Typography, Button, Stack, useMediaQuery, Alert, Tooltip, Link } from '@mui/material';
 import { fetchDataFromURL } from "../../../API/ApiFetch";
 import { RESTmethods } from "../../../API/Utils";
 import { getApiUrl } from '../../../API/ApiUrls';
@@ -179,7 +179,15 @@ const EmailsInput = () => {
             Email Recipients:
           </Typography>
         </Grid>
-        <Grid item xs={12} sm>
+        <Grid
+          item
+          xs={12}
+          lg
+          sx={{
+            overflowY: "scroll",
+            maxHeight: "300px"
+          }}
+        >
           <Grid
             container
             alignItems="center"
@@ -203,7 +211,7 @@ const EmailsInput = () => {
             )}
             {
               localEmails.length < maxEmails ? (
-                <Grid item xs={12} sm minWidth="200px">
+                <Grid item xs={12} sm minWidth="200px" >
                   <TextField
                     fullWidth
                     variant="standard"
@@ -223,7 +231,7 @@ const EmailsInput = () => {
                     onPaste={handlePaste}
                     placeholder="Add recipient"
                     sx={{
-                      mx: 0.5,
+                      mx: 0.5
                     }}
                     InputProps={{
                       disableUnderline: true,
@@ -238,14 +246,31 @@ const EmailsInput = () => {
       </Grid>
 
       <Stack sx={{ mt: 1 }} spacing={1} alignItems={smallScreen ? "stretch" : "end"}>
-        <Typography
-          variant="caption"
-          display="block"
-          color="text.secondary"
-          textAlign="right"
-        >
-          {localEmails.length} / {maxEmails} recipient{localEmails.length > 1 ? 's' : null} added
-        </Typography>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" gap={1}>
+          <Typography
+            variant="caption"
+            display="block"
+            color="text.secondary"
+            textAlign="right"
+          >
+            {localEmails.length} / {maxEmails} recipient{localEmails.length > 1 ? 's' : null} added
+          </Typography>
+
+          <Link
+            variant="caption"
+            sx={{
+              cursor: "pointer"
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              setCurrentEmail('');
+              setLocalEmails([])
+            }}
+          >
+            Clear All
+          </Link>
+        </Stack>
+
 
         {
           serverEmails.length === 0 ?
