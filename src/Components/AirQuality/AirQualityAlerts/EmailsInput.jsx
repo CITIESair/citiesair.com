@@ -28,7 +28,7 @@ const EmailsInput = () => {
 
   const [saveButtonTooltipTitle, setSaveButtonTooltipTitle] = useState('');
 
-  const maxEmails = 50;
+  const maxEmails = 150;
   const validateEmail = (email) => {
     return String(email)
       .toLowerCase()
