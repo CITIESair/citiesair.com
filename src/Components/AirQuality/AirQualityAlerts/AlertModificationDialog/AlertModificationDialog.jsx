@@ -29,6 +29,7 @@ import { ThresholdSlider } from './ThresholdSlider';
 import { AlertSeverity, useNotificationContext } from '../../../../ContextProviders/NotificationContext';
 
 import isEqual from 'lodash.isequal';
+import DaysOfWeekToggle from './DayOfTheWeekToggle';
 
 const AlertModificationDialog = (props) => {
   const {
@@ -133,14 +134,17 @@ const AlertModificationDialog = (props) => {
     switch (alertTypeKey) {
       case AlertTypes.daily.id:
         alertTypeSpecificData = (
-          <SimplePicker
-            icon={<AccessTimeIcon />}
-            label={AlertTypes.daily.tableColumnHeader}
-            value={editingAlert[AirQualityAlertKeys.minutespastmidnight]}
-            options={HOURS}
-            disabled={isDisabled(AirQualityAlertKeys.minutespastmidnight)}
-            handleChange={handleCurrentMinutesPastMidnightChange}
-          />
+          <>
+            <SimplePicker
+              icon={<AccessTimeIcon />}
+              label={AlertTypes.daily.tableColumnHeader}
+              value={editingAlert[AirQualityAlertKeys.minutespastmidnight]}
+              options={HOURS}
+              disabled={isDisabled(AirQualityAlertKeys.minutespastmidnight)}
+              handleChange={handleCurrentMinutesPastMidnightChange}
+            />
+            <DaysOfWeekToggle />
+          </>
         );
         break;
       case AlertTypes.threshold.id:

@@ -28,13 +28,13 @@ function AlertTab(props) {
   );
 }
 
-export default function AlertsTabs(props) {
+export default function AlertsTabs() {
   const smallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
   const [currentTab, setCurrentTab] = useState(0);
 
   const { setSelectedAlert } = useAirQualityAlert();
 
-  const handleTabChange = (event, newVal) => {
+  const handleTabChange = (_, newVal) => {
     setCurrentTab(newVal);
     setSelectedAlert(
       getAlertPlaceholder(AlertTypes[Object.keys(AlertTypes)?.[newVal]]?.id)
