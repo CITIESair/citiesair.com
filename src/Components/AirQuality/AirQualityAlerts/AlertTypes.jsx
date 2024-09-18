@@ -14,7 +14,8 @@ const AlertTypes = {
     index: 1,
     name: "Daily",
     tableColumnHeader: "Alert Hour",
-    icon: <CalendarMonthIcon />
+    icon: <CalendarMonthIcon />,
+    disclaimer: "Daily alerts will not be sent during weekends to align with school's off-days."
   }
 };
 

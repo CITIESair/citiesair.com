@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Tab, useMediaQuery } from '@mui/material';
+import { Box, Tab, Typography, useMediaQuery } from '@mui/material';
 
 import StyledTabs from '../../StyledTabs';
 import AlertsTable from './AlertsTable';
@@ -9,32 +9,48 @@ import AlertTypes from './AlertTypes';
 import { isValidArray } from '../../../Utils/UtilFunctions';
 
 function AlertTab(props) {
-  const { children, value, index, alertTypeKey, alertsArray, ...other } = props;
+  const { children, value, index, alertType, alertsArray, ...other } = props;
 
   return (
     <Box
       role="tabpanel"
       hidden={value !== index}
-      id={`alert-tabpanel-${alertTypeKey}`}
-      aria-labelledby={`alert-tab-${alertTypeKey}`}
+      id={`alert-tabpanel-${alertType.id}`}
+      aria-labelledby={`alert-tab-${alertType.id}`}
       width="100%"
       {...other}
     >
       <AlertsTable
-        alertTypeKey={alertTypeKey}
+        alertTypeKey={alertType.id}
         alertsForTable={alertsArray}
       />
+
+      {
+        alertType.disclaimer ? (
+          <Typography
+            display="block"
+            variant="caption"
+            textAlign="right"
+            width="100%"
+            fontStyle="italic"
+            my={1}
+          >
+            {alertType.disclaimer}
+          </Typography>
+        ) : null
+      }
+
     </Box>
   );
 }
 
-export default function AlertsTabs(props) {
+export default function AlertsTabs() {
   const smallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
   const [currentTab, setCurrentTab] = useState(0);
 
   const { setSelectedAlert } = useAirQualityAlert();
 
-  const handleTabChange = (event, newVal) => {
+  const handleTabChange = (_, newVal) => {
     setCurrentTab(newVal);
     setSelectedAlert(
       getAlertPlaceholder(AlertTypes[Object.keys(AlertTypes)?.[newVal]]?.id)
@@ -87,7 +103,7 @@ export default function AlertsTabs(props) {
         return (
           <AlertTab
             key={type.id}
-            alertTypeKey={type.id}
+            alertType={type}
             value={currentTab}
             index={type.index}
             alertsArray={filteredAlerts.array}
