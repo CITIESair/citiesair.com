@@ -41,7 +41,7 @@ export const AQI_Database = [
     id: 1,
     category: 'Moderate',
     color: {
-      Light: colors.yellow[lightShade + 100],
+      Light: "#ffb600",
       Dark: colors.yellow[darkShade + 200]
     },
     aqiUS: {
@@ -232,7 +232,7 @@ export const VOC_Database = [
       high: 150
     },
     color: {
-      Light: colors.yellow[lightShade + 100],
+      Light: "#ffb600",
       Dark: colors.yellow[darkShade + 200]
     }
   },

@@ -83,7 +83,14 @@ const NYUADbanner = (props) => {
 
 
   return (
-    <Grid container overflow="hidden" flex={1} maxWidth="lg" margin="auto" backgroundColor="customAlternateBackground">
+    <Grid
+      container
+      overflow="hidden"
+      flex={1}
+      maxWidth="lg"
+      margin="auto"
+      backgroundColor={isOnBannerPage ? "#f5f5f5" : "customAlternateBackground"}
+    >
       {
         isOnBannerPage &&
         <Grid item xs={12} height="fit-content">
@@ -109,7 +116,7 @@ const NYUADbanner = (props) => {
         >
           <AQImap
             tileOption={TileOptions.nyuad}
-            themePreference={isOnBannerPage ? ThemePreferences.dark : themePreference}
+            themePreference={isOnBannerPage ? ThemePreferences.light : themePreference}
             centerCoordinates={getCenterCoordinates()}
             maxBounds={[
               [24.52, 54.42612],
