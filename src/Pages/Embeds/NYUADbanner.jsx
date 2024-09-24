@@ -180,6 +180,7 @@ const NYUADbanner = (props) => {
               currentSensorsData={otherIndoorLocations}
               useLocationShort={isSmallScreen}
               size={isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium}
+              isOnBannerPage={isOnBannerPage}
             />
           </Grid>
         </Grid>
