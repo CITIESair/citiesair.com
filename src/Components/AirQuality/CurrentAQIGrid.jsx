@@ -188,7 +188,8 @@ export const SimpleCurrentAQIlist = (props) => {
   const {
     currentSensorsData,
     useLocationShort = false,
-    size = CurrentAQIGridSize.medium
+    size = CurrentAQIGridSize.medium,
+    isOnBannerPage = false
   } = props;
 
   const theme = useTheme();
@@ -231,6 +232,7 @@ export const SimpleCurrentAQIlist = (props) => {
                 textTransform="capitalize"
                 textOverflow="ellipsis"
                 overflow="hidden"
+                textAlign={isOnBannerPage ? "start" : "center"}
                 noWrap
               >
                 {returnLocationName({
