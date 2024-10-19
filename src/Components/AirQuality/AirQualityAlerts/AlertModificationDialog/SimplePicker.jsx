@@ -10,7 +10,8 @@ export const SimplePicker = (props) => {
     <Stack
       direction="row"
       spacing={1}
-      alignItems="center">
+      alignItems="center"
+    >
       <Box
         aria-hidden={true}
         sx={{

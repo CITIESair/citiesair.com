@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText, Stack, useMediaQuery, Typography, Grid } from '@mui/material';
+import { Button, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText, Stack, useMediaQuery, Typography, Grid, Switch, FormGroup, FormControlLabel } from '@mui/material';
 import { useTheme } from '@emotion/react';
 import AlertTypes from '../AlertTypes';
 import { ThresholdAlertTypes } from '../AlertTypes';
@@ -30,6 +30,14 @@ import { AlertSeverity, useNotificationContext } from '../../../../ContextProvid
 
 import isEqual from 'lodash.isequal';
 import DaysOfWeekToggle from './DayOfTheWeekToggle';
+import MultiDaysCalendarPicker from './MultiDaysCalendarPicker';
+
+const returnFormattedStatusString = (editingAlert) => {
+  const status = editingAlert[AirQualityAlertKeys.is_enabled] ? "enabled" : "disabled";
+  const tense = editingAlert[AirQualityAlertKeys.id] ? "is" : "will be"; // if this alert doesn't have id, it's not saved in DB yet, thus we use future tense 
+
+  return `This alert ${tense} ${status}`;
+}
 
 const AlertModificationDialog = (props) => {
   const {
@@ -72,8 +80,15 @@ const AlertModificationDialog = (props) => {
       [AirQualityAlertKeys.datatypekey]: selectedDataTypeKey,
       [AirQualityAlertKeys.threshold_value]: defaultValueForAlert
     });
+  }
 
+  const handleCurrentDaysOfWeekChange = (_, newDaysOfWeek) => {
+    const validDaysOfWeek = Array.isArray(newDaysOfWeek) ? newDaysOfWeek : [];
 
+    setEditingAlert({
+      ...editingAlert,
+      [AirQualityAlertKeys.days_of_week]: validDaysOfWeek.sort()
+    });
   }
 
   const handleCurrentThresholdValueChange = (value) => {
@@ -90,10 +105,41 @@ const AlertModificationDialog = (props) => {
     });
   }
 
+  const handleExcludedDatesChange = (valueArray) => {
+    // Get the current excluded dates or initialize as an empty array
+    const currentExcludedDates = editingAlert[AirQualityAlertKeys.excluded_dates] || [];
+
+    // Create a new array that updates the excluded dates
+    const updatedExcludedDates = valueArray.reduce((acc, date) => {
+      // Check if the date is already excluded
+      if (acc.includes(date)) {
+        // If it exists, filter it out (remove the date)
+        return acc.filter(excludedDate => excludedDate !== date);
+      } else {
+        // If it doesn't exist, add the date to the array
+        return [...acc, date];
+      }
+    }, currentExcludedDates); // Start with the current excluded dates
+
+    // Update the state with the new excluded_dates array
+    setEditingAlert({
+      ...editingAlert,
+      [AirQualityAlertKeys.excluded_dates]: updatedExcludedDates
+    });
+  };
+
+
   const handleCurrentMinutesPastMidnightChange = (event) => {
     setEditingAlert({
       ...editingAlert,
       [AirQualityAlertKeys.minutespastmidnight]: event.target.value
+    });
+  }
+
+  const handleIsEnabledChange = (event) => {
+    setEditingAlert({
+      ...editingAlert,
+      [AirQualityAlertKeys.is_enabled]: event.target.checked
     });
   }
 
@@ -116,6 +162,8 @@ const AlertModificationDialog = (props) => {
       const dependencies = {
         [AirQualityAlertKeys.sensor_id]: null,
         [AirQualityAlertKeys.datatypekey]: AirQualityAlertKeys.sensor_id,
+        [AirQualityAlertKeys.days_of_week]: AirQualityAlertKeys.datatypekey,
+        [AirQualityAlertKeys.excluded_dates]: AirQualityAlertKeys.datatypekey,
         [AirQualityAlertKeys.alert_type]: AirQualityAlertKeys.datatypekey,
         [AirQualityAlertKeys.threshold_value]: AirQualityAlertKeys.datatypekey,
         [AirQualityAlertKeys.minutespastmidnight]: AirQualityAlertKeys.datatypekey
@@ -134,17 +182,14 @@ const AlertModificationDialog = (props) => {
     switch (alertTypeKey) {
       case AlertTypes.daily.id:
         alertTypeSpecificData = (
-          <>
-            <SimplePicker
-              icon={<AccessTimeIcon />}
-              label={AlertTypes.daily.tableColumnHeader}
-              value={editingAlert[AirQualityAlertKeys.minutespastmidnight]}
-              options={HOURS}
-              disabled={isDisabled(AirQualityAlertKeys.minutespastmidnight)}
-              handleChange={handleCurrentMinutesPastMidnightChange}
-            />
-            <DaysOfWeekToggle />
-          </>
+          <SimplePicker
+            icon={<AccessTimeIcon />}
+            label={AlertTypes.daily.tableColumnHeader}
+            value={editingAlert[AirQualityAlertKeys.minutespastmidnight]}
+            options={HOURS}
+            disabled={isDisabled(AirQualityAlertKeys.minutespastmidnight)}
+            handleChange={handleCurrentMinutesPastMidnightChange}
+          />
         );
         break;
       case AlertTypes.threshold.id:
@@ -267,6 +312,25 @@ const AlertModificationDialog = (props) => {
             ) : null
         }
 
+        <Stack
+          direction="row"
+          spacing={1}
+          alignItems="center"
+        >
+          <Switch
+            size='small'
+            checked={editingAlert[AirQualityAlertKeys.is_enabled]}
+            onChange={handleIsEnabledChange}
+            disabled={isDisabled(AirQualityAlertKeys.is_enabled)}
+          />
+          <Typography
+            fontWeight={500}
+            color="text.secondary"
+          >
+            {returnFormattedStatusString(editingAlert)}
+          </Typography>
+        </Stack>
+
         <SimplePicker
           icon={<PlaceIcon />}
           label={SharedColumnHeader.location}
@@ -283,6 +347,18 @@ const AlertModificationDialog = (props) => {
           options={allowedDataTypesForSensor}
           disabled={isDisabled(AirQualityAlertKeys.datatypekey)}
           handleChange={handleCurrentDataTypeChange}
+        />
+
+        <DaysOfWeekToggle
+          value={editingAlert[AirQualityAlertKeys.days_of_week]}
+          disabled={isDisabled(AirQualityAlertKeys.days_of_week)}
+          handleChange={handleCurrentDaysOfWeekChange}
+        />
+
+        <MultiDaysCalendarPicker
+          selectedDates={editingAlert[AirQualityAlertKeys.excluded_dates] || []}
+          disabled={isDisabled(AirQualityAlertKeys.excluded_dates)}
+          handleChange={handleExcludedDatesChange}
         />
 
         {alertTypeSpecificData}

@@ -6,6 +6,8 @@ import AirQualityIndexTable from './AirQualityIndexTable';
 import ExpandableSection from '../ExpandableSection/ExpandableSection';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 
+import InfoIcon from '@mui/icons-material/Info';
+
 const Explanation = {
   title: "Explanation of the US Air Quality Index (AQI) for PM2.5",
   subtitle: "CITIESair uses the <a href='https://www.airnow.gov/aqi/aqi-basics/'>Air Quality Index (AQI)</a> developed by the United States Environmental Protection Agency (EPA) to effectively communicate different levels of PM2.5 air pollution. To calculate the AQI from the raw measurement of PM2.5 concentration (µg/m³), different breakpoints and piecewise linear function are utilized (read more <a href='https://en.wikipedia.org/wiki/Air_quality_index#United_States'>here</a>). Higher AQI values correspond to poorer air quality and greater heath risks to humans.<br><br>The US EPA sets thresholds for PM2.5 concentration, recently updated in February 2024: <sup>[1]</sup><ul><li><b>Annual average</b>: 9.0 µg/m³, corresponding to US AQI <b>50</b></li><li><b>24-hour average</b>: 35.0 µg/m³, corresponding to US AQI <b>100</b></li></ul>In 2021, the World's Heath Organization (WHO) proposed a new guideline for PM2.5<sup>[2]</sup> with stricter thresholds than those of the US EPA:<ul><li><b>Annual average</b>: 5.0 µg/m³, corresponding to US AQI <b>21</b></li><li><b>24-hour average</b>: 15.0 µg/m³, corresponding to US AQI <b>56</b></li></ul>",
@@ -18,6 +20,7 @@ const AQIexplanation = () => {
   return (
     <ExpandableSection
       title={Explanation.title}
+      icon={<InfoIcon sx={{ fontSize: "1rem" }} />}
       content={(
         <Box>
           <AirQualityIndexTable themePreference={themePreference} />

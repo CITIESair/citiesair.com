@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Box, Button, IconButton, Stack, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, Alert, Grow } from '@mui/material';
+import { useContext, useState } from 'react';
+import { Box, Button, IconButton, Stack, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, Alert, Grow, Switch } from '@mui/material';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -17,10 +17,36 @@ import AlertModificationDialog from './AlertModificationDialog/AlertModification
 import { returnHoursFromMinutesPastMidnight, CrudTypes, SharedColumnHeader } from './Utils';
 import { TransitionGroup } from 'react-transition-group';
 import { DataTypes } from '../../../Utils/AirQuality/DataTypes';
+import { DAYS_OF_WEEK } from './AlertModificationDialog/DAYS_OF_WEEK';
+import { fetchDataFromURL } from '../../../API/ApiFetch';
+import { GeneralAPIendpoints, RESTmethods } from '../../../API/Utils';
+import { DashboardContext } from '../../../ContextProviders/DashboardContext';
+import { AlertSeverity, useNotificationContext } from '../../../ContextProviders/NotificationContext';
+import { getAlertsApiUrl } from '../../../API/ApiUrls';
+
+const returnDaysOfWeekString = (days_of_week) => {
+  if (!days_of_week || !isValidArray(days_of_week)) return "";
+
+  // Case where all days are selected
+  if (days_of_week.length === DAYS_OF_WEEK.length) return "Everyday";
+
+  // Check if two days are missing and if both are weekend days
+  const missingDays = DAYS_OF_WEEK.filter(d => !days_of_week.includes(d.value));
+  if (missingDays.length === 2 && missingDays.every(d => [5, 6].includes(d.value))) {
+    return "Only weekdays";
+  }
+
+  // Default case: map the selected days to their short labels
+  return days_of_week
+    .map(day => DAYS_OF_WEEK.find(d => d.value === day)?.label.slice(0, 2))
+    .join(', ');
+};
 
 const AlertsTable = (props) => {
 
-  const { selectedAlert, setSelectedAlert } = useAirQualityAlert();
+  const { selectedAlert, setSelectedAlert, editingAlert, allowedDataTypesForSensor, setEditingAlert, setAlerts } = useAirQualityAlert();
+  const { currentSchoolID } = useContext(DashboardContext);
+  const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
 
   const { alertTypeKey, alertsForTable } = props;
 
@@ -40,6 +66,37 @@ const AlertsTable = (props) => {
     setSelectedAlert(getAlertPlaceholder(alertTypeKey));
   }
 
+  const handleEnableClick = ({ alert }) => {
+    const currentIsEnabled = alert[AirQualityAlertKeys.is_enabled];
+    const newIsEnabled = !currentIsEnabled;
+
+    fetchDataFromURL({
+      url: getAlertsApiUrl({
+        endpoint: GeneralAPIendpoints.alerts,
+        school_id: currentSchoolID,
+        alert_id: alert[AirQualityAlertKeys.id]
+      }),
+      restMethod: RESTmethods.PUT,
+      body: {
+        ...alert,
+        [AirQualityAlertKeys.is_enabled]: newIsEnabled
+      }
+    }).then((data) => {
+      setAlerts(prevAlerts =>
+        prevAlerts.map(prevAlert =>
+          prevAlert[AirQualityAlertKeys.id] === alert[AirQualityAlertKeys.id] ? data : prevAlert
+        )
+      );
+      setSeverity(AlertSeverity.success);
+      setMessage(`This alert will be ${newIsEnabled ? "enabled" : "disabled"}`);
+      setShowNotification(true);
+    }).catch((error) => {
+      setSeverity(AlertSeverity.error);
+      setMessage(`There was an error ${newIsEnabled ? "enabling" : "disabling"} this alert, try again!`);
+      setShowNotification(true);
+    });
+  }
+
   return (
     <>
       <Stack spacing={2} alignItems="center">
@@ -50,12 +107,18 @@ const AlertsTable = (props) => {
                 <Table size="small" sx={{ my: 1 }}>
                   <TableHead>
                     <TableRow>
+                      <TableCell sx={{ width: "1rem", px: 0 }}></TableCell>
+
                       <TableCell sx={{ pl: 1 }}>
                         {SharedColumnHeader.location}
                       </TableCell>
 
                       <TableCell>
                         {SharedColumnHeader.dataType}
+                      </TableCell>
+
+                      <TableCell>
+                        {SharedColumnHeader.selectedDaysOfWeek}
                       </TableCell>
 
                       <TableCell>
@@ -71,28 +134,47 @@ const AlertsTable = (props) => {
                       <Grow key={index}>
                         <TableRow
                           sx={{
-                            background: alert?.id === selectedAlert?.id && theme.palette.background.NYUpurpleLight
+                            background: alert[AirQualityAlertKeys.id] === selectedAlert[AirQualityAlertKeys.id] && theme.palette.background.NYUpurpleLight,
+                            textDecoration: alert[AirQualityAlertKeys.is_enabled] === false ? "line-through" : "none"
                           }}
                         >
+                          <TableCell>
+                            <Tooltip
+                              title={`Click to ${alert[AirQualityAlertKeys.is_enabled] ? "disable" : "enable"} alert`}
+                            >
+                              <Switch
+                                size='small'
+                                checked={alert[AirQualityAlertKeys.is_enabled]}
+                                onClick={() => {
+                                  handleEnableClick({ alert })
+                                }}
+                              />
+                            </Tooltip>
+                          </TableCell>
+
                           <TableCell sx={{ textTransform: 'capitalize' }}>
-                            {alert?.[AirQualityAlertKeys.location_short]}
+                            {alert[AirQualityAlertKeys.location_short]}
                           </TableCell>
 
                           <TableCell>
                             {
                               Object.keys(DataTypes)
-                                .filter(key => key === alert?.[AirQualityAlertKeys.datatypekey])
+                                .filter(key => key === alert[AirQualityAlertKeys.datatypekey])
                                 .map(key => DataTypes[key].name_title)[0]
                             }
                           </TableCell>
 
+                          <TableCell>
+                            {returnDaysOfWeekString(alert[AirQualityAlertKeys.days_of_week])}
+                          </TableCell>
+
                           {alertTypeKey === AlertTypes.threshold.id ? (
                             <TableCell>
-                              {ThresholdAlertTypes[alert?.alert_type].sign}{alert?.threshold_value}
+                              {ThresholdAlertTypes[alert[AirQualityAlertKeys.alert_type]].sign}{alert[AirQualityAlertKeys.threshold_value]}
                               &nbsp;
                               {
                                 Object.keys(DataTypes)
-                                  .filter(key => key === alert?.[AirQualityAlertKeys.datatypekey])
+                                  .filter(key => key === alert[AirQualityAlertKeys.datatypekey])
                                   .map(key => DataTypes[key].unit)[0]
                               }
                             </TableCell>
@@ -100,7 +182,7 @@ const AlertsTable = (props) => {
 
                           {alertTypeKey === AlertTypes.daily.id ? (
                             <TableCell>
-                              {returnHoursFromMinutesPastMidnight(alert?.minutespastmidnight)}
+                              {returnHoursFromMinutesPastMidnight(alert[AirQualityAlertKeys.minutespastmidnight])}
                             </TableCell>
                           ) : null}
 

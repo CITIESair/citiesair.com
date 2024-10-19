@@ -16,7 +16,8 @@ const CustomDialog = (props) => {
     dialogCloseHandler = null,
     displaySchoolID = true,
     maxWidth = "lg",
-    children
+    children,
+    disabled
   } = props;
 
   let iconOnly;
@@ -50,6 +51,7 @@ const CustomDialog = (props) => {
           aria-label={buttonIconAria}
           size="small"
           sx={{ "&:hover,:focus": { color: theme.palette.primary.main } }}
+          disabled={disabled}
         >
           {buttonIcon}
         </IconButton>
@@ -60,6 +62,7 @@ const CustomDialog = (props) => {
       <Button
         onClick={onOpen}
         variant="contained"
+        disabled={disabled}
       >
         {buttonIcon}&nbsp;{buttonLabel}
       </Button>
@@ -78,17 +81,14 @@ const CustomDialog = (props) => {
         fullScreen={smallScreen}
         keepMounted
       >
-        {(
-          smallScreen &&
-          <DialogActions sx={{ justifyContent: "start" }}>
-            <Button onClick={onClose}>
-              <ChevronLeftIcon sx={{ fontSize: '1rem' }} />Back
-            </Button>
-          </DialogActions>
-        )}
+        <DialogActions sx={{ justifyContent: "start" }}>
+          <Button onClick={onClose}>
+            <ChevronLeftIcon sx={{ fontSize: '1rem' }} />Back
+          </Button>
+        </DialogActions>
 
         <DialogTitle>
-          {displaySchoolID &&
+          {displaySchoolID === true ?
             (<>
               <Chip
                 label={currentSchoolID ? `School: ${currentSchoolID.toUpperCase()}` : "No School"}
@@ -98,7 +98,7 @@ const CustomDialog = (props) => {
               />
               <br />
             </>
-            )}
+            ) : null}
 
           {dialogTitle}
         </DialogTitle>

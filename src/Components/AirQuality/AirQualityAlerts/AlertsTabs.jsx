@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Tab, Typography, useMediaQuery } from '@mui/material';
+import { Box, Tab, useMediaQuery } from '@mui/material';
 
 import StyledTabs from '../../StyledTabs';
 import AlertsTable from './AlertsTable';
@@ -24,22 +24,6 @@ function AlertTab(props) {
         alertTypeKey={alertType.id}
         alertsForTable={alertsArray}
       />
-
-      {
-        alertType.disclaimer ? (
-          <Typography
-            display="block"
-            variant="caption"
-            textAlign="right"
-            width="100%"
-            fontStyle="italic"
-            my={1}
-          >
-            {alertType.disclaimer}
-          </Typography>
-        ) : null
-      }
-
     </Box>
   );
 }

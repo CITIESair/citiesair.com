@@ -16,7 +16,10 @@ export const AirQualityAlertKeys = {
   location_short: "location_short",
   datatypekey: "datatypekey",
   threshold_value: "threshold_value",
-  minutespastmidnight: "minutespastmidnight"
+  days_of_week: "days_of_week",
+  minutespastmidnight: "minutespastmidnight",
+  is_enabled: "is_enabled",
+  excluded_dates: "excluded_dates"
 };
 
 export const getAlertPlaceholder = (alert_type = AlertTypes.daily.id) => {
@@ -28,8 +31,11 @@ export const getAlertPlaceholder = (alert_type = AlertTypes.daily.id) => {
     [AirQualityAlertKeys.alert_type]: localAlertType || alert_type,
     [AirQualityAlertKeys.sensor_id]: '',
     [AirQualityAlertKeys.datatypekey]: '',
+    [AirQualityAlertKeys.days_of_week]: [0, 1, 2, 3, 4],
     [AirQualityAlertKeys.threshold_value]: -1,
-    [AirQualityAlertKeys.minutespastmidnight]: ''
+    [AirQualityAlertKeys.minutespastmidnight]: '',
+    [AirQualityAlertKeys.is_enabled]: true,
+    [AirQualityAlertKeys.excluded_dates]: []
   }
 }
 
