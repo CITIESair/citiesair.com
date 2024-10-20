@@ -1,7 +1,6 @@
 import { useContext, useState } from 'react';
 import { Box, Button, IconButton, Stack, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, Alert, Grow, Switch } from '@mui/material';
 
-import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddAlarmIcon from '@mui/icons-material/AddAlarm';
 
@@ -25,7 +24,7 @@ import { AlertSeverity, useNotificationContext } from '../../../ContextProviders
 import { getAlertsApiUrl } from '../../../API/ApiUrls';
 
 const returnDaysOfWeekString = (days_of_week) => {
-  if (!days_of_week || !isValidArray(days_of_week)) return "";
+  if (!days_of_week || !isValidArray(days_of_week)) return "N/A";
 
   // Case where all days are selected
   if (days_of_week.length === DAYS_OF_WEEK.length) return "Everyday";
@@ -44,7 +43,7 @@ const returnDaysOfWeekString = (days_of_week) => {
 
 const AlertsTable = (props) => {
 
-  const { selectedAlert, setSelectedAlert, editingAlert, allowedDataTypesForSensor, setEditingAlert, setAlerts } = useAirQualityAlert();
+  const { selectedAlert, setSelectedAlert, setAlerts } = useAirQualityAlert();
   const { currentSchoolID } = useContext(DashboardContext);
   const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
 
@@ -100,16 +99,16 @@ const AlertsTable = (props) => {
   return (
     <>
       <Stack spacing={2} alignItems="center">
-        <Box width="100%">
+        <Box sx={{ width: "100%" }}>
           {
             isValidArray(alertsForTable) ?
               (
                 <Table size="small" sx={{ my: 1 }}>
                   <TableHead>
                     <TableRow>
-                      <TableCell sx={{ width: "1rem", px: 0 }}></TableCell>
+                      <TableCell sx={{ px: 0 }} />
 
-                      <TableCell sx={{ pl: 1 }}>
+                      <TableCell>
                         {SharedColumnHeader.location}
                       </TableCell>
 
@@ -125,7 +124,7 @@ const AlertsTable = (props) => {
                         {AlertTypes[alertTypeKey]?.tableColumnHeader || ""}
                       </TableCell>
 
-                      <TableCell sx={{ width: "5rem", px: 0 }}></TableCell>
+                      <TableCell sx={{ px: 0 }} />
                     </TableRow>
                   </TableHead>
 
@@ -138,7 +137,7 @@ const AlertsTable = (props) => {
                             textDecoration: alert[AirQualityAlertKeys.is_enabled] === false ? "line-through" : "none"
                           }}
                         >
-                          <TableCell>
+                          <TableCell sx={{ px: 0 }}>
                             <Tooltip
                               title={`Click to ${alert[AirQualityAlertKeys.is_enabled] ? "disable" : "enable"} alert`}
                             >
@@ -149,6 +148,17 @@ const AlertsTable = (props) => {
                                   handleEnableClick({ alert })
                                 }}
                               />
+                            </Tooltip>
+
+                            <Tooltip title="Edit Alert">
+                              <IconButton
+                                aria-label="edit"
+                                size="small"
+                                sx={{ "&:hover,:focus": { color: theme.palette.primary.main } }}
+                                onClick={() => handleModifyClick({ alert, crudType: CrudTypes.edit })}
+                              >
+                                <EditIcon />
+                              </IconButton>
                             </Tooltip>
                           </TableCell>
 
@@ -186,28 +196,8 @@ const AlertsTable = (props) => {
                             </TableCell>
                           ) : null}
 
-                          <TableCell sx={{ width: "5rem", px: 0 }}>
-                            <Tooltip title="Edit Alert">
-                              <IconButton
-                                aria-label="edit"
-                                size="small"
-                                sx={{ "&:hover,:focus": { color: theme.palette.primary.main } }}
-                                onClick={() => handleModifyClick({ alert, crudType: CrudTypes.edit })}
-                              >
-                                <EditIcon />
-                              </IconButton>
-                            </Tooltip>
+                          <TableCell sx={{ px: 0 }}>
 
-                            <Tooltip title="Delete Alert">
-                              <IconButton
-                                aria-label="delete"
-                                size="small"
-                                sx={{ "&:hover,:focus": { color: theme.palette.primary.main } }}
-                                onClick={() => handleModifyClick({ alert, crudType: CrudTypes.delete })}
-                              >
-                                <DeleteIcon />
-                              </IconButton>
-                            </Tooltip>
                           </TableCell>
                         </TableRow>
                       </Grow>

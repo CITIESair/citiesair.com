@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText, Stack, useMediaQuery, Typography, Grid, Switch, FormGroup, FormControlLabel } from '@mui/material';
+import { Button, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText, Stack, useMediaQuery, Typography, Grid, Switch } from '@mui/material';
 import { useTheme } from '@emotion/react';
 import AlertTypes from '../AlertTypes';
 import { ThresholdAlertTypes } from '../AlertTypes';
@@ -31,6 +31,7 @@ import { AlertSeverity, useNotificationContext } from '../../../../ContextProvid
 import isEqual from 'lodash.isequal';
 import DaysOfWeekToggle from './DayOfTheWeekToggle';
 import MultiDaysCalendarPicker from './MultiDaysCalendarPicker';
+import AlertDeletionDialog from './AlertDeletionDialog';
 
 const returnFormattedStatusString = (editingAlert) => {
   const status = editingAlert[AirQualityAlertKeys.is_enabled] ? "enabled" : "disabled";
@@ -155,10 +156,7 @@ const AlertModificationDialog = (props) => {
   const returnDialogContent = () => {
 
     // Helper function to check if the previous field has a value to disable this field
-    // or disable everything if the crudType is DELETE
     const isDisabled = (key) => {
-      if (crudType === CrudTypes.delete) return true;
-
       const dependencies = {
         [AirQualityAlertKeys.sensor_id]: null,
         [AirQualityAlertKeys.datatypekey]: AirQualityAlertKeys.sensor_id,
@@ -367,21 +365,21 @@ const AlertModificationDialog = (props) => {
     );
   }
 
-  const handleAlertModification = () => {
+  const handleAlertModification = ({ passedCrudType }) => {
     const handleFetchError = (error) => {
       setSeverity(AlertSeverity.error);
-      setMessage(DialogData[crudType].errorMessage);
+      setMessage(DialogData[passedCrudType].errorMessage);
       setShowNotification(true);
     };
 
     const handleFetchSuccess = () => {
       setSeverity(AlertSeverity.success);
-      setMessage(DialogData[crudType].successMessage);
+      setMessage(DialogData[passedCrudType].successMessage);
       setShowNotification(true);
       handleClose();
     }
 
-    switch (crudType) {
+    switch (passedCrudType) {
       case CrudTypes.add:
         fetchDataFromURL({
           url: getAlertsApiUrl({
@@ -488,22 +486,38 @@ const AlertModificationDialog = (props) => {
       <DialogContent>
         {returnDialogContent()}
       </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={handleClose}
-          sx={{
-            color: theme.palette.text.secondary
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={handleAlertModification}
-          color="primary"
-          disabled={crudType === CrudTypes.delete ? false : shouldDisableButton} // Delete dialog button can never be disabled
-        >
-          {DialogData[crudType]?.primaryButtonLabel}
-        </Button>
+      <DialogActions sx={{
+        justifyContent: "space-between"
+      }}>
+        {
+          crudType === CrudTypes.edit ? (
+            <AlertDeletionDialog
+              onConfirmedDelete={() => {
+                handleAlertModification({ passedCrudType: CrudTypes.delete })
+              }}
+            />
+          ) : null
+        }
+
+        <Stack direction="row" width="100%" justifyContent="end">
+          <Button
+            onClick={handleClose}
+            sx={{
+              color: theme.palette.text.secondary
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              handleAlertModification({ passedCrudType: crudType })
+            }}
+            color="primary"
+            disabled={shouldDisableButton}
+          >
+            Save Edit
+          </Button>
+        </Stack>
       </DialogActions>
     </Dialog>
   );
