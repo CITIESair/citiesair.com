@@ -27,6 +27,25 @@ import { PreferenceContext } from '../ContextProviders/PreferenceContext';
 import { CITIESair } from '../Utils/GlobalVariables';
 import { INACTIVE_SENSOR_COLORS } from '../Themes/CustomColors';
 
+// Helper function to parse displayHours
+function isWithinDisplayHours(location) {
+  const params = new URLSearchParams(location.search);
+  const displayHours = params.get("displayHours");
+  if (!displayHours) return true; // Show screen if no parameter
+
+  const [start, end] = displayHours.split("-").map(time => parseInt(time.replace(":", ""), 10));
+  const now = parseInt(new Date().toTimeString().slice(0, 5).replace(":", ""), 10);
+
+  if (start <= end) {
+    // Regular range (same day, e.g., 06:00-20:00)
+    return start <= now && now < end;
+  } else {
+    // Overnight range (e.g., 16:00-01:00)
+    return now >= start || now < end;
+  }
+}
+
+
 const Screen = ({ title }) => {
   const { temperatureUnitPreference, themePreference } = useContext(PreferenceContext);
 
@@ -35,6 +54,14 @@ const Screen = ({ title }) => {
 
   const location = useLocation();
   const locationPath = location.pathname;
+
+  const [shouldDisplayScreen, setShouldDisplayScreen] = useState(isWithinDisplayHours(location));
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setShouldDisplayScreen(isWithinDisplayHours(location));
+    }, 60000); // Check every minute
+    return () => clearInterval(intervalId);
+  }, []);
 
   // Update the page's title
   useEffect(() => {
@@ -147,7 +174,7 @@ const Screen = ({ title }) => {
     );
   }
 
-  return (
+  if (shouldDisplayScreen) return (
     <Grid
       container
       alignContent="stretch"
@@ -307,8 +334,20 @@ const Screen = ({ title }) => {
         </Grid>
 
       </Grid>
-    </Grid >
+    </Grid>
   );
+  else return (
+    <Grid
+      container
+      alignContent="stretch"
+      alignItems="stretch"
+      height="100vh"
+      sx={{
+        overflow: 'hidden',
+        background: "black",
+      }}
+    />
+  )
 };
 
 export default Screen;
