@@ -14,8 +14,8 @@ This folder contains UI components for account state management throughout CITIE
 
   It contains the classic trio `username`, `password`, and `rememeberMe` for schools to log in the CITIESair dashboard with the provided credentials. With the help of [UserContext.jsx](/src/ContextProviders/UserContext.jsx), it makes a `POST` to the backend server (api.citiesair.com) to authenticate the login attempt and handle the result appropriately:
     - Successful login: redirect the user to:
-      - `redirectTo` if it is provided in the URL param, for example: https://citiesair.com/login?redirectTo=/dashboard/muna. This happens if the user is not logged in and they access a private page; subsequently, that page calls `useNavigate()` to point the user back to this `/login` page, with a URL param to navigate back to that page when logged in successfully.
-      - `/dashboard` if no `redirectTo` is provided
+      - `redirect_url` if it is provided in the URL param, for example: https://citiesair.com/login?redirect_url=/dashboard/muna. This happens if the user is not logged in and they access a private page; subsequently, that page calls `useNavigate()` to point the user back to this `/login` page, with a URL param to navigate back to that page when logged in successfully.
+      - `/dashboard` if no `redirect_url` is provided
     - Unsuccessful login: displays error message for the user to try again
 
       ![login-unsuccessful](/documentation/login-unsuccessful.png)

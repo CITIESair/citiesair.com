@@ -35,10 +35,10 @@ export default function Login() {
 
   const navigate = useNavigate();
 
-  // After login succeeds, navigate to /dashboard if no redirectTo string query is detected
+  // After login succeeds, navigate to /dashboard if no redirect_url string query is detected
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const redirectTo = queryParams.get(AppRoutes.redirectQuery)?.toLowerCase() || AppRoutes.dashboard;
+  const redirect_url = queryParams.get(AppRoutes.redirectQuery)?.toLowerCase() || AppRoutes.dashboard;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -65,7 +65,7 @@ export default function Login() {
           username: data.username,
         });
 
-        navigate(redirectTo, { replace: true });
+        navigate(redirect_url, { replace: true });
       })
       .catch((error) => {
         setMessage(prefabErrorMessage);

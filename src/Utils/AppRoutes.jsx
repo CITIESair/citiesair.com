@@ -11,5 +11,5 @@ export const AppRoutes = {
   anyScreen: '/screen/*',
   404: '/404',
   blogSubdomain: BLOG_CITIESair_URL,
-  redirectQuery: 'redirectTo'
+  redirectQuery: 'redirect_url'
 }

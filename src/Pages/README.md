@@ -37,7 +37,7 @@ There are a few differences in the behavior of `/dashboard` route depends on if 
 
 - If **NOT** logged in:
   - If the school is public (only `/dashboard/nyuad` for now), it will display the page nicely
-  - If the school is not public (most of the other `/:school_id`), it will `navigate()` to `/login/redirectTo=${locationPath}` for the user to log in and on logged in successfully, automatically `navigate()` them back here if they have the privilege to access this school. If not, it will display the same error message as above and `navigate()` to `/404`.
+  - If the school is not public (most of the other `/:school_id`), it will `navigate()` to `/login/redirect_url=${locationPath}` for the user to log in and on logged in successfully, automatically `navigate()` them back here if they have the privilege to access this school. If not, it will display the same error message as above and `navigate()` to `/404`.
 
 ### Data Fetch
 `Dashboard` also takes care of fetching all necessary data for `Project` to render, such as:
