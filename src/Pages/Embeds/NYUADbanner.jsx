@@ -30,10 +30,10 @@ const NYUADbanner = (props) => {
 
   const getCenterCoordinates = () => {
     if (isOnBannerPage) {
-      return [24.5238, 54.43449]
+      return [24.5235, 54.43449]
     }
     else {
-      return [24.5238, 54.4341]
+      return [24.5242, 54.4341]
     }
   }
 
@@ -101,41 +101,68 @@ const NYUADbanner = (props) => {
           </Container>
         </Grid>
       }
-      <Grid item xs={12} sm={6}>
-        <Box
-          height="100%"
-          minHeight={minMapHeight}
-          sx={{
-            '& .leaflet-container': {
-              borderRadius: (isSmallScreen === false && isOnBannerPage === false) && theme.shape.borderRadius
-            },
-            '& .leaflet-marker-icon': {
-              cursor: (isSmallScreen && isOnBannerPage) && "default"
+
+      {
+        // Hide map when on banner and small screen
+        (isOnBannerPage === true && isSmallScreen === true) ? null : (
+          <Grid item xs={12} sm={6}>
+            <Box
+              height="85%"
+              minHeight={minMapHeight}
+              sx={{
+                '& .leaflet-container': {
+                  borderRadius: (isSmallScreen === false && isOnBannerPage === false) && theme.shape.borderRadius
+                },
+                '& .leaflet-marker-icon': {
+                  cursor: (isSmallScreen && isOnBannerPage) && "default"
+                }
+              }}
+            >
+              <AQImap
+                tileOption={TileOptions.nyuad}
+                themePreference={isOnBannerPage ? ThemePreferences.light : themePreference}
+                centerCoordinates={getCenterCoordinates()}
+                maxBounds={[
+                  [24.52, 54.42612],
+                  [24.53, 54.44079]
+                ]}
+                defaultZoom={zoomLevel}
+                minZoom={zoomLevel}
+                maxZoom={isOnBannerPage ? zoomLevel : Math.round(zoomLevel + 1)}
+                disableInteraction={isOnBannerPage}
+                displayMinimap={false}
+                locationTitle={LocationTitles.short}
+                fullSizeMap={true}
+                showAttribution={false}
+                mapData={nyuadCurrentData}
+                markerSizeInRem={isSmallScreen ? 0.75 : 0.9}
+                ariaLabel={"A map of all air quality sensors at NYU Abu Dhabi"}
+              />
+            </Box>
+
+            {
+              // Display weather and last update (from outdoors) for large banner 
+              (isOnBannerPage === true && isSmallScreen === false) ? (
+                <Box textAlign="center">
+                  <CurrentAQIGrid
+                    currentSensorsData={outdoorLocations}
+                    showWeather={true}
+                    showWeatherText={true}
+                    showHeatIndex={false}
+                    showAQI={false}
+                    showRawMeasurements={false}
+                    roundTemperature={true}
+                    size={isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium}
+                    showLastUpdate={true}
+                  />
+                </Box>
+              ) : null
             }
-          }}
-        >
-          <AQImap
-            tileOption={TileOptions.nyuad}
-            themePreference={isOnBannerPage ? ThemePreferences.light : themePreference}
-            centerCoordinates={getCenterCoordinates()}
-            maxBounds={[
-              [24.52, 54.42612],
-              [24.53, 54.44079]
-            ]}
-            defaultZoom={zoomLevel}
-            minZoom={zoomLevel}
-            maxZoom={isOnBannerPage ? zoomLevel : Math.round(zoomLevel + 1)}
-            disableInteraction={isOnBannerPage}
-            displayMinimap={false}
-            locationTitle={LocationTitles.short}
-            fullSizeMap={true}
-            showAttribution={false}
-            mapData={nyuadCurrentData}
-            markerSizeInRem={isSmallScreen ? 0.75 : 0.9}
-            ariaLabel={"A map of all air quality sensors at NYU Abu Dhabi"}
-          />
-        </Box>
-      </Grid>
+
+          </Grid>
+        )
+      }
+
 
       <Grid
         container
@@ -153,14 +180,16 @@ const NYUADbanner = (props) => {
           textAlign="center"
           spacing={isOnBannerPage === false ? 1 : 0}
         >
-          <Grid item xs={12} >
+          <Grid item xs={12}>
             <CurrentAQIGrid
               currentSensorsData={outdoorLocations}
+              showWeather={!isOnBannerPage}
               showHeatIndex={!isOnBannerPage}
               showRawMeasurements={!isOnBannerPage}
               useLocationShort={true}
               roundTemperature={isOnBannerPage && true}
               size={isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium}
+              showLastUpdate={false}
             />
           </Grid>
 
@@ -175,14 +204,34 @@ const NYUADbanner = (props) => {
             />
           </Grid>
 
-          <Grid item xs={12} mb={1}>
+          <Grid item xs={isSmallScreen ? 10 : 12} mb={1}>
             <SimpleCurrentAQIlist
               currentSensorsData={otherIndoorLocations}
               useLocationShort={isSmallScreen}
-              size={isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium}
               isOnBannerPage={isOnBannerPage}
+              showCategory={false}
             />
           </Grid>
+
+          {
+            // Display weather and last update (from outdoors) for small banner 
+            (isOnBannerPage === true && isSmallScreen === true) ? (
+              <Grid item xs={12}>
+                <CurrentAQIGrid
+                  currentSensorsData={outdoorLocations}
+                  showWeather={true}
+                  showWeatherText={true}
+                  showHeatIndex={false}
+                  showAQI={false}
+                  showRawMeasurements={false}
+                  roundTemperature={true}
+                  size={isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium}
+                  showLastUpdate={true}
+                />
+              </Grid>
+            ) : null
+          }
+
         </Grid>
 
         <Grid container item xs={1.5} sm={12} textAlign="left" my={isSmallScreen ? 2 : 1}>

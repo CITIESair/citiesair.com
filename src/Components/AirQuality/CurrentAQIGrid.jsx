@@ -22,8 +22,10 @@ const CurrentAQIGrid = (props) => {
     currentSensorsData,
     isScreen = false,
     showWeather = true,
+    showWeatherText = false,
     showHeatIndex = true,
     showLastUpdate = true,
+    showAQI = true,
     showRawMeasurements = true,
     useLocationShort = false,
     roundTemperature = false,
@@ -51,48 +53,54 @@ const CurrentAQIGrid = (props) => {
         item
         {...gridSizes}
       >
-        <Box sx={{
-          '& .MuiTypography-root': {
-            color: (current?.category && sensor.sensor_status === SensorStatus.active) ?
-              theme.palette.text.aqi[current.category]
-              : (isScreen ? INACTIVE_SENSOR_COLORS.screen : theme.palette.text.aqi[SensorStatus.offline])
-          }
-        }}>
-          <Typography variant={ElementSizes[size].locationAndCategory} fontWeight="500" className='condensedFont' textTransform="capitalize">
-            {returnLocationName({
-              useLocationShort,
-              location_short: sensor?.location_short,
-              location_long: sensor?.location_long
-            })}
-          </Typography>
-          <Typography variant={ElementSizes[size].aqi} fontWeight="500" lineHeight={ElementSizes[size].aqiLineHeight}>
-            {current?.aqi?.val || '--'}
-          </Typography>
-          <Typography
-            variant={ElementSizes[size].locationAndCategory}
-            fontWeight="500"
-            className='condensedFont'
-            style={{
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden'
-            }}
-          >
-            {current?.category || '--'}
-          </Typography>
-        </Box>
+        {
+          showAQI ? (
+            <Box>
+              <Box sx={{
+                '& .MuiTypography-root': {
+                  color: (current?.category && sensor.sensor_status === SensorStatus.active) ?
+                    theme.palette.text.aqi[current.category]
+                    : (isScreen ? INACTIVE_SENSOR_COLORS.screen : theme.palette.text.aqi[SensorStatus.offline])
+                }
+              }}>
+                <Typography variant={ElementSizes[size].locationAndCategory} fontWeight="500" className='condensedFont' textTransform="capitalize">
+                  {returnLocationName({
+                    useLocationShort,
+                    location_short: sensor?.location_short,
+                    location_long: sensor?.location_long
+                  })}
+                </Typography>
+                <Typography variant={ElementSizes[size].aqi} fontWeight="500" lineHeight={ElementSizes[size].aqiLineHeight}>
+                  {current?.aqi?.val || '--'}
+                </Typography>
+                <Typography
+                  variant={ElementSizes[size].locationAndCategory}
+                  fontWeight="500"
+                  className='condensedFont'
+                  style={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                  }}
+                >
+                  {current?.category || '--'}
+                </Typography>
+              </Box>
 
-        {showRawMeasurements ?
-          <Typography
-            variant={ElementSizes[size].rawValues}
-            display="block"
-            fontWeight="500"
-            className='condensedFont'
-            color={isScreen ? INACTIVE_SENSOR_COLORS.screen : 'text.secondary'}
-          >
-            {`PM2.5: ${current?.["pm2.5"] || "--"} μg/m3`}
-          </Typography> : null
+              {showRawMeasurements ?
+                <Typography
+                  variant={ElementSizes[size].rawValues}
+                  display="block"
+                  fontWeight="500"
+                  className='condensedFont'
+                  color={isScreen ? INACTIVE_SENSOR_COLORS.screen : 'text.secondary'}
+                >
+                  {`PM2.5: ${current?.["pm2.5"] || "--"} μg/m3`}
+                </Typography> : null
+              }
+            </Box>
+          ) : null
         }
 
         <Box sx={{
@@ -106,7 +114,7 @@ const CurrentAQIGrid = (props) => {
           }, mt: ElementSizes[size].meteroDataMarginTop
         }} className='condensedFont'>
           {
-            showWeather && displayWeather({ size, current, temperatureUnitPreference, roundTemperature })
+            showWeather && displayWeather({ size, current, temperatureUnitPreference, roundTemperature, showWeatherText })
           }
           {
             // Show heat index for selected location types
@@ -189,7 +197,7 @@ export const SimpleCurrentAQIlist = (props) => {
     currentSensorsData,
     useLocationShort = false,
     size = CurrentAQIGridSize.medium,
-    isOnBannerPage = false
+    showCategory = true
   } = props;
 
   const theme = useTheme();
@@ -197,7 +205,7 @@ export const SimpleCurrentAQIlist = (props) => {
   const displayAQI = ({ aqi, category }) => {
     if (!aqi) return "--";
     else {
-      return `${aqi} (${category || '--'})`;
+      return `${aqi}${showCategory ? `(${category || '--'})` : ''} `;
     }
   }
 
@@ -232,7 +240,7 @@ export const SimpleCurrentAQIlist = (props) => {
                 textTransform="capitalize"
                 textOverflow="ellipsis"
                 overflow="hidden"
-                textAlign={isOnBannerPage ? "start" : "center"}
+                textAlign="center"
                 noWrap
               >
                 {returnLocationName({
@@ -302,9 +310,10 @@ const displayLastUpdateAndSensorStatus = ({ sensor, size, isScreen }) => {
     )
 }
 
-const displayWeather = ({ size, current, temperatureUnitPreference, roundTemperature }) => {
+const displayWeather = ({ size, current, temperatureUnitPreference, roundTemperature, showWeatherText }) => {
   return (
     <Typography variant={ElementSizes[size].metero}>
+      {showWeatherText ? "Weather:" : null}
       <ThermostatIcon />
       {
         getFormattedTemperature({
