@@ -30,14 +30,14 @@ const NYUADbanner = (props) => {
 
   const getCenterCoordinates = () => {
     if (isOnBannerPage) {
-      return [24.5235, 54.43449]
+      return [24.523, 54.4343]
     }
     else {
-      return [24.5242, 54.4341]
+      return [24.524, 54.4341]
     }
   }
 
-  const zoomLevel = isSmallScreen ? 16.25 : (isOnBannerPage ? 16.75 : 17.25);
+  const zoomLevel = isSmallScreen ? (isOnBannerPage ? 16.6 : 16.25) : (isOnBannerPage ? 16.75 : 17.25);
 
   const [nyuadCurrentData, setNYUADcurrentData] = useState(initialNyuadCurrentData);
   const [outdoorLocations, setOutdoorLocations] = useState();
@@ -89,12 +89,19 @@ const NYUADbanner = (props) => {
       flex={1}
       maxWidth="lg"
       margin="auto"
+      alignItems="stretch"
       backgroundColor={isOnBannerPage ? "#f5f5f5" : "customAlternateBackground"}
+      gap={(isOnBannerPage === true && isSmallScreen === true) ? 2 : 0}
+      justifyContent="center"
     >
       {
         isOnBannerPage &&
-        <Grid item xs={12} height="fit-content">
-          <Container sx={{ p: 1, pb: 0, m: 0 }}>
+        <Grid
+          item
+          xs={12}
+          sx={{ p: 1, pb: 0, m: 0, mt: isSmallScreen ? 3 : 1, mb: isSmallScreen ? -6 : 0 }}
+        >
+          <Container >
             <Typography color="text.primary" variant="h5" textAlign="center" fontWeight="500">
               NYUAD Air Quality
             </Typography>
@@ -102,203 +109,204 @@ const NYUADbanner = (props) => {
         </Grid>
       }
 
-      {
-        // Hide map when on banner and small screen
-        (isOnBannerPage === true && isSmallScreen === true) ? null : (
-          <Grid item xs={12} sm={6}>
-            <Box
-              height="85%"
-              minHeight={minMapHeight}
-              sx={{
-                '& .leaflet-container': {
-                  borderRadius: (isSmallScreen === false && isOnBannerPage === false) && theme.shape.borderRadius
-                },
-                '& .leaflet-marker-icon': {
-                  cursor: (isSmallScreen && isOnBannerPage) && "default"
-                }
-              }}
-            >
-              <AQImap
-                tileOption={TileOptions.nyuad}
-                themePreference={isOnBannerPage ? ThemePreferences.light : themePreference}
-                centerCoordinates={getCenterCoordinates()}
-                maxBounds={[
-                  [24.52, 54.42612],
-                  [24.53, 54.44079]
-                ]}
-                defaultZoom={zoomLevel}
-                minZoom={zoomLevel}
-                maxZoom={isOnBannerPage ? zoomLevel : Math.round(zoomLevel + 1)}
-                disableInteraction={isOnBannerPage}
-                displayMinimap={false}
-                locationTitle={LocationTitles.short}
-                fullSizeMap={true}
-                showAttribution={false}
-                mapData={nyuadCurrentData}
-                markerSizeInRem={isSmallScreen ? 0.75 : 0.9}
-                ariaLabel={"A map of all air quality sensors at NYU Abu Dhabi"}
+      <Grid item xs={12} sm={6}>
+        <Box
+          height="100%"
+          minHeight={minMapHeight}
+          sx={{
+            '& .leaflet-container': {
+              borderRadius: (isSmallScreen === false && isOnBannerPage === false) && theme.shape.borderRadius
+            },
+            '& .leaflet-marker-icon': {
+              cursor: (isSmallScreen && isOnBannerPage) && "default"
+            }
+          }}
+        >
+          <AQImap
+            tileOption={TileOptions.nyuad}
+            themePreference={isOnBannerPage ? ThemePreferences.light : themePreference}
+            centerCoordinates={getCenterCoordinates()}
+            maxBounds={[
+              [24.52, 54.42612],
+              [24.53, 54.44079]
+            ]}
+            defaultZoom={zoomLevel}
+            minZoom={zoomLevel}
+            maxZoom={isOnBannerPage ? zoomLevel : Math.round(zoomLevel + 1)}
+            disableInteraction={isOnBannerPage}
+            displayMinimap={false}
+            locationTitle={LocationTitles.short}
+            fullSizeMap={true}
+            showAttribution={false}
+            mapData={nyuadCurrentData}
+            markerSizeInRem={isSmallScreen ? 0.75 : 0.9}
+            ariaLabel={"A map of all air quality sensors at NYU Abu Dhabi"}
+          />
+        </Box>
+
+        {
+          // Display weather and last update (from outdoors)
+          (isOnBannerPage === true) ? (
+            <Box textAlign="center" sx={{ mt: isSmallScreen ? -4 : -10 }}>
+              <CurrentAQIGrid
+                currentSensorsData={outdoorLocations}
+                showWeather={true}
+                showWeatherText={true}
+                showHeatIndex={false}
+                showAQI={false}
+                showRawMeasurements={false}
+                roundTemperature={true}
+                size={isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium}
+                showLastUpdate={true}
               />
             </Box>
+          ) : null
+        }
+      </Grid>
 
-            {
-              // Display weather and last update (from outdoors) for large banner 
-              (isOnBannerPage === true && isSmallScreen === false) ? (
-                <Box textAlign="center">
-                  <CurrentAQIGrid
-                    currentSensorsData={outdoorLocations}
-                    showWeather={true}
-                    showWeatherText={true}
-                    showHeatIndex={false}
-                    showAQI={false}
-                    showRawMeasurements={false}
-                    roundTemperature={true}
-                    size={isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium}
-                    showLastUpdate={true}
-                  />
-                </Box>
-              ) : null
-            }
+      {
+        // Don't display the AQI grids when on smallScreen banner page
+        // Only display an AQIscale
+        (isOnBannerPage === true && isSmallScreen === true) ? (
+          <Grid item xs={11} sx={{ mt: 3 }}>
+            <AQIscale
+              isSmallScreen={false}
+              isOnBannerPage={isOnBannerPage}
+              showLabel={false}
+            />
+          </Grid>
+        ) : (
+          <Grid
+            container
+            item
+            xs={12} sm={6}
+            justifyContent="space-around"
+            sx={{ p: 1 }}
+          >
+            <Grid
+              container
+              item
+              xs={10}
+              sm={12}
+              justifyContent="center"
+              textAlign="center"
+              spacing={isOnBannerPage === false ? 1 : 0}
+            >
+              <Grid item xs={12}>
+                <CurrentAQIGrid
+                  currentSensorsData={outdoorLocations}
+                  showWeather={!isOnBannerPage}
+                  showHeatIndex={!isOnBannerPage}
+                  showRawMeasurements={!isOnBannerPage}
+                  useLocationShort={true}
+                  roundTemperature={isOnBannerPage && true}
+                  size={isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium}
+                  showLastUpdate={false}
+                />
+              </Grid>
 
+              <Grid item xs={12} >
+                <CurrentAQIGrid
+                  currentSensorsData={featuredIndoorLocations}
+                  showWeather={!isOnBannerPage}
+                  showRawMeasurements={!isOnBannerPage}
+                  showHeatIndex={false}
+                  showLastUpdate={!isOnBannerPage}
+                  size={CurrentAQIGridSize.small}
+                />
+              </Grid>
+
+              <Grid item xs={isSmallScreen ? 10 : 12} mb={1}>
+                <SimpleCurrentAQIlist
+                  currentSensorsData={otherIndoorLocations}
+                  useLocationShort={isSmallScreen}
+                  isOnBannerPage={isOnBannerPage}
+                  showCategory={false}
+                />
+              </Grid>
+            </Grid>
+
+            <Grid container item xs={1.5} sm={12} textAlign="left" my={isSmallScreen ? 2 : 1}>
+              <AQIscale
+                isSmallScreen={isSmallScreen}
+                isOnBannerPage={isOnBannerPage}
+                showLabel={!isSmallScreen}
+              />
+            </Grid>
           </Grid>
         )
       }
 
-
-      <Grid
-        container
-        item
-        xs={12} sm={6}
-        justifyContent="space-around"
-        sx={{ p: 1 }}
-      >
-        <Grid
-          container
-          item
-          xs={10}
-          sm={12}
-          justifyContent="center"
-          textAlign="center"
-          spacing={isOnBannerPage === false ? 1 : 0}
-        >
-          <Grid item xs={12}>
-            <CurrentAQIGrid
-              currentSensorsData={outdoorLocations}
-              showWeather={!isOnBannerPage}
-              showHeatIndex={!isOnBannerPage}
-              showRawMeasurements={!isOnBannerPage}
-              useLocationShort={true}
-              roundTemperature={isOnBannerPage && true}
-              size={isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium}
-              showLastUpdate={false}
-            />
-          </Grid>
-
-          <Grid item xs={12} >
-            <CurrentAQIGrid
-              currentSensorsData={featuredIndoorLocations}
-              showWeather={!isOnBannerPage}
-              showRawMeasurements={!isOnBannerPage}
-              showHeatIndex={false}
-              showLastUpdate={!isOnBannerPage}
-              size={CurrentAQIGridSize.small}
-            />
-          </Grid>
-
-          <Grid item xs={isSmallScreen ? 10 : 12} mb={1}>
-            <SimpleCurrentAQIlist
-              currentSensorsData={otherIndoorLocations}
-              useLocationShort={isSmallScreen}
-              isOnBannerPage={isOnBannerPage}
-              showCategory={false}
-            />
-          </Grid>
-
-          {
-            // Display weather and last update (from outdoors) for small banner 
-            (isOnBannerPage === true && isSmallScreen === true) ? (
-              <Grid item xs={12}>
-                <CurrentAQIGrid
-                  currentSensorsData={outdoorLocations}
-                  showWeather={true}
-                  showWeatherText={true}
-                  showHeatIndex={false}
-                  showAQI={false}
-                  showRawMeasurements={false}
-                  roundTemperature={true}
-                  size={isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium}
-                  showLastUpdate={true}
-                />
-              </Grid>
-            ) : null
-          }
-
-        </Grid>
-
-        <Grid container item xs={1.5} sm={12} textAlign="left" my={isSmallScreen ? 2 : 1}>
-          <Stack
-            direction={isSmallScreen ? "column-reverse" : "row"}
-            justifyContent="center"
-            flex={1}
-          >
-            {AQI_Database.map((element, index) => (
-              <Tooltip
-                key={index}
-                title={!isOnBannerPage && isSmallScreen && element.category}
-                slotProps={{
-                  popper: {
-                    modifiers: [
-                      { name: 'offset', options: { offset: [0, -48] } }
-                    ],
-                  },
-                }}
-              >
-                <Stack
-                  direction={isSmallScreen ? "row-reverse" : "column"}
-                  width={isSmallScreen ? "auto" : "15%"}
-                  justifyContent={isSmallScreen && "flex-end"}
-                  alignItems={isSmallScreen && "flex-end"}
-                  spacing={0.5}
-                  flex={1}
-                >
-                  <Typography
-                    variant="caption"
-                    fontWeight={500}
-                    lineHeight={1}
-                    color="text.secondary"
-                  >
-                    <small>{element.aqiUS.low === 301 ? '301+' : element.aqiUS.low}</small>
-                  </Typography>
-                  <Box
-                    backgroundColor={element.color[themePreference]}
-                    width={isSmallScreen ? "0.35rem" : "100%"}
-                    height={isSmallScreen ? "100%" : "0.5rem"}
-                  />
-                  {(isSmallScreen === false) &&
-                    <Typography
-                      variant="caption"
-                      lineHeight={0.9}
-                      color="text.secondary"
-                      sx={{
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        display: "-webkit-box",
-                        WebkitBoxOrient: "vertical",
-                        WebkitLineClamp: 3,
-                        px: 0.25
-                      }}
-                    >
-                      <small>{element.category}</small>
-                    </Typography>
-                  }
-                </Stack>
-              </Tooltip>
-            ))}
-          </Stack>
-        </Grid>
-      </Grid>
     </Grid >
 
   );
 };
+
+const AQIscale = ({ isSmallScreen, isOnBannerPage, showLabel = true }) => {
+  const { themePreference } = useContext(PreferenceContext);
+
+  return (
+    <Stack
+      direction={isSmallScreen ? "column-reverse" : "row"}
+      justifyContent="center"
+      flex={1}
+    >
+      {AQI_Database.map((element, index) => (
+        <Tooltip
+          key={index}
+          title={!isOnBannerPage && isSmallScreen && element.category}
+          slotProps={{
+            popper: {
+              modifiers: [
+                { name: 'offset', options: { offset: [0, -48] } }
+              ],
+            },
+          }}
+        >
+          <Stack
+            direction={isSmallScreen ? "row-reverse" : "column"}
+            width={isSmallScreen ? "auto" : "15%"}
+            justifyContent={isSmallScreen && "flex-end"}
+            alignItems={isSmallScreen && "flex-end"}
+            spacing={0.5}
+            flex={1}
+          >
+            <Typography
+              variant="caption"
+              fontWeight={500}
+              lineHeight={1}
+              color="text.secondary"
+            >
+              <small>{element.aqiUS.low === 301 ? '301+' : element.aqiUS.low}</small>
+            </Typography>
+            <Box
+              backgroundColor={element.color[themePreference]}
+              width={isSmallScreen ? "0.35rem" : "100%"}
+              height={isSmallScreen ? "100%" : "0.5rem"}
+            />
+
+            {(showLabel === true) &&
+              <Typography
+                variant="caption"
+                lineHeight={0.9}
+                color="text.secondary"
+                sx={{
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  display: "-webkit-box",
+                  WebkitBoxOrient: "vertical",
+                  WebkitLineClamp: 3,
+                  px: 0.25
+                }}
+              >
+                <small>{element.category}</small>
+              </Typography>
+            }
+          </Stack>
+        </Tooltip>
+      ))}
+    </Stack>
+  )
+}
 
 export default NYUADbanner;
