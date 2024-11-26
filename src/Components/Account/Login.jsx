@@ -87,7 +87,7 @@ export default function Login() {
             required
             fullWidth
             id="schoolID"
-            label="School ID"
+            label="Email / School ID"
             name="schoolID"
             autoComplete="username"
             autoFocus
@@ -98,7 +98,7 @@ export default function Login() {
             required
             fullWidth
             name="password"
-            label="Access Code"
+            label="Password"
             type="password"
             id="password"
             autoComplete="current-password"
@@ -145,6 +145,21 @@ export default function Login() {
           </Typography>
         </Box>
       </Paper>
+
+      <Paper sx={{ p: 3, mt: 3 }} elevation={3}>
+      <Typography variant="body1" align="center">
+        Don't have an account?
+      </Typography>
+      <Button
+        fullWidth
+        variant="outlined"
+        sx={{ mt: 2 }}
+        onClick={() => navigate(`${AppRoutes.signUp}?redirect_url=${encodeURIComponent(window.location.pathname)}`)}
+      >
+        Sign Up
+      </Button>
+
+    </Paper>
     </Container>
 
   );

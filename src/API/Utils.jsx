@@ -6,6 +6,7 @@ export const GeneralAPIendpoints = {
   chartdata: "chartdata",
   screen: "screen",
   login: "login",
+  signUp: "sign-up",
   logout: "logout",
   map: "map_public_outdoors_stations",
   alerts: "alerts",
