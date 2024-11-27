@@ -7,6 +7,8 @@ import { GeneralAPIendpoints } from "../../../API/Utils";
 import { DashboardContext } from '../../../ContextProviders/DashboardContext';
 import { isValidArray } from '../../../Utils/UtilFunctions';
 import { AlertSeverity, useNotificationContext } from '../../../ContextProviders/NotificationContext';
+import { validateEmail } from '../../../Utils/UtilFunctions';
+
 
 const compareArrays = (arr1, arr2) => {
   return JSON.stringify(arr1) === JSON.stringify(arr2);
@@ -29,13 +31,13 @@ const EmailsInput = () => {
   const [saveButtonTooltipTitle, setSaveButtonTooltipTitle] = useState('');
 
   const maxEmails = 150;
-  const validateEmail = (email) => {
-    return String(email)
-      .toLowerCase()
-      .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
-  };
+  // const validateEmail = (email) => {
+  //   return String(email)
+  //     .toLowerCase()
+  //     .match(
+  //       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  //     );
+  // };
 
   // Fetch emails from backend
   useEffect(() => {

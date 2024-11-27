@@ -10,6 +10,7 @@ import { GeneralAPIendpoints, RESTmethods } from "../../API/Utils";
 import { AppRoutes } from "../../Utils/AppRoutes";
 import { AlertSeverity, useNotificationContext } from "../../ContextProviders/NotificationContext";
 import { fetchDataFromURL } from "../../API/ApiFetch";
+import { validateEmail } from "../../Utils/UtilFunctions"; 
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 
@@ -26,6 +27,13 @@ export default function SignUp() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (!validateEmail(email)) {
+      setMessage("Please enter a valid email address.");
+      setSeverity(AlertSeverity.error);
+      setShowNotification(true);
+      return;
+    }
 
     if (password.length < 8) {
       setMessage("Password must be at least 8 characters long.");
@@ -78,6 +86,7 @@ export default function SignUp() {
           Sign Up
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+
           <TextField
             margin="normal"
             required
@@ -88,7 +97,21 @@ export default function SignUp() {
             autoComplete="email"
             autoFocus
             onChange={(e) => setEmail(e.target.value)}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: validateEmail(email) ? "green" : "",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: validateEmail(email) ? "green" : "",
+                },
+                "&:hover fieldset": {
+                   borderColor: validateEmail(email) ? "green" : "",
+                },
+              },
+            }}
           />
+
           <TextField
               margin="normal"
               required
@@ -103,30 +126,44 @@ export default function SignUp() {
                   "&.Mui-focused fieldset": {
                     borderColor: password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "red",
                   },
-                },
-              }}
-            />
-
-
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="confirmPassword"
-              label="Confirm Password"
-              type="password"
-              id="confirmPassword"
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
+                  "& fieldset": {
                     borderColor:
-                      password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword ? "green" : "red",
+                      password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: 
+                      password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "",
                   },
                 },
               }}
             />
 
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="confirmPassword"
+            label="Confirm Password"
+            type="password"
+            id="confirmPassword"
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor:
+                    password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword ? "green" : "",
+                } ,                
+                "&.Mui-focused fieldset": {
+                  borderColor:
+                    password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword ? "green" : "red",
+                },
+                "&:hover fieldset": {
+                    borderColor: 
+                      password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword ? "green" : "",
+                  },
+              },
+            }}
+          />
 
           <Button
             type="submit"
