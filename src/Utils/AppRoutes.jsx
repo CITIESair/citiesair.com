@@ -5,7 +5,7 @@ export const AppRoutes = {
   nyuadMap: "/nyuadMap",
   nyuadBanner: "/nyuadBanner",
   login: "/login",
-  signUp: "/sign-up",
+  signUp: "/signup",
   dashboard: "/dashboard",
   dashboardWithParam: "/dashboard/:school_id_param",
   home: "/",

@@ -1,26 +1,17 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-
-import {
-  CircularProgress,
-  Button,
-  TextField,
-  Box,
-  Typography,
-  Container,
-  Paper,
-} from "@mui/material";
+import { CircularProgress, Button, TextField, Box, Typography, Container, Paper } from "@mui/material";
 
 import { UserContext } from "../../ContextProviders/UserContext";
 import { getApiUrl } from "../../API/ApiUrls";
-import { GeneralAPIendpoints } from "../../API/Utils";
+import { GeneralAPIendpoints, RESTmethods } from "../../API/Utils";
 import { AppRoutes } from "../../Utils/AppRoutes";
-import {
-  AlertSeverity,
-  useNotificationContext,
-} from "../../ContextProviders/NotificationContext";
+import { AlertSeverity, useNotificationContext } from "../../ContextProviders/NotificationContext";
+import { fetchDataFromURL } from "../../API/ApiFetch";
+
+const MINIMUM_PASSWORD_LENGTH = 8;
 
 export default function SignUp() {
   const { setUser } = useContext(UserContext);
@@ -73,7 +64,7 @@ export default function SignUp() {
         navigate(AppRoutes.dashboard, { replace: true });
       })
       .catch((error) => {
-        setMessage("Sign-up failed. Please try again.");
+        setMessage("Sign up unsuccesfully. Please try again.");
         setSeverity(AlertSeverity.error);
         setShowNotification(true);
         setLoading(false);
@@ -108,18 +99,18 @@ export default function SignUp() {
             id="password"
             onChange={(e) => setPassword(e.target.value)}
             sx={{
-             "& .MuiOutlinedInput-root": {
+              "& .MuiOutlinedInput-root": {
                 borderColor:
-                    password.length >= 8 && password === confirmPassword ? "green" : "",
+                  password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword ? "green" : "",
                 "&.Mui-focused fieldset": {
-                    borderColor:
-                    password.length >= 8 && password === confirmPassword ? "green" : "",
+                  borderColor:
+                    password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword ? "green" : "",
                 },
-                },
+              },
             }}
-            />
+          />
 
-            <TextField
+          <TextField
             margin="normal"
             required
             fullWidth
@@ -129,16 +120,16 @@ export default function SignUp() {
             id="confirmPassword"
             onChange={(e) => setConfirmPassword(e.target.value)}
             sx={{
-                "& .MuiOutlinedInput-root": {
+              "& .MuiOutlinedInput-root": {
                 borderColor:
-                    password.length >= 8 && password === confirmPassword ? "green" : "",
+                  password.length >= 8 && password === confirmPassword ? "green" : "",
                 "&.Mui-focused fieldset": {
-                    borderColor:
+                  borderColor:
                     password.length >= 8 && password === confirmPassword ? "green" : "",
                 },
-                },
+              },
             }}
-            />
+          />
 
           <Button
             type="submit"
@@ -156,19 +147,19 @@ export default function SignUp() {
       </Paper>
 
       <Paper sx={{ p: 3, mt: 3 }} elevation={3}>
-      <Typography variant="body1" align="center">
-        Already have an account?
-      </Typography>
-      
-      <Button
-        fullWidth
-        variant="outlined"
-        sx={{ mt: 2 }}
-        onClick={() => navigate(`${AppRoutes.login}?redirect_url=${encodeURIComponent(window.location.pathname)}`)}
-      >
-        Login
-      </Button>
-    </Paper>
+        <Typography variant="body1" align="center">
+          Already have an account?
+        </Typography>
+
+        <Button
+          fullWidth
+          variant="outlined"
+          sx={{ mt: 2 }}
+          onClick={() => navigate(`${AppRoutes.login}?redirect_url=${encodeURIComponent(window.location.pathname)}`)}
+        >
+          Login
+        </Button>
+      </Paper>
     </Container>
   );
 }
