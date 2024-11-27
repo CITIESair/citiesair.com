@@ -3,7 +3,7 @@
 import { useState, useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 
-import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper } from "@mui/material";
+import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper, Divider } from "@mui/material";
 
 import { UserContext } from '../../ContextProviders/UserContext';
 import { getApiUrl } from '../../API/ApiUrls';
@@ -146,20 +146,22 @@ export default function Login() {
         </Box>
       </Paper>
 
-      <Paper sx={{ p: 3, mt: 3 }} elevation={3}>
-      <Typography variant="body1" align="center">
-        Don't have an account?
-      </Typography>
-      <Button
-        fullWidth
-        variant="outlined"
-        sx={{ mt: 2 }}
-        onClick={() => navigate(`${AppRoutes.signUp}?redirect_url=${encodeURIComponent(window.location.pathname)}`)}
-      >
-        Sign Up
-      </Button>
 
-    </Paper>
+      <Divider textAlign="center" sx={{ my: 3 }}>
+        <Typography variant="body1" align="center" color="text.secondary">
+          Don't have an account?
+        </Typography>
+      </Divider>
+
+      <Paper sx={{ p: 0, mx: 3 }} elevation={3}>
+        <Button
+          fullWidth
+          onClick={() => navigate(`${AppRoutes.signUp}?redirect_url=${encodeURIComponent(window.location.pathname)}`)}
+        >
+          Sign Up
+        </Button>
+      </Paper>
+
     </Container>
 
   );

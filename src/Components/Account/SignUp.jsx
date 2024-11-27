@@ -2,7 +2,7 @@
 /* eslint-disable */
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { CircularProgress, Button, TextField, Box, Typography, Container, Paper } from "@mui/material";
+import { CircularProgress, Button, TextField, Box, Typography, Container, Paper, Divider } from "@mui/material";
 
 import { UserContext } from "../../ContextProviders/UserContext";
 import { getApiUrl } from "../../API/ApiUrls";
@@ -146,15 +146,15 @@ export default function SignUp() {
         </Box>
       </Paper>
 
-      <Paper sx={{ p: 3, mt: 3 }} elevation={3}>
-        <Typography variant="body1" align="center">
+      <Divider textAlign="center" sx={{ my: 3 }}>
+        <Typography variant="body1" align="center" color="text.secondary">
           Already have an account?
         </Typography>
+      </Divider>
 
+      <Paper sx={{ p: 0, mx: 3 }} elevation={3}>
         <Button
           fullWidth
-          variant="outlined"
-          sx={{ mt: 2 }}
           onClick={() => navigate(`${AppRoutes.login}?redirect_url=${encodeURIComponent(window.location.pathname)}`)}
         >
           Login
