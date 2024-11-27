@@ -1,6 +1,6 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CircularProgress, Button, TextField, Box, Typography, Container, Paper, Divider } from "@mui/material";
 
@@ -10,7 +10,8 @@ import { GeneralAPIendpoints, RESTmethods } from "../../API/Utils";
 import { AppRoutes } from "../../Utils/AppRoutes";
 import { AlertSeverity, useNotificationContext } from "../../ContextProviders/NotificationContext";
 import { fetchDataFromURL } from "../../API/ApiFetch";
-import { validateEmail } from "../../Utils/UtilFunctions"; 
+import { validateEmail } from "../../Utils/UtilFunctions";
+import { MetadataContext } from "../../ContextProviders/MetadataContext";
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 
@@ -24,6 +25,11 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  const { setCurrentPage } = useContext(MetadataContext);
+  useEffect(() => {
+    setCurrentPage(AppRoutes.signUp);
+  }, [setCurrentPage]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -106,37 +112,37 @@ export default function SignUp() {
                   borderColor: validateEmail(email) ? "green" : "",
                 },
                 "&:hover fieldset": {
-                   borderColor: validateEmail(email) ? "green" : "",
+                  borderColor: validateEmail(email) ? "green" : "",
                 },
               },
             }}
           />
 
           <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              onChange={(e) => setPassword(e.target.value)}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    borderColor: password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "red",
-                  },
-                  "& fieldset": {
-                    borderColor:
-                      password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: 
-                      password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "",
-                  },
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            onChange={(e) => setPassword(e.target.value)}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused fieldset": {
+                  borderColor: password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "red",
                 },
-              }}
-            />
+                "& fieldset": {
+                  borderColor:
+                    password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "",
+                },
+                "&:hover fieldset": {
+                  borderColor:
+                    password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "",
+                },
+              },
+            }}
+          />
 
           <TextField
             margin="normal"
@@ -152,15 +158,15 @@ export default function SignUp() {
                 "& fieldset": {
                   borderColor:
                     password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword ? "green" : "",
-                } ,                
+                },
                 "&.Mui-focused fieldset": {
                   borderColor:
                     password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword ? "green" : "red",
                 },
                 "&:hover fieldset": {
-                    borderColor: 
-                      password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword ? "green" : "",
-                  },
+                  borderColor:
+                    password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword ? "green" : "",
+                },
               },
             }}
           />

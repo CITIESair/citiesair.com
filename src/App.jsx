@@ -16,7 +16,7 @@ import Footer from "./Components/Footer";
 import FourOhFour from "./Pages/404";
 import LoadingAnimation from "./Components/LoadingAnimation";
 import Login from "./Components/Account/Login";
-import SignUp from "./Components/Account/SignUp"; // Import the SignUp component
+import SignUp from "./Components/Account/SignUp";
 import NYUADmap from "./Pages/Embeds/NYUADmap";
 import SpeedDialButton from "./Components/SpeedDial/SpeedDialButton";
 
@@ -43,15 +43,15 @@ const getDesignTokens = (themePreference) => ({
     mode: themePreference,
     ...(themePreference === ThemePreferences.dark
       ? {
-          ...CustomThemes.dark.palette,
-          ...CustomThemes.universal.palette,
-          typography: CustomThemes.universal.palette,
-        }
+        ...CustomThemes.dark.palette,
+        ...CustomThemes.universal.palette,
+        typography: CustomThemes.universal.palette,
+      }
       : {
-          ...CustomThemes.light.palette,
-          ...CustomThemes.universal.palette,
-          typography: CustomThemes.universal.palette,
-        }),
+        ...CustomThemes.light.palette,
+        ...CustomThemes.universal.palette,
+        typography: CustomThemes.universal.palette,
+      }),
   },
 });
 
