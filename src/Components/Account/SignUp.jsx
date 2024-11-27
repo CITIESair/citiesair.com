@@ -90,46 +90,43 @@ export default function SignUp() {
             onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            onChange={(e) => setPassword(e.target.value)}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                borderColor:
-                  password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword ? "green" : "",
-                "&.Mui-focused fieldset": {
-                  borderColor:
-                    password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword ? "green" : "",
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              onChange={(e) => setPassword(e.target.value)}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-focused fieldset": {
+                    borderColor: password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "red",
+                  },
                 },
-              },
-            }}
-          />
+              }}
+            />
 
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="confirmPassword"
-            label="Confirm Password"
-            type="password"
-            id="confirmPassword"
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                borderColor:
-                  password.length >= 8 && password === confirmPassword ? "green" : "",
-                "&.Mui-focused fieldset": {
-                  borderColor:
-                    password.length >= 8 && password === confirmPassword ? "green" : "",
+
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="confirmPassword"
+              label="Confirm Password"
+              type="password"
+              id="confirmPassword"
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-focused fieldset": {
+                    borderColor:
+                      password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword ? "green" : "red",
+                  },
                 },
-              },
-            }}
-          />
+              }}
+            />
+
 
           <Button
             type="submit"
