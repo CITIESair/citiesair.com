@@ -156,7 +156,7 @@ export default function Login() {
       <Paper sx={{ p: 0, mx: 3 }} elevation={3}>
         <Button
           fullWidth
-          onClick={() => navigate(`${AppRoutes.signUp}?redirect_url=${encodeURIComponent(window.location.pathname)}`)}
+          onClick={() => navigate(AppRoutes.signUp)}
         >
           Sign Up
         </Button>
