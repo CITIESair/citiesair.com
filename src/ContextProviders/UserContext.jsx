@@ -6,11 +6,17 @@ import { GeneralAPIendpoints } from "../API/Utils";
 export const UserContext = createContext();
 
 export function UserProvider({ children }) {
+  const emptyData = {
+    allowedSchools: [],
+    username: null,
+    email: null,
+    isVerified: false
+  };
+
   const [user, setUser] = useState({
     checkedAuthentication: false,
     authenticated: false,
-    allowedSchools: [],
-    username: null
+    ...emptyData
   });
 
   useEffect(() => {
@@ -21,16 +27,17 @@ export function UserProvider({ children }) {
           setUser({
             checkedAuthentication: true,
             authenticated: true,
-            allowedSchools: data.allowedSchools,
-            username: data.username
+            email: data.email,
+            username: data.username,
+            is_verified: data.is_verified,
+            allowedSchools: data.allowedSchools
           })
         }
         else {
           setUser({
             checkedAuthentication: true,
             authenticated: false,
-            allowedSchools: [],
-            username: null
+            ...emptyData
           })
         }
       })
@@ -38,8 +45,7 @@ export function UserProvider({ children }) {
         setUser({
           checkedAuthentication: true,
           authenticated: false,
-          allowedSchools: [],
-          username: null
+          ...emptyData
         });
         console.log(error);
       });

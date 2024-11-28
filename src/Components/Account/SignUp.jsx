@@ -73,9 +73,10 @@ export default function SignUp() {
           checkedAuthentication: true,
           authenticated: true,
           email: data.email,
+          username: data.username,
+          is_verified: data.is_verified,
+          allowedSchools: data.allowedSchools
         });
-
-        navigate(AppRoutes.dashboard, { replace: true });
       })
       .catch((error) => {
         setMessage("Sign up unsuccesfully. Please try again.");
@@ -88,9 +89,16 @@ export default function SignUp() {
   return (
     <Container maxWidth="sm" sx={{ my: 3 }}>
       <Paper sx={{ p: 3 }} elevation={3}>
-        <Typography variant="h5" fontWeight={500}>
+        <Typography variant="h5" fontWeight={500} gutterBottom>
           Sign Up
         </Typography>
+
+        <Typography variant="caption" fontStyle="italic">
+          <Typography fontWeight={500} variant="caption" gutterBottom>For school admins:</Typography> Self sign up is not available for schools yet. Please contact us for an account to access your school's private dashboard.
+          <br />
+          <Typography fontWeight={500} variant="caption">For NYU Abu Dhabi community:</Typography> Make a personal account to add and manage air quality alerts in the NYUAD dashboard.
+        </Typography>
+
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
 
           <TextField

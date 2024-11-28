@@ -1,19 +1,21 @@
 import { Stack } from '@mui/material';
 
 import NotificationImportantIcon from '@mui/icons-material/NotificationImportant';
-import * as Tracking from '../../../Utils/Tracking';
 
 import CustomDialog from '../../CustomDialog/CustomDialog';
 import EmailsInput from './EmailsInput';
 import AlertsTabs from './AlertsTabs';
 import { AirQualityAlertProvider } from '../../../ContextProviders/AirQualityAlertContext';
+import { useContext } from 'react';
+import { UserContext } from '../../../ContextProviders/UserContext';
 
 export default function AirQualityAlerts() {
+  const { user } = useContext(UserContext);
+
   return (
     <CustomDialog
       buttonIcon={<NotificationImportantIcon sx={{ fontSize: '1rem' }} />}
       buttonLabel="Alerts"
-      trackingEvent={Tracking.Events.rawDatasetButtonClicked}
       dialogTitle="Air quality alerts"
     >
       <Stack width="100%" spacing={5}>

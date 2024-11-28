@@ -320,13 +320,9 @@ const Project = () => {
             <Grid item>
               <DatasetDownloadDialog />
             </Grid>
-            {
-              // only show Air Quality Alerts for schools other than nyuad at the moment
-              (currentSchoolID && currentSchoolID !== NYUAD) ? <Grid item>
-                <AirQualityAlerts />
-              </Grid> : null
-            }
-
+            <Grid item>
+              <AirQualityAlerts />
+            </Grid>
           </Grid>
 
           <AQIexplanation />
