@@ -23,6 +23,10 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isPasswordFieldFocused, setIsPasswordFieldFocused] = useState(false);
+  const [isConfirmPasswordFieldFocused, setIsConfirmPasswordFieldFocused] = useState(false);
+
+
 
   const navigate = useNavigate();
 
@@ -135,6 +139,8 @@ export default function SignUp() {
             type="password"
             id="password"
             onChange={(e) => setPassword(e.target.value)}
+            onFocus={() => setIsPasswordFieldFocused(true)}
+            onBlur={() => setIsPasswordFieldFocused(false)}
             sx={{
               "& .MuiOutlinedInput-root": {
                 "&.Mui-focused fieldset": {
@@ -151,7 +157,16 @@ export default function SignUp() {
               },
             }}
           />
-
+          {isPasswordFieldFocused && (
+            <Typography
+              variant="caption"
+              color={password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "red"}
+            >
+              {password.length >= MINIMUM_PASSWORD_LENGTH
+                ? <em>✔ Enter at least 8 characters</em>
+                : <em>X Password must be at least 8 characters long</em>}
+            </Typography>
+          )}
           <TextField
             margin="normal"
             required
@@ -161,6 +176,9 @@ export default function SignUp() {
             type="password"
             id="confirmPassword"
             onChange={(e) => setConfirmPassword(e.target.value)}
+            onFocus={() => setIsConfirmPasswordFieldFocused(true)}
+            onBlur={() => setIsConfirmPasswordFieldFocused(false)}
+
             sx={{
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
@@ -178,6 +196,20 @@ export default function SignUp() {
               },
             }}
           />
+          {isConfirmPasswordFieldFocused && (
+          <Typography
+            variant="caption"
+            color={
+              password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword
+                ? "green"
+                : "red"
+            }
+          >
+            {password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword
+              ? <em>✔ Passwords match</em>
+              : <em>X Passwords must match</em>}
+          </Typography>
+          )}
 
           <Button
             type="submit"
