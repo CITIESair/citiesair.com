@@ -26,8 +26,6 @@ export default function SignUp() {
   const [isPasswordFieldFocused, setIsPasswordFieldFocused] = useState(false);
   const [isConfirmPasswordFieldFocused, setIsConfirmPasswordFieldFocused] = useState(false);
 
-
-
   const navigate = useNavigate();
 
   const { setCurrentPage } = useContext(MetadataContext);
@@ -45,8 +43,8 @@ export default function SignUp() {
       return;
     }
 
-    if (password.length < 8) {
-      setMessage("Password must be at least 8 characters long.");
+    if (password.length < MINIMUM_PASSWORD_LENGTH) {
+      setMessage(`Password must be at least ${MINIMUM_PASSWORD_LENGTH} characters long.`);
       setSeverity(AlertSeverity.error);
       setShowNotification(true);
       return;
@@ -135,7 +133,7 @@ export default function SignUp() {
             required
             fullWidth
             name="password"
-            label="Password"
+            label={`Password (Minimum ${MINIMUM_PASSWORD_LENGTH} characters)`}
             type="password"
             id="password"
             onChange={(e) => setPassword(e.target.value)}
@@ -163,8 +161,8 @@ export default function SignUp() {
               color={password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "red"}
             >
               {password.length >= MINIMUM_PASSWORD_LENGTH
-                ? <em>✔ Enter at least 8 characters</em>
-                : <em>X Password must be at least 8 characters long</em>}
+                ? <em><b>✔</b> Password at least {MINIMUM_PASSWORD_LENGTH} characters</em>
+                : <em><b>!</b> Password must be at least {MINIMUM_PASSWORD_LENGTH} characters</em>}
             </Typography>
           )}
           <TextField
@@ -197,18 +195,18 @@ export default function SignUp() {
             }}
           />
           {isConfirmPasswordFieldFocused && (
-          <Typography
-            variant="caption"
-            color={
-              password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword
-                ? "green"
-                : "red"
-            }
-          >
-            {password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword
-              ? <em>✔ Passwords match</em>
-              : <em>X Passwords must match</em>}
-          </Typography>
+            <Typography
+              variant="caption"
+              color={
+                password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword
+                  ? "green"
+                  : "red"
+              }
+            >
+              {password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword
+                ? <em><b>✔</b> Passwords matched</em>
+                : <em><b>!</b> Passwords must match</em>}
+            </Typography>
           )}
 
           <Button
