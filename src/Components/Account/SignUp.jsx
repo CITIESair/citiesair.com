@@ -2,16 +2,29 @@
 /* eslint-disable */
 import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { CircularProgress, Button, TextField, Box, Typography, Container, Paper, Divider } from "@mui/material";
+import {
+  CircularProgress,
+  Button,
+  TextField,
+  Box,
+  Typography,
+  Container,
+  Paper,
+  Divider,
+} from "@mui/material";
 
 import { UserContext } from "../../ContextProviders/UserContext";
 import { getApiUrl } from "../../API/ApiUrls";
 import { GeneralAPIendpoints, RESTmethods } from "../../API/Utils";
 import { AppRoutes } from "../../Utils/AppRoutes";
-import { AlertSeverity, useNotificationContext } from "../../ContextProviders/NotificationContext";
+import {
+  AlertSeverity,
+  useNotificationContext,
+} from "../../ContextProviders/NotificationContext";
 import { fetchDataFromURL } from "../../API/ApiFetch";
 import { validateEmail } from "../../Utils/UtilFunctions";
 import { MetadataContext } from "../../ContextProviders/MetadataContext";
+import EmailVerificationDialog from "./EmailVerificationDialog";
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 
@@ -24,7 +37,9 @@ export default function SignUp() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [isPasswordFieldFocused, setIsPasswordFieldFocused] = useState(false);
-  const [isConfirmPasswordFieldFocused, setIsConfirmPasswordFieldFocused] = useState(false);
+  const [isConfirmPasswordFieldFocused, setIsConfirmPasswordFieldFocused] =
+    useState(false);
+  const [showVerificationDialog, setShowVerificationDialog] = useState(false); // State for dialog
 
   const navigate = useNavigate();
 
@@ -44,7 +59,9 @@ export default function SignUp() {
     }
 
     if (password.length < MINIMUM_PASSWORD_LENGTH) {
-      setMessage(`Password must be at least ${MINIMUM_PASSWORD_LENGTH} characters long.`);
+      setMessage(
+        `Password must be at least ${MINIMUM_PASSWORD_LENGTH} characters long.`
+      );
       setSeverity(AlertSeverity.error);
       setShowNotification(true);
       return;
@@ -70,21 +87,28 @@ export default function SignUp() {
       .then((data) => {
         setShowNotification(false);
         setLoading(false);
-
-        setUser({
-          checkedAuthentication: true,
-          authenticated: true,
-          email: data.email,
-          username: data.username,
-          is_verified: data.is_verified,
-          allowedSchools: data.allowedSchools
-        });
+        if (data.is_verified) {
+          setShowVerificationDialog(true);
+        } else {
+          setMessage("Sign up unsuccesfully. Please try again.");
+          setSeverity(AlertSeverity.error);
+          setShowNotification(true);
+        }
+        // setUser({
+        //   checkedAuthentication: true,
+        //   authenticated: true,
+        //   email: data.email,
+        //   username: data.username,
+        //   is_verified: data.is_verified,
+        //   allowedSchools: data.allowedSchools
+        // });
       })
       .catch((error) => {
         setMessage("Sign up unsuccesfully. Please try again.");
         setSeverity(AlertSeverity.error);
         setShowNotification(true);
         setLoading(false);
+        // setShowVerificationDialog(true); // - just to test out the dialog box
       });
   };
 
@@ -96,13 +120,20 @@ export default function SignUp() {
         </Typography>
 
         <Typography variant="caption" fontStyle="italic">
-          <Typography fontWeight={500} variant="caption" gutterBottom>For school admins:</Typography> Self sign up is not available for schools yet. Please contact us for an account to access your school's private dashboard.
+          <Typography fontWeight={500} variant="caption" gutterBottom>
+            For school admins:
+          </Typography>{" "}
+          Self sign up is not available for schools yet. Please contact us for
+          an account to access your school's private dashboard.
           <br />
-          <Typography fontWeight={500} variant="caption">For NYU Abu Dhabi community:</Typography> Make a personal account to add and manage air quality alerts in the NYUAD dashboard.
+          <Typography fontWeight={500} variant="caption">
+            For NYU Abu Dhabi community:
+          </Typography>{" "}
+          Make a personal account to add and manage air quality alerts in the
+          NYUAD dashboard.
         </Typography>
 
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-
           <TextField
             margin="normal"
             required
@@ -142,7 +173,10 @@ export default function SignUp() {
             sx={{
               "& .MuiOutlinedInput-root": {
                 "&.Mui-focused fieldset": {
-                  borderColor: password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "red",
+                  borderColor:
+                    password.length >= MINIMUM_PASSWORD_LENGTH
+                      ? "green"
+                      : "red",
                 },
                 "& fieldset": {
                   borderColor:
@@ -158,11 +192,21 @@ export default function SignUp() {
           {isPasswordFieldFocused && (
             <Typography
               variant="caption"
-              color={password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "red"}
+              color={
+                password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "red"
+              }
             >
-              {password.length >= MINIMUM_PASSWORD_LENGTH
-                ? <em><b>✔</b> Password at least {MINIMUM_PASSWORD_LENGTH} characters</em>
-                : <em><b>!</b> Password must be at least {MINIMUM_PASSWORD_LENGTH} characters</em>}
+              {password.length >= MINIMUM_PASSWORD_LENGTH ? (
+                <em>
+                  <b>✔</b> Password at least {MINIMUM_PASSWORD_LENGTH}{" "}
+                  characters
+                </em>
+              ) : (
+                <em>
+                  <b>!</b> Password must be at least {MINIMUM_PASSWORD_LENGTH}{" "}
+                  characters
+                </em>
+              )}
             </Typography>
           )}
           <TextField
@@ -176,20 +220,28 @@ export default function SignUp() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             onFocus={() => setIsConfirmPasswordFieldFocused(true)}
             onBlur={() => setIsConfirmPasswordFieldFocused(false)}
-
             sx={{
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
                   borderColor:
-                    password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword ? "green" : "",
+                    password.length >= MINIMUM_PASSWORD_LENGTH &&
+                    password === confirmPassword
+                      ? "green"
+                      : "",
                 },
                 "&.Mui-focused fieldset": {
                   borderColor:
-                    password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword ? "green" : "red",
+                    password.length >= MINIMUM_PASSWORD_LENGTH &&
+                    password === confirmPassword
+                      ? "green"
+                      : "red",
                 },
                 "&:hover fieldset": {
                   borderColor:
-                    password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword ? "green" : "",
+                    password.length >= MINIMUM_PASSWORD_LENGTH &&
+                    password === confirmPassword
+                      ? "green"
+                      : "",
                 },
               },
             }}
@@ -198,14 +250,22 @@ export default function SignUp() {
             <Typography
               variant="caption"
               color={
-                password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword
+                password.length >= MINIMUM_PASSWORD_LENGTH &&
+                password === confirmPassword
                   ? "green"
                   : "red"
               }
             >
-              {password.length >= MINIMUM_PASSWORD_LENGTH && password === confirmPassword
-                ? <em><b>✔</b> Passwords matched</em>
-                : <em><b>!</b> Passwords must match</em>}
+              {password.length >= MINIMUM_PASSWORD_LENGTH &&
+              password === confirmPassword ? (
+                <em>
+                  <b>✔</b> Passwords matched
+                </em>
+              ) : (
+                <em>
+                  <b>!</b> Passwords must match
+                </em>
+              )}
             </Typography>
           )}
 
@@ -231,13 +291,15 @@ export default function SignUp() {
       </Divider>
 
       <Paper sx={{ p: 0, mx: 3 }} elevation={3}>
-        <Button
-          fullWidth
-          onClick={() => navigate(AppRoutes.login)}
-        >
+        <Button fullWidth onClick={() => navigate(AppRoutes.login)}>
           Login
         </Button>
       </Paper>
+      <EmailVerificationDialog
+        open={showVerificationDialog}
+        onClose={() => setShowVerificationDialog(false)}
+        email={email}
+      />
     </Container>
   );
 }
