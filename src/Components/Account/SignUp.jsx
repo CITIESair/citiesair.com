@@ -83,11 +83,14 @@ export default function SignUp() {
         email,
         password,
       },
+      headers: {
+        "Content-Type": "application/json",
+      },
     })
       .then((data) => {
         setShowNotification(false);
         setLoading(false);
-        if (data.is_verified) {
+        if (data.message === "User registered successfully") {
           setShowVerificationDialog(true);
         } else {
           setMessage("Sign up unsuccesfully. Please try again.");

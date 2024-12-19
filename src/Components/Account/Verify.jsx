@@ -50,15 +50,16 @@ export default function Verify() {
         restMethod: RESTmethods.POST,
         body: { token },
       });
+      console.log(response.status);
 
-      if (response.status === 200) {
+      if (response.message === "Email verified") {
         // console.log("Hello");
         setStatus("success");
         setMessage("Account verified! Click below to refresh.");
         setUser((prev) => ({ ...prev, isVerified: true }));
 
         // Redirect based on login state
-        const isLoggedIn = Boolean(localStorage.getItem("authToken"));
+        const isLoggedIn = Boolean(localStorage.getItem("clerk-db-jwt"));
         setTimeout(() => {
           navigate(isLoggedIn ? AppRoutes.nyuad : AppRoutes.login);
         }, 3000);
