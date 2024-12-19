@@ -3,7 +3,7 @@
 import { useState, useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 
-import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper } from "@mui/material";
+import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper, Divider } from "@mui/material";
 
 import { UserContext } from '../../ContextProviders/UserContext';
 import { getApiUrl } from '../../API/ApiUrls';
@@ -31,7 +31,7 @@ export default function Login() {
   const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
   const [loading, setLoading] = useState(false);
 
-  const prefabErrorMessage = 'Incorrect school ID or access code. Try again or contact us if you think there is a mistake.';
+  const prefabErrorMessage = 'Incorrect credentials or account does not exist. Try again or contact us if you think there is a mistake.';
 
   const navigate = useNavigate();
 
@@ -78,16 +78,23 @@ export default function Login() {
   return (
     <Container maxWidth="sm" sx={{ my: 3 }}>
       <Paper sx={{ p: 3 }} elevation={3}>
-        <Typography variant="h5" fontWeight={500}>
+        <Typography variant="h5" fontWeight={500} gutterBottom>
           Login
         </Typography>
+
+        <Typography variant="caption" fontStyle="italic">
+          <Typography fontWeight={500} variant="caption" gutterBottom>For school admins:</Typography> Login with the provided credentials to see your school's private dashboard. If you do not have the credentials, please contact us.
+          <br />
+          <Typography fontWeight={500} variant="caption">For NYU Abu Dhabi community:</Typography> Login with your personal account to your manage air quality alerts in the NYUAD dashboard.
+        </Typography>
+
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
             fullWidth
             id="schoolID"
-            label="School ID"
+            label="Email / School ID"
             name="schoolID"
             autoComplete="username"
             autoFocus
@@ -98,7 +105,7 @@ export default function Login() {
             required
             fullWidth
             name="password"
-            label="Access Code"
+            label="Password"
             type="password"
             id="password"
             autoComplete="current-password"
@@ -138,13 +145,25 @@ export default function Login() {
                 : "Log In"
             }
           </Button>
-          <Typography variant="caption">
-            <i>
-              Login with the provided credentials to see your school's air quality dashboard, including indoor and outdoor devices. If you do not have the credentials, please contact your school admin or {CITIESair}.
-            </i>
-          </Typography>
         </Box>
       </Paper>
+
+
+      <Divider textAlign="center" sx={{ my: 3 }}>
+        <Typography variant="body1" align="center" color="text.secondary">
+          Don't have an account?
+        </Typography>
+      </Divider>
+
+      <Paper sx={{ p: 0, mx: 3 }} elevation={3}>
+        <Button
+          fullWidth
+          onClick={() => navigate(AppRoutes.signUp)}
+        >
+          Sign Up
+        </Button>
+      </Paper>
+
     </Container>
 
   );

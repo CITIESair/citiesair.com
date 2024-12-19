@@ -17,6 +17,7 @@ import { LocalStorage } from "../Utils/LocalStorage";
 import { AppRoutes } from "../Utils/AppRoutes";
 import { CITIESair, NUMBER_OF_CHARTS_TO_LOAD_INITIALLY, NYUAD } from "../Utils/GlobalVariables";
 import { AlertSeverity, useNotificationContext } from "../ContextProviders/NotificationContext";
+import { isValidArray } from "../Utils/UtilFunctions";
 
 const Dashboard = () => {
   const { school_id_param } = useParams();
@@ -63,7 +64,7 @@ const Dashboard = () => {
 
     const allowedSchools = user.allowedSchools;
 
-    if (Array.isArray(allowedSchools) && allowedSchools.length > 0) {
+    if (isValidArray(allowedSchools)) {
       // If no school_id_param is given
       if (!school_id_param) {
         let school_id;
@@ -101,6 +102,8 @@ const Dashboard = () => {
           setSeverity(AlertSeverity.error);
         }
       }
+    } else {
+      navigate(AppRoutes.nyuad); // else, if there is no valid allowedSchools for this user, route to public NYUAD dashboard
     }
   }, [user, school_id_param]);
 
