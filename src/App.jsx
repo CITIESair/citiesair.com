@@ -17,6 +17,7 @@ import FourOhFour from "./Pages/404";
 import LoadingAnimation from "./Components/LoadingAnimation";
 import Login from "./Components/Account/Login";
 import SignUp from "./Components/Account/SignUp";
+import Verify from "./Components/Account/Verify";
 import NYUADmap from "./Pages/Embeds/NYUADmap";
 import SpeedDialButton from "./Components/SpeedDial/SpeedDialButton";
 
@@ -43,15 +44,15 @@ const getDesignTokens = (themePreference) => ({
     mode: themePreference,
     ...(themePreference === ThemePreferences.dark
       ? {
-        ...CustomThemes.dark.palette,
-        ...CustomThemes.universal.palette,
-        typography: CustomThemes.universal.palette,
-      }
+          ...CustomThemes.dark.palette,
+          ...CustomThemes.universal.palette,
+          typography: CustomThemes.universal.palette,
+        }
       : {
-        ...CustomThemes.light.palette,
-        ...CustomThemes.universal.palette,
-        typography: CustomThemes.universal.palette,
-      }),
+          ...CustomThemes.light.palette,
+          ...CustomThemes.universal.palette,
+          typography: CustomThemes.universal.palette,
+        }),
   },
 });
 
@@ -135,6 +136,16 @@ function App() {
                   <Box>
                     <Header />
                     <SignUp />
+                    <Footer />
+                  </Box>
+                }
+              />
+              <Route
+                path={AppRoutes.verify}
+                element={
+                  <Box>
+                    <Header />
+                    <Verify />
                     <Footer />
                   </Box>
                 }

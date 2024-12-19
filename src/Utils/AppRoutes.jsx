@@ -1,3 +1,4 @@
+import Verify from "../Components/Account/Verify";
 import { BLOG_CITIESair_URL } from "./GlobalVariables";
 
 export const AppRoutes = {
@@ -6,6 +7,7 @@ export const AppRoutes = {
   nyuadBanner: "/nyuadBanner",
   login: "/login",
   signUp: "/signup",
+  verify: "/verify",
   dashboard: "/dashboard",
   dashboardWithParam: "/dashboard/:school_id_param",
   home: "/",
