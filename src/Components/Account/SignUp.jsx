@@ -29,7 +29,14 @@ import EmailVerificationDialog from "./EmailVerificationDialog";
 const MINIMUM_PASSWORD_LENGTH = 8;
 
 export default function SignUp() {
-  const { setUser } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const { user, setUser } = useContext(UserContext);
+
+  useEffect(() => {
+    if (user.authenticated && user.checkedAuthentication) navigate("/");
+  }, [user]);
+
   const { setShowNotification, setMessage, setSeverity } =
     useNotificationContext();
   const [email, setEmail] = useState("");
@@ -40,8 +47,6 @@ export default function SignUp() {
   const [isConfirmPasswordFieldFocused, setIsConfirmPasswordFieldFocused] =
     useState(false);
   const [showVerificationDialog, setShowVerificationDialog] = useState(false); // State for dialog
-
-  const navigate = useNavigate();
 
   const { setCurrentPage } = useContext(MetadataContext);
   useEffect(() => {
@@ -228,21 +233,21 @@ export default function SignUp() {
                 "& fieldset": {
                   borderColor:
                     password.length >= MINIMUM_PASSWORD_LENGTH &&
-                    password === confirmPassword
+                      password === confirmPassword
                       ? "green"
                       : "",
                 },
                 "&.Mui-focused fieldset": {
                   borderColor:
                     password.length >= MINIMUM_PASSWORD_LENGTH &&
-                    password === confirmPassword
+                      password === confirmPassword
                       ? "green"
                       : "red",
                 },
                 "&:hover fieldset": {
                   borderColor:
                     password.length >= MINIMUM_PASSWORD_LENGTH &&
-                    password === confirmPassword
+                      password === confirmPassword
                       ? "green"
                       : "",
                 },
@@ -254,13 +259,13 @@ export default function SignUp() {
               variant="caption"
               color={
                 password.length >= MINIMUM_PASSWORD_LENGTH &&
-                password === confirmPassword
+                  password === confirmPassword
                   ? "green"
                   : "red"
               }
             >
               {password.length >= MINIMUM_PASSWORD_LENGTH &&
-              password === confirmPassword ? (
+                password === confirmPassword ? (
                 <em>
                   <b>✔</b> Passwords matched
                 </em>

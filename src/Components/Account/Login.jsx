@@ -10,13 +10,19 @@ import { getApiUrl } from '../../API/ApiUrls';
 import { GeneralAPIendpoints } from "../../API/Utils";
 import { AppRoutes } from '../../Utils/AppRoutes';
 import { AlertSeverity, useNotificationContext } from '../../ContextProviders/NotificationContext';
-import { CITIESair } from '../../Utils/GlobalVariables';
 import { fetchDataFromURL } from '../../API/ApiFetch';
 import { RESTmethods } from "../../API/Utils";
 import { MetadataContext } from '../../ContextProviders/MetadataContext';
 
 export default function Login() {
-  const { setUser } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const { user, setUser } = useContext(UserContext);
+
+  useEffect(() => {
+    if (user.authenticated && user.checkedAuthentication) navigate("/");
+  }, [user]);
+
   const { setCurrentPage } = useContext(MetadataContext);
 
   // set current page to login
@@ -32,8 +38,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const prefabErrorMessage = 'Incorrect credentials or account does not exist. Try again or contact us if you think there is a mistake.';
-
-  const navigate = useNavigate();
 
   // After login succeeds, navigate to /dashboard if no redirect_url string query is detected
   const location = useLocation();
