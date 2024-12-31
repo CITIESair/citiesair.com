@@ -8,6 +8,7 @@ export const GeneralAPIendpoints = {
   login: "login",
   signUp: "signup",
   verify: "verify",
+  googleCallback: "google/callback",
   logout: "logout",
   map: "map_public_outdoors_stations",
   alerts: "alerts",

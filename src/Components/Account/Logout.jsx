@@ -13,11 +13,16 @@ import { getApiUrl } from '../../API/ApiUrls';
 import { GeneralAPIendpoints } from "../../API/Utils";
 import { fetchDataFromURL } from '../../API/ApiFetch';
 import { RESTmethods } from "../../API/Utils";
+import { EMPTY_USER_DATA } from '../../Utils/GlobalVariables';
+import { AlertSeverity, useNotificationContext } from '../../ContextProviders/NotificationContext';
 
 export default function LogOut() {
-  const { setUser } = useContext(UserContext);
+  const { setUser, setAuthenticationState } = useContext(UserContext);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const { setMessage, setSeverity, setShowNotification } = useNotificationContext();
+
 
   const logOut = async () => {
     setLoading(true);
@@ -26,12 +31,19 @@ export default function LogOut() {
       url: getApiUrl({ endpoint: GeneralAPIendpoints.logout }),
       restMethod: RESTmethods.GET
     })
-      .then(() => {
-        setUser({
+      .then((data) => {
+        setAuthenticationState({
           checkedAuthentication: true,
           authenticated: false,
-          username: null
-        });
+        })
+        setUser(EMPTY_USER_DATA);
+
+        if (data.message) {
+          setMessage(data.message);
+          setSeverity(AlertSeverity.success);
+          setShowNotification(true);
+        }
+
         navigate('/');
       })
       .catch((error) => {

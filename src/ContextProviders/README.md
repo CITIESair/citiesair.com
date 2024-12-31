@@ -12,7 +12,7 @@ These are contexts used widely throughout different components in the applicatio
   - The current page (`/`, `/login`, or `/dashboard`)
   - A list of all the charts' title in the `dashboard` page
 
-[NotificationContext](./NotificationContext.jsx): Manages the textual content and severity of the [SnackbarNotification](/src/Components/SnackbarNotification.jsx), and also if it should be shown or not.
+[NotificationContext](./NotificationContext.jsx): Manages the textual content and severity of the [SnackbarNotification](/src/Components/SnackbarNotification.jsx), and also if it should be shown or not. `NotificationContext` should always be a parent of `UserContext` as the latter makes use of the former.
 
 [PreferenceContext](./PreferenceContext.jsx): Sets user preferences based on `localStorage` or user selected values and ensures that user preferences are stored and shared across the application:
 

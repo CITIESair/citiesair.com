@@ -1,4 +1,3 @@
-import Verify from "../Components/Account/Verify";
 import { BLOG_CITIESair_URL } from "./GlobalVariables";
 
 export const AppRoutes = {
@@ -8,6 +7,7 @@ export const AppRoutes = {
   login: "/login",
   signUp: "/signup",
   verify: "/verify",
+  googleCallback: "/google/callback",
   dashboard: "/dashboard",
   dashboardWithParam: "/dashboard/:school_id_param",
   home: "/",

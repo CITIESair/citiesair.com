@@ -13,22 +13,23 @@ import {
 import { UserContext } from "../../ContextProviders/UserContext";
 import { getApiUrl } from "../../API/ApiUrls";
 import { GeneralAPIendpoints, RESTmethods } from "../../API/Utils";
-import { AppRoutes } from "../../Utils/AppRoutes";
-import { useNotificationContext } from "../../ContextProviders/NotificationContext";
 import { fetchDataFromURL } from "../../API/ApiFetch";
+import { AppRoutes } from "../../Utils/AppRoutes";
+import { MetadataContext } from "../../ContextProviders/MetadataContext";
 
 export default function Verify() {
+  const { setCurrentPage } = useContext(MetadataContext);
+
+  // set current page to login
+  useEffect(() => {
+    setCurrentPage(AppRoutes.verify);
+  }, [setCurrentPage]);
+
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState(null);
 
-  const { setUser } = useContext(UserContext);
-  const {
-    setShowNotification,
-    setMessage: setNotificationMessage,
-    setSeverity,
-  } = useNotificationContext();
-
+  const { setUser, setAuthenticationState } = useContext(UserContext);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
@@ -50,19 +51,11 @@ export default function Verify() {
         restMethod: RESTmethods.POST,
         body: { token },
       });
-      console.log(response.status);
 
       if (response.message === "Email verified") {
-        // console.log("Hello");
         setStatus("success");
         setMessage("Account verified! Click below to refresh.");
-        setUser((prev) => ({ ...prev, isVerified: true }));
-
-        // Redirect based on login state
-        const isLoggedIn = Boolean(localStorage.getItem("clerk-db-jwt"));
-        setTimeout(() => {
-          navigate(isLoggedIn ? AppRoutes.nyuad : AppRoutes.login);
-        }, 3000);
+        setUser((prev) => ({ ...prev, is_verified: true }));
       } else {
         throw new Error("Verification failed");
       }
@@ -83,8 +76,8 @@ export default function Verify() {
           {loading
             ? "Verifying..."
             : status === "success"
-            ? "Verified"
-            : "Error"}
+              ? "Verified"
+              : "Error"}
         </Typography>
 
         {loading && (
@@ -96,7 +89,7 @@ export default function Verify() {
         {!loading && (
           <Typography
             variant="body1"
-            color={status === "success" ? "green" : "red"}
+            color="text.secondary"
           >
             {message}
           </Typography>
@@ -106,9 +99,9 @@ export default function Verify() {
           <Button
             variant="contained"
             sx={{ mt: 3 }}
-            onClick={() => window.location.reload()}
+            onClick={() => navigate("/")}
           >
-            Refresh Page
+            Refresh
           </Button>
         )}
       </Paper>

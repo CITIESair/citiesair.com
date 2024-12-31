@@ -25,17 +25,22 @@ import { fetchDataFromURL } from "../../API/ApiFetch";
 import { validateEmail } from "../../Utils/UtilFunctions";
 import { MetadataContext } from "../../ContextProviders/MetadataContext";
 import EmailVerificationDialog from "./EmailVerificationDialog";
+import GoogleOAuthButton from "./OAuth/GoogleOAuthButton";
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 
 export default function SignUp() {
   const navigate = useNavigate();
 
-  const { user, setUser } = useContext(UserContext);
+  const { setUser, authenticationState, setAuthenticationState } = useContext(UserContext);
 
+  // Navigate back to home page if the user has already logged in
+  // except for when the user just signed up and seeing the verification dialog
   useEffect(() => {
-    if (user.authenticated && user.checkedAuthentication) navigate("/");
-  }, [user]);
+    if (showVerificationDialog) return;
+
+    if (authenticationState.authenticated && authenticationState.checkedAuthentication) navigate("/");
+  }, [authenticationState]);
 
   const { setShowNotification, setMessage, setSeverity } =
     useNotificationContext();
@@ -95,28 +100,25 @@ export default function SignUp() {
       .then((data) => {
         setShowNotification(false);
         setLoading(false);
-        if (data.message === "User registered successfully") {
-          setShowVerificationDialog(true);
-        } else {
-          setMessage("Sign up unsuccesfully. Please try again.");
-          setSeverity(AlertSeverity.error);
+        setShowVerificationDialog(true);
+
+        setAuthenticationState({
+          checkedAuthentication: true,
+          authenticated: true
+        })
+        setUser(data);
+
+        if (data.message) {
+          setMessage(data.message);
+          setSeverity(AlertSeverity.success);
           setShowNotification(true);
         }
-        // setUser({
-        //   checkedAuthentication: true,
-        //   authenticated: true,
-        //   email: data.email,
-        //   username: data.username,
-        //   is_verified: data.is_verified,
-        //   allowedSchools: data.allowedSchools
-        // });
       })
       .catch((error) => {
-        setMessage("Sign up unsuccesfully. Please try again.");
+        setMessage(error.message || "Sign up unsuccesfully. Please try again.");
         setSeverity(AlertSeverity.error);
         setShowNotification(true);
         setLoading(false);
-        // setShowVerificationDialog(true); // - just to test out the dialog box
       });
   };
 
@@ -281,7 +283,7 @@ export default function SignUp() {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            sx={{ mt: 3, mb: 1 }}
           >
             {loading ? (
               <CircularProgress disableShrink color="inherit" size="1.5rem" />
@@ -289,6 +291,14 @@ export default function SignUp() {
               "Sign Up"
             )}
           </Button>
+
+          <Divider sx={{ mb: 1 }}>
+            <Typography color="text.secondary">or</Typography>
+          </Divider>
+
+          <Box width="100%">
+            <GoogleOAuthButton />
+          </Box>
         </Box>
       </Paper>
 
@@ -305,7 +315,6 @@ export default function SignUp() {
       </Paper>
       <EmailVerificationDialog
         open={showVerificationDialog}
-        onClose={() => setShowVerificationDialog(false)}
         email={email}
       />
     </Container>

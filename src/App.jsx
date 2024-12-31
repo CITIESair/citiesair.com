@@ -32,6 +32,7 @@ import jsonData from "./section_data.json";
 
 import SnackbarNotification from "./Components/SnackbarNotification";
 import { CITIESair } from "./Utils/GlobalVariables";
+import GoogleOAuthHandler from "./Components/Account/OAuth/GoogleOAuthHandler";
 
 // Lazy load pages
 const Home = lazy(() => import("./Pages/Home/Home"));
@@ -44,15 +45,15 @@ const getDesignTokens = (themePreference) => ({
     mode: themePreference,
     ...(themePreference === ThemePreferences.dark
       ? {
-          ...CustomThemes.dark.palette,
-          ...CustomThemes.universal.palette,
-          typography: CustomThemes.universal.palette,
-        }
+        ...CustomThemes.dark.palette,
+        ...CustomThemes.universal.palette,
+        typography: CustomThemes.universal.palette,
+      }
       : {
-          ...CustomThemes.light.palette,
-          ...CustomThemes.universal.palette,
-          typography: CustomThemes.universal.palette,
-        }),
+        ...CustomThemes.light.palette,
+        ...CustomThemes.universal.palette,
+        typography: CustomThemes.universal.palette,
+      }),
   },
 });
 
@@ -109,6 +110,7 @@ function App() {
             fallback={<LoadingAnimation optionalText="Loading Dashboard" />}
           >
             <Routes>
+              {/* ----- HOME ----- */}
               <Route
                 path={AppRoutes.home}
                 element={
@@ -120,6 +122,7 @@ function App() {
                 }
               />
 
+              {/* ----- AUTHENTICATION ROUTES ----- */}
               <Route
                 path={AppRoutes.login}
                 element={
@@ -150,7 +153,18 @@ function App() {
                   </Box>
                 }
               />
+              <Route
+                path={AppRoutes.googleCallback}
+                element={
+                  <Box>
+                    <Header />
+                    <GoogleOAuthHandler />
+                    <Footer />
+                  </Box>
+                }
+              />
 
+              {/* ----- DASHBOARD ROUTES ----- */}
               {[AppRoutes.dashboard, AppRoutes.dashboardWithParam].map(
                 (path) => (
                   <Route
@@ -169,6 +183,7 @@ function App() {
                 )
               )}
 
+              {/* ----- OTHER ROUTES: SCREENS, MAPS, BANNERS... ----- */}
               <Route
                 path={AppRoutes.anyScreen}
                 element={<Screen title={`${CITIESair} | Screen`} />}
@@ -181,6 +196,7 @@ function App() {
                 element={<NYUADbanner isOnBannerPage={true} />}
               />
 
+              {/* ----- 404 ROUTES ----- */}
               <Route
                 path={AppRoutes[404]}
                 element={<FourOhFour title={`${CITIESair} | Page Not Found`} />}

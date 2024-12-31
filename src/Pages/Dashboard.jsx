@@ -46,7 +46,7 @@ const Dashboard = () => {
     allChartsData, setIndividualChartData,
     loadMoreCharts
   } = useContext(DashboardContext);
-  const { user } = useContext(UserContext);
+  const { user, authenticationState } = useContext(UserContext);
 
   const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
 
@@ -58,7 +58,7 @@ const Dashboard = () => {
       return;
     };
 
-    if (user.checkedAuthentication === true && user.authenticated === false) {
+    if (authenticationState.checkedAuthentication === true && authenticationState.authenticated === false) {
       navigate(`${AppRoutes.login}?${AppRoutes.redirectQuery}=${locationPath}`);
     }
 

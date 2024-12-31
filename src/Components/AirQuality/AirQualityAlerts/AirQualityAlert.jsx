@@ -6,12 +6,8 @@ import CustomDialog from '../../CustomDialog/CustomDialog';
 import EmailsInput from './EmailsInput';
 import AlertsTabs from './AlertsTabs';
 import { AirQualityAlertProvider } from '../../../ContextProviders/AirQualityAlertContext';
-import { useContext } from 'react';
-import { UserContext } from '../../../ContextProviders/UserContext';
 
 export default function AirQualityAlerts() {
-  const { user } = useContext(UserContext);
-
   return (
     <CustomDialog
       buttonIcon={<NotificationImportantIcon sx={{ fontSize: '1rem' }} />}

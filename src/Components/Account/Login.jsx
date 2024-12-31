@@ -13,15 +13,16 @@ import { AlertSeverity, useNotificationContext } from '../../ContextProviders/No
 import { fetchDataFromURL } from '../../API/ApiFetch';
 import { RESTmethods } from "../../API/Utils";
 import { MetadataContext } from '../../ContextProviders/MetadataContext';
+import GoogleOAuthButton from './OAuth/GoogleOAuthButton';
 
 export default function Login() {
   const navigate = useNavigate();
 
-  const { user, setUser } = useContext(UserContext);
+  const { setUser, authenticationState, setAuthenticationState } = useContext(UserContext);
 
   useEffect(() => {
-    if (user.authenticated && user.checkedAuthentication) navigate("/");
-  }, [user]);
+    if (authenticationState.authenticated && authenticationState.checkedAuthentication) navigate("/");
+  }, [authenticationState]);
 
   const { setCurrentPage } = useContext(MetadataContext);
 
@@ -30,14 +31,12 @@ export default function Login() {
     setCurrentPage(AppRoutes.login);
   }, [setCurrentPage]);
 
-  const [username, setUserName] = useState();
-  const [password, setPassword] = useState();
+  const [username, setUserName] = useState("");
+  const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
   const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
   const [loading, setLoading] = useState(false);
-
-  const prefabErrorMessage = 'Incorrect credentials or account does not exist. Try again or contact us if you think there is a mistake.';
 
   // After login succeeds, navigate to /dashboard if no redirect_url string query is detected
   const location = useLocation();
@@ -46,6 +45,14 @@ export default function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    // Alert error if the credential is missing
+    if (username === "" || password === "") {
+      setMessage("Credentials cannot be empty");
+      setSeverity(AlertSeverity.error);
+      setShowNotification(true);
+      return;
+    }
 
     setLoading(true);
 
@@ -62,17 +69,22 @@ export default function Login() {
         setShowNotification(false)
         setLoading(false);
 
-        setUser({
+        setAuthenticationState({
           checkedAuthentication: true,
-          authenticated: true,
-          allowedSchools: data.allowedSchools,
-          username: data.username,
+          authenticated: true
         });
+        setUser(data);
+
+        if (data.message) {
+          setMessage(data.message);
+          setSeverity(AlertSeverity.success);
+          setShowNotification(true);
+        }
 
         navigate(redirect_url, { replace: true });
       })
       .catch((error) => {
-        setMessage(prefabErrorMessage);
+        setMessage(error.message);
         setSeverity(AlertSeverity.error);
         setShowNotification(true);
         setLoading(false);
@@ -89,7 +101,7 @@ export default function Login() {
         <Typography variant="caption" fontStyle="italic">
           <Typography fontWeight={500} variant="caption" gutterBottom>For school admins:</Typography> Login with the provided credentials to see your school's private dashboard. If you do not have the credentials, please contact us.
           <br />
-          <Typography fontWeight={500} variant="caption">For NYU Abu Dhabi community:</Typography> Login with your personal account to your manage air quality alerts in the NYUAD dashboard.
+          <Typography fontWeight={500} variant="caption">For NYU Abu Dhabi community:</Typography> Login with your personal account <b>(or with Google)</b> to your manage air quality alerts in the NYUAD dashboard.
         </Typography>
 
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
@@ -141,7 +153,7 @@ export default function Login() {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            sx={{ mt: 3, mb: 1 }}
           >
             {
               loading
@@ -149,6 +161,14 @@ export default function Login() {
                 : "Log In"
             }
           </Button>
+
+          <Divider sx={{ mb: 1 }}>
+            <Typography color="text.secondary">or</Typography>
+          </Divider>
+
+          <Box width="100%">
+            <GoogleOAuthButton />
+          </Box>
         </Box>
       </Paper>
 
@@ -168,7 +188,7 @@ export default function Login() {
         </Button>
       </Paper>
 
-    </Container>
+    </Container >
 
   );
 }

@@ -14,7 +14,7 @@ export function MetadataProvider({ children }) {
       const jsonData = await fetchDataFromURL({
         url: HYVOR_API_URL,
         needsAuthorization: false,
-        includesHeadersJSON: false
+        includesContentTypeHeader: false
       });
       jsonData.forEach((item) => {
         commentCountsForAllPages[item.identifier] = item.comments_count;

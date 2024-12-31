@@ -28,3 +28,4 @@ root.render(
   </React.StrictMode>
 );
 // these are no logic behind the order of encapsulation of the ContextProviders, they are sorted by alphabetical order
+// except: `NotificationContext` should always be a parent of `UserContext` as the latter makes use of the former.

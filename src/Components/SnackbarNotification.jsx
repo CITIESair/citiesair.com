@@ -1,6 +1,6 @@
 import { Snackbar, Alert, IconButton } from '@mui/material';
 import { Close } from '@mui/icons-material/';
-import { useNotificationContext } from '../ContextProviders/NotificationContext';
+import { AlertAutoHideDuration, useNotificationContext } from '../ContextProviders/NotificationContext';
 
 const SnackbarNotification = () => {
   const { showNotification, setShowNotification, message, severity } = useNotificationContext();
@@ -27,7 +27,7 @@ const SnackbarNotification = () => {
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       open={showNotification}
       onClose={handleClose}
-      autoHideDuration={10000} // 10 seconds
+      autoHideDuration={AlertAutoHideDuration[severity] || 10000}
       action={action}
     >
       <Alert

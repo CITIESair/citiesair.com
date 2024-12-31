@@ -31,7 +31,7 @@ const StyledMenuList = styled(MenuList)(({ theme }) => ({
 
 const NavBar = (props) => {
   const { currentPage, isMobile } = props;
-  const { user } = useContext(UserContext);
+  const { user, authenticationState } = useContext(UserContext);
   const [navbar, setNavbar] = useState([]);
 
   const homeNavLink = (
@@ -60,7 +60,7 @@ const NavBar = (props) => {
     return "Dashboard";
   };
 
-  const reservedAreaMenu = user.authenticated ? (
+  const reservedAreaMenu = authenticationState.authenticated === true ? (
     isMobile ? (
       [
         <MenuItemAsNavLink

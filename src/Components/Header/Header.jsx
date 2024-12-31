@@ -188,7 +188,7 @@ export default function Header() {
 
       {
         (
-          [AppRoutes.home, AppRoutes.login, AppRoutes.signUp].includes(currentPage)
+          [AppRoutes.home, AppRoutes.login, AppRoutes.signUp, AppRoutes.verify].includes(currentPage)
             ? (
               <FullWidthBox sx={{
                 width: '100%',

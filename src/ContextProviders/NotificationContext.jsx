@@ -3,11 +3,17 @@ import { createContext, useMemo, useState, useContext } from 'react';
 const NotificationContext = createContext();
 
 export const AlertSeverity = {
-  severe: 'severe',
   info: 'info',
   warning: 'warning',
   error: 'error',
   success: 'success'
+}
+
+export const AlertAutoHideDuration = {
+  [AlertSeverity.info]: 10000,
+  [AlertSeverity.warning]: 5000,
+  [AlertSeverity.error]: 10000,
+  [AlertSeverity.success]: 3000,
 }
 
 export function NotificationProvider({ children }) {

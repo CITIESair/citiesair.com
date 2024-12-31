@@ -56,11 +56,6 @@ const AlertModificationDialog = (props) => {
 
   const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
 
-  useEffect(() => {
-    setMessage();
-    setShowNotification(false);
-  }, [crudType, setMessage, setShowNotification]);
-
   const handleCurrentSensorChange = (event) => {
     const newSensor = event.target.value;
     setEditingAlert({

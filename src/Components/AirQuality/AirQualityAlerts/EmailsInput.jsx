@@ -34,6 +34,8 @@ const EmailsInput = () => {
 
   // Fetch emails from backend
   useEffect(() => {
+    if (!currentSchoolID) return;
+
     fetchDataFromURL({
       url: getApiUrl({
         endpoint: GeneralAPIendpoints.alertsEmails,
