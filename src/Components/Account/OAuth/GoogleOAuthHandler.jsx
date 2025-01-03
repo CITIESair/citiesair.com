@@ -1,48 +1,51 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getApiUrl } from "../../../API/ApiUrls";
 import { GeneralAPIendpoints, RESTmethods } from "../../../API/Utils";
 import { fetchDataFromURL } from "../../../API/ApiFetch";
-import { Container, Paper, Typography } from "@mui/material";
-
-const handleGoogleLogin = async (code) => {
-    fetchDataFromURL({
-        url: getApiUrl({ endpoint: GeneralAPIendpoints.googleCallback }),
-        restMethod: RESTmethods.POST,
-        body: { code },
-    }).then((data) => {
-        // Send the result to the main window
-        window.opener.postMessage(
-            {
-                type: "google-auth",
-                success: true,
-                user: data,
-            },
-            window.location.origin
-        );
-    }).catch((error) => {
-        console.error("Error during Google login:", error);
-
-        // Notify the main window of the error
-        window.opener.postMessage(
-            {
-                type: "google-auth",
-                success: false,
-                errorMessage: error.message
-            },
-            window.location.origin
-        );
-    }).finally(() => {
-        window.close(); // Close the popup
-    });
-};
+import { Container, Paper, Typography, CircularProgress } from "@mui/material";
 
 export default function GoogleOAuthHandler() {
+    const [status, setStatus] = useState("Initiating authentication...");
+
     useEffect(() => {
         const queryParams = new URLSearchParams(window.location.search);
         const code = queryParams.get("code");
         if (code) {
-            handleGoogleLogin(code);
+            setStatus("Processing authentication...");
+
+            fetchDataFromURL({
+                url: getApiUrl({ endpoint: GeneralAPIendpoints.googleCallback }),
+                restMethod: RESTmethods.POST,
+                body: { code },
+            }).then((data) => {
+                // Send the result to the main window
+                window.opener.postMessage(
+                    {
+                        type: "google-auth",
+                        success: true,
+                        user: data,
+                    },
+                    window.location.origin
+                );
+            }).catch((error) => {
+                setStatus("Authentication failed");
+                console.error("Error during Google login:", error);
+
+                // Notify the main window of the error
+                window.opener.postMessage(
+                    {
+                        type: "google-auth",
+                        success: false,
+                        errorMessage: error.message
+                    },
+                    window.location.origin
+                );
+            }).finally(() => {
+                window.close(); // Close the popup
+            });
+
         } else {
+            setStatus("Authentication failed");
             console.error("Authorization code is missing from the URL.");
 
             // Notify the main window about the failure
@@ -64,8 +67,12 @@ export default function GoogleOAuthHandler() {
         <Container maxWidth="sm" sx={{ my: 3 }}>
             <Paper sx={{ p: 3 }} elevation={3}>
                 <Typography variant="h5" fontWeight={500} gutterBottom>
-                    Google Authentication
+                    Google Login
                 </Typography>
+                <Typography variant="body1" gutterBottom>
+                    {status}
+                </Typography>
+                <CircularProgress disableShrink color="inherit" size="1.5rem" />
             </Paper>
         </Container>
     );
