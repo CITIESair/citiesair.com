@@ -32,6 +32,8 @@ export default function LogOut() {
       restMethod: RESTmethods.GET
     })
       .then((data) => {
+        setLoading(false);
+
         setAuthenticationState({
           checkedAuthentication: true,
           authenticated: false,
@@ -48,6 +50,11 @@ export default function LogOut() {
       })
       .catch((error) => {
         console.log(error);
+        setLoading(false);
+
+        setMessage(error.message);
+        setSeverity(AlertSeverity.error);
+        setShowNotification(true);
       })
   };
 

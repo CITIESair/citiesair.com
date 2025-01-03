@@ -33,6 +33,7 @@ import jsonData from "./section_data.json";
 import SnackbarNotification from "./Components/SnackbarNotification";
 import { CITIESair } from "./Utils/GlobalVariables";
 import GoogleOAuthHandler from "./Components/Account/OAuth/GoogleOAuthHandler";
+import ScrollToTop from "./Components/ScrollToTop";
 
 // Lazy load pages
 const Home = lazy(() => import("./Pages/Home/Home"));
@@ -89,6 +90,7 @@ function App() {
 
   return (
     <BrowserRouter basename="/">
+      <ScrollToTop />
       <ThemeProvider theme={theme}>
         <Box
           sx={{
