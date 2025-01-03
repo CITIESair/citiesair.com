@@ -9,8 +9,8 @@ import { PreferenceContext } from "../../ContextProviders/PreferenceContext";
 import { isValidArray } from "../../Utils/UtilFunctions";
 
 const Promo = () => {
-  const { user } = useContext(UserContext);
-  const authenticated = user.authenticated && user.checkedAuthentication;
+  const { authenticationState } = useContext(UserContext);
+  const authenticated = authenticationState.authenticated && authenticationState.checkedAuthentication;
 
   const { hiddenPromos } = useContext(PreferenceContext);
 
