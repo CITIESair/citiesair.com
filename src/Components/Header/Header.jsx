@@ -181,7 +181,7 @@ export default function Header() {
 
       <FullWidthBox sx={{
         backgroundColor: "customAlternateBackground",
-        pt: 4
+        pt: 2
       }}>
         <Promo />
       </FullWidthBox>

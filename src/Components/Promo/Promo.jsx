@@ -15,6 +15,7 @@ const Promo = () => {
   const { hiddenPromos } = useContext(PreferenceContext);
 
   const promosForBanner = sectionData.promos
+    .filter((promo) => !promo.expired) // only show non-expired promo
     .filter((promo) => promo.isPublic || (!promo.isPublic && authenticated)) // only show promo depends on if it is public or private
     .filter((promo) => !hiddenPromos.includes(promo.id)) // only show promo not hidden before
     .map((promo) => {
@@ -24,21 +25,28 @@ const Promo = () => {
       }
     });
 
+  const promoStack = sectionData.promos.filter((promo) => !promo.expired);
+
   return (
     <>
-      <Stack spacing={1} alignItems="center">
-        {sectionData.promos.map((e, index) => {
-          if (e.isPublic || (!e.isPublic && authenticated)) {
-            return (
-              <PromoAlert
-                message={e.alertMessage}
-                key={index}
-              />
-            );
-          }
-          return null;
-        })}
-      </Stack>
+      {
+        promoStack.length > 0 ?
+          (
+            <Stack spacing={1} alignItems="center" sx={{ pt: 2 }}>
+              {promoStack.map((e, index) => {
+                if (e.isPublic || (!e.isPublic && authenticated)) {
+                  return (
+                    <PromoAlert
+                      message={e.alertMessage}
+                      key={index}
+                    />
+                  );
+                }
+                return null;
+              })}
+            </Stack>
+          ) : null
+      }
 
       {
         isValidArray(promosForBanner) ? <PromoDialogBanner promosForBanner={promosForBanner} /> : null
