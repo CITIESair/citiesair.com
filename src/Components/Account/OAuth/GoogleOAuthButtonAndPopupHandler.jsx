@@ -2,16 +2,26 @@ import { Button } from "@mui/material";
 import { useTheme } from '@emotion/react';
 import { AppRoutes } from '../../../Utils/AppRoutes';
 import { useLocation, useNavigate } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../ContextProviders/UserContext";
 import { AlertSeverity, useNotificationContext } from "../../../ContextProviders/NotificationContext";
+import { LoginTypes } from "../Utils";
 
 const svgs = {
     light: 'images/oauth/google/web_light_sq_ctn.svg',
     dark: 'images/oauth/google/web_dark_sq_ctn.svg'
 }
 
-export default function GoogleOAuthButton() {
+export default function GoogleOAuthButtonAndPopupHandler() {
+    const [isPopupItself, setIsPopupItself] = useState(false);
+
+    useEffect(() => {
+        // Check if the window was opened as a popup
+        if (window.opener) {
+            setIsPopupItself(true);
+        }
+    }, []);
+
     const navigate = useNavigate();
     const { setUser, setAuthenticationState } = useContext(UserContext);
     const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
@@ -42,21 +52,36 @@ export default function GoogleOAuthButton() {
 
             // Listen for the message from the popup
             window.addEventListener("message", (event) => {
-                if (event.origin === window.location.origin && event.data.type === "google-auth") {
+                if (event.origin === window.location.origin && event.data.type === LoginTypes.google) {
                     if (event.data.success) {
-                        setAuthenticationState({
-                            checkedAuthentication: true,
-                            authenticated: true
-                        })
-                        setUser(event.data.user);
+                        const userData = event.data.user;
+                        if (isPopupItself) {
+                            // Send the result to the main window
+                            window.opener.postMessage(
+                                {
+                                    type: LoginTypes.password,
+                                    success: true,
+                                    user: userData,
+                                },
+                                window.location.origin
+                            );
 
-                        if (event.data.user.message) {
-                            setMessage(event.data.user.message);
-                            setSeverity(AlertSeverity.success);
-                            setShowNotification(true);
+                            window.close(); // Close the popup
+                        } else {
+                            setAuthenticationState({
+                                checkedAuthentication: true,
+                                authenticated: true
+                            });
+                            setUser(userData);
+
+                            if (userData.message) {
+                                setMessage(userData.message);
+                                setSeverity(AlertSeverity.success);
+                                setShowNotification(true);
+                            }
+
+                            navigate(redirect_url, { replace: true });
                         }
-
-                        navigate(redirect_url, { replace: true });
                     } else {
                         setMessage(event.data.errorMessage);
                         setSeverity(AlertSeverity.error);

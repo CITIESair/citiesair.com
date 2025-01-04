@@ -29,7 +29,7 @@ export default function Verify() {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState(null);
 
-  const { setUser, setAuthenticationState } = useContext(UserContext);
+  const { setUser } = useContext(UserContext);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");

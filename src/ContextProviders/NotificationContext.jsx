@@ -11,7 +11,7 @@ export const AlertSeverity = {
 
 export const AlertAutoHideDuration = {
   [AlertSeverity.info]: 10000,
-  [AlertSeverity.warning]: 5000,
+  [AlertSeverity.warning]: 10000,
   [AlertSeverity.error]: 10000,
   [AlertSeverity.success]: 3000,
 }

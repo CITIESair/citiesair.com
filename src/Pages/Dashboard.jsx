@@ -5,7 +5,7 @@ import { useEffect, useContext } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { fetchDataFromURL } from "../API/ApiFetch";
-import Project from "./Project";
+import Project from "./Project/Project";
 import { getApiUrl, getChartApiUrl, getHistoricalChartApiUrl } from "../API/ApiUrls";
 import { ChartAPIendpointsOrder, GeneralAPIendpoints } from "../API/Utils";
 import { fetchAndProcessCurrentSensorsData } from "../API/ApiFetch";
@@ -60,6 +60,7 @@ const Dashboard = () => {
 
     if (authenticationState.checkedAuthentication === true && authenticationState.authenticated === false) {
       navigate(`${AppRoutes.login}?${AppRoutes.redirectQuery}=${locationPath}`);
+      return;
     }
 
     const allowedSchools = user.allowedSchools;

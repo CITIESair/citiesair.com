@@ -3,8 +3,9 @@ import { getApiUrl } from "../../../API/ApiUrls";
 import { GeneralAPIendpoints, RESTmethods } from "../../../API/Utils";
 import { fetchDataFromURL } from "../../../API/ApiFetch";
 import { Container, Paper, Typography, CircularProgress } from "@mui/material";
+import { LoginTypes } from "../Utils";
 
-export default function GoogleOAuthHandler() {
+export default function GoogleOAuthCallback() {
     const [status, setStatus] = useState("Initiating authentication...");
 
     useEffect(() => {
@@ -21,7 +22,7 @@ export default function GoogleOAuthHandler() {
                 // Send the result to the main window
                 window.opener.postMessage(
                     {
-                        type: "google-auth",
+                        type: LoginTypes.google,
                         success: true,
                         user: data,
                     },
@@ -34,7 +35,7 @@ export default function GoogleOAuthHandler() {
                 // Notify the main window of the error
                 window.opener.postMessage(
                     {
-                        type: "google-auth",
+                        type: LoginTypes.google,
                         success: false,
                         errorMessage: error.message
                     },
@@ -51,7 +52,7 @@ export default function GoogleOAuthHandler() {
             // Notify the main window about the failure
             window.opener.postMessage(
                 {
-                    type: "google-auth",
+                    type: LoginTypes.google,
                     success: false,
                     errorMessage: "Google Login failed, please try again."
                 },

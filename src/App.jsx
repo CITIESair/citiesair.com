@@ -32,7 +32,7 @@ import jsonData from "./section_data.json";
 
 import SnackbarNotification from "./Components/SnackbarNotification";
 import { CITIESair } from "./Utils/GlobalVariables";
-import GoogleOAuthHandler from "./Components/Account/OAuth/GoogleOAuthHandler";
+import GoogleOAuthCallback from "./Components/Account/OAuth/GoogleOAuthCallback";
 import ScrollToTop from "./Components/ScrollToTop";
 
 // Lazy load pages
@@ -160,7 +160,7 @@ function App() {
                 element={
                   <Box>
                     <Header />
-                    <GoogleOAuthHandler />
+                    <GoogleOAuthCallback />
                     <Footer />
                   </Box>
                 }

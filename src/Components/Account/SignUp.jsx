@@ -25,11 +25,20 @@ import { fetchDataFromURL } from "../../API/ApiFetch";
 import { validateEmail } from "../../Utils/UtilFunctions";
 import { MetadataContext } from "../../ContextProviders/MetadataContext";
 import EmailVerificationDialog from "./EmailVerificationDialog";
-import GoogleOAuthButton from "./OAuth/GoogleOAuthButton";
+import GoogleOAuthButtonAndPopupHandler from "./OAuth/GoogleOAuthButtonAndPopupHandler";
+import { LoginTypes } from "./Utils";
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 
 export default function SignUp() {
+  const [isPopupItself, setIsPopupItself] = useState(false);
+  useEffect(() => {
+    // Check if the window was opened as a popup
+    if (window.opener) {
+      setIsPopupItself(true);
+    }
+  }, []);
+
   const navigate = useNavigate();
 
   const { setUser, authenticationState, setAuthenticationState } = useContext(UserContext);
@@ -98,20 +107,34 @@ export default function SignUp() {
       },
     })
       .then((data) => {
-        setShowNotification(false);
-        setLoading(false);
-        setShowVerificationDialog(true);
+        if (isPopupItself) {
+          // Send the result to the main window
+          window.opener.postMessage(
+            {
+              type: LoginTypes.password,
+              success: true,
+              user: data,
+            },
+            window.location.origin
+          );
 
-        setAuthenticationState({
-          checkedAuthentication: true,
-          authenticated: true
-        })
-        setUser(data);
+          window.close(); // Close the popup
+        } else {
+          setShowNotification(false);
+          setLoading(false);
+          setShowVerificationDialog(true);
 
-        if (data.message) {
-          setMessage(data.message);
-          setSeverity(AlertSeverity.success);
-          setShowNotification(true);
+          setAuthenticationState({
+            checkedAuthentication: true,
+            authenticated: true
+          })
+          setUser(data);
+
+          if (data.message) {
+            setMessage(data.message);
+            setSeverity(AlertSeverity.success);
+            setShowNotification(true);
+          }
         }
       })
       .catch((error) => {
@@ -297,7 +320,7 @@ export default function SignUp() {
           </Divider>
 
           <Box width="100%">
-            <GoogleOAuthButton />
+            <GoogleOAuthButtonAndPopupHandler />
           </Box>
         </Box>
       </Paper>

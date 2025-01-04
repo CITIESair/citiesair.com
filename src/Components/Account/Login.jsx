@@ -13,9 +13,24 @@ import { AlertSeverity, useNotificationContext } from '../../ContextProviders/No
 import { fetchDataFromURL } from '../../API/ApiFetch';
 import { RESTmethods } from "../../API/Utils";
 import { MetadataContext } from '../../ContextProviders/MetadataContext';
-import GoogleOAuthButton from './OAuth/GoogleOAuthButton';
+import GoogleOAuthButtonAndPopupHandler from './OAuth/GoogleOAuthButtonAndPopupHandler';
+import { LoginTypes } from './Utils';
 
 export default function Login() {
+  const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
+
+  const [isPopupItself, setIsPopupItself] = useState(false);
+
+  useEffect(() => {
+    // Check if the window was opened as a popup
+    if (window.opener) {
+      setIsPopupItself(true);
+      setMessage("You must be logged in to access this functionality.");
+      setSeverity(AlertSeverity.info);
+      setShowNotification(true);
+    }
+  }, []);
+
   const navigate = useNavigate();
 
   const { setUser, authenticationState, setAuthenticationState } = useContext(UserContext);
@@ -35,7 +50,6 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
   const [loading, setLoading] = useState(false);
 
   // After login succeeds, navigate to /dashboard if no redirect_url string query is detected
@@ -69,19 +83,33 @@ export default function Login() {
         setShowNotification(false)
         setLoading(false);
 
-        setAuthenticationState({
-          checkedAuthentication: true,
-          authenticated: true
-        });
-        setUser(data);
+        if (isPopupItself) {
+          // Send the result to the main window
+          window.opener.postMessage(
+            {
+              type: LoginTypes.password,
+              success: true,
+              user: data,
+            },
+            window.location.origin
+          );
 
-        if (data.message) {
-          setMessage(data.message);
-          setSeverity(AlertSeverity.success);
-          setShowNotification(true);
+          window.close(); // Close the popup
+        } else {
+          setAuthenticationState({
+            checkedAuthentication: true,
+            authenticated: true
+          });
+          setUser(data);
+
+          if (data.message) {
+            setMessage(data.message);
+            setSeverity(AlertSeverity.success);
+            setShowNotification(true);
+          }
+
+          navigate(redirect_url, { replace: true });
         }
-
-        navigate(redirect_url, { replace: true });
       })
       .catch((error) => {
         setMessage(error.message);
@@ -167,7 +195,7 @@ export default function Login() {
           </Divider>
 
           <Box width="100%">
-            <GoogleOAuthButton />
+            <GoogleOAuthButtonAndPopupHandler />
           </Box>
         </Box>
       </Paper>

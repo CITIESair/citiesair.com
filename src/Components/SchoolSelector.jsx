@@ -5,7 +5,7 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Box, Menu, MenuItem, MenuList } from "@mui/material";
-import { CustomChip } from "../Pages/Project";
+import CustomChip from "./CustomChip";
 
 import PlaceIcon from '@mui/icons-material/Place';
 import { LocalStorage } from "../Utils/LocalStorage";

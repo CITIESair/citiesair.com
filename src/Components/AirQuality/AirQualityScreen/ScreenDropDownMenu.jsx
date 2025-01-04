@@ -1,40 +1,56 @@
-// disable eslint for this file
-/* eslint-disable */
 import { useState, useContext } from "react";
 import { Button, Menu, MenuItem } from "@mui/material";
-import { Link } from 'react-router-dom';
-import TvIcon from '@mui/icons-material/Tv';
+import TvIcon from "@mui/icons-material/Tv";
+import { useNavigate } from "react-router-dom";
 import { DashboardContext } from "../../../ContextProviders/DashboardContext";
 import { isValidArray } from "../../../Utils/UtilFunctions";
+import useLoginHandler from "../../Account/useLoginHandler";
 
-const ScreenDropDownMenu = () => {
-  const [anchorEl, setAnchorEl] = useState(null);
-
+const ScreenDropDownMenu = ({ onButtonClick }) => {
   const { currentSchoolID, schoolMetadata } = useContext(DashboardContext);
+  const { handleRestrictedAccess } = useLoginHandler(onButtonClick);
 
-  if (!schoolMetadata) return;
+  const [anchorEl, setAnchorEl] = useState(null);
+  const navigate = useNavigate();
+
+  if (!schoolMetadata) return null;
+
   const screens = schoolMetadata.screens;
 
   if (!isValidArray(screens)) return null;
 
-  // If there is only 1 screen, display a button linked to that screen
+  const handleSingleScreenClick = () => {
+    handleRestrictedAccess(() => navigate(`/screen/${currentSchoolID}`));
+  };
+
+  // If there is only 1 screen, show a single button
   if (screens.length <= 1) {
     return (
       <Button
         variant="contained"
-        component={Link}
-        to={`/screen/${currentSchoolID}`}
+        size="small"
+        onClick={handleSingleScreenClick}
       >
-        <TvIcon sx={{ fontSize: '1rem' }} />&nbsp;TV Screen
+        <TvIcon sx={{ fontSize: "1rem" }} />&nbsp;TV Screen
       </Button>
-    )
+    );
   }
-  // If there are more than 1 screens to choose from, display a popup dropdown menu
+
+  // If there are multiple screens, show a dropdown menu
   const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+
+  const handleMenuItemClick = (screenName) => {
+    handleRestrictedAccess(() => {
+      setAnchorEl(null);
+      navigate(`/screen/${currentSchoolID}/${screenName}`);
+    });
   };
-  const handleClose = () => {
+
+  const handleMenuOpen = (event) => {
+    handleRestrictedAccess(() => setAnchorEl(event.currentTarget));
+  };
+
+  const handleMenuClose = () => {
     setAnchorEl(null);
   };
 
@@ -42,13 +58,14 @@ const ScreenDropDownMenu = () => {
     <>
       <Button
         id="basic-button"
-        aria-controls={open ? 'tv-screen-list-menu' : undefined}
+        aria-controls={open ? "tv-screen-list-menu" : undefined}
         aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
+        aria-expanded={open ? "true" : undefined}
+        onClick={handleMenuOpen}
         variant="contained"
+        size="small"
       >
-        <TvIcon sx={{ fontSize: '1rem' }} />
+        <TvIcon sx={{ fontSize: "1rem" }} />
         &nbsp;
         TV Screens
       </Button>
@@ -56,23 +73,20 @@ const ScreenDropDownMenu = () => {
         id="tv-screen-list-menu"
         anchorEl={anchorEl}
         open={open}
-        onClose={handleClose}
+        onClose={handleMenuClose}
         MenuListProps={{
-          'aria-labelledby': 'basic-button',
+          "aria-labelledby": "basic-button",
         }}
       >
-        {
-          screens.map((screen, index) => (
-            <MenuItem
-              key={index}
-              component={Link}
-              to={`/screen/${currentSchoolID}/${screen.screen_name}`}
-              onClick={handleClose}
-              sx={{ fontSize: '0.8rem' }}
-            >
-              {screen.location_long}
-            </MenuItem>
-          ))}
+        {screens.map((screen, index) => (
+          <MenuItem
+            key={index}
+            onClick={() => handleMenuItemClick(screen.screen_name)}
+            sx={{ fontSize: "0.8rem" }}
+          >
+            {screen.location_long}
+          </MenuItem>
+        ))}
       </Menu>
     </>
   );

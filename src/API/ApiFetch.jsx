@@ -29,6 +29,8 @@ export const fetchDataFromURL = async ({
         case SupportedFetchExtensions.csv:
           fetchOptions.headers["Content-Type"] = "text/csv; charset=UTF-8";
           break;
+        default:
+          break;
       }
     }
 
