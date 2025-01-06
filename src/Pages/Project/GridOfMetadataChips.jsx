@@ -8,7 +8,7 @@ import CustomChip from "../../Components/CustomChip";
 
 import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
-import BarChartIcon from '@mui/icons-material/BarChart';
+// import BarChartIcon from '@mui/icons-material/BarChart';
 import CommentIcon from '@mui/icons-material/Comment';
 
 import * as Tracking from '../../Utils/Tracking';

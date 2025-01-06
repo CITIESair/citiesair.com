@@ -20,8 +20,9 @@ import { DAYS_OF_WEEK } from './AlertModificationDialog/DAYS_OF_WEEK';
 import { fetchDataFromURL } from '../../../API/ApiFetch';
 import { GeneralAPIendpoints, RESTmethods } from '../../../API/Utils';
 import { DashboardContext } from '../../../ContextProviders/DashboardContext';
-import { AlertSeverity, useNotificationContext } from '../../../ContextProviders/NotificationContext';
+import { SnackbarMetadata } from '../../../Utils/SnackbarMetadata';
 import { getAlertsApiUrl } from '../../../API/ApiUrls';
+import { useSnackbar } from 'notistack';
 
 const returnDaysOfWeekString = (days_of_week) => {
   if (!days_of_week || !isValidArray(days_of_week)) return "N/A";
@@ -45,7 +46,7 @@ const AlertsTable = (props) => {
 
   const { selectedAlert, setSelectedAlert, setAlerts } = useAirQualityAlert();
   const { currentSchoolID } = useContext(DashboardContext);
-  const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
+  const { enqueueSnackbar } = useSnackbar()
 
   const { alertTypeKey, alertsForTable } = props;
 
@@ -86,13 +87,15 @@ const AlertsTable = (props) => {
           prevAlert[AirQualityAlertKeys.id] === alert[AirQualityAlertKeys.id] ? data : prevAlert
         )
       );
-      setSeverity(AlertSeverity.success);
-      setMessage(`This alert will be ${newIsEnabled ? "enabled" : "disabled"}`);
-      setShowNotification(true);
+      enqueueSnackbar(`This alert will be ${newIsEnabled ? "enabled" : "disabled"}`, {
+        variant: SnackbarMetadata.success.name,
+        duration: SnackbarMetadata.success.duration
+      });
     }).catch((error) => {
-      setSeverity(AlertSeverity.error);
-      setMessage(`There was an error ${newIsEnabled ? "enabling" : "disabling"} this alert, try again!`);
-      setShowNotification(true);
+      enqueueSnackbar(`There was an error ${newIsEnabled ? "enabling" : "disabling"} this alert, try again!`, {
+        variant: SnackbarMetadata.error.name,
+        duration: SnackbarMetadata.error.duration
+      });
     });
   }
 

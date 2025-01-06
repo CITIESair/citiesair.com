@@ -17,16 +17,16 @@ import { UserContext } from "../../ContextProviders/UserContext";
 import { getApiUrl } from "../../API/ApiUrls";
 import { GeneralAPIendpoints, RESTmethods } from "../../API/Utils";
 import { AppRoutes } from "../../Utils/AppRoutes";
-import {
-  AlertSeverity,
-  useNotificationContext,
-} from "../../ContextProviders/NotificationContext";
+
 import { fetchDataFromURL } from "../../API/ApiFetch";
 import { validateEmail } from "../../Utils/UtilFunctions";
 import { MetadataContext } from "../../ContextProviders/MetadataContext";
 import EmailVerificationDialog from "./EmailVerificationDialog";
 import GoogleOAuthButtonAndPopupHandler from "./OAuth/GoogleOAuthButtonAndPopupHandler";
 import { LoginTypes } from "./Utils";
+
+import { useSnackbar } from "notistack";
+import { SnackbarMetadata } from "../../Utils/SnackbarMetadata";
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 
@@ -51,8 +51,6 @@ export default function SignUp() {
     if (authenticationState.authenticated && authenticationState.checkedAuthentication) navigate("/");
   }, [authenticationState]);
 
-  const { setShowNotification, setMessage, setSeverity } =
-    useNotificationContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -61,6 +59,8 @@ export default function SignUp() {
   const [isConfirmPasswordFieldFocused, setIsConfirmPasswordFieldFocused] =
     useState(false);
   const [showVerificationDialog, setShowVerificationDialog] = useState(false); // State for dialog
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const { setCurrentPage } = useContext(MetadataContext);
   useEffect(() => {
@@ -71,25 +71,27 @@ export default function SignUp() {
     event.preventDefault();
 
     if (!validateEmail(email)) {
-      setMessage("Please enter a valid email address.");
-      setSeverity(AlertSeverity.error);
-      setShowNotification(true);
+      enqueueSnackbar("Please enter a valid email address", {
+        variant: SnackbarMetadata.error.name,
+        duration: SnackbarMetadata.error.duration
+      });
       return;
     }
 
     if (password.length < MINIMUM_PASSWORD_LENGTH) {
-      setMessage(
-        `Password must be at least ${MINIMUM_PASSWORD_LENGTH} characters long.`
-      );
-      setSeverity(AlertSeverity.error);
-      setShowNotification(true);
+      enqueueSnackbar(`Password must be at least ${MINIMUM_PASSWORD_LENGTH} characters long.`
+        , {
+          variant: SnackbarMetadata.error.name,
+          duration: SnackbarMetadata.error.duration
+        });
       return;
     }
 
     if (password !== confirmPassword) {
-      setMessage("Passwords do not match.");
-      setSeverity(AlertSeverity.error);
-      setShowNotification(true);
+      enqueueSnackbar("Passwords do not match", {
+        variant: SnackbarMetadata.error.name,
+        duration: SnackbarMetadata.error.duration
+      });
       return;
     }
 
@@ -120,7 +122,6 @@ export default function SignUp() {
 
           window.close(); // Close the popup
         } else {
-          setShowNotification(false);
           setLoading(false);
           setShowVerificationDialog(true);
 
@@ -131,16 +132,18 @@ export default function SignUp() {
           setUser(data);
 
           if (data.message) {
-            setMessage(data.message);
-            setSeverity(AlertSeverity.success);
-            setShowNotification(true);
+            enqueueSnackbar(data.message, {
+              variant: SnackbarMetadata.success.name,
+              duration: SnackbarMetadata.success.duration
+            });
           }
         }
       })
       .catch((error) => {
-        setMessage(error.message || "Sign up unsuccesfully. Please try again.");
-        setSeverity(AlertSeverity.error);
-        setShowNotification(true);
+        enqueueSnackbar(error.message || "Sign up unsuccesfully. Please try again", {
+          variant: SnackbarMetadata.error.name,
+          duration: SnackbarMetadata.error.duration
+        });
         setLoading(false);
       });
   };

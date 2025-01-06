@@ -30,7 +30,6 @@ import { MetadataContext } from "./ContextProviders/MetadataContext";
 
 import jsonData from "./section_data.json";
 
-import SnackbarNotification from "./Components/SnackbarNotification";
 import { CITIESair } from "./Utils/GlobalVariables";
 import GoogleOAuthCallback from "./Components/Account/OAuth/GoogleOAuthCallback";
 import ScrollToTop from "./Components/ScrollToTop";
@@ -105,8 +104,6 @@ function App() {
             chartsTitlesList={chartsTitlesList}
             topAnchorID={jsonData.topAnchor.id}
           />
-
-          <SnackbarNotification />
 
           <Suspense
             fallback={<LoadingAnimation optionalText="Loading Dashboard" />}

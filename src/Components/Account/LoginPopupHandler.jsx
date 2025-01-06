@@ -1,13 +1,14 @@
 import { useEffect, useRef, useCallback, useContext, useState } from "react";
 import { AppRoutes } from "../../Utils/AppRoutes";
 import { LoginTypes } from "../Account/Utils";
-import { AlertSeverity, useNotificationContext } from "../../ContextProviders/NotificationContext";
+import { SnackbarMetadata } from '../../Utils/SnackbarMetadata';
 import { UserContext } from "../../ContextProviders/UserContext";
 import EmailVerificationDialog from "./EmailVerificationDialog";
+import { useSnackbar } from "notistack";
 
 const LoginPopupHandler = ({ onLoginSuccess, children }) => {
     const popupRef = useRef(null);
-    const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
+    const { enqueueSnackbar } = useSnackbar()
     const { setAuthenticationState, setUser } = useContext(UserContext);
 
     const [showVerificationDialog, setShowVerificationDialog] = useState(false);
@@ -54,9 +55,10 @@ const LoginPopupHandler = ({ onLoginSuccess, children }) => {
                     setUser(user);
 
                     if (user.message) {
-                        setMessage(user.message);
-                        setSeverity(AlertSeverity.success);
-                        setShowNotification(true);
+                        enqueueSnackbar(user.message, {
+                            variant: SnackbarMetadata.success.name,
+                            duration: SnackbarMetadata.success.duration
+                        });
                     }
 
                     if (user.is_verified === false) {

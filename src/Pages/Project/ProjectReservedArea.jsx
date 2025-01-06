@@ -4,12 +4,18 @@ import DatasetDownloadDialog from "../../Components/DatasetDownload/DatasetDownl
 import AirQualityAlerts from "../../Components/AirQuality/AirQualityAlerts/AirQualityAlert";
 import LoginPopupHandler from "../../Components/Account/LoginPopupHandler";
 import useLoginHandler from "../../Components/Account/useLoginHandler";
+import { SnackbarMetadata } from "../../Utils/SnackbarMetadata";
+import { useSnackbar } from "notistack";
 
 const ProjectReservedArea = () => {
     const { loggedIn } = useLoginHandler();
+    const { enqueueSnackbar } = useSnackbar()
 
     const handleLoginSuccess = () => {
-
+        enqueueSnackbar("You can now access TV Screens, Dataset, and Alerts functionalities.", {
+            variant: SnackbarMetadata.success.name,
+            duration: SnackbarMetadata.success.duration * 2
+        });
     };
 
     return (

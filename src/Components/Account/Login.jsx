@@ -9,15 +9,17 @@ import { UserContext } from '../../ContextProviders/UserContext';
 import { getApiUrl } from '../../API/ApiUrls';
 import { GeneralAPIendpoints } from "../../API/Utils";
 import { AppRoutes } from '../../Utils/AppRoutes';
-import { AlertSeverity, useNotificationContext } from '../../ContextProviders/NotificationContext';
+import { SnackbarMetadata } from '../../Utils/SnackbarMetadata';
 import { fetchDataFromURL } from '../../API/ApiFetch';
 import { RESTmethods } from "../../API/Utils";
 import { MetadataContext } from '../../ContextProviders/MetadataContext';
 import GoogleOAuthButtonAndPopupHandler from './OAuth/GoogleOAuthButtonAndPopupHandler';
 import { LoginTypes } from './Utils';
 
+import { useSnackbar } from "notistack";
+
 export default function Login() {
-  const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
+  const { enqueueSnackbar } = useSnackbar()
 
   const [isPopupItself, setIsPopupItself] = useState(false);
 
@@ -25,9 +27,10 @@ export default function Login() {
     // Check if the window was opened as a popup
     if (window.opener) {
       setIsPopupItself(true);
-      setMessage("You must be logged in to access this functionality.");
-      setSeverity(AlertSeverity.info);
-      setShowNotification(true);
+      enqueueSnackbar("You must be logged in to access this functionality.", {
+        variant: SnackbarMetadata.info.name,
+        duration: SnackbarMetadata.info.duration
+      });
     }
   }, []);
 
@@ -62,9 +65,10 @@ export default function Login() {
 
     // Alert error if the credential is missing
     if (username === "" || password === "") {
-      setMessage("Credentials cannot be empty");
-      setSeverity(AlertSeverity.error);
-      setShowNotification(true);
+      enqueueSnackbar("Credentials cannot be empty.", {
+        variant: SnackbarMetadata.error.name,
+        duration: SnackbarMetadata.error.duration
+      });
       return;
     }
 
@@ -80,7 +84,6 @@ export default function Login() {
       }
     })
       .then((data) => {
-        setShowNotification(false)
         setLoading(false);
 
         if (isPopupItself) {
@@ -103,18 +106,20 @@ export default function Login() {
           setUser(data);
 
           if (data.message) {
-            setMessage(data.message);
-            setSeverity(AlertSeverity.success);
-            setShowNotification(true);
+            enqueueSnackbar(data.message, {
+              variant: SnackbarMetadata.success.name,
+              duration: SnackbarMetadata.success.duration
+            });
           }
 
           navigate(redirect_url, { replace: true });
         }
       })
       .catch((error) => {
-        setMessage(error.message);
-        setSeverity(AlertSeverity.error);
-        setShowNotification(true);
+        enqueueSnackbar(error.message, {
+          variant: SnackbarMetadata.error.name,
+          duration: SnackbarMetadata.error.duration
+        });
         setLoading(false);
       })
   };

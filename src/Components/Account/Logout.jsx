@@ -14,15 +14,15 @@ import { GeneralAPIendpoints } from "../../API/Utils";
 import { fetchDataFromURL } from '../../API/ApiFetch';
 import { RESTmethods } from "../../API/Utils";
 import { EMPTY_USER_DATA } from '../../Utils/GlobalVariables';
-import { AlertSeverity, useNotificationContext } from '../../ContextProviders/NotificationContext';
+import { useSnackbar } from 'notistack';
+import { SnackbarMetadata } from '../../Utils/SnackbarMetadata';
 
 export default function LogOut() {
   const { setUser, setAuthenticationState } = useContext(UserContext);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const { setMessage, setSeverity, setShowNotification } = useNotificationContext();
-
+  const { enqueueSnackbar } = useSnackbar()
 
   const logOut = async () => {
     setLoading(true);
@@ -40,11 +40,11 @@ export default function LogOut() {
         })
         setUser(EMPTY_USER_DATA);
 
-        if (data.message) {
-          setMessage(data.message);
-          setSeverity(AlertSeverity.success);
-          setShowNotification(true);
-        }
+        if (data.message) enqueueSnackbar(data.message, {
+          variant: SnackbarMetadata.success.name,
+          duration: SnackbarMetadata.success.duration
+        });
+
 
         navigate('/');
       })
@@ -52,9 +52,10 @@ export default function LogOut() {
         console.log(error);
         setLoading(false);
 
-        setMessage(error.message);
-        setSeverity(AlertSeverity.error);
-        setShowNotification(true);
+        enqueueSnackbar(data.message, {
+          variant: SnackbarMetadata.error.name,
+          duration: SnackbarMetadata.error.duration
+        });
       })
   };
 

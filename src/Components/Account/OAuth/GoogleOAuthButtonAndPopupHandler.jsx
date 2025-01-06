@@ -4,8 +4,9 @@ import { AppRoutes } from '../../../Utils/AppRoutes';
 import { useLocation, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../ContextProviders/UserContext";
-import { AlertSeverity, useNotificationContext } from "../../../ContextProviders/NotificationContext";
+import { SnackbarMetadata } from '../../../Utils/SnackbarMetadata';
 import { LoginTypes } from "../Utils";
+import { useSnackbar } from "notistack";
 
 const svgs = {
     light: 'images/oauth/google/web_light_sq_ctn.svg',
@@ -24,7 +25,7 @@ export default function GoogleOAuthButtonAndPopupHandler() {
 
     const navigate = useNavigate();
     const { setUser, setAuthenticationState } = useContext(UserContext);
-    const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
+    const { enqueueSnackbar } = useSnackbar()
 
     const theme = useTheme();
     const currentSvg = theme.palette.mode === 'dark' ? svgs.dark : svgs.light;
@@ -75,17 +76,19 @@ export default function GoogleOAuthButtonAndPopupHandler() {
                             setUser(userData);
 
                             if (userData.message) {
-                                setMessage(userData.message);
-                                setSeverity(AlertSeverity.success);
-                                setShowNotification(true);
+                                enqueueSnackbar(userData.message, {
+                                    variant: SnackbarMetadata.success.name,
+                                    duration: SnackbarMetadata.success.duration
+                                });
                             }
 
                             navigate(redirect_url, { replace: true });
                         }
                     } else {
-                        setMessage(event.data.errorMessage);
-                        setSeverity(AlertSeverity.error);
-                        setShowNotification(true);
+                        enqueueSnackbar(event.data.errorMessage, {
+                            variant: SnackbarMetadata.error.name,
+                            duration: SnackbarMetadata.error.duration
+                        });
                     }
                 }
             });
