@@ -48,7 +48,7 @@ export const replacePlainHTMLWithMuiComponents = (node) => {
   const parseChildren = (children) => {
     return children.map((child, index) => (
       <Fragment key={`child-${index}`}>
-        {domToReact(child, options)}
+        {domToReact([child], options)}
       </Fragment>
     ));
   };
