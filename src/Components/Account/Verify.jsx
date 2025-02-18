@@ -54,7 +54,7 @@ export default function Verify() {
 
       if (response.message === "Email verified") {
         setStatus("success");
-        setMessage("Account verified! Click below to refresh.");
+        setMessage(`Account verified for ${response.email || response.username || ""}. Click below to refresh.`);
         setUser((prev) => ({ ...prev, is_verified: true }));
       } else {
         throw new Error("Verification failed");
