@@ -18,8 +18,11 @@ import { DashboardContext } from '../../ContextProviders/DashboardContext';
 
 import CustomDialog from '../CustomDialog/CustomDialog';
 import { CITIESair } from '../../Utils/GlobalVariables';
+import useLoginHandler from '../Account/useLoginHandler';
 
-export default function DatasetDownloadDialog() {
+export default function DatasetDownloadDialog({ onButtonClick }) {
+  const { handleRestrictedAccess } = useLoginHandler(onButtonClick);
+
   const { currentSchoolID, current } = useContext(DashboardContext);
 
   const [sensorsDatasets, updateSensorsDatasets] = useState({});
@@ -60,8 +63,9 @@ export default function DatasetDownloadDialog() {
       buttonLabel="Dataset"
       trackingEvent={Tracking.Events.rawDatasetButtonClicked}
       dialogTitle="Preview and download raw dataset(s)"
-      dialogOpenHandler={(() => {
+      dialogOpenHandler={((action) => {
         setPreviewingDataset(null);
+        handleRestrictedAccess(action);
       })}
     >
       <DatasetSelectorAndPreviewer

@@ -13,11 +13,16 @@ import { getApiUrl } from '../../API/ApiUrls';
 import { GeneralAPIendpoints } from "../../API/Utils";
 import { fetchDataFromURL } from '../../API/ApiFetch';
 import { RESTmethods } from "../../API/Utils";
+import { EMPTY_USER_DATA } from '../../Utils/GlobalVariables';
+import { useSnackbar } from 'notistack';
+import { SnackbarMetadata } from '../../Utils/SnackbarMetadata';
 
 export default function LogOut() {
-  const { setUser } = useContext(UserContext);
+  const { setUser, setAuthenticationState } = useContext(UserContext);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const { enqueueSnackbar } = useSnackbar()
 
   const logOut = async () => {
     setLoading(true);
@@ -26,16 +31,31 @@ export default function LogOut() {
       url: getApiUrl({ endpoint: GeneralAPIendpoints.logout }),
       restMethod: RESTmethods.GET
     })
-      .then(() => {
-        setUser({
+      .then((data) => {
+        setLoading(false);
+
+        setAuthenticationState({
           checkedAuthentication: true,
           authenticated: false,
-          username: null
+        })
+        setUser(EMPTY_USER_DATA);
+
+        if (data.message) enqueueSnackbar(data.message, {
+          variant: SnackbarMetadata.success.name,
+          duration: SnackbarMetadata.success.duration
         });
+
+
         navigate('/');
       })
       .catch((error) => {
         console.log(error);
+        setLoading(false);
+
+        enqueueSnackbar(data.message, {
+          variant: SnackbarMetadata.error.name,
+          duration: SnackbarMetadata.error.duration
+        });
       })
   };
 

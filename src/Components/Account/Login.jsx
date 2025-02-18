@@ -3,20 +3,45 @@
 import { useState, useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 
-import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper } from "@mui/material";
+import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper, Divider } from "@mui/material";
 
 import { UserContext } from '../../ContextProviders/UserContext';
 import { getApiUrl } from '../../API/ApiUrls';
 import { GeneralAPIendpoints } from "../../API/Utils";
 import { AppRoutes } from '../../Utils/AppRoutes';
-import { AlertSeverity, useNotificationContext } from '../../ContextProviders/NotificationContext';
-import { CITIESair } from '../../Utils/GlobalVariables';
+import { SnackbarMetadata } from '../../Utils/SnackbarMetadata';
 import { fetchDataFromURL } from '../../API/ApiFetch';
 import { RESTmethods } from "../../API/Utils";
 import { MetadataContext } from '../../ContextProviders/MetadataContext';
+import GoogleOAuthButtonAndPopupHandler from './OAuth/GoogleOAuthButtonAndPopupHandler';
+import { LoginTypes } from './Utils';
+
+import { useSnackbar } from "notistack";
 
 export default function Login() {
-  const { setUser } = useContext(UserContext);
+  const { enqueueSnackbar } = useSnackbar()
+
+  const [isPopupItself, setIsPopupItself] = useState(false);
+
+  useEffect(() => {
+    // Check if the window was opened as a popup
+    if (window.opener) {
+      setIsPopupItself(true);
+      enqueueSnackbar("You must be logged in to access this functionality.", {
+        variant: SnackbarMetadata.info.name,
+        duration: SnackbarMetadata.info.duration
+      });
+    }
+  }, []);
+
+  const navigate = useNavigate();
+
+  const { setUser, authenticationState, setAuthenticationState } = useContext(UserContext);
+
+  useEffect(() => {
+    if (authenticationState.authenticated && authenticationState.checkedAuthentication) navigate("/");
+  }, [authenticationState]);
+
   const { setCurrentPage } = useContext(MetadataContext);
 
   // set current page to login
@@ -24,16 +49,11 @@ export default function Login() {
     setCurrentPage(AppRoutes.login);
   }, [setCurrentPage]);
 
-  const [username, setUserName] = useState();
-  const [password, setPassword] = useState();
+  const [username, setUserName] = useState("");
+  const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
   const [loading, setLoading] = useState(false);
-
-  const prefabErrorMessage = 'Incorrect school ID or access code. Try again or contact us if you think there is a mistake.';
-
-  const navigate = useNavigate();
 
   // After login succeeds, navigate to /dashboard if no redirect_url string query is detected
   const location = useLocation();
@@ -42,6 +62,15 @@ export default function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    // Alert error if the credential is missing
+    if (username === "" || password === "") {
+      enqueueSnackbar("Credentials cannot be empty.", {
+        variant: SnackbarMetadata.error.name,
+        duration: SnackbarMetadata.error.duration
+      });
+      return;
+    }
 
     setLoading(true);
 
@@ -55,22 +84,42 @@ export default function Login() {
       }
     })
       .then((data) => {
-        setShowNotification(false)
         setLoading(false);
 
-        setUser({
-          checkedAuthentication: true,
-          authenticated: true,
-          allowedSchools: data.allowedSchools,
-          username: data.username,
-        });
+        if (isPopupItself) {
+          // Send the result to the main window
+          window.opener.postMessage(
+            {
+              type: LoginTypes.password,
+              success: true,
+              user: data,
+            },
+            window.location.origin
+          );
 
-        navigate(redirect_url, { replace: true });
+          window.close(); // Close the popup
+        } else {
+          setAuthenticationState({
+            checkedAuthentication: true,
+            authenticated: true
+          });
+          setUser(data);
+
+          if (data.message) {
+            enqueueSnackbar(data.message, {
+              variant: SnackbarMetadata.success.name,
+              duration: SnackbarMetadata.success.duration
+            });
+          }
+
+          navigate(redirect_url, { replace: true });
+        }
       })
       .catch((error) => {
-        setMessage(prefabErrorMessage);
-        setSeverity(AlertSeverity.error);
-        setShowNotification(true);
+        enqueueSnackbar(error.message, {
+          variant: SnackbarMetadata.error.name,
+          duration: SnackbarMetadata.error.duration
+        });
         setLoading(false);
       })
   };
@@ -78,16 +127,23 @@ export default function Login() {
   return (
     <Container maxWidth="sm" sx={{ my: 3 }}>
       <Paper sx={{ p: 3 }} elevation={3}>
-        <Typography variant="h5" fontWeight={500}>
+        <Typography variant="h5" fontWeight={500} gutterBottom>
           Login
         </Typography>
+
+        <Typography variant="caption" fontStyle="italic">
+          <Typography fontWeight={500} variant="caption" gutterBottom>For school admins:</Typography> Login with the provided credentials to see your school's private dashboard. If you do not have the credentials, please contact us.
+          <br />
+          <Typography fontWeight={500} variant="caption">For NYU Abu Dhabi community:</Typography> Login with your personal account <b>(or with Google)</b> to your manage air quality alerts in the NYUAD dashboard.
+        </Typography>
+
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
             fullWidth
             id="schoolID"
-            label="School ID"
+            label="Email / School ID"
             name="schoolID"
             autoComplete="username"
             autoFocus
@@ -98,7 +154,7 @@ export default function Login() {
             required
             fullWidth
             name="password"
-            label="Access Code"
+            label="Password"
             type="password"
             id="password"
             autoComplete="current-password"
@@ -130,7 +186,7 @@ export default function Login() {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            sx={{ mt: 3, mb: 1 }}
           >
             {
               loading
@@ -138,14 +194,34 @@ export default function Login() {
                 : "Log In"
             }
           </Button>
-          <Typography variant="caption">
-            <i>
-              Login with the provided credentials to see your school's air quality dashboard, including indoor and outdoor devices. If you do not have the credentials, please contact your school admin or {CITIESair}.
-            </i>
-          </Typography>
+
+          <Divider sx={{ mb: 1 }}>
+            <Typography color="text.secondary">or</Typography>
+          </Divider>
+
+          <Box width="100%">
+            <GoogleOAuthButtonAndPopupHandler />
+          </Box>
         </Box>
       </Paper>
-    </Container>
+
+
+      <Divider textAlign="center" sx={{ my: 3 }}>
+        <Typography variant="body1" align="center" color="text.secondary">
+          Don't have an account?
+        </Typography>
+      </Divider>
+
+      <Paper sx={{ p: 0, mx: 3 }} elevation={3}>
+        <Button
+          fullWidth
+          onClick={() => navigate(AppRoutes.signUp)}
+        >
+          Sign Up
+        </Button>
+      </Paper>
+
+    </Container >
 
   );
 }

@@ -6,12 +6,15 @@ export const GeneralAPIendpoints = {
   chartdata: "chartdata",
   screen: "screen",
   login: "login",
+  signUp: "signup",
+  verify: "verify",
+  googleCallback: "google/callback",
   logout: "logout",
   map: "map_public_outdoors_stations",
   alerts: "alerts",
   alertsEmails: "alerts/emails",
   stats: "stats",
-  dataTypes: "datatypes"
+  dataTypes: "datatypes",
 };
 
 export const ChartAPIendpoints = {
@@ -20,7 +23,7 @@ export const ChartAPIendpoints = {
   percentageByMonth: "chart/percentageByMonth",
   yearlyAverageByDoW: "chart/yearlyAverageByDoW",
   hourlyAverageByMonth: "chart/hourlyAverageByMonth",
-  correlationDailyAverage: "chart/correlationDailyAverage"
+  correlationDailyAverage: "chart/correlationDailyAverage",
 };
 
 export const ChartAPIendpointsOrder = [
@@ -29,23 +32,22 @@ export const ChartAPIendpointsOrder = [
   ChartAPIendpoints.percentageByMonth,
   ChartAPIendpoints.yearlyAverageByDoW,
   ChartAPIendpoints.hourlyAverageByMonth,
-  ChartAPIendpoints.correlationDailyAverage
+  ChartAPIendpoints.correlationDailyAverage,
 ];
 
 export const RawDatasetType = {
   daily: "daily",
-  hourly: "hourly"
+  hourly: "hourly",
 };
 
 export const RESTmethods = {
   GET: "GET",
   POST: "POST",
   PUT: "PUT",
-  DELETE: "DELETE"
+  DELETE: "DELETE",
 };
 
 export const SupportedFetchExtensions = {
-  json: 'json',
-  csv: 'csv'
+  json: "json",
+  csv: "csv",
 };
-

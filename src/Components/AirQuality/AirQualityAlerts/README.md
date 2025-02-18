@@ -62,7 +62,7 @@ In the order of nested DOMs:
   - The user can type email addresses in and finalize each address by typing `Enter` or `spacebar` 
   - Each email `Chip` has a `x` button to remove that email
   - Clicking anywhere on an email `Chip` opens a dropdown menu that currently only has the option to `Edit` that email address. When an email addressed is being edited this way, it will be moved to the end of the input field
-  - There are several checks in place for invalid user inputs: using [SnackbarNotification](src/Components/SnackbarNotification.jsx) and [NotificationContext](src/ContextProviders/NotificationContext.jsx) to display error messages
+  - There are several checks in place for invalid user inputs:
     - Wrong email format (must be abc@def.xyz):
       
       ![emails-input-invalid-email-format](/documentation/emails-input-invalid-email-format.png)

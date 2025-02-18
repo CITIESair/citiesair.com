@@ -3,36 +3,62 @@ import { AQI_Database } from "../Utils/AirQuality/AirQualityIndexHelper";
 import parse from 'html-react-parser';
 import { SupportedFetchExtensions, RESTmethods } from "./Utils";
 
+const genericErrorMessage = 'Network response was not OK';
+
 export const fetchDataFromURL = async ({
   url,
   extension = SupportedFetchExtensions.json,
   needsAuthorization = true,
   restMethod = RESTmethods.GET,
   body = null,
-  includesHeadersJSON = true
+  includesContentTypeHeader = true
 }) => {
   try {
     const fetchOptions = {
       method: restMethod,
       credentials: needsAuthorization ? 'include' : 'omit',
       ...(body && { body: JSON.stringify(body) }),
-      ...(SupportedFetchExtensions.json && includesHeadersJSON && {
-        headers: {
-          "Content-type": "application/json; charset=UTF-8"
-        }
-      })
+      headers: {}
     };
+
+    if (includesContentTypeHeader) {
+      switch (extension) {
+        case SupportedFetchExtensions.json:
+          fetchOptions.headers["Content-Type"] = "application/json; charset=UTF-8";
+          break;
+        case SupportedFetchExtensions.csv:
+          fetchOptions.headers["Content-Type"] = "text/csv; charset=UTF-8";
+          break;
+        default:
+          break;
+      }
+    }
 
     const response = await fetch(url, fetchOptions);
 
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
+    // Case: 500
+    if (response.status === 500) {
+      return Promise.reject(new Error('The server encountered an error. Please try again later.'));
     }
 
+    // Proceed with case OK 204
     if (response.status === 204) {
       return true;
     }
 
+    // All other errors
+    if (!response.ok) {
+      const contentType = response.headers.get('Content-Type');
+      if (contentType && contentType.includes('application/json')) {
+        const errorData = await response.json();
+        return Promise.reject(new Error(errorData.message || genericErrorMessage));
+      } else {
+        const errorText = await response.text();
+        return Promise.reject(new Error(errorText || genericErrorMessage));
+      }
+    }
+
+    // OK
     switch (extension) {
       case SupportedFetchExtensions.json:
         return await response.json();
@@ -42,8 +68,15 @@ export const fetchDataFromURL = async ({
         return response;
     }
   } catch (error) {
-    throw new Error(`Error fetching data: ${error.message}`);
+    // Check if it's a network error
+    if (error.message === 'Failed to fetch') {
+      throw new Error('Unable to connect to the server. Please check your internet connection and try again.');
+    }
+
+    // For other errors, preserve the original message
+    throw new Error(error.message);
   }
+
 };
 
 export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {

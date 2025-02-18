@@ -30,6 +30,7 @@
     "lodash": "^4.17.21",
     "lodash.isequal": "^4.5.0",
     "material-ui-popup-state": "^5.0.8",
+    "notistack": "^3.0.1",
     "prop-types": "15.8.1",
     "react": "^18.2.0",
     "react-date-range": "^2.0.0-alpha.4",
@@ -47,10 +48,15 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "build": "react-scripts build",
+    "build-local-backend": "REACT_APP_ENV=local-backend react-scripts build",
+    "build-local-backend-w": "set REACT_APP_ENV=local-backend && react-scripts build",
+    "build-w": "set REACT_APP_ENV=production && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start-local-backend": "REACT_APP_ENV=local-backend react-scripts start",
-    "start": "REACT_APP_ENV=production react-scripts start"
+    "start": "REACT_APP_ENV=production react-scripts start",
+    "start-local-backend-w": "set REACT_APP_ENV=local-backend && react-scripts start",
+    "start-w": "set REACT_APP_ENV=production && react-scripts start"
   },
   "eslintConfig": {
     "extends": [

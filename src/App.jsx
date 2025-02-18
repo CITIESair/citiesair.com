@@ -1,40 +1,43 @@
 // React components
-import { React, useMemo, lazy, Suspense, useContext, useEffect } from 'react';
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { React, useMemo, lazy, Suspense, useContext, useEffect } from "react";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 
 // MUI components
-import { Box } from '@mui/material/';
+import { Box } from "@mui/material/";
 
 // Theme
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import ThemePreferences from './Themes/ThemePreferences';
-import CustomThemes from './Themes/CustomThemes';
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import ThemePreferences from "./Themes/ThemePreferences";
+import CustomThemes from "./Themes/CustomThemes";
 
 // UI components
-import Header from './Components/Header/Header';
-import Footer from './Components/Footer';
-import FourOhFour from './Pages/404';
-import LoadingAnimation from './Components/LoadingAnimation';
-import Login from './Components/Account/Login';
-import NYUADmap from './Pages/Embeds/NYUADmap';
-import SpeedDialButton from './Components/SpeedDial/SpeedDialButton';
+import Header from "./Components/Header/Header";
+import Footer from "./Components/Footer";
+import FourOhFour from "./Pages/404";
+import LoadingAnimation from "./Components/LoadingAnimation";
+import Login from "./Components/Account/Login";
+import SignUp from "./Components/Account/SignUp";
+import Verify from "./Components/Account/Verify";
+import NYUADmap from "./Pages/Embeds/NYUADmap";
+import SpeedDialButton from "./Components/SpeedDial/SpeedDialButton";
 
-import { AppRoutes } from './Utils/AppRoutes';
-import NYUADbanner from './Pages/Embeds/NYUADbanner';
+import { AppRoutes } from "./Utils/AppRoutes";
+import NYUADbanner from "./Pages/Embeds/NYUADbanner";
 
-import { DashboardProvider } from './ContextProviders/DashboardContext';
-import { PreferenceContext } from './ContextProviders/PreferenceContext';
-import { MetadataContext } from './ContextProviders/MetadataContext';
+import { DashboardProvider } from "./ContextProviders/DashboardContext";
+import { PreferenceContext } from "./ContextProviders/PreferenceContext";
+import { MetadataContext } from "./ContextProviders/MetadataContext";
 
-import jsonData from './section_data.json';
+import jsonData from "./section_data.json";
 
-import SnackbarNotification from './Components/SnackbarNotification';
-import { CITIESair } from './Utils/GlobalVariables';
+import { CITIESair } from "./Utils/GlobalVariables";
+import GoogleOAuthCallback from "./Components/Account/OAuth/GoogleOAuthCallback";
+import ScrollToTop from "./Components/ScrollToTop";
 
 // Lazy load pages
-const Home = lazy(() => import('./Pages/Home/Home'));
-const Dashboard = lazy(() => import('./Pages/Dashboard'));
-const Screen = lazy(() => import('./Pages/Screen'));
+const Home = lazy(() => import("./Pages/Home/Home"));
+const Dashboard = lazy(() => import("./Pages/Dashboard"));
+const Screen = lazy(() => import("./Pages/Screen"));
 
 // Create theme design tokens based on theme preference
 const getDesignTokens = (themePreference) => ({
@@ -73,7 +76,7 @@ function App() {
   useEffect(() => {
     // Use vanilla JS to get the query parameters from the URL
     const queryParams = new URLSearchParams(window.location.search);
-    const optionallyPassedThemePreference = queryParams.get('themePreference');
+    const optionallyPassedThemePreference = queryParams.get("themePreference");
     if (optionallyPassedThemePreference) {
       const previousTheme = themePreference;
       setThemePreference(optionallyPassedThemePreference);
@@ -86,22 +89,27 @@ function App() {
 
   return (
     <BrowserRouter basename="/">
+      <ScrollToTop />
       <ThemeProvider theme={theme}>
         <Box
           sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '100%',
-            minHeight: '100vh',
-            backgroundColor: 'customBackground',
+            display: "flex",
+            flexDirection: "column",
+            width: "100%",
+            minHeight: "100vh",
+            backgroundColor: "customBackground",
           }}
         >
-          <SpeedDialButton chartsTitlesList={chartsTitlesList} topAnchorID={jsonData.topAnchor.id} />
+          <SpeedDialButton
+            chartsTitlesList={chartsTitlesList}
+            topAnchorID={jsonData.topAnchor.id}
+          />
 
-          <SnackbarNotification />
-
-          <Suspense fallback={<LoadingAnimation optionalText="Loading Dashboard" />}>
+          <Suspense
+            fallback={<LoadingAnimation optionalText="Loading Dashboard" />}
+          >
             <Routes>
+              {/* ----- HOME ----- */}
               <Route
                 path={AppRoutes.home}
                 element={
@@ -113,6 +121,7 @@ function App() {
                 }
               />
 
+              {/* ----- AUTHENTICATION ROUTES ----- */}
               <Route
                 path={AppRoutes.login}
                 element={
@@ -123,10 +132,40 @@ function App() {
                   </Box>
                 }
               />
+              <Route
+                path={AppRoutes.signUp}
+                element={
+                  <Box>
+                    <Header />
+                    <SignUp />
+                    <Footer />
+                  </Box>
+                }
+              />
+              <Route
+                path={AppRoutes.verify}
+                element={
+                  <Box>
+                    <Header />
+                    <Verify />
+                    <Footer />
+                  </Box>
+                }
+              />
+              <Route
+                path={AppRoutes.googleCallback}
+                element={
+                  <Box>
+                    <Header />
+                    <GoogleOAuthCallback />
+                    <Footer />
+                  </Box>
+                }
+              />
 
-              {
-                [AppRoutes.dashboard, AppRoutes.dashboardWithParam].map((path) =>
-                (
+              {/* ----- DASHBOARD ROUTES ----- */}
+              {[AppRoutes.dashboard, AppRoutes.dashboardWithParam].map(
+                (path) => (
                   <Route
                     key={path}
                     path={path}
@@ -141,37 +180,30 @@ function App() {
                     }
                   />
                 )
-                )
-              }
+              )}
 
+              {/* ----- OTHER ROUTES: SCREENS, MAPS, BANNERS... ----- */}
               <Route
                 path={AppRoutes.anyScreen}
                 element={<Screen title={`${CITIESair} | Screen`} />}
               />
 
-              <Route
-                path={AppRoutes.nyuadMap}
-                element={<NYUADmap />}
-              />
+              <Route path={AppRoutes.nyuadMap} element={<NYUADmap />} />
 
               <Route
                 path={AppRoutes.nyuadBanner}
                 element={<NYUADbanner isOnBannerPage={true} />}
               />
 
+              {/* ----- 404 ROUTES ----- */}
               <Route
                 path={AppRoutes[404]}
-                element={
-                  <FourOhFour title={`${CITIESair} | Page Not Found`} />
-                }
+                element={<FourOhFour title={`${CITIESair} | Page Not Found`} />}
               />
               <Route
                 path="*"
-                element={
-                  <Navigate replace to={AppRoutes[404]} />
-                }
+                element={<Navigate replace to={AppRoutes[404]} />}
               />
-
             </Routes>
           </Suspense>
         </Box>

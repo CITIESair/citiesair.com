@@ -97,6 +97,8 @@ The `Routes` defined in [`App.jsx`](src/App.jsx) correspond to these pages. *For
 
 # 4. Development Guide
 
+**IMPORTANT:** The React application is wrapped in `<StrictMode>`, read more [here](https://react.dev/reference/react/StrictMode), which will re-render components an extra time and run `useEffect()` twice. Consequently, this makes most API calls to the backend duplicated if they are called in `useEffect()`. This only happens in development mode (`npm run start`) and not on the build (`npm run build`). In some circumstances, such as Login, this might create some weird bugs on the backend (for example, two user sessions). Therefore, for the most accurate testing that reflects the real deployment production, build the application first before testing it.
+
 ## 4.1. Prerequisites
 
 - [Node.js](https://nodejs.org/en/download/)
@@ -128,9 +130,13 @@ The `Routes` defined in [`App.jsx`](src/App.jsx) correspond to these pages. *For
 4. If you want to run a stable build (more optimized and faster compared to the dev application in Step 3, but 404 page doesn't work in this case), run the below instead:
 
     ```
-    npm run build
-    cd build
-    python3 -m http.server
+    npm run build && serve -s build
+    ```
+    
+    - Or, if you want this frontend application to make API request to the locally hosted backend API (localhost://3001). This command set `REACT_APP_ENV=local-backend` so that the app can bypass authorization.
+
+    ```
+    npm run build-local-backend && serve -s build
     ```
 
 ## 4.3. Production Deployment
