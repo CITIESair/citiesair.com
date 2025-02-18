@@ -181,14 +181,14 @@ export default function Header() {
 
       <FullWidthBox sx={{
         backgroundColor: "customAlternateBackground",
-        pt: 2
+        pt: 4
       }}>
         <Promo />
       </FullWidthBox>
 
       {
         (
-          [AppRoutes.home, AppRoutes.login, AppRoutes.signUp, AppRoutes.verify].includes(currentPage)
+          [AppRoutes.home, AppRoutes.login].includes(currentPage)
             ? (
               <FullWidthBox sx={{
                 width: '100%',

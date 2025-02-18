@@ -61,11 +61,10 @@ export default function SpeedDialButton(props) {
 
   if (menuItemsArray.length > 0) {
     menuItemsArray.unshift(
-      <StyledMenuItem key="quick-navigation" disabled sx={{ fontWeight: '600' }}>
+      <StyledMenuItem disabled sx={{ fontWeight: '600' }}>
         Quick Navigation
       </StyledMenuItem>,
       <MenuItemAsNavLink
-        key="scroll-to-top"
         behavior={NavLinkBehavior.scrollTo}
         scrollToSectionID={topAnchorID}
         icon={<NorthIcon />}
@@ -74,7 +73,6 @@ export default function SpeedDialButton(props) {
         sx={{ fontSize: '0.8rem' }}
       />,
       <MenuItemAsNavLink
-        key="charts-list"
         behavior={NavLinkBehavior.doNothing}
         label="Charts List:"
         icon={<BarChartIcon />}

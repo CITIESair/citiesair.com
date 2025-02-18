@@ -1,56 +1,40 @@
+// disable eslint for this file
+/* eslint-disable */
 import { useState, useContext } from "react";
 import { Button, Menu, MenuItem } from "@mui/material";
-import TvIcon from "@mui/icons-material/Tv";
-import { useNavigate } from "react-router-dom";
+import { Link } from 'react-router-dom';
+import TvIcon from '@mui/icons-material/Tv';
 import { DashboardContext } from "../../../ContextProviders/DashboardContext";
 import { isValidArray } from "../../../Utils/UtilFunctions";
-import useLoginHandler from "../../Account/useLoginHandler";
 
-const ScreenDropDownMenu = ({ onButtonClick }) => {
-  const { currentSchoolID, schoolMetadata } = useContext(DashboardContext);
-  const { handleRestrictedAccess } = useLoginHandler(onButtonClick);
-
+const ScreenDropDownMenu = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const navigate = useNavigate();
 
-  if (!schoolMetadata) return null;
+  const { currentSchoolID, schoolMetadata } = useContext(DashboardContext);
 
+  if (!schoolMetadata) return;
   const screens = schoolMetadata.screens;
 
   if (!isValidArray(screens)) return null;
 
-  const handleSingleScreenClick = () => {
-    handleRestrictedAccess(() => navigate(`/screen/${currentSchoolID}`));
-  };
-
-  // If there is only 1 screen, show a single button
+  // If there is only 1 screen, display a button linked to that screen
   if (screens.length <= 1) {
     return (
       <Button
         variant="contained"
-        size="small"
-        onClick={handleSingleScreenClick}
+        component={Link}
+        to={`/screen/${currentSchoolID}`}
       >
-        <TvIcon sx={{ fontSize: "1rem" }} />&nbsp;TV Screen
+        <TvIcon sx={{ fontSize: '1rem' }} />&nbsp;TV Screen
       </Button>
-    );
+    )
   }
-
-  // If there are multiple screens, show a dropdown menu
+  // If there are more than 1 screens to choose from, display a popup dropdown menu
   const open = Boolean(anchorEl);
-
-  const handleMenuItemClick = (screenName) => {
-    handleRestrictedAccess(() => {
-      setAnchorEl(null);
-      navigate(`/screen/${currentSchoolID}/${screenName}`);
-    });
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
   };
-
-  const handleMenuOpen = (event) => {
-    handleRestrictedAccess(() => setAnchorEl(event.currentTarget));
-  };
-
-  const handleMenuClose = () => {
+  const handleClose = () => {
     setAnchorEl(null);
   };
 
@@ -58,14 +42,13 @@ const ScreenDropDownMenu = ({ onButtonClick }) => {
     <>
       <Button
         id="basic-button"
-        aria-controls={open ? "tv-screen-list-menu" : undefined}
+        aria-controls={open ? 'tv-screen-list-menu' : undefined}
         aria-haspopup="true"
-        aria-expanded={open ? "true" : undefined}
-        onClick={handleMenuOpen}
+        aria-expanded={open ? 'true' : undefined}
+        onClick={handleClick}
         variant="contained"
-        size="small"
       >
-        <TvIcon sx={{ fontSize: "1rem" }} />
+        <TvIcon sx={{ fontSize: '1rem' }} />
         &nbsp;
         TV Screens
       </Button>
@@ -73,20 +56,23 @@ const ScreenDropDownMenu = ({ onButtonClick }) => {
         id="tv-screen-list-menu"
         anchorEl={anchorEl}
         open={open}
-        onClose={handleMenuClose}
+        onClose={handleClose}
         MenuListProps={{
-          "aria-labelledby": "basic-button",
+          'aria-labelledby': 'basic-button',
         }}
       >
-        {screens.map((screen, index) => (
-          <MenuItem
-            key={index}
-            onClick={() => handleMenuItemClick(screen.screen_name)}
-            sx={{ fontSize: "0.8rem" }}
-          >
-            {screen.location_long}
-          </MenuItem>
-        ))}
+        {
+          screens.map((screen, index) => (
+            <MenuItem
+              key={index}
+              component={Link}
+              to={`/screen/${currentSchoolID}/${screen.screen_name}`}
+              onClick={handleClose}
+              sx={{ fontSize: '0.8rem' }}
+            >
+              {screen.location_long}
+            </MenuItem>
+          ))}
       </Menu>
     </>
   );

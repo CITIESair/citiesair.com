@@ -26,13 +26,12 @@ import { ThresholdTypeToggle } from './ThresholdTypeToggle';
 import { SimplePicker } from './SimplePicker';
 import { HOURS } from './HOURS';
 import { ThresholdSlider } from './ThresholdSlider';
-import { SnackbarMetadata } from '../../../../Utils/SnackbarMetadata';
+import { AlertSeverity, useNotificationContext } from '../../../../ContextProviders/NotificationContext';
 
 import isEqual from 'lodash.isequal';
 import DaysOfWeekToggle from './DayOfTheWeekToggle';
 import MultiDaysCalendarPicker from './MultiDaysCalendarPicker';
 import AlertDeletionDialog from './AlertDeletionDialog';
-import { useSnackbar } from 'notistack';
 
 const returnFormattedStatusString = (editingAlert) => {
   const status = editingAlert[AirQualityAlertKeys.is_enabled] ? "enabled" : "disabled";
@@ -55,7 +54,12 @@ const AlertModificationDialog = (props) => {
 
   const [shouldDisableButton, setShouldDisableButton] = useState(false);
 
-  const { enqueueSnackbar } = useSnackbar()
+  const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
+
+  useEffect(() => {
+    setMessage();
+    setShowNotification(false);
+  }, [crudType, setMessage, setShowNotification]);
 
   const handleCurrentSensorChange = (event) => {
     const newSensor = event.target.value;
@@ -363,17 +367,15 @@ const AlertModificationDialog = (props) => {
 
   const handleAlertModification = ({ passedCrudType }) => {
     const handleFetchError = (error) => {
-      enqueueSnackbar(DialogData[passedCrudType].errorMessage, {
-        variant: SnackbarMetadata.error.name,
-        duration: SnackbarMetadata.error.duration
-      });
+      setSeverity(AlertSeverity.error);
+      setMessage(DialogData[passedCrudType].errorMessage);
+      setShowNotification(true);
     };
 
     const handleFetchSuccess = () => {
-      enqueueSnackbar(DialogData[passedCrudType].successMessage, {
-        variant: SnackbarMetadata.success.name,
-        duration: SnackbarMetadata.success.duration
-      });
+      setSeverity(AlertSeverity.success);
+      setMessage(DialogData[passedCrudType].successMessage);
+      setShowNotification(true);
       handleClose();
     }
 

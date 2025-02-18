@@ -31,21 +31,15 @@ const CustomDialog = (props) => {
   const [open, setOpen] = useState(false);
 
   const onOpen = () => {
-    if (dialogOpenHandler) {
-      dialogOpenHandler(() => {
-        setOpen(true); // Only opens if dialogOpenHandler allows it
-        if (trackingEvent) Tracking.sendEventAnalytics(trackingEvent);
-      });
-    } else {
-      setOpen(true);
-      if (trackingEvent) Tracking.sendEventAnalytics(trackingEvent);
-    }
-  };
+    setOpen(true);
+    if (trackingEvent) Tracking.sendEventAnalytics(trackingEvent);
+    if (dialogOpenHandler) dialogOpenHandler();
+  }
 
   const onClose = () => {
     setOpen(false);
     if (dialogCloseHandler) dialogCloseHandler();
-  };
+  }
 
   const theme = useTheme();
 
@@ -69,7 +63,6 @@ const CustomDialog = (props) => {
         onClick={onOpen}
         variant="contained"
         disabled={disabled}
-        size="small"
       >
         {buttonIcon}&nbsp;{buttonLabel}
       </Button>

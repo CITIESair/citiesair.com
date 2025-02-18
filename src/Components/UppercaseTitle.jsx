@@ -1,6 +1,6 @@
 import { Skeleton, Typography } from '@mui/material';
 
-export default function UppercaseTitle({ text, sx, ...otherProps }) {
+export default function UppercaseTitle({ text }) {
   return (
     <Typography
       variant="h4"
@@ -10,10 +10,8 @@ export default function UppercaseTitle({ text, sx, ...otherProps }) {
         display: 'block',
         textTransform: 'uppercase',
         pb: 3,
-        lineHeight: 1,
-        ...sx
+        lineHeight: 1
       }}
-      {...otherProps}
     >
       {text || <Skeleton variant='text' />}
     </Typography>

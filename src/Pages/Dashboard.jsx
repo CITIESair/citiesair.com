@@ -5,8 +5,8 @@ import { useEffect, useContext } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { fetchDataFromURL } from "../API/ApiFetch";
-import Project from "./Project/Project";
-import { getApiUrl, getChartApiUrl } from "../API/ApiUrls";
+import Project from "./Project";
+import { getApiUrl, getChartApiUrl, getHistoricalChartApiUrl } from "../API/ApiUrls";
 import { ChartAPIendpointsOrder, GeneralAPIendpoints } from "../API/Utils";
 import { fetchAndProcessCurrentSensorsData } from "../API/ApiFetch";
 import { MetadataContext } from "../ContextProviders/MetadataContext";
@@ -16,10 +16,7 @@ import { UserContext } from "../ContextProviders/UserContext";
 import { LocalStorage } from "../Utils/LocalStorage";
 import { AppRoutes } from "../Utils/AppRoutes";
 import { CITIESair, NUMBER_OF_CHARTS_TO_LOAD_INITIALLY, NYUAD } from "../Utils/GlobalVariables";
-import { isValidArray } from "../Utils/UtilFunctions";
-
-import { useSnackbar } from "notistack";
-import { SnackbarMetadata } from "../Utils/SnackbarMetadata";
+import { AlertSeverity, useNotificationContext } from "../ContextProviders/NotificationContext";
 
 const Dashboard = () => {
   const { school_id_param } = useParams();
@@ -27,8 +24,6 @@ const Dashboard = () => {
 
   const location = useLocation();
   const locationPath = location.pathname;
-
-  const { enqueueSnackbar } = useSnackbar()
 
   // Update the page's title based on school_id_param
   useEffect(() => {
@@ -50,7 +45,9 @@ const Dashboard = () => {
     allChartsData, setIndividualChartData,
     loadMoreCharts
   } = useContext(DashboardContext);
-  const { user, authenticationState } = useContext(UserContext);
+  const { user } = useContext(UserContext);
+
+  const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
 
   useEffect(() => {
     // NYUAD is public --> skip authentication and just fetch data
@@ -60,14 +57,13 @@ const Dashboard = () => {
       return;
     };
 
-    if (authenticationState.checkedAuthentication === true && authenticationState.authenticated === false) {
+    if (user.checkedAuthentication === true && user.authenticated === false) {
       navigate(`${AppRoutes.login}?${AppRoutes.redirectQuery}=${locationPath}`);
-      return;
     }
 
     const allowedSchools = user.allowedSchools;
 
-    if (isValidArray(allowedSchools)) {
+    if (Array.isArray(allowedSchools) && allowedSchools.length > 0) {
       // If no school_id_param is given
       if (!school_id_param) {
         let school_id;
@@ -99,16 +95,12 @@ const Dashboard = () => {
         }
         // If the school_id_param is not in the allowedSchools
         else {
-          enqueueSnackbar("You don't have permission to view this school or this school does not exist.", {
-            variant: SnackbarMetadata.error.name,
-            duration: SnackbarMetadata.error.duration
-          });
-
           navigate(AppRoutes[404], { replace: true });
+          setShowNotification(true);
+          setMessage("You don't have permission to view this school or this school does not exist.");
+          setSeverity(AlertSeverity.error);
         }
       }
-    } else {
-      navigate(AppRoutes.nyuad); // else, if there is no valid allowedSchools for this user, route to public NYUAD dashboard
     }
   }, [user, school_id_param]);
 

@@ -9,7 +9,7 @@ import NavLinkBehavior from './NavLinkBehavior';
 // import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { UserContext } from '../../ContextProviders/UserContext';
 
-// import BarChartIcon from '@mui/icons-material/BarChart';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import PersonIcon from '@mui/icons-material/Person';
 
 import HoverMenu from 'material-ui-popup-state/HoverMenu';
@@ -17,7 +17,7 @@ import PopupState, { bindHover, bindFocus, bindMenu } from 'material-ui-popup-st
 
 import LogOut from '../Account/Logout';
 import { AppRoutes } from '../../Utils/AppRoutes';
-// import { NYUAD } from '../../Utils/GlobalVariables';
+import { NYUAD } from '../../Utils/GlobalVariables';
 
 const StyledMenuList = styled(MenuList)(({ theme }) => ({
   // Make these items display on the same line on large display
@@ -31,7 +31,7 @@ const StyledMenuList = styled(MenuList)(({ theme }) => ({
 
 const NavBar = (props) => {
   const { currentPage, isMobile } = props;
-  const { user, authenticationState } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const [navbar, setNavbar] = useState([]);
 
   const homeNavLink = (
@@ -44,28 +44,17 @@ const NavBar = (props) => {
     />
   );
 
-  const getDashboardLabel = () => {
-    if (user?.username && user?.email && user.username === user.email) {
-      return "My Dashboard";
-    }
-
-    if (user?.username) {
-      return `${user.username.toUpperCase()}'s Dashboard`;
-    }
-
-    if (user?.email) {
-      return user.email;
-    }
-
-    return "Dashboard";
+  const getFormattedUsername = (username) => {
+    if (!username) return "NO USERNAME";
+    return username.toUpperCase();
   };
 
-  const reservedAreaMenu = authenticationState.authenticated === true ? (
+  const reservedAreaMenu = user.authenticated ? (
     isMobile ? (
       [
         <MenuItemAsNavLink
           key="dashboard"
-          label={getDashboardLabel()}
+          label={`${getFormattedUsername(user.username)}'s Dashboard`}
           behavior={NavLinkBehavior.toNewPage}
           icon={<PersonIcon />}
           analyticsOriginID="navbar"
@@ -78,7 +67,7 @@ const NavBar = (props) => {
         {(popupState) => (
           <>
             <MenuItemAsNavLink
-              label={getDashboardLabel()}
+              label={`${getFormattedUsername(user.username)}'s Dashboard`}
               behavior={NavLinkBehavior.hoverMenu}
               icon={<PersonIcon />}
               analyticsOriginID="navbar"
@@ -106,7 +95,7 @@ const NavBar = (props) => {
   ) : (
     <MenuItemAsNavLink
       key="login"
-      label={"Login / Signup"}
+      label={"School Login"}
       behavior={NavLinkBehavior.toNewPage}
       icon={<PersonIcon />}
       analyticsOriginID="navbar"
@@ -114,17 +103,17 @@ const NavBar = (props) => {
     />
   );
 
-  // const nyuadDashboardNavLink = (
-  //   <MenuItemAsNavLink
-  //     key={NYUAD}
-  //     label={"NYUAD Dashboard (Public access)"}
-  //     behavior={NavLinkBehavior.toNewPage}
-  //     to={AppRoutes.nyuad}
-  //     icon={<BarChartIcon />}
-  //     analyticsOriginID="navbar"
-  //     school_id={NYUAD}
-  //   />
-  // );
+  const nyuadDashboardNavLink = (
+    <MenuItemAsNavLink
+      key={NYUAD}
+      label={"NYUAD Dashboard (Public access)"}
+      behavior={NavLinkBehavior.toNewPage}
+      to={AppRoutes.nyuad}
+      icon={<BarChartIcon />}
+      analyticsOriginID="navbar"
+      school_id={NYUAD}
+    />
+  );
 
   // const blogNavLink = (
   //   <MenuItemAsNavLink
@@ -140,7 +129,7 @@ const NavBar = (props) => {
   useEffect(() => {
     switch (currentPage) {
       case AppRoutes.home:
-        setNavbar([reservedAreaMenu]);
+        setNavbar([nyuadDashboardNavLink, reservedAreaMenu]);
         break;
       default:
         setNavbar([homeNavLink, reservedAreaMenu]);

@@ -6,9 +6,7 @@ import { getApiUrl } from '../../../API/ApiUrls';
 import { GeneralAPIendpoints } from "../../../API/Utils";
 import { DashboardContext } from '../../../ContextProviders/DashboardContext';
 import { isValidArray } from '../../../Utils/UtilFunctions';
-import { SnackbarMetadata } from '../../../Utils/SnackbarMetadata';
-import { validateEmail } from '../../../Utils/UtilFunctions';
-import { useSnackbar } from 'notistack';
+import { AlertSeverity, useNotificationContext } from '../../../ContextProviders/NotificationContext';
 
 const compareArrays = (arr1, arr2) => {
   return JSON.stringify(arr1) === JSON.stringify(arr2);
@@ -17,7 +15,7 @@ const compareArrays = (arr1, arr2) => {
 const EmailsInput = () => {
   const { currentSchoolID } = useContext(DashboardContext);
 
-  const { enqueueSnackbar } = useSnackbar()
+  const { setShowNotification, setMessage, setSeverity } = useNotificationContext();
 
   const smallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
@@ -31,11 +29,16 @@ const EmailsInput = () => {
   const [saveButtonTooltipTitle, setSaveButtonTooltipTitle] = useState('');
 
   const maxEmails = 150;
+  const validateEmail = (email) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
 
   // Fetch emails from backend
   useEffect(() => {
-    if (!currentSchoolID) return;
-
     fetchDataFromURL({
       url: getApiUrl({
         endpoint: GeneralAPIendpoints.alertsEmails,
@@ -47,10 +50,9 @@ const EmailsInput = () => {
       setServerEmails(data);
     })
       .catch((error) => {
-        enqueueSnackbar("There was an error loading the email list, please try again", {
-          variant: SnackbarMetadata.error.name,
-          duration: SnackbarMetadata.error.duration
-        });
+        setMessage("There was an error loading the email list, please try again.");
+        setSeverity(AlertSeverity.error);
+        setShowNotification(true);
       });
   }, [currentSchoolID]);
 
@@ -75,29 +77,28 @@ const EmailsInput = () => {
 
       // Make sure currentEmail hasn't been added before
       if (localEmails.includes(email)) {
-        enqueueSnackbar(`Already added: ${email}`, {
-          variant: SnackbarMetadata.error.name,
-          duration: SnackbarMetadata.error.duration
-        });
+        setMessage(`Already added: ${email}`);
+        setSeverity(AlertSeverity.error);
+        setShowNotification(true);
+
         setCurrentEmail('');
         return;
       }
 
       // Display alert if reached maximum number of email recipients
       if (newEmails.length === maxEmails) {
-        enqueueSnackbar('Maximum number of recipients reached', {
-          variant: SnackbarMetadata.warning.name,
-          duration: SnackbarMetadata.warning.duration
-        });
+        setMessage('Maximum number of recipients reached');
+        setSeverity(AlertSeverity.warning);
+        setShowNotification(true);
       }
 
       setLocalEmails(newEmails);
       setCurrentEmail('');
+      setMessage();
     } else {
-      enqueueSnackbar('Invalid email address. Valid format: abc@def.xyz', {
-        variant: SnackbarMetadata.error.name,
-        duration: SnackbarMetadata.error.duration
-      });
+      setMessage('Invalid email address. Valid format: abc@def.xyz');
+      setSeverity(AlertSeverity.error);
+      setShowNotification(true);
     }
   };
 
@@ -138,15 +139,14 @@ const EmailsInput = () => {
       body: emailsToSave
     }).then((data) => {
       setServerEmails(data);
-      enqueueSnackbar('Email list saved successfully!', {
-        variant: SnackbarMetadata.success.name,
-        duration: SnackbarMetadata.success.duration
-      });
+
+      setSeverity(AlertSeverity.success);
+      setMessage('Email list saved successfully!');
+      setShowNotification(true);
     }).catch(() => {
-      enqueueSnackbar('There was an error saving the email. Please try again.', {
-        variant: SnackbarMetadata.error.name,
-        duration: SnackbarMetadata.error.duration
-      });
+      setMessage('There was an error saving the email. Please try again.');
+      setSeverity(AlertSeverity.error);
+      setShowNotification(true);
     })
 
     return;

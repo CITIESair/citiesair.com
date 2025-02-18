@@ -49,7 +49,7 @@ function isWithinDisplayHours(location) {
 const Screen = ({ title }) => {
   const { temperatureUnitPreference, themePreference } = useContext(PreferenceContext);
 
-  const { authenticationState } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
   const location = useLocation();
@@ -101,9 +101,9 @@ const Screen = ({ title }) => {
   // Fetch air quality data from database, depends on the state of 'user' object
   useEffect(() => {
     // Only attempt to fetch data if the user has been authenticated
-    if (authenticationState.checkedAuthentication === false) return;
+    if (user.checkedAuthentication === false) return;
 
-    if (authenticationState.authenticated === true) {
+    if (user.authenticated === true) {
       // Do nothing if the data has been fetched before
       if (Object.keys(data).length != 0) return;
 
@@ -135,7 +135,7 @@ const Screen = ({ title }) => {
     } else {
       navigate(`${AppRoutes.login}?${AppRoutes.redirectQuery}=${locationPath}`);
     }
-  }, [authenticationState]);
+  }, [user]);
 
   const AirQualityComparison = () => {
     // Only display air quality comparison if every sensor is currently active

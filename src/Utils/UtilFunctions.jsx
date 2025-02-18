@@ -1,6 +1,5 @@
 import { Link, List, ListItem, ListItemText, Table, TableBody, TableCell, TableHead, TableRow, styled, TableFooter } from '@mui/material';
 import { domToReact } from 'html-react-parser';
-import { Fragment } from 'react';
 
 // Function to check if an array has valid data
 // eslint-disable-next-line max-len
@@ -45,13 +44,7 @@ export const replacePlainHTMLWithMuiComponents = (node) => {
     replace: replacePlainHTMLWithMuiComponents
   };
 
-  const parseChildren = (children) => {
-    return children.map((child, index) => (
-      <Fragment key={`child-${index}`}>
-        {domToReact([child], options)}
-      </Fragment>
-    ));
-  };
+  const parseChildren = (children) => children.map((child, index) => domToReact([child], { ...options, key: `child-${index}` }));
 
   switch (node.name) {
     case 'a': {
@@ -132,13 +125,4 @@ export const replacePlainHTMLWithMuiComponents = (node) => {
       return undefined;
     }
   }
-};
-
-
-export const validateEmail = (email) => {
-  return String(email)
-    .toLowerCase()
-    .match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
 };
