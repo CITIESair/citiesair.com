@@ -87,15 +87,9 @@ const AlertsTable = (props) => {
           prevAlert[AirQualityAlertKeys.id] === alert[AirQualityAlertKeys.id] ? data : prevAlert
         )
       );
-      enqueueSnackbar(`This alert will be ${newIsEnabled ? "enabled" : "disabled"}`, {
-        variant: SnackbarMetadata.success.name,
-        duration: SnackbarMetadata.success.duration
-      });
+      enqueueSnackbar(`This alert will be ${newIsEnabled ? "enabled" : "disabled"}`, SnackbarMetadata.success);
     }).catch((error) => {
-      enqueueSnackbar(`There was an error ${newIsEnabled ? "enabling" : "disabling"} this alert, try again!`, {
-        variant: SnackbarMetadata.error.name,
-        duration: SnackbarMetadata.error.duration
-      });
+      enqueueSnackbar(`There was an error ${newIsEnabled ? "enabling" : "disabling"} this alert, try again!`, SnackbarMetadata.error);
     });
   }
 

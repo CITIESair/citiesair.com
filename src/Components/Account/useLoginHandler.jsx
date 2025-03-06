@@ -18,10 +18,7 @@ const useLoginHandler = (openLoginPopup) => {
                 if (user?.allowedSchools.some(school => school.school_id === currentSchoolID)) {
                     action?.();
                 } else {
-                    enqueueSnackbar(`Your account does not have access to ${currentSchoolID.toUpperCase()} Alerts`, {
-                        variant: SnackbarMetadata.error.name,
-                        duration: SnackbarMetadata.error.duration
-                    });
+                    enqueueSnackbar(`Your account does not have access to ${currentSchoolID.toUpperCase()} Alerts`, SnackbarMetadata.error);
                 }
             }
         },

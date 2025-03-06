@@ -363,17 +363,11 @@ const AlertModificationDialog = (props) => {
 
   const handleAlertModification = ({ passedCrudType }) => {
     const handleFetchError = (error) => {
-      enqueueSnackbar(DialogData[passedCrudType].errorMessage, {
-        variant: SnackbarMetadata.error.name,
-        duration: SnackbarMetadata.error.duration
-      });
+      enqueueSnackbar(DialogData[passedCrudType].errorMessage, SnackbarMetadata.error);
     };
 
     const handleFetchSuccess = () => {
-      enqueueSnackbar(DialogData[passedCrudType].successMessage, {
-        variant: SnackbarMetadata.success.name,
-        duration: SnackbarMetadata.success.duration
-      });
+      enqueueSnackbar(DialogData[passedCrudType].successMessage, SnackbarMetadata.success);
       handleClose();
     }
 

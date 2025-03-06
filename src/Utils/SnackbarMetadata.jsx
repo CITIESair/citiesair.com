@@ -1,19 +1,19 @@
 
 export const SnackbarMetadata = {
     info: {
-        name: 'info',
+        variant: 'info',
         duration: 10000
     },
     warning: {
-        name: 'warning',
+        variant: 'warning',
         duration: 10000
     },
     error: {
-        name: 'error',
+        variant: 'error',
         duration: 10000
     },
     success: {
-        name: 'success',
+        variant: 'success',
         duration: 3000
     }
 };

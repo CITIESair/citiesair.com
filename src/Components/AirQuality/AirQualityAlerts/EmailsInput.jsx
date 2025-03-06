@@ -47,10 +47,7 @@ const EmailsInput = () => {
       setServerEmails(data);
     })
       .catch((error) => {
-        enqueueSnackbar("There was an error loading the email list, please try again", {
-          variant: SnackbarMetadata.error.name,
-          duration: SnackbarMetadata.error.duration
-        });
+        enqueueSnackbar("There was an error loading the email list, please try again", SnackbarMetadata.error);
       });
   }, [currentSchoolID]);
 
@@ -75,29 +72,20 @@ const EmailsInput = () => {
 
       // Make sure currentEmail hasn't been added before
       if (localEmails.includes(email)) {
-        enqueueSnackbar(`Already added: ${email}`, {
-          variant: SnackbarMetadata.error.name,
-          duration: SnackbarMetadata.error.duration
-        });
+        enqueueSnackbar(`Already added: ${email}`, SnackbarMetadata.error);
         setCurrentEmail('');
         return;
       }
 
       // Display alert if reached maximum number of email recipients
       if (newEmails.length === maxEmails) {
-        enqueueSnackbar('Maximum number of recipients reached', {
-          variant: SnackbarMetadata.warning.name,
-          duration: SnackbarMetadata.warning.duration
-        });
+        enqueueSnackbar('Maximum number of recipients reached', SnackbarMetadata.warning);
       }
 
       setLocalEmails(newEmails);
       setCurrentEmail('');
     } else {
-      enqueueSnackbar('Invalid email address. Valid format: abc@def.xyz', {
-        variant: SnackbarMetadata.error.name,
-        duration: SnackbarMetadata.error.duration
-      });
+      enqueueSnackbar('Invalid email address. Valid format: abc@def.xyz', SnackbarMetadata.error);
     }
   };
 
@@ -138,15 +126,9 @@ const EmailsInput = () => {
       body: emailsToSave
     }).then((data) => {
       setServerEmails(data);
-      enqueueSnackbar('Email list saved successfully!', {
-        variant: SnackbarMetadata.success.name,
-        duration: SnackbarMetadata.success.duration
-      });
+      enqueueSnackbar('Email list saved successfully!', SnackbarMetadata.success);
     }).catch(() => {
-      enqueueSnackbar('There was an error saving the email. Please try again.', {
-        variant: SnackbarMetadata.error.name,
-        duration: SnackbarMetadata.error.duration
-      });
+      enqueueSnackbar('There was an error saving the email. Please try again.', SnackbarMetadata.error);
     })
 
     return;

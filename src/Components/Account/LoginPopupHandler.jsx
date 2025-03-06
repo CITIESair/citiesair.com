@@ -55,10 +55,7 @@ const LoginPopupHandler = ({ onLoginSuccess, children }) => {
                     setUser(user);
 
                     if (user.message) {
-                        enqueueSnackbar(user.message, {
-                            variant: SnackbarMetadata.success.name,
-                            duration: SnackbarMetadata.success.duration
-                        });
+                        enqueueSnackbar(user.message, SnackbarMetadata.success);
                     }
 
                     if (user.is_verified === false) {

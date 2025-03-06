@@ -71,27 +71,17 @@ export default function SignUp() {
     event.preventDefault();
 
     if (!validateEmail(email)) {
-      enqueueSnackbar("Please enter a valid email address", {
-        variant: SnackbarMetadata.error.name,
-        duration: SnackbarMetadata.error.duration
-      });
+      enqueueSnackbar("Please enter a valid email address", SnackbarMetadata.error);
       return;
     }
 
     if (password.length < MINIMUM_PASSWORD_LENGTH) {
-      enqueueSnackbar(`Password must be at least ${MINIMUM_PASSWORD_LENGTH} characters long.`
-        , {
-          variant: SnackbarMetadata.error.name,
-          duration: SnackbarMetadata.error.duration
-        });
+      enqueueSnackbar(`Password must be at least ${MINIMUM_PASSWORD_LENGTH} characters long.`, SnackbarMetadata.error);
       return;
     }
 
     if (password !== confirmPassword) {
-      enqueueSnackbar("Passwords do not match", {
-        variant: SnackbarMetadata.error.name,
-        duration: SnackbarMetadata.error.duration
-      });
+      enqueueSnackbar("Passwords do not match", SnackbarMetadata.error);
       return;
     }
 
@@ -132,18 +122,12 @@ export default function SignUp() {
           setUser(data);
 
           if (data.message) {
-            enqueueSnackbar(data.message, {
-              variant: SnackbarMetadata.success.name,
-              duration: SnackbarMetadata.success.duration
-            });
+            enqueueSnackbar(data.message, SnackbarMetadata.success);
           }
         }
       })
       .catch((error) => {
-        enqueueSnackbar(error.message || "Sign up unsuccesfully. Please try again", {
-          variant: SnackbarMetadata.error.name,
-          duration: SnackbarMetadata.error.duration
-        });
+        enqueueSnackbar(error.message || "Sign up unsuccesfully. Please try again", SnackbarMetadata.error);
         setLoading(false);
       });
   };

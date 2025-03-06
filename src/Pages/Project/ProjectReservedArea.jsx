@@ -12,7 +12,7 @@ const ProjectReservedArea = () => {
     const { enqueueSnackbar } = useSnackbar()
 
     const handleLoginSuccess = () => {
-        enqueueSnackbar("You can now access TV Screens, Dataset, and Alerts functionalities.", {
+        enqueueSnackbar("You can now access TV Screens, Dataset, and Alerts.", {
             variant: SnackbarMetadata.success.name,
             duration: SnackbarMetadata.success.duration * 2
         });

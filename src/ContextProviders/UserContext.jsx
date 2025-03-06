@@ -52,8 +52,7 @@ export function UserProvider({ children }) {
 
     if (user.is_verified === false) {
       enqueueSnackbar("Your account is unverified. Please click on the verification link in the email we sent after signing up.", {
-        variant: SnackbarMetadata.warning.name,
-        duration: SnackbarMetadata.warning.duration, persist: true
+        ...SnackbarMetadata.error, persist: true
       });
     }
   }, [user]);

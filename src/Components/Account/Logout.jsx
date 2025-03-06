@@ -40,10 +40,7 @@ export default function LogOut() {
         })
         setUser(EMPTY_USER_DATA);
 
-        if (data.message) enqueueSnackbar(data.message, {
-          variant: SnackbarMetadata.success.name,
-          duration: SnackbarMetadata.success.duration
-        });
+        if (data.message) enqueueSnackbar(data.message, SnackbarMetadata.success);
 
 
         navigate('/');
@@ -52,10 +49,7 @@ export default function LogOut() {
         console.log(error);
         setLoading(false);
 
-        enqueueSnackbar(data.message, {
-          variant: SnackbarMetadata.error.name,
-          duration: SnackbarMetadata.error.duration
-        });
+        enqueueSnackbar(data.message, SnackbarMetadata.error);
       })
   };
 

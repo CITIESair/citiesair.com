@@ -76,19 +76,13 @@ export default function GoogleOAuthButtonAndPopupHandler() {
                             setUser(userData);
 
                             if (userData.message) {
-                                enqueueSnackbar(userData.message, {
-                                    variant: SnackbarMetadata.success.name,
-                                    duration: SnackbarMetadata.success.duration
-                                });
+                                enqueueSnackbar(userData.message, SnackbarMetadata.success);
                             }
 
                             navigate(redirect_url, { replace: true });
                         }
                     } else {
-                        enqueueSnackbar(event.data.errorMessage, {
-                            variant: SnackbarMetadata.error.name,
-                            duration: SnackbarMetadata.error.duration
-                        });
+                        enqueueSnackbar(event.data.errorMessage, SnackbarMetadata.error);
                     }
                 }
             });

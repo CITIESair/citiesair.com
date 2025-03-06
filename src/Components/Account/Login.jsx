@@ -27,10 +27,7 @@ export default function Login() {
     // Check if the window was opened as a popup
     if (window.opener) {
       setIsPopupItself(true);
-      enqueueSnackbar("You must be logged in to access this functionality.", {
-        variant: SnackbarMetadata.info.name,
-        duration: SnackbarMetadata.info.duration
-      });
+      enqueueSnackbar("You must be logged in to access this functionality.", SnackbarMetadata.info);
     }
   }, []);
 
@@ -65,10 +62,7 @@ export default function Login() {
 
     // Alert error if the credential is missing
     if (username === "" || password === "") {
-      enqueueSnackbar("Credentials cannot be empty.", {
-        variant: SnackbarMetadata.error.name,
-        duration: SnackbarMetadata.error.duration
-      });
+      enqueueSnackbar("Credentials cannot be empty.", SnackbarMetadata.error);
       return;
     }
 
@@ -106,20 +100,14 @@ export default function Login() {
           setUser(data);
 
           if (data.message) {
-            enqueueSnackbar(data.message, {
-              variant: SnackbarMetadata.success.name,
-              duration: SnackbarMetadata.success.duration
-            });
+            enqueueSnackbar(data.message, SnackbarMetadata.success);
           }
 
           navigate(redirect_url, { replace: true });
         }
       })
       .catch((error) => {
-        enqueueSnackbar(error.message, {
-          variant: SnackbarMetadata.error.name,
-          duration: SnackbarMetadata.error.duration
-        });
+        enqueueSnackbar(error.message, SnackbarMetadata.error);
         setLoading(false);
       })
   };
