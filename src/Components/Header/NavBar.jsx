@@ -17,6 +17,7 @@ import PopupState, { bindHover, bindFocus, bindMenu } from 'material-ui-popup-st
 
 import LogOut from '../Account/Logout';
 import { AppRoutes } from '../../Utils/AppRoutes';
+import { UserRoles } from '../Account/Utils';
 // import { NYUAD } from '../../Utils/GlobalVariables';
 
 const StyledMenuList = styled(MenuList)(({ theme }) => ({
@@ -45,19 +46,18 @@ const NavBar = (props) => {
   );
 
   const getDashboardLabel = () => {
-    if (user?.username && user?.email && user.username === user.email) {
-      return "My Dashboard";
-    }
+    const role = user?.user_role;
 
-    if (user?.username) {
-      return `${user.username.toUpperCase()}'s Dashboard`;
+    switch (role) {
+      case UserRoles.individual:
+        if (user.email) {
+          return `My Dashboard`;
+        } else {
+          return `Dashboard (${user.email})`;
+        }
+      default:
+        return `${user.username.toUpperCase()}'s Dashboard`;
     }
-
-    if (user?.email) {
-      return user.email;
-    }
-
-    return "Dashboard";
   };
 
   const reservedAreaMenu = authenticationState.authenticated === true ? (

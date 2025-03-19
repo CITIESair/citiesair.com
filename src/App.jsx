@@ -115,7 +115,9 @@ function App() {
                 element={
                   <Box>
                     <Header />
-                    <Home title={CITIESair} />
+                    <DashboardProvider>
+                      <Home title={CITIESair} />
+                    </DashboardProvider>
                     <Footer />
                   </Box>
                 }

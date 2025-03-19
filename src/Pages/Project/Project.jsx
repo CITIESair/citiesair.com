@@ -65,8 +65,6 @@ const Project = () => {
     setChartsTitlesList(chartsTitles);
   }, [allChartsData]);
 
-  const theme = useTheme();
-
   const getDashboardTitle = () => {
     if (schoolMetadata?.school_id) return `Air Quality | ${schoolMetadata?.school_id}`
   }
