@@ -74,7 +74,7 @@ export default function Login() {
       body: {
         username,
         password,
-        rememberMe
+        remember_me: rememberMe
       }
     })
       .then((data) => {
