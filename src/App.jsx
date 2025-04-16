@@ -33,6 +33,7 @@ import jsonData from "./section_data.json";
 import { CITIESair } from "./Utils/GlobalVariables";
 import GoogleOAuthCallback from "./Components/Account/OAuth/GoogleOAuthCallback";
 import ScrollToTop from "./Components/ScrollToTop";
+import UnsubscribeAlert from "./Pages/UnsubscribeAlert";
 
 // Lazy load pages
 const Home = lazy(() => import("./Pages/Home/Home"));
@@ -185,6 +186,18 @@ function App() {
               )}
 
               {/* ----- OTHER ROUTES: SCREENS, MAPS, BANNERS... ----- */}
+
+              <Route
+                path={AppRoutes.unsubscribeAlert}
+                element={
+                  <Box>
+                    <Header />
+                    <UnsubscribeAlert />
+                    <Footer />
+                  </Box>
+                }
+              />
+
               <Route
                 path={AppRoutes.anyScreen}
                 element={<Screen title={`${CITIESair} | Screen`} />}

@@ -7,6 +7,7 @@ export const AppRoutes = {
   login: "/login",
   signUp: "/signup",
   verify: "/verify",
+  unsubscribeAlert: "/unsubscribe",
   googleCallback: "/google/callback",
   dashboard: "/dashboard",
   dashboardWithParam: "/dashboard/:school_id_param",

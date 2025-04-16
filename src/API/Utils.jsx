@@ -15,6 +15,7 @@ export const GeneralAPIendpoints = {
   alertsEmails: "alerts/emails",
   stats: "stats",
   dataTypes: "datatypes",
+  unsubscribe: "unsubscribe_alert",
 };
 
 export const ChartAPIendpoints = {
