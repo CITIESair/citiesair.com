@@ -16,6 +16,29 @@ const UnsubscribeAlert = () => {
     const [status, setStatus] = useState(null);
 
     useEffect(() => {
+        const handleUnsubscribe = async () => {
+            try {
+                const data = await fetchDataFromURL({
+                    url: getApiUrl({ endpoint: GeneralAPIendpoints.unsubscribe }),
+                    restMethod: RESTmethods.POST,
+                    body: { token },
+                });
+
+                if (data.is_enabled === false) {
+                    setMessage("You have successfully unsubscribed from this alert.");
+                    setStatus("success");
+                } else {
+                    setMessage("Failed to unsubscribe to this alert. Please try again.");
+                    setStatus("error");
+                }
+            } catch (error) {
+                setStatus("error");
+                setMessage("Failed to unsubscribe. Please try again or contact us.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (token) {
             handleUnsubscribe();
         } else {
@@ -24,30 +47,6 @@ const UnsubscribeAlert = () => {
             setLoading(false);
         }
     }, [token]);
-
-    const handleUnsubscribe = async () => {
-        try {
-            const response = await fetchDataFromURL({
-                url: getApiUrl({ endpoint: GeneralAPIendpoints.unsubscribe }),
-                restMethod: RESTmethods.POST,
-                body: { token },
-            });
-
-            const data = await response.json();
-            if (data.is_enable === false) {
-                setMessage("You have successfully unsubscribed from this alert.");
-                setStatus("success");
-            } else {
-                setMessage("Failed to unsubscribe to this alert. Please try again.");
-                setStatus("error");
-            }
-        } catch (error) {
-            setStatus("error");
-            setMessage("Failed to unsubscribe. Please try again or contact us.");
-        } finally {
-            setLoading(false);
-        }
-    };
 
     return (
 
