@@ -43,8 +43,7 @@ const returnDaysOfWeekString = (days_of_week) => {
 };
 
 const AlertsTable = (props) => {
-
-  const { selectedAlert, setSelectedAlert, setAlerts } = useAirQualityAlert();
+  const { selectedAlert, setSelectedAlert, setAlerts, fetchAlerts } = useAirQualityAlert();
   const { currentSchoolID } = useContext(DashboardContext);
   const { enqueueSnackbar } = useSnackbar()
 

@@ -14,11 +14,14 @@ const useLoginHandler = (openLoginPopup) => {
         (action) => {
             if (!loggedIn) {
                 openLoginPopup?.();
+                return false;
             } else {
                 if (user?.allowedSchools.some(school => school.school_id === currentSchoolID)) {
                     action?.();
+                    return true;
                 } else {
                     enqueueSnackbar(`Your account does not have access to ${currentSchoolID.toUpperCase()} Alerts`, SnackbarMetadata.error);
+                    return false;
                 }
             }
         },

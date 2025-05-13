@@ -5,7 +5,7 @@ import { fetchDataFromURL, fetchAndProcessCurrentSensorsData } from '../API/ApiF
 import { getApiUrl } from '../API/ApiUrls';
 import { ChartAPIendpointsOrder, GeneralAPIendpoints } from '../API/Utils';
 import { AppRoutes } from '../Utils/AppRoutes';
-import { EMPTY_USER_DATA, NUMBER_OF_CHARTS_TO_LOAD_INITIALLY, NYUAD } from '../Utils/GlobalVariables';
+import { NUMBER_OF_CHARTS_TO_LOAD_INITIALLY, NYUAD } from '../Utils/GlobalVariables';
 import { LocalStorage } from '../Utils/LocalStorage';
 import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
 import { isValidArray } from '../Utils/UtilFunctions';
@@ -27,7 +27,7 @@ export function DashboardProvider({ children }) {
   const isHomePage = locationPath === AppRoutes.home;
 
   const [schoolMetadata, setSchoolMetadata] = useState();
-  const [current, setCurrent] = useState();
+  const [currentSensorMeasurements, setCurrentSensorMeasurements] = useState();
   const [allChartsData, setAllChartsData] = useState({});
   const [currentSchoolID, setCurrentSchoolID] = useState();
   const [loadMoreCharts, setLoadMoreCharts] = useState(false);
@@ -44,11 +44,11 @@ export function DashboardProvider({ children }) {
   const providerValue = useMemo(() => ({
     currentSchoolID, setCurrentSchoolID,
     schoolMetadata, setSchoolMetadata,
-    current, setCurrent,
+    currentSensorMeasurements, setCurrentSensorMeasurements,
     allChartsData, setIndividualChartData,
     loadMoreCharts, setLoadMoreCharts,
     publicMapData
-  }), [currentSchoolID, schoolMetadata, current, allChartsData, loadMoreCharts, publicMapData]);
+  }), [currentSchoolID, schoolMetadata, currentSensorMeasurements, allChartsData, loadMoreCharts, publicMapData]);
 
   useEffect(() => {
     if (isHomePage && !publicMapData) {
@@ -70,7 +70,6 @@ export function DashboardProvider({ children }) {
     if (authenticationState.authenticated === false) {
       if (school_id_param === NYUAD || isHomePage) {
         fetchInitialDataForDashboard(NYUAD);
-        setCurrentSchoolID(NYUAD);
         return;
       }
 
@@ -105,7 +104,7 @@ export function DashboardProvider({ children }) {
         }
 
         // If there is no schoolMetadata or current or chartData, then fetch them
-        if (!(!schoolMetadata && !current && !allChartsData)) fetchInitialDataForDashboard(school_id);
+        if (!(!schoolMetadata && !currentSensorMeasurements && !allChartsData)) fetchInitialDataForDashboard(school_id);
       }
       // If there is school_id_param, check if school_id_param is in the allowedSchools
       else {
@@ -116,9 +115,8 @@ export function DashboardProvider({ children }) {
         }
         // If the school_id_param is not in the allowedSchools
         else {
-
           // NYUAD case
-          if (school_id_param === NYUAD){
+          if (school_id_param === NYUAD) {
             setCurrentSchoolID(NYUAD);
             fetchInitialDataForDashboard(NYUAD);
           } else {
@@ -139,7 +137,7 @@ export function DashboardProvider({ children }) {
   const fetchInitialDataForDashboard = async (school_id) => {
     try {
       setSchoolMetadata();
-      setCurrent();
+      setCurrentSensorMeasurements();
 
       const response = await Promise.all([
         fetchDataFromURL({
@@ -155,7 +153,7 @@ export function DashboardProvider({ children }) {
       ])
 
       setSchoolMetadata(response[0]);
-      setCurrent(response[1]);
+      setCurrentSensorMeasurements(response[1]);
     } catch (error) {
       console.log(error);
     }

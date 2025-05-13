@@ -5,6 +5,7 @@ import AirQualityAlerts from "../../Components/AirQuality/AirQualityAlerts/AirQu
 import LoginPopupHandler from "../../Components/Account/LoginPopupHandler";
 import useLoginHandler from "../../Components/Account/useLoginHandler";
 import { SnackbarMetadata } from "../../Utils/SnackbarMetadata";
+import { AirQualityAlertProvider } from "../../ContextProviders/AirQualityAlertContext";
 import { useSnackbar } from "notistack";
 
 const ProjectReservedArea = () => {
@@ -31,7 +32,9 @@ const ProjectReservedArea = () => {
                         <DatasetDownloadDialog onButtonClick={loggedIn ? null : openLoginPopup} />
                     </Grid>
                     <Grid item>
-                        <AirQualityAlerts onButtonClick={loggedIn ? null : openLoginPopup} />
+                        <AirQualityAlertProvider>
+                            <AirQualityAlerts onButtonClick={loggedIn ? null : openLoginPopup} />
+                        </AirQualityAlertProvider>
                     </Grid>
                 </Grid>
             )}

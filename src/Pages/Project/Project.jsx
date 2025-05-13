@@ -41,7 +41,7 @@ import LoadMoreButton from './LoadMoreButton';
 const Project = () => {
   const { setChartsTitlesList } = useContext(MetadataContext);
 
-  const { schoolMetadata, current, allChartsData } = useContext(DashboardContext);
+  const { schoolMetadata, currentSensorMeasurements, allChartsData } = useContext(DashboardContext);
   const { themePreference, temperatureUnitPreference } = useContext(PreferenceContext);
 
   const [displayCommentSection, setDisplayCommentSection] = useState(false);
@@ -147,7 +147,7 @@ const Project = () => {
           {displayMapOfSensors === true &&
             (
               <NYUADbanner
-                initialNyuadCurrentData={current}
+                initialNyuadCurrentData={currentSensorMeasurements}
                 isOnBannerPage={false}
                 themePreference={themePreference}
                 minMapHeight={"250px"}
@@ -158,7 +158,7 @@ const Project = () => {
           {displayMapOfSensors === false &&
             (<Box textAlign="center" sx={{ mb: 2 }}>
               <CurrentAQIGrid
-                currentSensorsData={current}
+                currentSensorsData={currentSensorMeasurements}
                 isScreen={false}
                 temperatureUnitPreference={temperatureUnitPreference}
               />

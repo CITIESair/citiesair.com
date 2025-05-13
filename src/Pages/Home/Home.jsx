@@ -45,18 +45,18 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
     setChartsTitlesList([]);
   }, [setCurrentPage, setChartsTitlesList]);
 
-  const { currentSchoolID, current, publicMapData } = useContext(DashboardContext);
+  const { currentSchoolID, currentSensorMeasurements, publicMapData } = useContext(DashboardContext);
   const { authenticationState } = useContext(UserContext);
 
   const displaySensorCounts = () => {
-    if (!current) return null;
+    if (!currentSensorMeasurements) return null;
 
     return (
       <Grid item xs={12}>
         <Typography variant='body2' color="text.secondary">
           <b>Sensors status: </b>{
-            current.reduce((count, obj) => obj?.sensor?.sensor_status === SensorStatus.active ? count + 1 : count, 0)
-          } active out of {current.length}
+            currentSensorMeasurements.reduce((count, obj) => obj?.sensor?.sensor_status === SensorStatus.active ? count + 1 : count, 0)
+          } active out of {currentSensorMeasurements.length}
         </Typography>
       </Grid>
     );
@@ -134,7 +134,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
           <Grid container spacing={2} justifyContent="center" textAlign="center">
             <Grid item xs={12} lg={10}>
               <CurrentAQIGrid
-                currentSensorsData={current?.slice(0, 3)}
+                currentSensorsData={currentSensorMeasurements?.slice(0, 3)}
                 isScreen={false}
                 temperatureUnitPreference={temperatureUnitPreference}
                 firstSensorOwnLine={true}

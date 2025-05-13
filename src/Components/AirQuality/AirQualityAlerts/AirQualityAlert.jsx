@@ -4,7 +4,7 @@ import NotificationImportantIcon from '@mui/icons-material/NotificationImportant
 import CustomDialog from '../../CustomDialog/CustomDialog';
 import EmailsInput from './EmailsInput';
 import AlertsTabs from './AlertsTabs';
-import { AirQualityAlertProvider } from '../../../ContextProviders/AirQualityAlertContext';
+import { useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
 import useLoginHandler from '../../Account/useLoginHandler';
 import { useContext } from 'react';
 import { UserContext } from '../../../ContextProviders/UserContext';
@@ -13,6 +13,8 @@ import { UserRoles } from '../../Account/Utils';
 
 export default function AirQualityAlerts({ onButtonClick }) {
   const { handleRestrictedAccess } = useLoginHandler(onButtonClick);
+
+  const { fetchAlerts, hasFetchedAlerts, setHasFetchedAlerts } = useAirQualityAlert();
 
   const { user } = useContext(UserContext);
 
@@ -23,12 +25,16 @@ export default function AirQualityAlerts({ onButtonClick }) {
       buttonIcon={<NotificationImportantIcon sx={{ fontSize: '1rem' }} />}
       buttonLabel="Alerts"
       dialogTitle="Air quality alerts"
-      dialogOpenHandler={(action) => handleRestrictedAccess(action)}
+      dialogOpenHandler={(action) => {
+        const isLoggedIn = handleRestrictedAccess(action);
+        if (isLoggedIn && !hasFetchedAlerts) {
+          fetchAlerts();
+          setHasFetchedAlerts(true);
+        }
+      }}
     >
       <Stack width="100%" spacing={isModifiable ? 5 : 2}>
-        <AirQualityAlertProvider>
-          <AlertsTabs />
-        </AirQualityAlertProvider>
+        <AlertsTabs />
 
         {isModifiable ? <EmailsInput /> : (
           <Typography variant="body2" color="text.secondary">

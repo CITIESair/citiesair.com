@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Box, TextField, Chip, Menu, MenuItem, Grid, Typography, Button, Stack, useMediaQuery, Alert, Tooltip, Link } from '@mui/material';
 import { fetchDataFromURL } from "../../../API/ApiFetch";
 import { RESTmethods } from "../../../API/Utils";
@@ -9,6 +9,7 @@ import { isValidArray } from '../../../Utils/UtilFunctions';
 import { SnackbarMetadata } from '../../../Utils/SnackbarMetadata';
 import { validateEmail } from '../../../Utils/UtilFunctions';
 import { useSnackbar } from 'notistack';
+import { useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
 
 const compareArrays = (arr1, arr2) => {
   return JSON.stringify(arr1) === JSON.stringify(arr2);
@@ -17,11 +18,13 @@ const compareArrays = (arr1, arr2) => {
 const EmailsInput = () => {
   const { currentSchoolID } = useContext(DashboardContext);
 
+  const { alertEmails, setAlertEmails } = useAirQualityAlert();
+  console.log(alertEmails);
+
   const { enqueueSnackbar } = useSnackbar()
 
   const smallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
-  const [serverEmails, setServerEmails] = useState([]);
   const [localEmails, setLocalEmails] = useState([]);
   const [emailsListChanged, setEmailsListChanged] = useState(false);
 
@@ -32,31 +35,12 @@ const EmailsInput = () => {
 
   const maxEmails = 150;
 
-  // Fetch emails from backend
   useEffect(() => {
-    if (!currentSchoolID) return;
-
-    fetchDataFromURL({
-      url: getApiUrl({
-        endpoint: GeneralAPIendpoints.alertsEmails,
-        school_id: currentSchoolID
-      }),
-      extension: 'json',
-      needsAuthorization: true
-    }).then((data) => {
-      setServerEmails(data);
-    })
-      .catch((error) => {
-        enqueueSnackbar("There was an error loading the email list, please try again", SnackbarMetadata.error);
-      });
-  }, [currentSchoolID]);
+    setLocalEmails(alertEmails);
+  }, [alertEmails]);
 
   useEffect(() => {
-    setLocalEmails(serverEmails);
-  }, [serverEmails]);
-
-  useEffect(() => {
-    setEmailsListChanged(!compareArrays(localEmails, serverEmails));
+    setEmailsListChanged(!compareArrays(localEmails, alertEmails));
   }, [localEmails]);
 
   useEffect(() => {
@@ -125,7 +109,7 @@ const EmailsInput = () => {
       restMethod: RESTmethods.POST,
       body: emailsToSave
     }).then((data) => {
-      setServerEmails(data);
+      setAlertEmails(data);
       enqueueSnackbar('Email list saved successfully!', SnackbarMetadata.success);
     }).catch(() => {
       enqueueSnackbar('There was an error saving the email. Please try again.', SnackbarMetadata.error);
@@ -136,7 +120,7 @@ const EmailsInput = () => {
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
-      if (localEmails !== serverEmails) {
+      if (localEmails !== alertEmails) {
         event.preventDefault();
         event.returnValue = '';
       }
@@ -147,7 +131,7 @@ const EmailsInput = () => {
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, [localEmails, serverEmails]);
+  }, [localEmails, alertEmails]);
 
   return (
     <Box>
@@ -255,7 +239,7 @@ const EmailsInput = () => {
 
 
         {
-          serverEmails.length === 0 ?
+          alertEmails.length === 0 ?
             (
               <Alert
                 severity='error'

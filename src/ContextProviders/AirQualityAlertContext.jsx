@@ -1,11 +1,13 @@
-import { createContext, useMemo, useState, useContext, useEffect } from 'react';
+import { createContext, useMemo, useState, useContext, useEffect, useCallback } from 'react';
 import { DashboardContext } from './DashboardContext';
 import { fetchDataFromURL } from '../API/ApiFetch';
-import { getAlertsApiUrl } from '../API/ApiUrls';
+import { getAlertsApiUrl, getApiUrl } from '../API/ApiUrls';
 import { GeneralAPIendpoints } from "../API/Utils";
 import AlertTypes, { ThresholdAlertTypes } from '../Components/AirQuality/AirQualityAlerts/AlertTypes';
 import { isValidArray } from '../Utils/UtilFunctions';
 import { DataTypes } from '../Utils/AirQuality/DataTypes';
+import { enqueueSnackbar } from 'notistack';
+import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
 
 const AirQualityAlertContext = createContext();
 
@@ -50,6 +52,29 @@ export function AirQualityAlertProvider({ children }) {
 
   const [alerts, setAlerts] = useState([]);
 
+  const [hasFetchedAlerts, setHasFetchedAlerts] = useState();
+
+  const [alertEmails, setAlertEmails] = useState([]);
+
+  const returnAllowedDataTypesForThisSensor = useCallback((sensor) => {
+    if (!schoolMetadata) return [];
+
+    const { sensors } = schoolMetadata;
+    if (!isValidArray(sensors)) return [];
+
+    const sensorData = sensors.find(elem => elem.sensor_id === sensor);
+    const allowedDataTypesForThisSensor = sensorData?.allowedDataTypes;
+
+    if (allowedDataTypesForThisSensor) {
+      return allowedDataTypesForThisSensor.map(dataType => ({
+        value: dataType,
+        label: DataTypes[dataType].name_title
+      }));
+    }
+
+    return [];
+  }, [schoolMetadata]);
+
   useEffect(() => {
     setEditingAlert({ ...selectedAlert });
   }, [selectedAlert]);
@@ -61,26 +86,10 @@ export function AirQualityAlertProvider({ children }) {
         returnAllowedDataTypesForThisSensor(sensor_id)
       )
     }
-  }, [editingAlert]);
-
-  const returnAllowedDataTypesForThisSensor = (sensor) => {
-    if (!schoolMetadata) return;
-
-    const { sensors } = schoolMetadata;
-    if (!isValidArray(sensors)) return;
-
-    const sensorData = sensors.find(elem => elem.sensor_id === sensor) || [];
-    const allowedDataTypesForThisSensor = sensorData.allowedDataTypes;
-
-    if (allowedDataTypesForThisSensor) {
-      return allowedDataTypesForThisSensor
-        .map(dataType => ({ value: dataType, label: DataTypes[dataType].name_title }));
-    }
-    else return [];
-  }
+  }, [editingAlert, returnAllowedDataTypesForThisSensor]);
 
   // Fetch alerts for individual school
-  useEffect(() => {
+  const fetchAlerts = useCallback(() => {
     if (!currentSchoolID) return;
 
     fetchDataFromURL({
@@ -94,14 +103,36 @@ export function AirQualityAlertProvider({ children }) {
       console.log(error);
     });
 
+    fetchDataFromURL({
+      url: getApiUrl({
+        endpoint: GeneralAPIendpoints.alertsEmails,
+        school_id: currentSchoolID
+      }),
+      extension: 'json',
+      needsAuthorization: true
+    }).then((data) => {
+      setAlertEmails(data);
+    })
+      .catch((error) => {
+        enqueueSnackbar("There was an error loading the alert email list, please try again", SnackbarMetadata.error);
+      });
   }, [currentSchoolID]);
+
+  useEffect(() => {
+    if (!currentSchoolID) return;
+
+    setHasFetchedAlerts(false);
+  }, [currentSchoolID, fetchAlerts]);
 
   const contextValue = useMemo(() => ({
     selectedAlert, setSelectedAlert,
     editingAlert, setEditingAlert,
     allowedDataTypesForSensor, setAllowedDataTypesForSensor,
-    alerts, setAlerts
-  }), [selectedAlert, editingAlert, allowedDataTypesForSensor, alerts]);
+    alerts, setAlerts,
+    fetchAlerts,
+    hasFetchedAlerts, setHasFetchedAlerts,
+    alertEmails, setAlertEmails
+  }), [selectedAlert, editingAlert, allowedDataTypesForSensor, alerts, fetchAlerts, hasFetchedAlerts, setHasFetchedAlerts, alertEmails, setAlertEmails]);
 
   return (
     <AirQualityAlertContext.Provider value={contextValue}>

@@ -23,7 +23,7 @@ import useLoginHandler from '../Account/useLoginHandler';
 export default function DatasetDownloadDialog({ onButtonClick }) {
   const { handleRestrictedAccess } = useLoginHandler(onButtonClick);
 
-  const { currentSchoolID, current } = useContext(DashboardContext);
+  const { currentSchoolID, currentSensorMeasurements } = useContext(DashboardContext);
 
   const [sensorsDatasets, updateSensorsDatasets] = useState({});
 
@@ -31,9 +31,9 @@ export default function DatasetDownloadDialog({ onButtonClick }) {
 
   // Construct the structure of sensorsDatasets based on current data
   useEffect(() => {
-    if (!current) return;
+    if (!currentSensorMeasurements) return;
 
-    const sensorsDatasets = current
+    const sensorsDatasets = currentSensorMeasurements
       .filter(item => item && item.sensor)  // Filter out null or undefined items and sensors
       .reduce((acc, item) => {
         // Use location_short as the key for each sensor
@@ -55,7 +55,7 @@ export default function DatasetDownloadDialog({ onButtonClick }) {
       }, {});
 
     updateSensorsDatasets(sensorsDatasets);
-  }, [current]);
+  }, [currentSensorMeasurements]);
 
   return (
     <CustomDialog
