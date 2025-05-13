@@ -116,8 +116,15 @@ export function DashboardProvider({ children }) {
         }
         // If the school_id_param is not in the allowedSchools
         else {
-          enqueueSnackbar("You don't have permission to view this school or this school does not exist.", SnackbarMetadata.error);
-          navigate(AppRoutes[404], { replace: true });
+
+          // NYUAD case
+          if (school_id_param === NYUAD){
+            setCurrentSchoolID(NYUAD);
+            fetchInitialDataForDashboard(NYUAD);
+          } else {
+            enqueueSnackbar("You don't have permission to view this school or this school does not exist.", SnackbarMetadata.error);
+            navigate(AppRoutes[404], { replace: true });
+          }
         }
       }
     } else {
