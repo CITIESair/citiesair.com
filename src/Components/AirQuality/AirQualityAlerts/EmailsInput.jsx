@@ -19,7 +19,6 @@ const EmailsInput = () => {
   const { currentSchoolID } = useContext(DashboardContext);
 
   const { alertEmails, setAlertEmails } = useAirQualityAlert();
-  console.log(alertEmails);
 
   const { enqueueSnackbar } = useSnackbar()
 
