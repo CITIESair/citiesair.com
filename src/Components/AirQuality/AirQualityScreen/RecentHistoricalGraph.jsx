@@ -198,7 +198,13 @@ const RecentHistoricalGraph = (props) => {
 
       // 7.2. Append the circle marker at the end of this line chart to denote its liveness
       const mostRecentData = sensorData.historical?.length > 0 ? sensorData.historical?.[0] : null;
-      if (mostRecentData && mostRecentData.aqi.val && mostRecentData.timestamp) {
+      if (
+        mostRecentData &&
+        mostRecentData.aqi &&
+        mostRecentData.aqi.val !== undefined &&
+        mostRecentData.aqi.val !== null &&
+        mostRecentData.timestamp
+      ) {
         const markerWrapper = d3.select(layerLines.current)
           .append("g")
           .attr(

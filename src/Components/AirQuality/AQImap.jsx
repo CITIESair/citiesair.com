@@ -233,7 +233,11 @@ const AQImap = (props) => {
     }
 
     const displayAqiValue = (location) => {
-        if (!location.current || !location.current?.aqi.val) return emptyValue;
+        if (
+            !location.current ||
+            location.current?.aqi == null ||
+            location.current?.aqi.val == null
+        ) return emptyValue;
 
         return location.current?.aqi.val;
     };

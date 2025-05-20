@@ -71,7 +71,7 @@ const CurrentAQIGrid = (props) => {
                   })}
                 </Typography>
                 <Typography variant={ElementSizes[size].aqi} fontWeight="500" lineHeight={ElementSizes[size].aqiLineHeight}>
-                  {current?.aqi?.val || '--'}
+                  {current?.aqi?.val !== null && current?.aqi?.val !== undefined ? current.aqi.val : '--'}
                 </Typography>
                 <Typography
                   variant={ElementSizes[size].locationAndCategory}
