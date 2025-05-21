@@ -16,6 +16,9 @@ export function UserProvider({ children }) {
 
   const [user, setUser] = useState(EMPTY_USER_DATA);
 
+  // School (private) or NYUAD (can register new account publicly)
+  const [isSchoolForLogin, setIsSchoolForLogin] = useState(null);
+
   const { enqueueSnackbar } = useSnackbar()
 
   useEffect(() => {
@@ -42,8 +45,9 @@ export function UserProvider({ children }) {
 
   const providerValue = useMemo(() => ({
     authenticationState, setAuthenticationState,
-    user, setUser
-  }), [user, authenticationState]);
+    user, setUser,
+    isSchoolForLogin, setIsSchoolForLogin
+  }), [user, authenticationState, isSchoolForLogin]);
 
   useEffect(() => {
     // If the user is authenticated but unverified, show it via SnackbarNotification

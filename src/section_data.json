@@ -1,5 +1,19 @@
 {
     "siteDescription": "Providing real-time indoor and outdoor air quality data to schools in Abu Dhabi<br/>Empowering data-driven decision-making and designing informed policies to safeguard school communities",
+    "login": {
+        "id": "login",
+        "content": {
+            "school": "<b>For school admins: </b>Login with the provided credentials to see your school's private dashboard. If you do not have the credentials, please contact us.",
+            "nyuad": "<b>For NYU Abu Dhabi community: </b> Login with your personal account <b>(or with Google)</b> to your manage air quality alerts and download raw datasets in the NYUAD dashboard"
+        }
+    },
+    "signup": {
+        "id": "signup",
+        "content": {
+            "school": "<b>For school admins: </b> Self sign up is not available for schools yet. Please contact us for an account to access your school's private dashboard.",
+            "nyuad": "<b>For NYU Abu Dhabi community: </b> Make a personal account to manage air quality alerts and download raw datasets in the NYUAD dashboard."
+        }
+    },
     "charts": {
         "id": "charts"
     },
