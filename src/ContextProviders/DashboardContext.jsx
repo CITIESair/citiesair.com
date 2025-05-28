@@ -69,6 +69,7 @@ export function DashboardProvider({ children }) {
     // or just fetch NYUAD if in homepage
     if (authenticationState.authenticated === false) {
       if (school_id_param === NYUAD || isHomePage) {
+        setCurrentSchoolID(NYUAD);
         fetchInitialDataForDashboard(NYUAD);
         return;
       }
