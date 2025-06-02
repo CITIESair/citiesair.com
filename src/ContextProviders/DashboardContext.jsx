@@ -2,7 +2,7 @@
 
 import { useState, createContext, useMemo, useEffect, useContext } from 'react';
 import { fetchDataFromURL, fetchAndProcessCurrentSensorsData } from '../API/ApiFetch';
-import { getApiUrl } from '../API/ApiUrls';
+import { getApiUrl, getChartApiUrl } from '../API/ApiUrls';
 import { ChartAPIendpointsOrder, GeneralAPIendpoints } from '../API/Utils';
 import { AppRoutes } from '../Utils/AppRoutes';
 import { NUMBER_OF_CHARTS_TO_LOAD_INITIALLY, NYUAD } from '../Utils/GlobalVariables';

@@ -18,7 +18,7 @@ export default function AirQualityAlerts({ onButtonClick }) {
 
   const { user } = useContext(UserContext);
 
-  const isModifiable = [UserRoles.admin, UserRoles.school].includes(user?.user_role);
+  const isModifiable = [UserRoles.admin.id, UserRoles.school.id].includes(user?.user_role);
 
   return (
     <CustomDialog

@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { Box, Button, IconButton, Stack, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, Alert, Grow, Switch } from '@mui/material';
+import { Box, Button, IconButton, Stack, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, Alert, Grow, Switch, Chip } from '@mui/material';
 
 import EditIcon from '@mui/icons-material/Edit';
 import AddAlarmIcon from '@mui/icons-material/AddAlarm';
@@ -23,6 +23,7 @@ import { DashboardContext } from '../../../ContextProviders/DashboardContext';
 import { SnackbarMetadata } from '../../../Utils/SnackbarMetadata';
 import { getAlertsApiUrl } from '../../../API/ApiUrls';
 import { useSnackbar } from 'notistack';
+import { UserRoles } from '../../Account/Utils';
 
 const returnDaysOfWeekString = (days_of_week) => {
   if (!days_of_week || !isValidArray(days_of_week)) return "N/A";
@@ -42,8 +43,23 @@ const returnDaysOfWeekString = (days_of_week) => {
     .join(', ');
 };
 
+const returnCreatedByString = (owner_role, self_is_owner) => {
+  if (self_is_owner === true) return "You";
+
+  if (owner_role) return UserRoles[owner_role].name;
+  else return "N/A";
+}
+
+const returnAlertNotModifiableString = (owner_role, is_allowed_to_modify) => {
+  if (is_allowed_to_modify) return "";
+
+  if (owner_role && UserRoles[owner_role]) {
+    return `${UserRoles[owner_role].name} added your email to this school-wide alert. For edit or removal, please reach out to ${UserRoles[owner_role].name}.`;
+  }
+};
+
 const AlertsTable = (props) => {
-  const { selectedAlert, setSelectedAlert, setAlerts, fetchAlerts } = useAirQualityAlert();
+  const { selectedAlert, setSelectedAlert, setAlerts } = useAirQualityAlert();
   const { currentSchoolID } = useContext(DashboardContext);
   const { enqueueSnackbar } = useSnackbar()
 
@@ -88,14 +104,14 @@ const AlertsTable = (props) => {
       );
       enqueueSnackbar(`This alert will be ${newIsEnabled ? "enabled" : "disabled"}`, SnackbarMetadata.success);
     }).catch((error) => {
-      enqueueSnackbar(`There was an error ${newIsEnabled ? "enabling" : "disabling"} this alert, try again!`, SnackbarMetadata.error);
+      enqueueSnackbar(error.message || `There was an error ${newIsEnabled ? "enabling" : "disabling"} this alert, try again!`, SnackbarMetadata.error);
     });
   }
 
   return (
     <>
       <Stack spacing={2} alignItems="center">
-        <Box sx={{ width: "100%" }}>
+        <Box sx={{ width: "100%", overflowX: 'auto' }}>
           {
             isValidArray(alertsForTable) ?
               (
@@ -120,7 +136,9 @@ const AlertsTable = (props) => {
                         {AlertTypes[alertTypeKey]?.tableColumnHeader || ""}
                       </TableCell>
 
-                      <TableCell sx={{ px: 0 }} />
+                      <TableCell>
+                        {SharedColumnHeader.createdBy}
+                      </TableCell>
                     </TableRow>
                   </TableHead>
 
@@ -135,26 +153,63 @@ const AlertsTable = (props) => {
                         >
                           <TableCell sx={{ px: 0 }}>
                             <Tooltip
-                              title={`Click to ${alert[AirQualityAlertKeys.is_enabled] ? "disable" : "enable"} alert`}
+                              title={
+                                alert[AirQualityAlertKeys.is_allowed_to_modify] === false
+                                  ? returnAlertNotModifiableString(alert[AirQualityAlertKeys.owner_role], alert[AirQualityAlertKeys.is_allowed_to_modify])
+                                  : `Click to ${alert[AirQualityAlertKeys.is_enabled] ? "disable" : "enable"} alert`
+                              }
                             >
-                              <Switch
-                                size='small'
-                                checked={alert[AirQualityAlertKeys.is_enabled]}
+                              {/* Wrap <Switch> in a <span> so that <Tooltip> will still display even if it's disabled */}
+                              <span
                                 onClick={() => {
-                                  handleEnableClick({ alert })
+                                  if (alert[AirQualityAlertKeys.is_allowed_to_modify] === false) {
+                                    enqueueSnackbar(
+                                      returnAlertNotModifiableString(alert[AirQualityAlertKeys.owner_role], alert[AirQualityAlertKeys.is_allowed_to_modify]),
+                                      SnackbarMetadata.warning
+                                    );
+                                    return;
+                                  }
+                                  handleEnableClick({ alert });
                                 }}
-                              />
+                                style={{ display: 'inline-block' }}
+                              >
+                                <Switch
+                                  size='small'
+                                  disabled={alert[AirQualityAlertKeys.is_allowed_to_modify] === false}
+                                  checked={alert[AirQualityAlertKeys.is_enabled]}
+                                />
+                              </span>
                             </Tooltip>
 
-                            <Tooltip title="Edit Alert">
-                              <IconButton
-                                aria-label="edit"
-                                size="small"
-                                sx={{ "&:hover,:focus": { color: theme.palette.primary.main } }}
-                                onClick={() => handleModifyClick({ alert, crudType: CrudTypes.edit })}
+                            <Tooltip
+                              title={
+                                alert[AirQualityAlertKeys.is_allowed_to_modify] === false
+                                  ? returnAlertNotModifiableString(alert[AirQualityAlertKeys.owner_role], alert[AirQualityAlertKeys.is_allowed_to_modify])
+                                  : `Edit alert`
+                              }
+                            >
+                              <span
+                                onClick={() => {
+                                  if (alert[AirQualityAlertKeys.is_allowed_to_modify] === false) {
+                                    enqueueSnackbar(
+                                      returnAlertNotModifiableString(alert[AirQualityAlertKeys.owner_role], alert[AirQualityAlertKeys.is_allowed_to_modify]),
+                                      SnackbarMetadata.warning
+                                    );
+                                    return;
+                                  }
+                                  handleModifyClick({ alert, crudType: CrudTypes.edit })
+                                }}
+                                style={{ display: 'inline-block' }}
                               >
-                                <EditIcon />
-                              </IconButton>
+                                <IconButton
+                                  aria-label="edit"
+                                  size="small"
+                                  disabled={alert[AirQualityAlertKeys.is_allowed_to_modify] === false}
+                                  sx={{ "&:hover,:focus": { color: theme.palette.primary.main } }}
+                                >
+                                  <EditIcon />
+                                </IconButton>
+                              </span>
                             </Tooltip>
                           </TableCell>
 
@@ -192,12 +247,19 @@ const AlertsTable = (props) => {
                             </TableCell>
                           ) : null}
 
-                          <TableCell sx={{ px: 0 }}>
-
+                          <TableCell>
+                            <Chip
+                              label={
+                                returnCreatedByString(
+                                  alert[AirQualityAlertKeys.owner_role],
+                                  alert[AirQualityAlertKeys.self_is_owner]
+                                )
+                              }
+                              size='small'
+                            />
                           </TableCell>
                         </TableRow>
                       </Grow>
-
                     )) : null
                     }
                   </TransitionGroup>

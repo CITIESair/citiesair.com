@@ -21,7 +21,10 @@ export const AirQualityAlertKeys = {
   days_of_week: "days_of_week",
   minutespastmidnight: "minutespastmidnight",
   is_enabled: "is_enabled",
-  excluded_dates: "excluded_dates"
+  excluded_dates: "excluded_dates",
+  owner_role: "owner_role",
+  self_is_owner: "self_is_owner",
+  is_allowed_to_modify: "is_allowed_to_modify"
 };
 
 export const getAlertPlaceholder = (alert_type = AlertTypes.daily.id) => {
