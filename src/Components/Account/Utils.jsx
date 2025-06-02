@@ -4,7 +4,16 @@ export const LoginTypes = {
 }
 
 export const UserRoles = {
-    admin: 'admin',
-    individual: 'individual',
-    school: 'school'
+    admin: {
+        id: 'admin',
+        name: 'CITIESair Admin'
+    },
+    individual: {
+        id: 'individual',
+        name: 'Individual User'
+    },
+    school: {
+        id: 'school',
+        name: 'School Admin'
+    }
 }

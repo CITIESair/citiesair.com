@@ -49,7 +49,7 @@ const NavBar = (props) => {
     const role = user?.user_role;
 
     switch (role) {
-      case UserRoles.individual:
+      case UserRoles.individual.id:
         if (user.email) {
           return `My Dashboard`;
         } else {
