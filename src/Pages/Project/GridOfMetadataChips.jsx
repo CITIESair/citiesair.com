@@ -1,6 +1,6 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { DashboardContext } from "../../ContextProviders/DashboardContext";
-import { MetadataContext } from "../../ContextProviders/MetadataContext";
+// import { MetadataContext } from "../../ContextProviders/MetadataContext";
 import { Grid } from "@mui/material";
 
 import SchoolSelector from "../../Components/SchoolSelector";
@@ -9,31 +9,33 @@ import CustomChip from "../../Components/CustomChip";
 import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
 // import BarChartIcon from '@mui/icons-material/BarChart';
-import CommentIcon from '@mui/icons-material/Comment';
+// import CommentIcon from '@mui/icons-material/Comment';
 
-import * as Tracking from '../../Utils/Tracking';
-import { scrollToSection } from "../../Components/Header/MenuItemAsNavLink";
+// import * as Tracking from '../../Utils/Tracking';
+// import { scrollToSection } from "../../Components/Header/MenuItemAsNavLink";
 
-import jsonData from '../../section_data.json';
-import { HYVOR_PAGE_NAME, NYUAD } from "../../Utils/GlobalVariables";
+// import jsonData from '../../section_data.json';
+// import { HYVOR_PAGE_NAME, NYUAD } from "../../Utils/GlobalVariables";
 
 
-const GridOfMetadataChips = ({ displayCommentSection }) => {
+// Temporarily not using HyvorTalk comment anymore
+// const GridOfMetadataChips = ({ displayCommentSection }) => {
+const GridOfMetadataChips = () => {
     const { schoolMetadata } = useContext(DashboardContext);
-    const { commentCounts, fetchCommentCounts, setCommentCounts } = useContext(MetadataContext);
 
+    // Temporarily not using HyvorTalk comment anymore
+    // const { commentCounts, fetchCommentCounts, setCommentCounts } = useContext(MetadataContext);
     // Fetch comment count for NYUAD
+    // useEffect(() => {
+    //     if (!schoolMetadata) return;
 
-    useEffect(() => {
-        if (!schoolMetadata) return;
-
-        const isNYUAD = schoolMetadata.school_id === NYUAD;
-        if (isNYUAD && !commentCounts) {
-            fetchCommentCounts().then((data) => {
-                setCommentCounts(data);
-            });
-        }
-    }, [schoolMetadata])
+    //     const isNYUAD = schoolMetadata.school_id === NYUAD;
+    //     if (isNYUAD && !commentCounts) {
+    //         fetchCommentCounts().then((data) => {
+    //             setCommentCounts(data);
+    //         });
+    //     }
+    // }, [schoolMetadata])
 
     return (
         <Grid container item spacing={1} justifyContent="center">
@@ -77,6 +79,7 @@ const GridOfMetadataChips = ({ displayCommentSection }) => {
                 />
             </Grid> */}
 
+            {/* Temporarily not using HyvorTalk comment anymore
             {(displayCommentSection === true && commentCounts !== null) ?
                 (
                     <Grid item>
@@ -95,7 +98,7 @@ const GridOfMetadataChips = ({ displayCommentSection }) => {
                             }}
                         />
                     </Grid>
-                ) : null}
+                ) : null} */}
         </Grid>
     )
 }

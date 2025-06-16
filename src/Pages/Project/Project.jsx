@@ -3,11 +3,12 @@
 import { useState, useEffect, useContext } from 'react';
 import ChartComponentWrapper from '../../Graphs/ChartComponentWrapper';
 import UppercaseTitle from '../../Components/UppercaseTitle';
-import CommentSection from '../../Components/CommentSection';
-import { HYVOR_PAGE_NAME } from '../../Utils/GlobalVariables';
-import { Box, Container, Divider, Grid, Stack } from '@mui/material';
 
-import { useTheme } from '@mui/material/styles';
+// Temporarily not using HyvorTalk comment anymore
+// import CommentSection from '../../Components/CommentSection';
+// import { HYVOR_PAGE_NAME } from '../../Utils/GlobalVariables';
+
+import { Box, Container, Divider, Grid, Stack } from '@mui/material';
 
 import ThemePreferences from '../../Themes/ThemePreferences';
 
@@ -44,7 +45,9 @@ const Project = () => {
   const { schoolMetadata, currentSensorMeasurements, allChartsData } = useContext(DashboardContext);
   const { themePreference, temperatureUnitPreference } = useContext(PreferenceContext);
 
-  const [displayCommentSection, setDisplayCommentSection] = useState(false);
+  // Temporarily not using HyvorTalk comment anymore
+  // const [displayCommentSection, setDisplayCommentSection] = useState(false);
+
   const [displayMapOfSensors, setDisplayMapOfSensors] = useState(false);
 
   // If NYUAD, display comment section and map of sensors
@@ -52,7 +55,10 @@ const Project = () => {
     if (!schoolMetadata) return;
 
     const isNYUAD = schoolMetadata.school_id === NYUAD;
-    setDisplayCommentSection(isNYUAD);
+
+    // Temporarily not using HyvorTalk comment anymore
+    // setDisplayCommentSection(isNYUAD);
+
     setDisplayMapOfSensors(isNYUAD);
   }, [schoolMetadata]);
 
@@ -135,7 +141,8 @@ const Project = () => {
             </Grid>
             <Grid item xs={12}>
               <GridOfMetadataChips
-                displayCommentSection={displayCommentSection}
+              // Temporarily not using HyvorTalk comment anymore
+              // displayCommentSection={displayCommentSection}
               />
             </Grid>
             <Grid item xs={12}>
@@ -177,11 +184,12 @@ const Project = () => {
       </Box>
       <Divider />
 
+      {/* Temporarily not using HyvorTalk comment anymore
       {displayCommentSection === true &&
         <FullWidthBox id={jsonData.commentSection.id} sx={{ pt: 3, pb: 4 }}>
           <CommentSection pageID={HYVOR_PAGE_NAME} />
         </FullWidthBox>
-      }
+      } */}
     </Box >
   );
 };
