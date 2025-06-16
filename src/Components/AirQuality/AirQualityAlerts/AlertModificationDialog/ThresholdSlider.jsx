@@ -1,5 +1,5 @@
 import { Slider, colors, TextField, Grid, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTheme } from '@emotion/react';
 
 export const ThresholdSlider = (props) => {
@@ -28,44 +28,7 @@ export const ThresholdSlider = (props) => {
   const [error, setError] = useState(false);
   const [helperText, setHelperText] = useState('');
 
-  useEffect(() => {
-    const localSliderRangeMin = invertSelection ? value : min;
-    const localSliderRangeMax = invertSelection ? max : value;
-    setSliderRangeMin(localSliderRangeMin);
-    setSliderRangeMax(localSliderRangeMax);
-
-    setNearestDataIndex(findNearestDataIndex(invertSelection ? localSliderRangeMin : localSliderRangeMax));
-  }, [invertSelection, value, max, min]);
-
-  const handleSliderChange = (event, newValue) => {
-    const val = newValue[invertSelection ? 0 : 1];
-
-    setSliderRangeMin(invertSelection ? val : min);
-    setSliderRangeMax(invertSelection ? max : val);
-
-    handleChange(val);
-    setNearestDataIndex(findNearestDataIndex(val));
-  };
-
-  const handleInputChange = (event) => {
-    const val = event.target.value === '' ? '' : Number(event.target.value);
-
-    if (val !== '' && (val >= min && val <= max)) {
-      setSliderRangeMin(invertSelection ? val : min);
-      setSliderRangeMax(invertSelection ? max : val);
-
-      handleChange(val);
-      setNearestDataIndex(findNearestDataIndex(val));
-
-      setError(false);
-      setHelperText('');
-    } else {
-      setError(true);
-      setHelperText(`Threshold must be between ${min} and ${max}`);
-    }
-  };
-
-  const findNearestDataIndex = (val) => {
+  const findNearestDataIndex = useCallback((val) => {
     if (!marks) return -1;
 
     // Filter marks to get those with values greater than currentVal
@@ -84,7 +47,50 @@ export const ThresholdSlider = (props) => {
     // Return the index of the nearest mark in the original marks array
     const index = marks.indexOf(nearestMark)
     return invertSelection ? index - 1 : index;
-  }
+  }, [marks, invertSelection]);
+
+  useEffect(() => {
+    const localSliderRangeMin = invertSelection ? value : min;
+    const localSliderRangeMax = invertSelection ? max : value;
+    setSliderRangeMin(localSliderRangeMin);
+    setSliderRangeMax(localSliderRangeMax);
+
+    setNearestDataIndex(findNearestDataIndex(invertSelection ? localSliderRangeMin : localSliderRangeMax));
+  }, [findNearestDataIndex, invertSelection, value, max, min]);
+
+  const handleSliderChange = (event, newValue) => {
+    const val = newValue[invertSelection ? 0 : 1];
+
+    setSliderRangeMin(invertSelection ? val : min);
+    setSliderRangeMax(invertSelection ? max : val);
+
+    handleChange(val);
+    setNearestDataIndex(findNearestDataIndex(val));
+  };
+
+  const handleInputChange = (event) => {
+    const val = event.target.value === '' ? '' : Number(event.target.value);
+
+    // Empty val
+    if (!val || val === '') {
+      handleChange(val);
+    }
+
+    // Non-empty val
+    if (val !== '' && (val >= min && val <= max)) {
+      setSliderRangeMin(invertSelection ? val : min);
+      setSliderRangeMax(invertSelection ? max : val);
+
+      handleChange(val);
+      setNearestDataIndex(findNearestDataIndex(val));
+
+      setError(false);
+      setHelperText('');
+    } else {
+      setError(true);
+      setHelperText(`Threshold must be between ${min} and ${max}`);
+    }
+  };
 
   const stripedGradient = `repeating-linear-gradient(-45deg, ${colors.grey[800]}, ${colors.grey[800]} 4px, ${colors.common.white} 4px, ${colors.common.white} 8px)`;
 

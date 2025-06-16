@@ -19,7 +19,7 @@ import { RESTmethods } from "../../../../API/Utils";
 import { getAlertsApiUrl } from '../../../../API/ApiUrls';
 import { GeneralAPIendpoints } from "../../../../API/Utils";
 import { generateCssBackgroundGradient } from '../../../../Utils/Gradient/GradientUtils';
-import { AQI_Database, VOC_Database } from '../../../../Utils/AirQuality/AirQualityIndexHelper';
+import { AQI_Database, HeatIndex_Database, VOC_Database } from '../../../../Utils/AirQuality/AirQualityIndexHelper';
 
 import { DialogData } from './DialogData';
 import { ThresholdTypeToggle } from './ThresholdTypeToggle';
@@ -150,7 +150,6 @@ const AlertModificationDialog = (props) => {
   ));
 
   const returnDialogContent = () => {
-
     // Helper function to check if the previous field has a value to disable this field
     const isDisabled = (key) => {
       const dependencies = {
@@ -205,10 +204,21 @@ const AlertModificationDialog = (props) => {
           let marks, database;
           const invertSelection = editingAlert[AirQualityAlertKeys.alert_type] === ThresholdAlertTypes.below_threshold.id;
 
-          if (currentDataTypeKey === DataTypeKeys.voc) {
-            database = VOC_Database;
-          } else if ([DataTypeKeys.aqi, DataTypeKeys.pm2_5, DataTypeKeys.pm10_raw, DataTypeKeys.co2].includes(currentDataTypeKey)) {
-            database = AQI_Database;
+          switch (currentDataTypeKey) {
+            case DataTypeKeys.voc:
+              database = VOC_Database;
+              break;
+            case DataTypeKeys.aqi:
+            case DataTypeKeys.pm2_5:
+            case DataTypeKeys.pm10_raw:
+            case DataTypeKeys.co2:
+              database = AQI_Database;
+              break;
+            case DataTypeKeys.heat_index_C:
+              database = HeatIndex_Database;
+              break;
+            default:
+              database = null;
           }
 
           if (database) {
@@ -452,6 +462,13 @@ const AlertModificationDialog = (props) => {
         break;
 
       case CrudTypes.edit:
+        // Case empty editing value
+        const val = editingAlert[AirQualityAlertKeys.threshold_value];
+        if (!val || val === '') {
+          setShouldDisableButton(true);
+          break;
+        }
+
         setShouldDisableButton(isEqual(selectedAlert, editingAlert));
         break;
       default:

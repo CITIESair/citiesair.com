@@ -52,15 +52,26 @@ const getColorAxisForContinuousDataTypes = ({ isDark }) => {
 
 const getColorAxisForDataTypesWithCategorization = ({ isGradient, themePreference }) =>
   [
-    DataTypeKeys.aqi, DataTypeKeys.pm2_5, DataTypeKeys.pm10_raw, DataTypeKeys.co2, DataTypeKeys.voc
+    DataTypeKeys.aqi, DataTypeKeys.pm2_5, DataTypeKeys.pm10_raw, DataTypeKeys.co2, DataTypeKeys.voc, DataTypeKeys.heat_index_C
   ].reduce((acc, dataTypeKey) => {
-    acc[DataTypes[dataTypeKey].color_axis] = getCategoryColorAxis({
+    const colorAxis = getCategoryColorAxis({
       themePreference,
       dataTypeKey,
       isGradient
     });
+
+    if (dataTypeKey === DataTypeKeys.heat_index_C) {
+      acc[DataTypes[dataTypeKey].color_axis] = {
+        ...colorAxis,
+        stepsForThreshold: 1,
+        defaultValueForAlert: 41
+      };
+    } else {
+      acc[DataTypes[dataTypeKey].color_axis] = colorAxis;
+    }
     return acc;
-  }, {});
+  }, {}
+  );
 
 const CustomThemes = {
   dark: {

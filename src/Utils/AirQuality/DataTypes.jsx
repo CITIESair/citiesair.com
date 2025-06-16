@@ -1,4 +1,14 @@
 const DataTypesObj = {
+  heat_index_C: {
+    name: "Heat Index",
+    name_short: "Heat Index",
+    name_title: "Heat Index °C",
+    threshold_mapping_name: "heat_index_C",
+    color_axis: "heat_index_C",
+    gradient_steps: 20,
+    unit: "°C",
+    pattern: "#.#"
+  },
   aqi: {
     name: "Air Quality Index (US)",
     name_short: "AQI",
@@ -104,6 +114,7 @@ export const DataTypeKeys = {
   temperature_C: "temperature_C",
   pressure: "pressure",
   rel_humidity: "rel_humidity",
+  heat_index_C: "heat_index_C"
 }
 
 // map DataTypeKeys to DataTypesObj

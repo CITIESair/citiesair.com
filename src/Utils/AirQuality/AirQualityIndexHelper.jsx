@@ -286,10 +286,132 @@ export const VOC_Database = [
   }
 ];
 
+// heat_index_F original categorization is in Farenheit; we convert it to heat_index_C for the gradient as well
+export const HeatIndex_Database = [
+  {
+    id: 0,
+    category: 'No Caution',
+    color: {
+      Light: colors.green[lightShade],
+      Dark: colors.green[darkShade]
+    },
+    heat_index_F: {
+      low: 32,
+      high: 80
+    },
+    heat_index_C: {
+      low: 0,
+      high: 26.7
+    },
+    description: 'No special precautions needed. Comfortable conditions for most people.',
+    healthSuggestions: {
+      outdoors: 'Enjoy outdoor activities as usual.',
+      indoors_generic: 'No special precautions needed.',
+      indoors_vulnerable: 'No special precautions needed.'
+    }
+  },
+  {
+    id: 1,
+    category: 'Caution',
+    color: {
+      Light: "#ffb600",
+      Dark: colors.yellow[darkShade + 200]
+    },
+    heat_index_F: {
+      low: 80.1,
+      high: 90
+    },
+    heat_index_C: {
+      low: 26.7,
+      high: 32.2
+    },
+    description: 'Fatigue possible with prolonged exposure and physical activity.',
+    healthSuggestions: {
+      outdoors: 'Take breaks in the shade and stay hydrated.',
+      indoors_generic: 'Ensure good ventilation and stay hydrated.',
+      indoors_vulnerable: 'Monitor for signs of heat stress.'
+    }
+  },
+  {
+    id: 2,
+    category: 'Extreme Caution',
+    color: {
+      Light: colors.orange[lightShade],
+      Dark: colors.orange[darkShade]
+    },
+    heat_index_F: {
+      low: 90.1,
+      high: 105
+    },
+    heat_index_C: {
+      low: 32.3,
+      high: 40.6
+    },
+    description: 'Heat cramps and heat exhaustion possible with prolonged exposure and/or physical activity.',
+    healthSuggestions: {
+      outdoors: 'Limit strenuous outdoor activities. Take frequent breaks.',
+      indoors_generic: 'Use fans or air conditioning if available.',
+      indoors_vulnerable: 'Check on vulnerable individuals regularly.'
+    }
+  },
+  {
+    id: 3,
+    category: 'Danger',
+    color: {
+      Light: colors.red[lightShade],
+      Dark: colors.red[darkShade]
+    },
+    heat_index_F: {
+      low: 105.1,
+      high: 130
+    },
+    heat_index_C: {
+      low: 40.6,
+      high: 54.4
+    },
+    description: 'Heat cramps and heat exhaustion likely; heat stroke possible with prolonged exposure and/or physical activity.',
+    healthSuggestions: {
+      outdoors: 'Avoid strenuous activities. Stay in the shade or indoors.',
+      indoors_generic: 'Use air conditioning. Stay hydrated.',
+      indoors_vulnerable: 'Extreme caution for elderly, children, and those with health conditions.'
+    }
+  },
+  {
+    id: 4,
+    category: 'Extreme Danger',
+    color: {
+      Light: colors.purple[lightShade],
+      Dark: colors.purple[darkShade]
+    },
+    heat_index_F: {
+      low: 130.1,
+      high: 180
+    },
+    heat_index_C: {
+      low: 54.5,
+      high: 82.2
+    },
+    description: 'Heat stroke highly likely with continued exposure.',
+    healthSuggestions: {
+      outdoors: 'Avoid all outdoor activities. Seek cool environments immediately.',
+      indoors_generic: 'Stay in air-conditioned spaces. Drink plenty of fluids.',
+      indoors_vulnerable: 'Immediate action required to prevent heat stroke.'
+    }
+  }
+];
+
 export const getCategoryColorAxis = ({ themePreference = ThemePreferences.light, dataTypeKey, isGradient }) => {
   let database;
-  if (dataTypeKey === DataTypeKeys.voc) database = VOC_Database;
-  else database = AQI_Database;
+  switch (dataTypeKey) {
+    case DataTypeKeys.voc:
+      database = VOC_Database;
+      break;
+    case DataTypeKeys.heat_index_C:
+      database = HeatIndex_Database;
+      break;
+    default:
+      database = AQI_Database;
+  }
 
   const dataType = DataTypes[dataTypeKey];
 
@@ -297,7 +419,11 @@ export const getCategoryColorAxis = ({ themePreference = ThemePreferences.light,
 
   // Return an object with a color gradient of colors associated with different categories for this dataType
   if (isGradient) {
-    const minValue = database[0][thresholdMappingName].low;
+    // If the minimum value is -Infinity, set it to a reasonable finite value (e.g., 0) for gradient axis
+    let minValue = database[0][thresholdMappingName].low;
+    if (minValue === -Infinity) {
+      minValue = 0;
+    }
     let maxValue = database[database.length - 1][thresholdMappingName].high;
 
     let secondHighestCategoryRange;
