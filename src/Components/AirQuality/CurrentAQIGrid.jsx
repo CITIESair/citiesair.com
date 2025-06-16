@@ -8,7 +8,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { returnSensorStatusString } from "./SensorStatus";
 import { getFormattedLastSeen } from "./SensorStatus";
 import { SensorStatus } from "./SensorStatus";
-import { TemperatureUnits, getFormattedTemperature, calculateHeatIndex } from "../../Utils/AirQuality/TemperatureUtils";
+import { TemperatureUnits, getFormattedTemperature } from "../../Utils/AirQuality/TemperatureUtils";
 
 import { AQI_Database } from '../../Utils/AirQuality/AirQualityIndexHelper';
 import { useContext } from 'react';
@@ -116,14 +116,11 @@ const CurrentAQIGrid = (props) => {
           {
             showWeather && displayWeather({ size, current, temperatureUnitPreference, roundTemperature, showWeatherText })
           }
+
           {
-            // Show heat index for selected location types
-            showHeatIndex &&
-            ['outdoors', 'indoors_gym'].includes(sensor?.location_type) &&
-            <Typography variant={ElementSizes[size].metero} sx={{ fontWeight: '300 !important' }}>
-              {returnHeatIndex({ current, temperatureUnitPreference })}
-            </Typography>
+            showHeatIndex && displayHeatIndex({ sensor, current, size, temperatureUnitPreference })
           }
+
           {
             showLastUpdate && displayLastUpdateAndSensorStatus({ sensor, size, isScreen })
           }
@@ -329,17 +326,33 @@ const displayWeather = ({ size, current, temperatureUnitPreference, roundTempera
   )
 }
 
-const returnHeatIndex = ({ current, temperatureUnitPreference }) => {
-  return calculateHeatIndex({
-    rawTemp: current?.temperature,
-    currentUnit: TemperatureUnits.celsius,
-    rel_humidity: current?.rel_humidity,
-    returnUnit: temperatureUnitPreference
-  })
-}
-
 const returnLocationName = ({ useLocationShort, location_short, location_long }) => {
   return useLocationShort ? (location_short || 'N/A') : (location_long || 'No Location Name');
+}
+
+const displayHeatIndex = ({ sensor, current, size, temperatureUnitPreference }) => {
+  if (!sensor || !current) return null;
+  if (!['outdoors', 'indoors_gym'].includes(sensor.location_type)) return null;
+
+  const heatIndexObject = current?.heat_index_C;
+
+  return (
+    <Typography variant={ElementSizes[size].heatIndex} sx={{ fontWeight: '300 !important' }}>
+      Heat Index:&nbsp;
+      {heatIndexObject && heatIndexObject.val !== undefined && heatIndexObject.val !== null
+        ? <>
+          {getFormattedTemperature({
+            rawTemp: heatIndexObject.val,
+            currentUnit: TemperatureUnits.celsius,
+            returnUnit: temperatureUnitPreference
+          })}
+          &nbsp;
+          ({heatIndexObject.category || '--'})
+        </>
+        : '--'
+      }
+    </Typography>
+  );
 }
 
 export default CurrentAQIGrid;
