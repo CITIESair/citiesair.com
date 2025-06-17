@@ -201,7 +201,7 @@ const NYUADbanner = (props) => {
                   useLocationShort={true}
                   roundTemperature={isOnBannerPage && true}
                   size={isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium}
-                  showLastUpdate={false}
+                  showLastUpdate={true}
                 />
               </Grid>
 
