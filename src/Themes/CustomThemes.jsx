@@ -11,7 +11,6 @@ const getColorAxisForContinuousDataTypes = ({ isDark }) => {
       minValue: 0,
       maxValue: 100,
       defaultValueForAlert: 70,
-      stepsForThreshold: 1,
       colors: [
         { color: colors.grey[isDark ? darkShade + 400 : lightShade - 300], offset: 0 },
         { color: colors.grey[isDark ? darkShade + 400 : lightShade - 300], offset: 15 },
@@ -23,7 +22,6 @@ const getColorAxisForContinuousDataTypes = ({ isDark }) => {
       minValue: 10,
       maxValue: 50,
       defaultValueForAlert: 35,
-      stepsForThreshold: 1,
       colors: [
         { color: colors.lightBlue[isDark ? darkShade : lightShade], offset: 10 },
         { color: colors.green[isDark ? darkShade : lightShade], offset: 15 },
@@ -37,7 +35,6 @@ const getColorAxisForContinuousDataTypes = ({ isDark }) => {
       minValue: 980,
       maxValue: 1040,
       defaultValueForAlert: 1013,
-      stepsForThreshold: 1,
       colors: [
         { color: colors.blue[900], offset: 980 },
         { color: colors.blue[500], offset: 1000 },
@@ -60,15 +57,8 @@ const getColorAxisForDataTypesWithCategorization = ({ isGradient, themePreferenc
       isGradient
     });
 
-    if (dataTypeKey === DataTypeKeys.heat_index_C) {
-      acc[DataTypes[dataTypeKey].color_axis] = {
-        ...colorAxis,
-        stepsForThreshold: 1,
-        defaultValueForAlert: 41
-      };
-    } else {
-      acc[DataTypes[dataTypeKey].color_axis] = colorAxis;
-    }
+    acc[DataTypes[dataTypeKey].color_axis] = colorAxis;
+
     return acc;
   }, {}
   );
@@ -167,6 +157,5 @@ const CustomThemes = {
     }
   }
 };
-
 
 export default CustomThemes;

@@ -205,8 +205,8 @@ const AQImap = (props) => {
                                 key={key}
                                 center={[location.sensor?.coordinates?.latitude, location.sensor?.coordinates?.longitude]}
                                 pathOptions={{
-                                    fillColor: (location?.current?.category && location?.sensor?.sensor_status === SensorStatus.active) ?
-                                        theme.palette.text.aqi[location.current.category] : theme.palette.text.aqi[SensorStatus.offline],
+                                    fillColor: (location?.current?.aqi?.category && location?.sensor?.sensor_status === SensorStatus.active) ?
+                                        theme.palette.text.aqi[location.current.aqi.category] : theme.palette.text.aqi[SensorStatus.offline],
                                     radius: 3,
                                     weight: 0,
                                     fillOpacity: 1
@@ -245,7 +245,7 @@ const AQImap = (props) => {
     const displayAqiCategory = (location) => {
         if (!location.current || !location.current?.aqi) return emptyValue;
 
-        return location.current.category;
+        return location.current.aqi.category;
     }
 
     const displayPM2_5 = (location) => {
@@ -327,8 +327,8 @@ const AQImap = (props) => {
                 <AttributionControl position="bottomright" prefix={false} />
                 {
                     mapData ? Object.entries(mapData).map(([key, location]) => {
-                        const markerColor = (location?.current?.category && location?.sensor?.sensor_status === SensorStatus.active) ?
-                            theme.palette.text.aqi[location.current.category] : theme.palette.text.aqi[SensorStatus.offline];
+                        const markerColor = (location?.current?.aqi?.category && location?.sensor?.sensor_status === SensorStatus.active) ?
+                            theme.palette.text.aqi[location.current.aqi.category] : theme.palette.text.aqi[SensorStatus.offline];
 
                         const markerIcon = new L.DivIcon({
                             className: aqiMarkerIconClass,

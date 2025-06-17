@@ -25,7 +25,7 @@ import AxesPicker from '../../Components/AxesPicker/AxesPicker';
 
 const NoChartToRender = ({ dataType, height, selectableAxes }) => {
   let messagePrefix = "This sensor ";
-  let messageSuffix = " data. Please choose a different sensor.";
+  let messageSuffix = " data for this chart. Please choose a different sensor or data type.";
 
   if (selectableAxes) {
     messagePrefix = "This pair of sensors ";

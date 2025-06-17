@@ -216,8 +216,8 @@ const RecentHistoricalGraph = (props) => {
             ")"
           )
           .attr("fill",
-            sensorData?.current?.category ?
-              theme.palette.text.aqi[sensorData.current.category] :
+            sensorData?.current?.aqi?.category ?
+              theme.palette.text.aqi[sensorData.current.aqi.category] :
               INACTIVE_SENSOR_COLORS.screen
           )
           ;

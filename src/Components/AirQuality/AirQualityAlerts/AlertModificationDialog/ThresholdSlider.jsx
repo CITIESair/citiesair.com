@@ -8,7 +8,7 @@ export const ThresholdSlider = (props) => {
     max = 100,
     value,
     defaultValue,
-    stepsForThreshold = 10,
+    stepsForThreshold = 1,
     marks = null,
     handleChange,
     disabled,

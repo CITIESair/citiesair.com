@@ -5,7 +5,7 @@ const DataTypesObj = {
     name_title: "Heat Index °C",
     threshold_mapping_name: "heat_index_C",
     color_axis: "heat_index_C",
-    gradient_steps: 20,
+    gradient_steps: 500,
     unit: "°C",
     pattern: "#.#"
   },
