@@ -4,8 +4,8 @@ import { Box, Button, IconButton, Stack, Table, TableBody, TableCell, TableHead,
 import EditIcon from '@mui/icons-material/Edit';
 import AddAlarmIcon from '@mui/icons-material/AddAlarm';
 
-import { useTheme } from '@emotion/react';
-import { AirQualityAlertKeys, getAlertPlaceholder, useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
+import { useTheme } from '@mui/material';
+import { AirQualityAlertKeys, getAlertDefaultPlaceholder, useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
 
 import AlertTypes from './AlertTypes';
 import { ThresholdAlertTypes } from './AlertTypes';
@@ -15,8 +15,7 @@ import AlertModificationDialog from './AlertModificationDialog/AlertModification
 
 import { returnHoursFromMinutesPastMidnight, CrudTypes, SharedColumnHeader } from './Utils';
 import { TransitionGroup } from 'react-transition-group';
-import { DataTypes } from '../../../Utils/AirQuality/DataTypes';
-import { DAYS_OF_WEEK } from './AlertModificationDialog/DAYS_OF_WEEK';
+
 import { fetchDataFromURL } from '../../../API/ApiFetch';
 import { GeneralAPIendpoints, RESTmethods } from '../../../API/Utils';
 import { DashboardContext } from '../../../ContextProviders/DashboardContext';
@@ -24,6 +23,8 @@ import { SnackbarMetadata } from '../../../Utils/SnackbarMetadata';
 import { getAlertsApiUrl } from '../../../API/ApiUrls';
 import { useSnackbar } from 'notistack';
 import { UserRoles } from '../../Account/Utils';
+import { DataTypes } from '../../../Utils/AirQuality/DataTypes';
+import { DAYS_OF_WEEK } from './AlertModificationDialog/AlertPropertyComponents/DAYS_OF_WEEK';
 
 const returnDaysOfWeekString = (days_of_week) => {
   if (!days_of_week || !isValidArray(days_of_week)) return "N/A";
@@ -78,7 +79,7 @@ const AlertsTable = (props) => {
 
   const handleClose = () => {
     setOpenAlertModificationDialog(false);
-    setSelectedAlert(getAlertPlaceholder(alertTypeKey));
+    setSelectedAlert(getAlertDefaultPlaceholder(alertTypeKey));
   }
 
   const handleEnableClick = ({ alert }) => {
@@ -282,7 +283,7 @@ const AlertsTable = (props) => {
           fullWidth
           sx={{ maxWidth: "sm", textTransform: 'uppercase' }}
           onClick={() => handleModifyClick({
-            alert: getAlertPlaceholder(alertTypeKey), crudType: CrudTypes.add
+            alert: getAlertDefaultPlaceholder(alertTypeKey), crudType: CrudTypes.add
           })}
         >
           Add Alert

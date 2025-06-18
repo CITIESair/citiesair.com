@@ -20,14 +20,16 @@ export const AirQualityAlertKeys = {
   threshold_value: "threshold_value",
   days_of_week: "days_of_week",
   minutespastmidnight: "minutespastmidnight",
+  time_range: "time_range",
   is_enabled: "is_enabled",
   excluded_dates: "excluded_dates",
   owner_role: "owner_role",
   self_is_owner: "self_is_owner",
-  is_allowed_to_modify: "is_allowed_to_modify"
+  is_allowed_to_modify: "is_allowed_to_modify",
+  message: "message"
 };
 
-export const getAlertPlaceholder = (alert_type = AlertTypes.daily.id) => {
+export const getAlertDefaultPlaceholder = (alert_type = AlertTypes.daily.id) => {
   let localAlertType;
   if (alert_type === AlertTypes.threshold.id) localAlertType = ThresholdAlertTypes.above_threshold.id;
 
@@ -37,17 +39,19 @@ export const getAlertPlaceholder = (alert_type = AlertTypes.daily.id) => {
     [AirQualityAlertKeys.sensor_id]: '',
     [AirQualityAlertKeys.datatypekey]: '',
     [AirQualityAlertKeys.days_of_week]: [0, 1, 2, 3, 4],
-    [AirQualityAlertKeys.threshold_value]: -1,
+    [AirQualityAlertKeys.time_range]: [0, 1380], // 00:00 and 23:00 in minutes since midnight
+    [AirQualityAlertKeys.threshold_value]: - 1,
     [AirQualityAlertKeys.minutespastmidnight]: '',
     [AirQualityAlertKeys.is_enabled]: true,
-    [AirQualityAlertKeys.excluded_dates]: []
+    [AirQualityAlertKeys.excluded_dates]: [],
+    [AirQualityAlertKeys.message]: null
   }
 }
 
 export function AirQualityAlertProvider({ children }) {
   const { schoolMetadata, currentSchoolID } = useContext(DashboardContext);
 
-  const [selectedAlert, setSelectedAlert] = useState(getAlertPlaceholder());
+  const [selectedAlert, setSelectedAlert] = useState(getAlertDefaultPlaceholder());
 
   const [editingAlert, setEditingAlert] = useState(selectedAlert);
 

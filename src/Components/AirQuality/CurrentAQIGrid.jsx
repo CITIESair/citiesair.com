@@ -14,7 +14,7 @@ import { AQI_Database } from '../../Utils/AirQuality/AirQualityIndexHelper';
 import { useContext } from 'react';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import { CurrentAQIGridSize, ElementSizes } from './CurrentAQIGridSize';
-import { useTheme } from '@emotion/react';
+import { useTheme } from '@mui/material';
 import { INACTIVE_SENSOR_COLORS } from '../../Themes/CustomColors';
 
 const CurrentAQIGrid = (props) => {

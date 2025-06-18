@@ -30,7 +30,7 @@ This folder contains components for rendering the CRUD modification dialog for e
       ![alert-DELETE-dialog](/documentation/alert-DELETE.png)
       ---
 
-- [**SimplePicker.jsx**](./SimplePicker.jsx): 
+- [**SimplePicker.jsx**](./AlertPropertyComponents/SimplePicker.jsx): 
 
   ![alert-simple-picker](/documentation/alert-simple-picker.png)
   
@@ -39,13 +39,13 @@ This folder contains components for rendering the CRUD modification dialog for e
   - Data type
   - Alert Hour
 
-- [**ThresholdTypeToggle.jsx**](./ThresholdTypeToggle.jsx): 
+- [**ThresholdTypeToggle.jsx**](./AlertPropertyComponents//ThresholdTypeToggle.jsx): 
 
   ![alert-threshold-type-toggle](/documentation/alert-threshold-type-toggle.png)
   
   Built upon MUI's `ToggleButton`, this component renders a toggle button group for selecting between `> exceeds` and `< below` a selected threshold values for the `threshold` alert type. It refers to enumeration data from [AlertTypes.jsx](src/Components/AirQuality/AirQualityAlerts/AlertTypes.jsx) to display the appropriately formatted labels.
 
-- [**ThresholdSlider.jsx**](./ThresholdSlider.jsx): 
+- [**ThresholdSlider.jsx**](./AlertPropertyComponents//ThresholdSlider.jsx): 
 
   Arguably one of the most complicated UI component in CITIESair, this component **heavily** builds upon MUI's `Slider` to make a threshold value sliding selector for the `threshold` alert. Some notable features:
 
@@ -84,7 +84,7 @@ This folder contains components for rendering the CRUD modification dialog for e
 
   Contains enumerations for textual data that are different for each CRUD dialog `ADD`, `EDIT`, `DELETE`, such as the name of the `primaryButtonLabel` or the `successMessage`.
 
-- [**HOURS.jsx**](./HOURS.jsx):
+- [**HOURS.jsx**](./AlertPropertyComponents/HOURS.jsx):
 
   Returns an array of formatted object for [SimplePicker.jsx](./SimplePicker.jsx). It spans from `01:00` to `23:00` for `daily` alert's Alert Hour. `00:00` is not included to prevent any unforeseen bug from the backend.
 

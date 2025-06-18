@@ -3,7 +3,7 @@ import { Chip, Tooltip, IconButton, Dialog, Button, DialogActions, DialogTitle, 
 import * as Tracking from '../../Utils/Tracking';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
-import { useTheme } from '@emotion/react';
+import { useTheme } from '@mui/material';
 
 const CustomDialog = (props) => {
   const {

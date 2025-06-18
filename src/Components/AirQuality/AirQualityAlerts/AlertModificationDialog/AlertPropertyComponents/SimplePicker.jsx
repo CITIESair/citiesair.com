@@ -1,22 +1,24 @@
 import { Box, FormControl, InputLabel, Select, MenuItem, Stack } from '@mui/material';
-import { useTheme } from '@emotion/react';
-import { isValidArray } from '../../../../Utils/UtilFunctions';
+import { useTheme } from '@mui/material';
+import { isValidArray } from '../../../../../Utils/UtilFunctions';
 
 export const SimplePicker = (props) => {
-  const { icon, label, value, options, handleChange, disabled } = props;
+  const { icon, label, value, options, handleChange, disabled, ...otherProps } = props;
   const theme = useTheme();
 
   return (
     <Stack
       direction="row"
-      spacing={1}
+      gap={icon ? 1 : 0}
       alignItems="center"
+      {...otherProps}
     >
       <Box
         aria-hidden={true}
         sx={{
           '& .MuiSvgIcon-root': {
-            color: disabled ? theme.palette.text.secondary : theme.palette.text.primary
+            color: disabled ? theme.palette.text.secondary : theme.palette.text.primary,
+            verticalAlign: "middle"
           }
         }}
       >
@@ -27,7 +29,7 @@ export const SimplePicker = (props) => {
         fullWidth
         size='small'
         disabled={disabled}
-        sx={{ minWidth: "200px" }}
+        sx={{ minWidth: "100px", marginLeft: "0 !important" }}
       >
         <InputLabel id={`${label}-picker-label`}>{label}</InputLabel>
         <Select
@@ -45,7 +47,6 @@ export const SimplePicker = (props) => {
             ))}
         </Select>
       </FormControl>
-    </Stack>
-
+    </Stack >
   );
 };

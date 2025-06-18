@@ -7,7 +7,7 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 
 import EventBusyIcon from '@mui/icons-material/EventBusy';
 import { Link, Typography } from '@mui/material';
-import ExpandableSection from '../../../ExpandableSection/ExpandableSection';
+import ExpandableSection from '../../../../ExpandableSection/ExpandableSection';
 
 // Custom styling for the selected days
 const CustomPickersDay = styled(PickersDay, {
@@ -53,7 +53,7 @@ export default function MultiDaysCalendarPicker(props) {
   return (
     <ExpandableSection
       title={returnSectionLabelString()}
-      icon={<EventBusyIcon sx={{ fontSize: "1rem" }} />}
+      icon={<EventBusyIcon sx={{ fontSize: "1rem", verticalAlign: "middle" }} />}
       disabled={disabled}
       content={(
         <>

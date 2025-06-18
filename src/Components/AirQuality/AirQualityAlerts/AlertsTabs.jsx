@@ -4,7 +4,7 @@ import { Box, Tab, useMediaQuery } from '@mui/material';
 import StyledTabs from '../../StyledTabs';
 import AlertsTable from './AlertsTable';
 
-import { getAlertPlaceholder, useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
+import { getAlertDefaultPlaceholder, useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
 import AlertTypes from './AlertTypes';
 import { isValidArray } from '../../../Utils/UtilFunctions';
 
@@ -37,7 +37,7 @@ export default function AlertsTabs() {
   const handleTabChange = (_, newVal) => {
     setCurrentTab(newVal);
     setSelectedAlert(
-      getAlertPlaceholder(AlertTypes[Object.keys(AlertTypes)?.[newVal]]?.id)
+      getAlertDefaultPlaceholder(AlertTypes[Object.keys(AlertTypes)?.[newVal]]?.id)
     );
   };
 

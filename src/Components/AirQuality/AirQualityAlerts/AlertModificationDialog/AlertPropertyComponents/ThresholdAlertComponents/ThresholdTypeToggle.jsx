@@ -1,5 +1,5 @@
 import { ToggleButtonGroup, ToggleButton } from '@mui/material';
-import { ThresholdAlertTypes } from '../AlertTypes';
+import { ThresholdAlertTypes } from '../../../AlertTypes';
 
 export const ThresholdTypeToggle = ({ thisAlertType, handleChange, disabled, ...others }) => {
   return (

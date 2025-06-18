@@ -1,6 +1,6 @@
 import { Slider, colors, TextField, Grid, Typography } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import { useTheme } from '@emotion/react';
+import { useTheme } from '@mui/material';
 
 export const ThresholdSlider = (props) => {
   const {
@@ -94,6 +94,66 @@ export const ThresholdSlider = (props) => {
 
   const stripedGradient = `repeating-linear-gradient(-45deg, ${colors.grey[800]}, ${colors.grey[800]} 4px, ${colors.common.white} 4px, ${colors.common.white} 8px)`;
 
+  const sliderSX = {
+    height: "20vh",
+    minHeight: "250px",
+    maxHeight: "500px",
+    cursor: disabled ? 'not-allowed' : 'inherit',
+    pointerEvents: 'all',
+    '& *': {
+      transition: 'none !important'
+    },
+    '& .MuiSlider-thumb': {
+      width: '2rem',
+      height: '4px',
+      borderRadius: 1,
+      color: colors.common.black,
+    },
+    [`& .MuiSlider-thumb[data-index="${invertSelection ? 1 : 0}"]`]: {
+      display: 'none',
+    },
+    '& .MuiSlider-mark, .MuiSlider-markActive': {
+      width: '2rem',
+      height: '3px',
+      background: theme.palette.background.paper,
+      backgroundImage: theme.palette.background.paperBackgroundGradient
+    },
+    '& .MuiSlider-thumb, .MuiSlider-mark': {
+      transform: `translate(-50%,50%})`
+    },
+    '& .MuiSlider-rail, .MuiSlider-track': {
+      width: '1rem',
+      opacity: 0.75,
+      border: 'none'
+    },
+    '& .MuiSlider-rail': {
+      background: disabled ? colors.grey[400] : backgroundCssGradient,
+    },
+    '& .MuiSlider-track': {
+      background: stripedGradient,
+      ...(invertSelection ? {
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0
+      } : {
+        borderTopLeftRadius: 0,
+        borderTopRightRadius: 0
+      })
+    },
+    [`& .MuiSlider-markLabel, .MuiSlider-markLabel[data-index="${nearestDataIndex}"]`]: {
+      color: theme.palette.text.primary,
+      fontWeight: 500,
+      textDecoration: 'underline',
+    },
+    '& .MuiSlider-markLabelActive': {
+      color: theme.palette.text.secondary,
+      fontWeight: 'inherit',
+      textDecoration: 'inherit',
+    },
+    '& .MuiSlider-valueLabel': {
+      transform: 'translate(-10px, -50%)',
+    }
+  };
+
   return (
     <>
       <Grid container item xs="auto" alignItems="end" spacing={0.5}>
@@ -132,7 +192,6 @@ export const ThresholdSlider = (props) => {
         }
       </Grid>
 
-
       <Grid item xs={12} sx={{ mt: 2, ml: 6 }}>
         <Slider
           aria-label="Alert Threshold Slider"
@@ -147,73 +206,17 @@ export const ThresholdSlider = (props) => {
           onChange={handleSliderChange}
           valueLabelDisplay="on"
           orientation="vertical"
-          sx={{
-            height: "35vh",
-            minHeight: "250px",
-            maxHeight: "500px",
-            cursor: disabled ? 'not-allowed' : 'inherit',
-            pointerEvents: 'all',
-            '& *': {
-              transition: 'none !important'
-            },
-            '& .MuiSlider-thumb': {
-              width: '2rem',
-              height: '4px',
-              borderRadius: 1,
-              color: colors.common.black,
-            },
-            [`& .MuiSlider-thumb[data-index="${invertSelection ? 1 : 0}"]`]: {
-              display: 'none',
-            },
-            '& .MuiSlider-mark, .MuiSlider-markActive': {
-              width: '2rem',
-              height: '3px',
-              background: theme.palette.background.paper,
-              backgroundImage: theme.palette.background.paperBackgroundGradient
-            },
-            '& .MuiSlider-thumb, .MuiSlider-mark': {
-              transform: `translate(-50%,50%})`
-            },
-            '& .MuiSlider-rail, .MuiSlider-track': {
-              width: '1rem',
-              opacity: 0.75,
-              border: 'none'
-            },
-            '& .MuiSlider-rail': {
-              background: disabled ? colors.grey[400] : backgroundCssGradient,
-            },
-            '& .MuiSlider-track': {
-              background: stripedGradient,
-              ...(invertSelection ? {
-                borderBottomLeftRadius: 0,
-                borderBottomRightRadius: 0
-              } : {
-                borderTopLeftRadius: 0,
-                borderTopRightRadius: 0
-              })
-            },
-            [`& .MuiSlider-markLabel, .MuiSlider-markLabel[data-index="${nearestDataIndex}"]`]: {
-              color: theme.palette.text.primary,
-              fontWeight: 500,
-              textDecoration: 'underline',
-            },
-            '& .MuiSlider-markLabelActive': {
-              color: theme.palette.text.secondary,
-              fontWeight: 'inherit',
-              textDecoration: 'inherit',
-            },
-            '& .MuiSlider-valueLabel': {
-              transform: 'translate(-10px, -50%)',
-            }
-          }} />
+          sx={sliderSX} />
       </Grid>
 
       <Grid item sx={{ mt: 1 }}>
-        <Typography variant='caption' display='block' fontStyle="italic">
+        <Typography color="text.secondary" variant='caption' display='block'>
           Move the slider to change the alert's threshold value or use the text input box for more precise control.
         </Typography>
       </Grid>
     </>
   );
 };
+
+
 

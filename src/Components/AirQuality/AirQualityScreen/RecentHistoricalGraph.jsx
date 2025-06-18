@@ -11,7 +11,7 @@ import { areDOMOverlapped } from './ScreenUtils';
 import ThemePreferences from '../../../Themes/ThemePreferences';
 import { capitalizePhrase } from '../../../Utils/UtilFunctions';
 import { INACTIVE_SENSOR_COLORS } from '../../../Themes/CustomColors';
-import { useTheme } from '@emotion/react';
+import { useTheme } from '@mui/material';
 
 const numberOfHoursForHistoricalData = 6;
 
