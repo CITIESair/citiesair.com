@@ -296,11 +296,11 @@ export const HeatIndex_Database = [
       Dark: colors.green[darkShade]
     },
     heat_index_F: {
-      low: 32,
+      low: -Infinity,
       high: 80
     },
     heat_index_C: {
-      low: 0,
+      low: -Infinity,
       high: 26.7
     },
     description: 'No special precautions needed. Comfortable conditions for most people.',
@@ -385,11 +385,11 @@ export const HeatIndex_Database = [
     },
     heat_index_F: {
       low: 130.1,
-      high: 180
+      high: Infinity
     },
     heat_index_C: {
       low: 54.5,
-      high: 82.2
+      high: Infinity
     },
     description: 'Heat stroke highly likely with continued exposure.',
     healthSuggestions: {
@@ -409,52 +409,47 @@ export const getCategoryColorAxis = ({ themePreference = ThemePreferences.light,
   switch (dataTypeKey) {
     case DataTypeKeys.voc:
       database = VOC_Database;
-      defaultValueForAlert = database[3][thresholdMappingName].high;
+      defaultValueForAlert = database[3][thresholdMappingName].low;
       break;
     case DataTypeKeys.heat_index_C:
       database = HeatIndex_Database;
-      defaultValueForAlert = database[2][thresholdMappingName].high;
+      defaultValueForAlert = database[3][thresholdMappingName].low;
       break;
     default:
       database = AQI_Database;
-      defaultValueForAlert = database[3][thresholdMappingName].high;
+      defaultValueForAlert = database[3][thresholdMappingName].low;
   }
 
   // Return an object with a color gradient of colors associated with different categories for this dataType
   if (isGradient) {
-    // If the minimum value is -Infinity, set it to a reasonable finite value (e.g., 0) for gradient axis
+    // If the minimum value is -Infinity, set it to a reasonable finite value for gradient axis
     let minValue = database[0][thresholdMappingName].low;
     if (minValue === -Infinity) {
-      minValue = 0;
+      // Stack another interval of the next higher category if the lowest category has a -Infinity low threshold
+      const secondLowestCategoryRange = database[1][thresholdMappingName].high - database[1][thresholdMappingName].low;
+      minValue = database[1][thresholdMappingName].low - secondLowestCategoryRange;
     }
-    let maxValue = database[database.length - 1][thresholdMappingName].high;
 
-    let secondHighestCategoryRange;
+    let maxValue = database[database.length - 1][thresholdMappingName].high;
     if (maxValue === Infinity) {
       // just stack another interval of the next lower category if the highest category has an Infinity high threshold
-      secondHighestCategoryRange = (database[database.length - 2][thresholdMappingName].high - database[database.length - 2][thresholdMappingName].low);
+      const secondHighestCategoryRange = (database[database.length - 2][thresholdMappingName].high - database[database.length - 2][thresholdMappingName].low);
       maxValue = database[database.length - 2][thresholdMappingName].high + secondHighestCategoryRange;
     }
 
-    return (
-      {
-        minValue,
-        maxValue,
-        defaultValueForAlert,
-        gradientSteps: dataType.gradient_steps,
-        colors: database.flatMap(category => {
-          const lowOffset = category[thresholdMappingName].low;
-          let highOffset = category[thresholdMappingName].high;
-
-          if (category[thresholdMappingName].high === Infinity) highOffset = maxValue;
-
-          return [
-            { color: category.color[themePreference], offset: lowOffset },
-            { color: category.color[themePreference], offset: highOffset }
-          ]
-        })
-      }
-    )
+    return {
+      minValue,
+      maxValue,
+      defaultValueForAlert,
+      gradientSteps: dataType.gradient_steps,
+      colors: database.flatMap(category => {
+        const { low, high } = category[thresholdMappingName];
+        return [
+          { color: category.color[themePreference], offset: low === -Infinity ? minValue : low },
+          { color: category.color[themePreference], offset: high === Infinity ? maxValue : high }
+        ];
+      })
+    };
   }
 
   // Just return an array with colors associated with different categories for this dataType

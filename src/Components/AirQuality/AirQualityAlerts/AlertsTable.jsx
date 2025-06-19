@@ -232,7 +232,7 @@ const AlertsTable = (props) => {
 
                           {alertTypeKey === AlertTypes.threshold.id ? (
                             <TableCell>
-                              {ThresholdAlertTypes[alert[AirQualityAlertKeys.alert_type]].sign}{alert[AirQualityAlertKeys.threshold_value]}
+                              {ThresholdAlertTypes[alert[AirQualityAlertKeys.alert_type]].sign} {alert[AirQualityAlertKeys.threshold_value]}
                               &nbsp;
                               {
                                 Object.keys(DataTypes)
