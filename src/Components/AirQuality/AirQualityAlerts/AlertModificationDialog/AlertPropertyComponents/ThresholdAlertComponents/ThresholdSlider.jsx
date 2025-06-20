@@ -194,10 +194,9 @@ export const ThresholdSlider = (props) => {
 
       <Grid item xs={12} sx={{ mt: 2, ml: 6 }}>
         <Slider
-          aria-label="Alert Threshold Slider"
+          getAriaLabel={() => 'Alert Threshold Slider'}
           aria-labelledby="input-threshold-slider"
           value={[sliderRangeMin, sliderRangeMax]}
-          defaultValue={[sliderRangeMin, sliderRangeMax]}
           step={marks === null ? stepsForThreshold : null} // only allow discrete equal step if marks are not provided
           marks={marks}
           disabled={disabled}

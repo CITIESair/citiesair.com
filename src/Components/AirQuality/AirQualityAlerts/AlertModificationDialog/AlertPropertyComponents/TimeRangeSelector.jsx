@@ -4,6 +4,7 @@ import { useTheme } from "@emotion/react";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { SimplePicker } from "./SimplePicker";
 import { HOURS } from "./HOURS";
+import { isValidArray } from "../../../../../Utils/UtilFunctions";
 
 const PREDEFINED_RANGES = {
     allday: { id: "allday", label: "All Day", from: HOURS[0].value, to: HOURS[HOURS.length - 1].value },
@@ -11,37 +12,46 @@ const PREDEFINED_RANGES = {
     custom: { id: "custom", label: "Custom" }
 };
 
-const TimeRangeSelector = ({ value = [null, null], disabled, handleChange }) => {
+const TimeRangeSelector = ({ value: timeRange, disabled, handleChange }) => {
     const theme = useTheme();
-    const [predefinedRange, setPredefinedRange] = useState(null);
 
-    // Sync mode with incoming value
+    // Always normalize into a [string, string]
+    const [fromValue, toValue] = isValidArray(timeRange)
+        ? timeRange
+        : [PREDEFINED_RANGES.allday.from, PREDEFINED_RANGES.allday.to];
+
+    const [predefinedRange, setPredefinedRange] = useState(() => {
+        // Sync initial toggle‑button state
+        const match = Object.values(PREDEFINED_RANGES)
+            .find(r => r.from === fromValue && r.to === toValue);
+        return match ? match.id : PREDEFINED_RANGES.custom.id;
+    });
+
+    // When `timeRange` actually changes, keep buttons in sync:
     useEffect(() => {
-        console.log(value)
-        const [fromHour, toHour] = value;
-        const matched = Object.values(PREDEFINED_RANGES).find(m => m.from === fromHour && m.to === toHour);
-        setPredefinedRange(matched ? matched.id : PREDEFINED_RANGES.custom.id);
-    }, [value, PREDEFINED_RANGES]);
+        const match = Object.values(PREDEFINED_RANGES)
+            .find(r => r.from === fromValue && r.to === toValue);
+        setPredefinedRange(match ? match.id : PREDEFINED_RANGES.custom.id);
+    }, [fromValue, toValue]);
 
-    // Handle toggle selection
     const handleModeChange = useCallback((_, newMode) => {
         if (!newMode) return;
         setPredefinedRange(newMode);
-        const r = PREDEFINED_RANGES[newMode];
-        if (r.from != null && r.to != null) {
-            handleChange([r.from, r.to]);
+        const range = PREDEFINED_RANGES[newMode];
+        if (range.from != null && range.to != null) {
+            handleChange([range.from, range.to]);
         }
     }, [handleChange]);
-
-    const [fromHour, toHour] = value;
 
     return (
         <Stack direction="row" alignItems="start" gap={1} width="100%">
             <Box
-                aria-hidden={true}
+                aria-hidden
                 sx={{
                     '& .MuiSvgIcon-root': {
-                        color: disabled ? theme.palette.text.secondary : theme.palette.text.primary
+                        color: disabled
+                            ? theme.palette.text.secondary
+                            : theme.palette.text.primary
                     }
                 }}
             >
@@ -50,23 +60,23 @@ const TimeRangeSelector = ({ value = [null, null], disabled, handleChange }) => 
 
             <Stack direction="column" width="100%" gap={1.5}>
                 <ToggleButtonGroup
-                    fullWidth={true}
+                    fullWidth
                     color={disabled ? "standard" : "primary"}
-                    value={predefinedRange || PREDEFINED_RANGES.allday.id}
+                    value={predefinedRange}
                     exclusive
                     onChange={handleModeChange}
                     size="small"
                     disabled={disabled}
                 >
-                    {Object.values(PREDEFINED_RANGES).map(range => (
+                    {Object.values(PREDEFINED_RANGES).map(r => (
                         <ToggleButton
-                            key={range.id}
-                            value={range.id}
-                            aria-label={range.label}
+                            key={r.id}
+                            value={r.id}
+                            aria-label={r.label}
                             sx={{ textTransform: 'none' }}
                             size="small"
                         >
-                            {range.label}
+                            {r.label}
                         </ToggleButton>
                     ))}
                 </ToggleButtonGroup>
@@ -74,18 +84,18 @@ const TimeRangeSelector = ({ value = [null, null], disabled, handleChange }) => 
                 <Stack direction="row" flex={1} gap={1}>
                     <SimplePicker
                         label="From"
-                        value={fromHour}
+                        value={fromValue}
                         options={HOURS}
                         disabled={disabled || predefinedRange !== "custom"}
-                        handleChange={(e) => handleChange([e.target.value, value[1]])}
+                        handleChange={e => handleChange([e.target.value, toValue])}
                         flex={1}
                     />
                     <SimplePicker
                         label="To"
-                        value={toHour}
-                        options={HOURS.filter(h => h.value > fromHour)}
+                        value={toValue}
+                        options={HOURS.filter(h => h.value > fromValue)}
                         disabled={disabled || predefinedRange !== "custom"}
-                        handleChange={(e) => handleChange([value[0], e.target.value])}
+                        handleChange={e => handleChange([fromValue, e.target.value])}
                         flex={1}
                     />
                 </Stack>
@@ -93,5 +103,6 @@ const TimeRangeSelector = ({ value = [null, null], disabled, handleChange }) => 
         </Stack>
     );
 };
+
 
 export default TimeRangeSelector;

@@ -13,7 +13,7 @@ const CustomMessage = ({ value, handleChange, maxLength }) => {
                 inputProps={{
                     maxLength,
                 }}
-                value={value}
+                value={value || ''}
                 onChange={(event) => {
                     handleChange(event);
                 }}
