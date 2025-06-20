@@ -39,7 +39,7 @@ export const getAlertDefaultPlaceholder = (alert_type = AlertTypes.daily.id) => 
     [AirQualityAlertKeys.sensor_id]: '',
     [AirQualityAlertKeys.datatypekey]: '',
     [AirQualityAlertKeys.days_of_week]: [0, 1, 2, 3, 4],
-    [AirQualityAlertKeys.time_range]: [0, 1380], // 00:00 and 23:00 in minutes since midnight
+    [AirQualityAlertKeys.time_range]: alert_type === AlertTypes.threshold ? [0, 1380] : null, // 00:00 and 23:00 in minutes since midnight
     [AirQualityAlertKeys.threshold_value]: - 1,
     [AirQualityAlertKeys.minutespastmidnight]: '',
     [AirQualityAlertKeys.is_enabled]: true,
