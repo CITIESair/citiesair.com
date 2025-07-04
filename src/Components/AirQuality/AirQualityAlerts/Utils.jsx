@@ -10,7 +10,7 @@ export const CrudTypes = {
 }
 
 export const SharedColumnHeader = {
-  location: "Sensor Location",
+  location: "Location",
   dataType: "Data Type",
   selectedDaysOfWeek: "Days",
   createdBy: "Created By"

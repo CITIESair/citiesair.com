@@ -43,7 +43,7 @@ This folder contains components for rendering the CRUD modification dialog for e
 
   ![alert-threshold-type-toggle](/documentation/alert-threshold-type-toggle.png)
   
-  Built upon MUI's `ToggleButton`, this component renders a toggle button group for selecting between `> exceeds` and `< below` a selected threshold values for the `threshold` alert type. It refers to enumeration data from [AlertTypes.jsx](src/Components/AirQuality/AirQualityAlerts/AlertTypes.jsx) to display the appropriately formatted labels.
+  Built upon MUI's `ToggleButton`, this component renders a toggle button group for selecting between `> above` and `< below` a selected threshold values for the `threshold` alert type. It refers to enumeration data from [AlertTypes.jsx](src/Components/AirQuality/AirQualityAlerts/AlertTypes.jsx) to display the appropriately formatted labels.
 
 - [**ThresholdSlider.jsx**](./AlertPropertyComponents//ThresholdSlider.jsx): 
 
@@ -51,10 +51,10 @@ This folder contains components for rendering the CRUD modification dialog for e
 
     - Uses a range slider (`[slider_value_1, slider_value_2]`)instead of a single-value slider (`slider_value`). While this might seem counterintuitive given that there is only one threshold value for each alert, this helps us achieve this ~~crossed-out~~ effect when switching between `below_threshold` and `below_threshold` type. This is necessary to indicate to the user which range of value of a certain data type they will receive alert:
 
-      - `above_threshold`: the **BOTTOM** part of the slider is ~~crossed-out~~, indicating that the alert will only be sent if the measurement **EXCEEDS** the selected threshold
+      - `above_threshold`: the **BOTTOM** part of the slider is ~~crossed-out~~, indicating that the alert will only be sent if the measurement **ABOVE** the selected threshold
         ![alert-threshold-slider-above](/documentation/alert-threshold-slider-above.png)
         
-      - `below_threshold`: the **TOP** part of the slider is ~~crossed-out~~, indicating that the alert will only be sent if the measurement **DROPS BELOW** the selected threshold
+      - `below_threshold`: the **TOP** part of the slider is ~~crossed-out~~, indicating that the alert will only be sent if the measurement **BELOW** the selected threshold
         ![alert-threshold-slider-below](/documentation/alert-threshold-slider-below.png)
 
       Without going too deep in the technical implementation of this quirk, just know that the real `threshold_value` might be the `slider_value_1` or `slider_value_2` in the range slider's array `float[2]`, depends on whether the `threshold_type` is `above` or `below`. For example:

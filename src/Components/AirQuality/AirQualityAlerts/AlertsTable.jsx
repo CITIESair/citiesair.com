@@ -60,7 +60,7 @@ const returnAlertNotModifiableString = (owner_role, is_allowed_to_modify) => {
 };
 
 const AlertsTable = (props) => {
-  const { selectedAlert, setSelectedAlert, setAlerts } = useAirQualityAlert();
+  const { selectedAlert, setSelectedAlert, setAlerts, addChildToAlerts } = useAirQualityAlert();
   const { currentSchoolID } = useContext(DashboardContext);
   const { enqueueSnackbar } = useSnackbar()
 
@@ -98,10 +98,12 @@ const AlertsTable = (props) => {
         [AirQualityAlertKeys.is_enabled]: newIsEnabled
       }
     }).then((data) => {
-      setAlerts(prevAlerts =>
-        prevAlerts.map(prevAlert =>
+      setAlerts(prevAlerts => {
+        const updatedAlerts = prevAlerts.map(prevAlert =>
           prevAlert[AirQualityAlertKeys.id] === alert[AirQualityAlertKeys.id] ? data : prevAlert
         )
+        return addChildToAlerts(updatedAlerts);
+      }
       );
       enqueueSnackbar(`This alert will be ${newIsEnabled ? "enabled" : "disabled"}`, SnackbarMetadata.success);
     }).catch((error) => {

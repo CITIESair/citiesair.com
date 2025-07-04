@@ -17,7 +17,7 @@ export const SimplePicker = (props) => {
         aria-hidden={true}
         sx={{
           '& .MuiSvgIcon-root': {
-            color: disabled ? theme.palette.text.secondary : theme.palette.text.primary,
+            color: disabled ? theme.palette.text.secondary : theme.palette.primary.main,
             verticalAlign: "middle"
           }
         }}

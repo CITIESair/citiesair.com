@@ -86,7 +86,7 @@ function App() {
         setThemePreference(previousTheme);
       };
     }
-  }, []);
+  }, [setThemePreference, themePreference]);
 
   return (
     <BrowserRouter basename="/">

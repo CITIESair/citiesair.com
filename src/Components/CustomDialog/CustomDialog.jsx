@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { Chip, Tooltip, IconButton, Dialog, Button, DialogActions, DialogTitle, DialogContent, useMediaQuery } from '@mui/material';
 import * as Tracking from '../../Utils/Tracking';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -10,6 +10,7 @@ const CustomDialog = (props) => {
     buttonIcon,
     buttonIconAria,
     buttonLabel,
+    buttonVariant = 'contained',
     trackingEvent,
     dialogTitle,
     dialogOpenHandler = null,
@@ -67,7 +68,7 @@ const CustomDialog = (props) => {
     else return (
       <Button
         onClick={onOpen}
-        variant="contained"
+        variant={buttonVariant}
         disabled={disabled}
         size="small"
       >

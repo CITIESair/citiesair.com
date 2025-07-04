@@ -4,7 +4,7 @@ import { Box, Tab, useMediaQuery } from '@mui/material';
 import StyledTabs from '../../StyledTabs';
 import AlertsTable from './AlertsTable';
 
-import { getAlertDefaultPlaceholder, useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
+import { AirQualityAlertKeys, getAlertDefaultPlaceholder, useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
 import AlertTypes from './AlertTypes';
 import { isValidArray } from '../../../Utils/UtilFunctions';
 
@@ -43,11 +43,18 @@ export default function AlertsTabs() {
 
   const { alerts } = useAirQualityAlert();
 
-  const returnFilteredAlertsBasedOnAlertType = (alertTypeKey) => {
+  // Helper function to return filered alert:
+  // - based on alert_type (threshold or daily, depends on which alert tab is visible)
+  // - only return alert that is not child to another alert
+  const returnFilteredAlerts = (alertTypeKey) => {
     const filteredAlerts = alerts.filter((alert) => {
-      const alertType = alert?.alert_type?.toLowerCase();
-      if (alertType.includes(alertTypeKey)) return alert;
-      else return null;
+      if (!alert) return;
+
+      const alertType = alert[AirQualityAlertKeys.alert_type]?.toLowerCase();
+      const parentAlertId = alert[AirQualityAlertKeys.parent_alert_id];
+
+      if (alertType.includes(alertTypeKey) && (parentAlertId === null || parentAlertId === undefined)) return alert;
+      else return;
     });
 
     const alertsLength = isValidArray(filteredAlerts) ? filteredAlerts.length : "0";
@@ -67,7 +74,7 @@ export default function AlertsTabs() {
         smallFontSize="0.825rem"
       >
         {Object.values(AlertTypes).map((type) => {
-          const filteredAlerts = returnFilteredAlertsBasedOnAlertType(type.id);
+          const filteredAlerts = returnFilteredAlerts(type.id);
           return (
             <Tab
               key={type.id}
@@ -83,7 +90,7 @@ export default function AlertsTabs() {
       </StyledTabs>
 
       {Object.values(AlertTypes).map((type) => {
-        const filteredAlerts = returnFilteredAlertsBasedOnAlertType(type.id);
+        const filteredAlerts = returnFilteredAlerts(type.id);
         return (
           <AlertTab
             key={type.id}

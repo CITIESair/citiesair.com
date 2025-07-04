@@ -1,47 +1,55 @@
 import { useState, useEffect, useCallback } from "react";
 import { Box, Stack, ToggleButtonGroup, ToggleButton } from "@mui/material";
-import { useTheme } from "@emotion/react";
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { useTheme } from "@mui/material";
+import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import { SimplePicker } from "./SimplePicker";
 import { HOURS } from "./HOURS";
 import { isValidArray } from "../../../../../Utils/UtilFunctions";
-
-const PREDEFINED_RANGES = {
-    allday: { id: "allday", label: "All Day", from: HOURS[0].value, to: HOURS[HOURS.length - 1].value },
-    business: { id: "business", label: "Business Hours", from: HOURS[7].value, to: HOURS[17].value },
-    custom: { id: "custom", label: "Custom" }
-};
+import { PREDEFINED_TIMERANGES } from "./PREDEFINED_TIMERANGES";
+import { getAlertDefaultPlaceholder, AirQualityAlertKeys } from "../../../../../ContextProviders/AirQualityAlertContext";
+import AlertTypes from "../../AlertTypes";
+import { useMediaQuery } from "@mui/material";
 
 const TimeRangeSelector = ({ value: timeRange, disabled, handleChange }) => {
     const theme = useTheme();
 
+    const [displayFromToPickers, setDisplayFromToPickers] = useState(false);
+
     // Always normalize into a [string, string]
     const [fromValue, toValue] = isValidArray(timeRange)
         ? timeRange
-        : [PREDEFINED_RANGES.allday.from, PREDEFINED_RANGES.allday.to];
+        : getAlertDefaultPlaceholder(AlertTypes.threshold.id)[AirQualityAlertKeys.time_range];
 
     const [predefinedRange, setPredefinedRange] = useState(() => {
         // Sync initial toggle‑button state
-        const match = Object.values(PREDEFINED_RANGES)
+        const match = Object.values(PREDEFINED_TIMERANGES)
             .find(r => r.from === fromValue && r.to === toValue);
-        return match ? match.id : PREDEFINED_RANGES.custom.id;
+        return match ? match.id : PREDEFINED_TIMERANGES.custom.id;
     });
 
     // When `timeRange` actually changes, keep buttons in sync:
     useEffect(() => {
-        const match = Object.values(PREDEFINED_RANGES)
+        const match = Object.values(PREDEFINED_TIMERANGES)
             .find(r => r.from === fromValue && r.to === toValue);
-        setPredefinedRange(match ? match.id : PREDEFINED_RANGES.custom.id);
+        setPredefinedRange(match ? match.id : PREDEFINED_TIMERANGES.custom.id);
     }, [fromValue, toValue]);
 
     const handleModeChange = useCallback((_, newMode) => {
         if (!newMode) return;
         setPredefinedRange(newMode);
-        const range = PREDEFINED_RANGES[newMode];
+        const range = PREDEFINED_TIMERANGES[newMode];
         if (range.from != null && range.to != null) {
             handleChange([range.from, range.to]);
         }
+
+        // only display the hour pickers if custom time is used
+        setDisplayFromToPickers(newMode == PREDEFINED_TIMERANGES.custom.id);
     }, [handleChange]);
+
+    // Add useMediaQuery to detect small screens
+
+    const smallScreen = useMediaQuery((theme) => theme.breakpoints.down('md'));
+    const extraSmallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
     return (
         <Stack direction="row" alignItems="start" gap={1} width="100%">
@@ -51,16 +59,17 @@ const TimeRangeSelector = ({ value: timeRange, disabled, handleChange }) => {
                     '& .MuiSvgIcon-root': {
                         color: disabled
                             ? theme.palette.text.secondary
-                            : theme.palette.text.primary
+                            : theme.palette.primary.main,
+                        verticalAlign: "-webkit-baseline-middle"
                     }
                 }}
             >
-                <AccessTimeIcon sx={{ mt: 0.75 }} />
+                <WatchLaterIcon sx={{ mt: 0.75 }} />
             </Box>
 
             <Stack direction="column" width="100%" gap={1.5}>
                 <ToggleButtonGroup
-                    fullWidth
+                    fullWidth={smallScreen}
                     color={disabled ? "standard" : "primary"}
                     value={predefinedRange}
                     exclusive
@@ -68,37 +77,56 @@ const TimeRangeSelector = ({ value: timeRange, disabled, handleChange }) => {
                     size="small"
                     disabled={disabled}
                 >
-                    {Object.values(PREDEFINED_RANGES).map(r => (
+                    {Object.values(PREDEFINED_TIMERANGES).map((range, idx, arr) => (
                         <ToggleButton
-                            key={r.id}
-                            value={r.id}
-                            aria-label={r.label}
-                            sx={{ textTransform: 'none' }}
+                            key={range.id}
+                            value={range.id}
+                            aria-label={range.label}
+                            sx={{
+                                textTransform: 'none',
+                                px: 1.5,
+                                flex: (idx == arr.length - 1) ? 1 : undefined,
+                                lineHeight: extraSmallScreen ? 1.3 : undefined
+                            }}
                             size="small"
                         >
-                            {r.label}
+                            {range.label}
+                            {range.fromToLabel && (
+                                extraSmallScreen ? (
+                                    <>
+                                        <br />
+                                        {range.fromToLabel}
+                                    </>
+                                ) : (
+                                    <> {range.fromToLabel}</>
+                                )
+                            )}
                         </ToggleButton>
                     ))}
                 </ToggleButtonGroup>
 
-                <Stack direction="row" flex={1} gap={1}>
-                    <SimplePicker
-                        label="From"
-                        value={fromValue}
-                        options={HOURS}
-                        disabled={disabled || predefinedRange !== "custom"}
-                        handleChange={e => handleChange([e.target.value, toValue])}
-                        flex={1}
-                    />
-                    <SimplePicker
-                        label="To"
-                        value={toValue}
-                        options={HOURS.filter(h => h.value > fromValue)}
-                        disabled={disabled || predefinedRange !== "custom"}
-                        handleChange={e => handleChange([fromValue, e.target.value])}
-                        flex={1}
-                    />
-                </Stack>
+                {
+                    displayFromToPickers ? (
+                        <Stack direction="row" flex={1} gap={1}>
+                            <SimplePicker
+                                label="From"
+                                value={fromValue}
+                                options={HOURS}
+                                disabled={disabled || predefinedRange !== "custom"}
+                                handleChange={e => handleChange([e.target.value, toValue])}
+                                flex={1}
+                            />
+                            <SimplePicker
+                                label="To"
+                                value={toValue}
+                                options={HOURS.filter(h => h.value > fromValue)}
+                                disabled={disabled || predefinedRange !== "custom"}
+                                handleChange={e => handleChange([fromValue, e.target.value])}
+                                flex={1}
+                            />
+                        </Stack>
+                    ) : null
+                }
             </Stack>
         </Stack>
     );
