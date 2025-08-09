@@ -43,7 +43,7 @@ const TimeRangeSelector = ({ value: timeRange, disabled, handleChange }) => {
         }
 
         // only display the hour pickers if custom time is used
-        setDisplayFromToPickers(newMode == PREDEFINED_TIMERANGES.custom.id);
+        setDisplayFromToPickers(newMode === PREDEFINED_TIMERANGES.custom.id);
     }, [handleChange]);
 
     // Add useMediaQuery to detect small screens
@@ -85,7 +85,7 @@ const TimeRangeSelector = ({ value: timeRange, disabled, handleChange }) => {
                             sx={{
                                 textTransform: 'none',
                                 px: 1.5,
-                                flex: (idx == arr.length - 1) ? 1 : undefined,
+                                flex: (idx === arr.length - 1) ? 1 : undefined,
                                 lineHeight: extraSmallScreen ? 1.3 : undefined
                             }}
                             size="small"

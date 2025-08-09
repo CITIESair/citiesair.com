@@ -40,6 +40,8 @@ const AlertModificationDialog = (props) => {
   const theme = useTheme();
 
   const sanityCheckAlertBeforeSaving = () => {
+    if (alertTypeKey === AlertTypes.daily.id) return { valid: true };
+
     if (!editingAlert[AirQualityAlertKeys.has_child_alert]) return { valid: true };
 
     const isAbove = editingAlert[AirQualityAlertKeys.alert_type] === ThresholdAlertTypes.above_threshold.id;

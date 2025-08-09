@@ -185,7 +185,7 @@ export function AirQualityAlertProvider({ children }) {
       .catch((error) => {
         enqueueSnackbar("There was an error loading the alert email list, please try again", SnackbarMetadata.error);
       });
-  }, [currentSchoolID]);
+  }, [currentSchoolID, addChildToAlerts]);
 
   useEffect(() => {
     if (!currentSchoolID) return;

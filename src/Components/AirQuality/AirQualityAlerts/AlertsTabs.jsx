@@ -48,13 +48,13 @@ export default function AlertsTabs() {
   // - only return alert that is not child to another alert
   const returnFilteredAlerts = (alertTypeKey) => {
     const filteredAlerts = alerts.filter((alert) => {
-      if (!alert) return;
+      if (!alert) return null;
 
       const alertType = alert[AirQualityAlertKeys.alert_type]?.toLowerCase();
       const parentAlertId = alert[AirQualityAlertKeys.parent_alert_id];
 
       if (alertType.includes(alertTypeKey) && (parentAlertId === null || parentAlertId === undefined)) return alert;
-      else return;
+      else return null;
     });
 
     const alertsLength = isValidArray(filteredAlerts) ? filteredAlerts.length : "0";
