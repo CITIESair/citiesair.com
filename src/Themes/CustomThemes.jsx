@@ -20,11 +20,12 @@ const getColorAxisForContinuousDataTypes = ({ isDark }) => {
       ]
     },
     [DataTypes.temperature_C.color_axis]: {
-      minValue: 10,
+      minValue: 0,
       maxValue: 50,
       defaultValueForAlert: 35,
       defaultValueForChildAlert: 30,
       colors: [
+        { color: colors.lightBlue[isDark ? darkShade : lightShade], offset: 0 },
         { color: colors.lightBlue[isDark ? darkShade : lightShade], offset: 10 },
         { color: colors.green[isDark ? darkShade : lightShade], offset: 15 },
         { color: colors.yellow[isDark ? darkShade : lightShade], offset: 25 },
