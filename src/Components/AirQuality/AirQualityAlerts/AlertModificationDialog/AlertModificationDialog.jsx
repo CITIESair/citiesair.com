@@ -131,9 +131,15 @@ const AlertModificationDialog = (props) => {
 
       case CrudTypes.edit:
         // Case empty editing value
-        const val = editingAlert[AirQualityAlertKeys.threshold_value];
+        let alertVal;
+        if (alertTypeKey === AlertTypes.daily.id) {
+          alertVal = editingAlert[AirQualityAlertKeys.minutespastmidnight]
+        } else {
+          alertVal = editingAlert[AirQualityAlertKeys.threshold_value]
+        }
         const datatypeKeyVal = editingAlert[AirQualityAlertKeys.datatypekey];
-        if (!val || val === '' || !datatypeKeyVal || datatypeKeyVal === '') {
+
+        if (!alertVal || alertVal === '' || !datatypeKeyVal || datatypeKeyVal === '') {
           setShouldDisableButton(true);
           break;
         }
