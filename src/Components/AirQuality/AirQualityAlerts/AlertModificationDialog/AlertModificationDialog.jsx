@@ -173,9 +173,8 @@ const AlertModificationDialog = (props) => {
 
           // 2. Editing for child alert associated with this main alert
           const child_alert_id = editingAlert[AirQualityAlertKeys.child_alert]?.[AirQualityAlertKeys.id];
-
           // 2.1. There should NOT be child alert
-          if (editingAlert[AirQualityAlertKeys.has_child_alert] === false) {
+          if (!editingAlert[AirQualityAlertKeys.has_child_alert]) {
             // If child alert existed before but now is removed, then trigger deletion
             if (child_alert_id !== null && child_alert_id !== undefined) {
               fetchDataFromURL({
@@ -194,7 +193,6 @@ const AlertModificationDialog = (props) => {
               }).catch((error) => handleFetchError(error));
             }
           }
-
           // 2.2. There should be child alert
           else {
             // 2.2.1. If there is no child alert id before, create one
