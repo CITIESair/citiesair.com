@@ -43,37 +43,34 @@ const normalizeColorStops = ({ colors, optionalMinValue, optionalMaxValue }) => 
 
 // Function to return an array of STEPS discrete colors in a gradient from an array of starting colors
 // Used for NivoCalendarChart
+function hexToRgb(hex) {
+  const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+  hex = hex.replace(shorthandRegex, function (m, r, g, b) {
+    return r + r + g + g + b + b;
+  });
+
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
+    : [null, null, null];
+}
+function rgbToHex(r, g, b) {
+  return "#" + [r, g, b].map(x => {
+    const hex = x.toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  }).join('');
+}
+function interpolateColor(color1, color2, factor) {
+  // Return immediately if the 2 colors are the same
+  if (color1.every((element, index) => element === color2[index])) return color1;
+
+  // Else, calculate the middle of the 2 colors
+  let result = color1.slice();
+  for (let i = 0; i < 3; i++) {
+    result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]));
+  }
+  return result;
+}
 export const generateDiscreteColorGradientArray = ({ colors, numSteps = 100 }) => {
-  function hexToRgb(hex) {
-    const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-    hex = hex.replace(shorthandRegex, function (m, r, g, b) {
-      return r + r + g + g + b + b;
-    });
-
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
-      : [null, null, null];
-  }
-
-  function rgbToHex(r, g, b) {
-    return "#" + [r, g, b].map(x => {
-      const hex = x.toString(16);
-      return hex.length === 1 ? '0' + hex : hex;
-    }).join('');
-  }
-
-  function interpolateColor(color1, color2, factor) {
-    // Return immediately if the 2 colors are the same
-    if (color1.every((element, index) => element === color2[index])) return color1;
-
-    // Else, calculate the middle of the 2 colors
-    let result = color1.slice();
-    for (let i = 0; i < 3; i++) {
-      result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]));
-    }
-    return result;
-  }
-
   const normalizedColors = normalizeColorStops({ colors });
   normalizedColors.forEach((colorStop) => {
     colorStop.color = hexToRgb(colorStop.color)

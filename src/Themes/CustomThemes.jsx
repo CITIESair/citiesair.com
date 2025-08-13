@@ -11,6 +11,7 @@ const getColorAxisForContinuousDataTypes = ({ isDark }) => {
       minValue: 0,
       maxValue: 100,
       defaultValueForAlert: 70,
+      defaultValueForChildAlert: 50,
       colors: [
         { color: colors.grey[isDark ? darkShade + 400 : lightShade - 300], offset: 0 },
         { color: colors.grey[isDark ? darkShade + 400 : lightShade - 300], offset: 15 },
@@ -19,10 +20,12 @@ const getColorAxisForContinuousDataTypes = ({ isDark }) => {
       ]
     },
     [DataTypes.temperature_C.color_axis]: {
-      minValue: 10,
+      minValue: 0,
       maxValue: 50,
       defaultValueForAlert: 35,
+      defaultValueForChildAlert: 30,
       colors: [
+        { color: colors.lightBlue[isDark ? darkShade : lightShade], offset: 0 },
         { color: colors.lightBlue[isDark ? darkShade : lightShade], offset: 10 },
         { color: colors.green[isDark ? darkShade : lightShade], offset: 15 },
         { color: colors.yellow[isDark ? darkShade : lightShade], offset: 25 },
@@ -34,7 +37,8 @@ const getColorAxisForContinuousDataTypes = ({ isDark }) => {
     [DataTypes.pressure.color_axis]: {
       minValue: 980,
       maxValue: 1040,
-      defaultValueForAlert: 1013,
+      defaultValueForAlert: 1020,
+      defaultValueForChildAlert: 1010,
       colors: [
         { color: colors.blue[900], offset: 980 },
         { color: colors.blue[500], offset: 1000 },

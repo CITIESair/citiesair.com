@@ -15,7 +15,9 @@ export const ThresholdSlider = (props) => {
     backgroundCssGradient,
     invertSelection = false,
     showInput = true,
-    inputUnit
+    inputUnit,
+    valueLabelDisplay = "on",
+    showTip = true
   } = props;
 
   const theme = useTheme();
@@ -192,7 +194,7 @@ export const ThresholdSlider = (props) => {
         }
       </Grid>
 
-      <Grid item xs={12} sx={{ mt: 2, ml: 6 }}>
+      <Grid item xs={12} sx={{ mt: 2, ml: 7.5 }}>
         <Slider
           getAriaLabel={() => 'Alert Threshold Slider'}
           aria-labelledby="input-threshold-slider"
@@ -203,12 +205,12 @@ export const ThresholdSlider = (props) => {
           min={min}
           max={max}
           onChange={handleSliderChange}
-          valueLabelDisplay="on"
+          valueLabelDisplay={valueLabelDisplay}
           orientation="vertical"
           sx={sliderSX} />
       </Grid>
 
-      <Grid item sx={{ mt: 1 }}>
+      <Grid item sx={{ mt: 1, ml: 1, visibility: showTip === true ? 'visible' : 'hidden' }}>
         <Typography color="text.secondary" variant='caption' display='block'>
           Move the slider to change the alert's threshold value or use the text input box for more precise control.
         </Typography>

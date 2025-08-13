@@ -405,19 +405,23 @@ export const getCategoryColorAxis = ({ themePreference = ThemePreferences.light,
   const thresholdMappingName = dataType.threshold_mapping_name;
 
   let database;
-  let defaultValueForAlert;
+  let defaultValueForAlert, defaultValueForChildAlert;
   switch (dataTypeKey) {
     case DataTypeKeys.voc:
       database = VOC_Database;
       defaultValueForAlert = database[3][thresholdMappingName].low;
+      defaultValueForChildAlert = database[2][thresholdMappingName].low
       break;
     case DataTypeKeys.heat_index_C:
       database = HeatIndex_Database;
       defaultValueForAlert = database[3][thresholdMappingName].low;
+      defaultValueForChildAlert = database[2][thresholdMappingName].low
       break;
     default:
       database = AQI_Database;
       defaultValueForAlert = database[3][thresholdMappingName].low;
+      defaultValueForChildAlert = database[2][thresholdMappingName].low
+      break;
   }
 
   // Return an object with a color gradient of colors associated with different categories for this dataType
@@ -441,6 +445,7 @@ export const getCategoryColorAxis = ({ themePreference = ThemePreferences.light,
       minValue,
       maxValue,
       defaultValueForAlert,
+      defaultValueForChildAlert,
       gradientSteps: dataType.gradient_steps,
       colors: database.flatMap(category => {
         const { low, high } = category[thresholdMappingName];

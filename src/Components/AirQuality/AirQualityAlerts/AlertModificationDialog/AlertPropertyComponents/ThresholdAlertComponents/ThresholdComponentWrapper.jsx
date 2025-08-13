@@ -1,36 +1,28 @@
-import { Grid, Typography } from "@mui/material";
 import { ThresholdSlider } from "./ThresholdSlider";
-import { ThresholdTypeToggle } from "./ThresholdTypeToggle";
 import { DataTypeKeys, DataTypes } from "../../../../../../Utils/AirQuality/DataTypes";
 import { AirQualityAlertKeys, useAirQualityAlert } from "../../../../../../ContextProviders/AirQualityAlertContext";
 import { AQI_Database, HeatIndex_Database, VOC_Database } from "../../../../../../Utils/AirQuality/AirQualityIndexHelper";
 import { useTheme } from '@mui/material';
 import { generateCssBackgroundGradient } from "../../../../../../Utils/Gradient/GradientUtils";
-import { ThresholdAlertTypes } from "../../../AlertTypes";
 
-export const ThresholdComponentWrapper = ({ disabledToggle, disabledSlider }) => {
-    const { editingAlert, setEditingAlert } = useAirQualityAlert();
+export const ThresholdComponentWrapper = (props) => {
+    const {
+        value,
+        invertSelection,
+        handleValueChange,
+        placeholderValueBeforeDataTypeSelection = 0.5,
+        disabledSlider,
+        showTip = true
+    } = props;
 
-    const handleCurrentThresholdValueChange = (value) => {
-        setEditingAlert({
-            ...editingAlert,
-            [AirQualityAlertKeys.threshold_value]: value
-        });
-    }
-
-    const handleCurrentAlertTypeChange = (event) => {
-        setEditingAlert({
-            ...editingAlert,
-            [AirQualityAlertKeys.alert_type]: event.target.value
-        });
-    }
+    const { editingAlert } = useAirQualityAlert();
 
     const theme = useTheme();
 
     let thresholdSlider = null;
 
     const currentDataTypeKey = editingAlert[AirQualityAlertKeys.datatypekey];
-    if (currentDataTypeKey && currentDataTypeKey !== "") {
+    if (currentDataTypeKey && DataTypes[currentDataTypeKey]) {
         const dataType = DataTypes[currentDataTypeKey];
         const dataTypeColorAxis = theme.palette.chart.colorAxes[dataType.color_axis];
         const { colors, minValue, maxValue, defaultValueForAlert, stepsForThreshold } = dataTypeColorAxis;
@@ -43,7 +35,6 @@ export const ThresholdComponentWrapper = ({ disabledToggle, disabledSlider }) =>
         // Check if this dataType exists in the AQI_Database
         // If yes, return value and label accordingly to the marks
         let marks, database;
-        const invertSelection = editingAlert[AirQualityAlertKeys.alert_type] === ThresholdAlertTypes.below_threshold.id;
 
         switch (currentDataTypeKey) {
             case DataTypeKeys.voc:
@@ -84,56 +75,30 @@ export const ThresholdComponentWrapper = ({ disabledToggle, disabledSlider }) =>
                 max={maxValue}
                 marks={marks}
                 defaultValue={defaultValueForAlert}
-                value={editingAlert[AirQualityAlertKeys.threshold_value]}
+                value={value}
                 stepsForThreshold={stepsForThreshold}
                 disabled={disabledSlider}
                 backgroundCssGradient={backgroundCssGradient}
                 invertSelection={invertSelection}
-                handleChange={handleCurrentThresholdValueChange}
+                handleChange={handleValueChange}
                 inputUnit={inputUnit}
+                showTip={showTip}
             />
         )
     } else {
         thresholdSlider = (
             <ThresholdSlider
                 min={0}
-                max={100}
-                defaultValue={50}
-                value={50}
+                max={1}
+                value={placeholderValueBeforeDataTypeSelection}
                 disabled={true}
                 showInput={false}
+                invertSelection={invertSelection}
+                valueLabelDisplay="off"
+                showTip={showTip}
             />
         )
     }
 
-    return (
-        <Grid
-            container
-            alignItems="stretch"
-        >
-            <Grid item xs={12}>
-                <Typography
-                    variant='body1'
-                    fontWeight={500}
-                    color="text.secondary"
-                    sx={{ mb: 1 }}
-                >
-                    Alert me if {DataTypes[currentDataTypeKey]?.name_title || 'selected data type'} is:
-                </Typography>
-            </Grid>
-
-            <Grid item sx={{ mr: 2 }}>
-                <ThresholdTypeToggle
-                    thisAlertType={editingAlert[AirQualityAlertKeys.alert_type]}
-                    handleChange={handleCurrentAlertTypeChange}
-                    disabled={disabledToggle}
-                    sx={{
-                        height: "100%"
-                    }}
-                />
-            </Grid>
-
-            {thresholdSlider}
-        </Grid>
-    )
+    return thresholdSlider;
 }
