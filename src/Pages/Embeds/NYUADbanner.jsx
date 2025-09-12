@@ -20,6 +20,7 @@ const NYUADbanner = (props) => {
 
   const {
     initialNyuadCurrentData = null,
+    disableInteraction = false,
     isOnBannerPage = true,
     minMapHeight = "230px"
   } = props;
@@ -85,6 +86,7 @@ const NYUADbanner = (props) => {
   return (
     <Grid
       container
+      item
       overflow="hidden"
       flex={1}
       maxWidth="lg"
@@ -133,7 +135,7 @@ const NYUADbanner = (props) => {
             defaultZoom={zoomLevel}
             minZoom={zoomLevel}
             maxZoom={isOnBannerPage ? zoomLevel : Math.round(zoomLevel + 1)}
-            disableInteraction={isOnBannerPage}
+            disableInteraction={isOnBannerPage || disableInteraction}
             displayMinimap={false}
             locationTitle={LocationTitles.short}
             fullSizeMap={true}

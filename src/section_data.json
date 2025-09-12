@@ -1,5 +1,5 @@
 {
-    "siteDescription": "Providing real-time indoor and outdoor air quality data to schools in Abu Dhabi<br/>Empowering data-driven decision-making and designing informed policies to safeguard school communities",
+    "siteDescription": "Providing real-time indoor and outdoor air quality data to schools in Abu Dhabi and beyond since 2021<br/>Empowering data-driven decision-making and designing informed policies to safeguard school communities",
     "login": {
         "id": "login",
         "content": {
@@ -42,7 +42,7 @@
     },
     "publicOutdoorStations": {
         "id": "public-outdoor-stations",
-        "content": "Below is a map of CITIESair's <b>public outdoor air quality sensors</b>. This map <u><b>does not</b></u> display indoor stations in participating schools to protect their privacy. That said, we publish schools' outdoor monitoring stations on IQAir, the world's most popular air quality monitoring platform, to make the data publicly available to the surrounding community, school teachers, staff, and parents."
+        "content": "<b>CITIESair public outdoor air quality sensors</b> can be found in the map below and on IQAir, the world's most popular air quality monitoring platform, to make data publicly available to the surrounding community, teachers, staff, and parents. The map below does not display indoor sensors in participating schools to protect their privacy. "
     },
     "getInTouch": {
         "id": "get-in-touch",

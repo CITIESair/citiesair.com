@@ -213,7 +213,7 @@ export default function Header() {
                   </Typography>
                   <Link
                     href={`#${sectionData.getInTouch.id}`}
-                    underline="hover"
+                    underline="always"
                     onClick={(e) => {
                       // Smooth scrolling
                       e.preventDefault();

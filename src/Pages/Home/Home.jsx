@@ -1,7 +1,7 @@
 import { useEffect, useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { Button, Box, Grid, Typography, Container, Divider } from '@mui/material';
+import { Button, Box, Grid, Typography, Container, Divider, useMediaQuery } from '@mui/material';
 import { MetadataContext } from '../../ContextProviders/MetadataContext';
 
 import UppercaseTitle from '../../Components/UppercaseTitle';
@@ -30,6 +30,7 @@ import { CITIESair, NYUAD } from '../../Utils/GlobalVariables';
 import AtAGlance from './AtAGlance';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
 import { UserContext } from '../../ContextProviders/UserContext';
+import NYUADbanner from '../Embeds/NYUADbanner';
 
 function Home({ themePreference, temperatureUnitPreference, title }) {
   // Update the page's title
@@ -62,11 +63,13 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
     );
   }
 
+  const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
+  console.log(isSmallScreen)
   const displayDashboardButtons = () => {
     const isOnlyNYUADButton = currentSchoolID === NYUAD && authenticationState.authenticated;
 
     return (
-      <Grid item container spacing={{ xs: 0, sm: 1 }} justifyContent="center" alignItems="center">
+      <Grid item container spacing={1} justifyContent="center" alignItems="center">
         {
           isOnlyNYUADButton ? null :
             (
@@ -97,10 +100,18 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
             )
         }
 
+        {
+          isSmallScreen === false && (
+            <Grid item xs={12} sm="auto">
+              <Typography color="text.secondary">|</Typography>
+            </Grid>
+          )
+        }
+
         <Grid item xs={12} sm="auto">
           <Button
             component={RouterLink}
-            variant={isOnlyNYUADButton ? 'contained' : 'text'}
+            variant={isOnlyNYUADButton ? 'contained' : (isSmallScreen ? 'text' : 'outlined')}
             sx={{ width: "fit-content" }}
             to={AppRoutes.nyuad}
             onClick={() => {
@@ -124,49 +135,22 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
 
   return (
     <Box width="100%">
-      <FullWidthBox>
-        <Container sx={{ pt: 3, pb: 4 }}>
-          <UppercaseTitle text={`real-time air quality at ${currentSchoolID || ""}`} />
-          <Typography variant='body1' color='text.secondary' sx={{ mt: -2, mb: 2 }}>
-            PM2.5 (Particulate Matter Smaller Than 2.5 Micrometer)
-          </Typography>
-
-          <Grid container spacing={2} justifyContent="center" textAlign="center">
-            <Grid item xs={12} lg={10}>
-              <CurrentAQIGrid
-                currentSensorsData={currentSensorMeasurements?.slice(0, 3)}
-                isScreen={false}
-                temperatureUnitPreference={temperatureUnitPreference}
-                firstSensorOwnLine={true}
-              />
-            </Grid>
-
-            {displaySensorCounts()}
-
-            {displayDashboardButtons()}
-
-            <Grid item xs={12} textAlign="left">
-              <AQIexplanation />
-            </Grid>
-          </Grid>
-        </Container>
-      </FullWidthBox>
 
       <FullWidthBox sx={{ backgroundColor: 'customAlternateBackground' }}>
-        <Container sx={{ py: 3 }}>
-          <UppercaseTitle text="at a glance" />
+        <Container sx={{ pt: 1, pb: 3 }}>
+          <UppercaseTitle text={`real-time air quality in the uae`} />
+
           <AtAGlance />
-        </Container>
-      </FullWidthBox>
 
-      <FullWidthBox sx={{ backgroundColor: 'customAlternateBackground' }}>
-        <Container sx={{ py: 3, pt: 0 }}>
-          <Typography variant="body1" color="text.secondary">
+          <Typography sx={{ mt: 2 }} variant="body1" color="text.secondary">
             {parse(jsonData.publicOutdoorStations.content, {
               replace: replacePlainHTMLWithMuiComponents,
             })}
           </Typography>
         </Container>
+      </FullWidthBox>
+
+      <FullWidthBox sx={{ backgroundColor: 'customAlternateBackground' }}>
         <AQImap
           tileOption={TileOptions.default}
           themePreference={themePreference}
@@ -180,6 +164,47 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
           ariaLabel={`Map of ${CITIESair} public outdoor air quality stations in Abu Dhabi`}
         />
 
+      </FullWidthBox>
+
+      <FullWidthBox sx={{ backgroundColor: 'customAlternateBackground' }}>
+        <Container sx={{ pt: 4, pb: 3 }}>
+          <UppercaseTitle text={`real-time air quality at  ${currentSchoolID || ""}`} />
+          <Typography variant='body1' color='text.secondary' sx={{ mt: -2, mb: 2 }}>
+            PM2.5 (Particulate Matter Smaller Than 2.5 Micrometer)
+          </Typography>
+
+          <Grid container spacing={2} justifyContent="center" textAlign="center">
+
+            {
+              (currentSchoolID === NYUAD || currentSchoolID === null || currentSchoolID === undefined) ? (
+                <NYUADbanner
+                  initialNyuadCurrentData={currentSensorMeasurements}
+                  isOnBannerPage={false}
+                  disableInteraction={true}
+                  themePreference={themePreference}
+                  minMapHeight={"250px"}
+                />
+              ) : (
+                <Grid item xs={12} lg={10}>
+                  <CurrentAQIGrid
+                    currentSensorsData={currentSensorMeasurements?.slice(0, 3)}
+                    isScreen={false}
+                    temperatureUnitPreference={temperatureUnitPreference}
+                    firstSensorOwnLine={true}
+                  />
+                </Grid>
+              )
+            }
+
+            {displaySensorCounts()}
+
+            {displayDashboardButtons()}
+
+            <Grid item xs={12} textAlign="left">
+              <AQIexplanation />
+            </Grid>
+          </Grid>
+        </Container>
       </FullWidthBox>
 
       <Divider />

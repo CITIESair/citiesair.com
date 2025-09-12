@@ -209,7 +209,7 @@ export const SimpleCurrentAQIlist = (props) => {
   return (
     <Grid
       container
-      justifyContent="center"
+      justifyContent="left"
       sx={{
         '& .condensedFont': {
           fontFamily: 'IBM Plex Sans Condensed, sans-serif !important',
