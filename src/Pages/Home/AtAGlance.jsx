@@ -1,4 +1,4 @@
-import { Grid, Typography, Container, Stack } from '@mui/material';
+import { Grid, Typography, Container, Stack, Skeleton } from '@mui/material';
 import { useContext, useEffect } from 'react';
 import { MetadataContext } from '../../ContextProviders/MetadataContext';
 import { fetchDataFromURL } from '../../API/ApiFetch';
@@ -32,16 +32,30 @@ const ByTheNumber = (props) => {
   return (
     <Stack direction="column" alignItems="center">
       {
-        iconString ? <IconLoader iconString={iconString} /> : null
+        iconString
+          ? <IconLoader iconString={iconString} />
+          : <Skeleton variant="circular" width={40} height={40} />
       }
 
-      <Typography color="text.primary" variant="h4" fontWeight="500">
-        {value}
-      </Typography>
+      {
+        value !== null && value !== undefined
+          ? (
+            <Typography color="text.primary" variant="h4" fontWeight="500">
+              {value}
+            </Typography>
+          )
+          : <Skeleton variant="text" sx={{ width: "50%", fontSize: '3rem' }} />
+      }
 
-      <Typography color="text.secondary" variant="h6" fontWeight="400" textTransform="uppercase">
-        {text}
-      </Typography>
+      {
+        text
+          ? (
+            <Typography color="text.secondary" variant="h6" fontWeight="400" textTransform="uppercase">
+              {text}
+            </Typography>
+          )
+          : <Skeleton variant="text" sx={{ width: "80%", fontSize: '2rem' }} />
+      }
     </Stack>
   );
 }
@@ -63,6 +77,9 @@ const AtAGlance = () => {
     }
   }, [stats, setStats]);
 
+  // Create an array of size 4 for loading skeletons
+  const skeletonArray = Array(4).fill(null);
+
   return (
     <Container>
       <Grid
@@ -72,24 +89,22 @@ const AtAGlance = () => {
         spacing={1}
         m={0}
       >
-        {
-          isValidArray(stats) ? stats.map((stat, index) => (
-            <Grid
-              key={`by-the-number-${index}`}
-              item
-              justifyContent="center"
-              alignItems="center"
-              sm={3}
-              xs={6}
-            >
-              <ByTheNumber
-                iconString={stat.icon}
-                value={stat.value || 0}
-                text={stat.text || "--"}
-              />
-            </Grid>
-          )) : null
-        }
+        {(isValidArray(stats) ? stats : skeletonArray).map((stat, index) => (
+          <Grid
+            key={`by-the-number-${index}`}
+            item
+            justifyContent="center"
+            alignItems="center"
+            sm={3}
+            xs={6}
+          >
+            <ByTheNumber
+              iconString={stat?.icon}
+              value={stat?.value}
+              text={stat?.text}
+            />
+          </Grid>
+        ))}
       </Grid>
     </Container>
   );
