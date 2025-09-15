@@ -7,7 +7,7 @@ import { isValidArray } from '../../Utils/UtilFunctions';
 import { getApiUrl } from '../../API/ApiUrls';
 
 import GroupsIcon from '@mui/icons-material/Groups';
-import TimelineIcon from '@mui/icons-material/Timeline';
+import FaceIcon from '@mui/icons-material/Face';
 import SensorsIcon from '@mui/icons-material/Sensors';
 import SchoolIcon from '@mui/icons-material/School';
 
@@ -15,8 +15,8 @@ const IconLoader = ({ iconString }) => {
   switch (iconString) {
     case 'GroupsIcon':
       return <GroupsIcon color="primary" fontSize='large' />;
-    case 'TimelineIcon':
-      return <TimelineIcon color="primary" fontSize='large' />;
+    case 'FaceIcon':
+      return <FaceIcon color="primary" fontSize='large' />;
     case 'SensorsIcon':
       return <SensorsIcon color="primary" fontSize='large' />;
     case 'SchoolIcon':
