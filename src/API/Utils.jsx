@@ -36,11 +36,6 @@ export const ChartAPIendpointsOrder = [
   ChartAPIendpoints.correlationDailyAverage,
 ];
 
-export const RawDatasetType = {
-  daily: "daily",
-  hourly: "hourly",
-};
-
 export const RESTmethods = {
   GET: "GET",
   POST: "POST",

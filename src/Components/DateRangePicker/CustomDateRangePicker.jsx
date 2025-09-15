@@ -9,7 +9,7 @@ import 'react-date-range/dist/theme/default.css'; // theme css file
 import { CircularProgress, useMediaQuery, useTheme } from '@mui/material';
 import { Alert, Button, Stack } from '@mui/material';
 
-import { StyledDateRangePicker, returnCustomStaticRanges, returnFormattedDates } from './DateRangePickerUtils';
+import { MaxNumberOfDaysPerAggregationType, StyledDateRangePicker, returnCustomStaticRanges, returnFormattedDates } from './DateRangePickerUtils';
 import { getHistoricalChartApiUrl } from '../../API/ApiUrls';
 import { ChartAPIendpoints, ChartAPIendpointsOrder } from "../../API/Utils";
 import AggregationTypeToggle from './AggregationTypeToggle';
@@ -19,11 +19,6 @@ import { DashboardContext } from '../../ContextProviders/DashboardContext';
 import { differenceInDays, isSameDay } from 'date-fns';
 import { fetchDataFromURL } from '../../API/ApiFetch';
 import { useDateRangePicker } from '../../ContextProviders/DateRangePickerContext';
-
-const InvalidRangeMessages = {
-  tooLong: "HOURLY data is limited to max 30d",
-  sameDay: "Start and end dates must be different"
-}
 
 const historicalChartIndex = ChartAPIendpointsOrder.findIndex(endpoint => endpoint === ChartAPIendpoints.historical);
 
@@ -40,12 +35,22 @@ const CustomDateRangePicker = (props) => {
   // Keep track of the date range and aggregationType  selected by the user
   const { dateRange, setDateRange, aggregationType, setAggregationType } = useDateRangePicker();
   useEffect(() => {
+    if (!aggregationType) {
+      setAggregationType(AggregationType.hour);
+    }
     // Initialize with the range of the first static range
     setDateRange({
-      ...returnCustomStaticRanges({ today, minDateOfDataset })[0].range(), key: 'selection'
+      ...returnCustomStaticRanges({
+        aggregationType: aggregationType || AggregationType.hour,
+        minDateOfDataset
+      })[0].range(), key: 'selection'
     });
-    setAggregationType(AggregationType.hourly);
-  }, []);
+
+  }, [aggregationType]);
+
+  useEffect(() => {
+    checkValidRange(dateRange);
+  }, [dateRange])
 
   const [chartUrl, setChartUrl] = useState();
 
@@ -75,7 +80,7 @@ const CustomDateRangePicker = (props) => {
 
     // Start date and end date can't be the same date
     if (isSameDay(startDate, endDate)) {
-      setInvalidRangeMessage(InvalidRangeMessages.sameDay);
+      setInvalidRangeMessage("Start and end dates must be different");
       setShouldDisableApplyButton(true);
       return;
     }
@@ -84,23 +89,17 @@ const CustomDateRangePicker = (props) => {
       setShouldDisableApplyButton(false);
     }
 
-    // Restrict the selection to only 30 days if aggregationType is hourly
-    if (aggregationType === AggregationType.hourly) {
-      const diff = differenceInDays(endDate, startDate);
-      const invalidRange = diff > 30;
+    // Restrict the selection to only max days per aggregationType
+    const diff = differenceInDays(endDate, startDate);
+    const maxAllowedDays = MaxNumberOfDaysPerAggregationType[aggregationType];
+    const rangeLongerThanMaxAllowed = diff > maxAllowedDays;
 
-      setInvalidRangeMessage(invalidRange ? InvalidRangeMessages.tooLong : null);
-      setShouldDisableApplyButton(invalidRange);
-    }
-    // No restriction for daily aggregationType
-    else {
-      if (invalidRangeMessage !== null) {
-        setInvalidRangeMessage(null);
-      }
-
-      if (shouldDisableApplyButton === true) {
-        setShouldDisableApplyButton(false);
-      }
+    if (rangeLongerThanMaxAllowed) {
+      setInvalidRangeMessage(`${aggregationType.toUpperCase()} average is limited to max ${maxAllowedDays}d`);
+      setShouldDisableApplyButton(true);
+    } else {
+      setInvalidRangeMessage(null);
+      setShouldDisableApplyButton(false);
     }
   }
 
@@ -111,10 +110,6 @@ const CustomDateRangePicker = (props) => {
     checkValidRange(ranges.selection);
     setDateRange(ranges.selection);
   };
-
-  useEffect(() => {
-    checkValidRange(dateRange);
-  }, [aggregationType]);
 
   // Send query request to backend when APPLY button is clicked
   // Check if a new date range is selected as well
@@ -175,7 +170,7 @@ const CustomDateRangePicker = (props) => {
           staticRanges={
             createStaticRanges(
               returnCustomStaticRanges({
-                today, minDateOfDataset, aggregationType
+                minDateOfDataset, aggregationType
               })
             )
           }
@@ -184,15 +179,15 @@ const CustomDateRangePicker = (props) => {
           minDate={minDateOfDataset}
           maxDate={today}
           months={1}
-          showMonthAndYearPickers={false}
+          showMonthAndYearPickers={true}
           direction={"horizontal"}
           fixedHeight={true}
           preventSnapRefocus={true}
-          calendarFocus="backwards"
           startDatePlaceholder="Start Date"
           endDatePlaceholder="End Date"
           editableDateInputs={true}
           showMonthArrow={true}
+          weekStartsOn={1}
         />
 
         {showPickerPanel && (

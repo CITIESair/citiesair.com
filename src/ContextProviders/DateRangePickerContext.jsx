@@ -7,7 +7,7 @@ const initDateRange = { startDate: null, endDate: null, key: 'selection' };
 
 export function DateRangePickerProvider({ children }) {
     const [dateRange, setDateRange] = useState(initDateRange);
-    const [aggregationType, setAggregationType] = useState(AggregationType.hourly);
+    const [aggregationType, setAggregationType] = useState(AggregationType.hour);
 
     const contextValue = useMemo(() => ({
         dateRange, setDateRange,

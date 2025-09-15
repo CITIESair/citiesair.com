@@ -11,7 +11,6 @@ import * as Tracking from '../../Utils/Tracking';
 import { fetchDataFromURL } from '../../API/ApiFetch';
 import { SupportedFetchExtensions } from "../../API/Utils";
 import { getRawDatasetUrl } from '../../API/ApiUrls';
-import { RawDatasetType } from "../../API/Utils";
 import LoadingAnimation from '../LoadingAnimation';
 
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
@@ -19,6 +18,7 @@ import { DashboardContext } from '../../ContextProviders/DashboardContext';
 import CustomDialog from '../CustomDialog/CustomDialog';
 import { CITIESair } from '../../Utils/GlobalVariables';
 import useLoginHandler from '../Account/useLoginHandler';
+import AggregationType from '../DateRangePicker/AggregationType';
 
 export default function DatasetDownloadDialog({ onButtonClick }) {
   const { handleRestrictedAccess } = useLoginHandler(onButtonClick);
@@ -43,8 +43,8 @@ export default function DatasetDownloadDialog({ onButtonClick }) {
           location_short: item.sensor.location_short,
           location_long: item.sensor.location_long,
           last_seen: item.sensor.last_seen.split('T')[0],
-          rawDatasets: Object.keys(RawDatasetType).reduce((datasetAcc, datasetKey) => {
-            datasetAcc[RawDatasetType[datasetKey]] = {
+          rawDatasets: Object.keys(AggregationType).reverse().reduce((datasetAcc, datasetKey) => {
+            datasetAcc[AggregationType[datasetKey]] = {
               sample: null,
               full: null
             };
@@ -95,7 +95,7 @@ const DatasetSelectorAndPreviewer = (props) => {
   useEffect(() => {
     if (Object.keys(sensorsDatasets).length > 0 && !previewingDataset) {
       const firstSensor = Object.keys(sensorsDatasets)[0];
-      const initialDatasetType = RawDatasetType.hourly;
+      const initialDatasetType = AggregationType.hour;
 
       setPreviewingDataset({
         sensor: firstSensor,
@@ -108,7 +108,7 @@ const DatasetSelectorAndPreviewer = (props) => {
       const url = getRawDatasetUrl({
         school_id: schoolID,
         sensor_location_short: firstSensor,
-        datasetType: initialDatasetType,
+        aggregationType: initialDatasetType,
         isSample: true
       });
 
@@ -194,10 +194,10 @@ const DatasetsTable = (props) => {
 const Dataset = (props) => {
   const { schoolID, sensorsDatasets, sensor, previewingDataset, setPreviewingDataset, isPreviewing, updateSensorsDatasets } = props;
 
-  const [selectedDatasetType, setSelectedDatasetType] = useState(RawDatasetType.hourly);
+  const [selectedDatasetType, setSelectedDatasetType] = useState(AggregationType.hour);
 
   useEffect(() => {
-    if (selectedDatasetType !== RawDatasetType.hourly) setSelectedDatasetType(RawDatasetType.hourly);
+    if (selectedDatasetType !== AggregationType.hour) setSelectedDatasetType(AggregationType.hour);
   }, [schoolID])
 
   const handleDatasetTypeChange = (event) => {
@@ -214,7 +214,7 @@ const Dataset = (props) => {
       const url = getRawDatasetUrl({
         school_id: schoolID,
         sensor_location_short: sensorsDatasets[sensor].location_short,
-        datasetType: datasetType,
+        aggregationType: datasetType,
         isSample: true
       });
 
@@ -300,7 +300,7 @@ const PreviewDataset = (props) => {
       const url = getRawDatasetUrl({
         school_id: schoolID,
         sensor_location_short: previewingDataset.sensor,
-        datasetType: previewingDataset.datasetType,
+        aggregationType: previewingDataset.datasetType,
         isSample: false
       });
 

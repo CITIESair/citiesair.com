@@ -4,7 +4,7 @@ import { useContext, useEffect, useMemo, useState, useCallback } from 'react';
 
 import { GoogleContext } from '../../ContextProviders/GoogleContext';
 
-import { Alert, Box, Grid, Stack } from '@mui/material/';
+import { Box, Grid, Stack } from '@mui/material/';
 
 import { useTheme } from '@mui/material/styles';
 import SeriesSelector from './SubchartUtils/SeriesSelector';
@@ -23,28 +23,7 @@ import { returnSelectedDataType } from '../../Utils/AirQuality/DataTypes';
 
 import AxesPicker from '../../Components/AxesPicker/AxesPicker';
 
-const NoChartToRender = ({ dataType, height, selectableAxes }) => {
-  let messagePrefix = "This sensor ";
-  let messageSuffix = " data for this chart. Please choose a different sensor or data type.";
-
-  if (selectableAxes) {
-    messagePrefix = "This pair of sensors ";
-    messageSuffix = " correlation data. Please choose another pair or a different data type."
-  }
-
-  return (
-    <Box height={height}>
-      <Alert severity="error" sx={{ my: 2 }}>
-        {messagePrefix}
-        does not have&nbsp;
-        <Box component="span" textTransform="capitalize">
-          {dataType}
-        </Box>
-        {messageSuffix}
-      </Alert>
-    </Box>
-  )
-}
+import NoChartToRender from './NoChartToRender';
 
 export default function SubChart(props) {
   // Props
@@ -121,7 +100,18 @@ export default function SubChart(props) {
           options={options}
           windowSize={windowSize}
         />
-      ) : <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />
+      ) : (
+        <>
+          <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />
+          <NivoCalendarChart
+            dataArray={[]}
+            valueRangeBoxTitle={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes, showUnit: true })}
+            isPortrait={isPortrait}
+            options={options}
+            windowSize={windowSize}
+          />
+        </>
+      )
     );
   }
 
@@ -350,13 +340,15 @@ export default function SubChart(props) {
           newViewColumns.push(dataColumn);
           // Find this dataColumn's supporting columns (whose role !== 'data')
           // A dataColumn has its supporting columns (can be many) follow it immediately
-          for (let i = dataColumn.indexIn_ + 1; i < _allInitialColumns.length; i++) {
-            if (_allInitialColumns[i].role !== 'data') {
-              newViewColumns.push(_allInitialColumns[i]);
-            }
-            // If this loop encounter the next dataColumn, break the loop, all supporting columns for this dataColumn have been discovered
-            else {
-              break;
+          if (isValidArray(_allInitialColumns)) {
+            for (let i = dataColumn.indexIn_ + 1; i < _allInitialColumns.length; i++) {
+              if (_allInitialColumns[i].role !== 'data') {
+                newViewColumns.push(_allInitialColumns[i]);
+              }
+              // If this loop encounter the next dataColumn, break the loop, all supporting columns for this dataColumn have been discovered
+              else {
+                break;
+              }
             }
           }
         }

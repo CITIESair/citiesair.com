@@ -35,7 +35,7 @@ export const getApiUrl = ({
   }
 }
 
-export const getHistoricalChartApiUrl = ({ endpoint, school_id, aggregationType = AggregationType.hourly, startDate, endDate, dataType }) => {
+export const getHistoricalChartApiUrl = ({ endpoint, school_id, aggregationType = AggregationType.hour, startDate, endDate, dataType }) => {
   const params = new URLSearchParams();
 
   if (dataType) params.append('dataType', dataType);
@@ -65,6 +65,6 @@ export const getCorrelationChartApiUrl = ({ endpoint, school_id, dataType, senso
 };
 
 
-export const getRawDatasetUrl = ({ school_id, sensor_location_short, datasetType, isSample = true }) => {
-  return `${API_CITIESair_URL}/${GeneralAPIendpoints.raw}/${school_id}/${sensor_location_short}/${datasetType}?isSample=${isSample}`;
+export const getRawDatasetUrl = ({ school_id, sensor_location_short, aggregationType, isSample = true }) => {
+  return `${API_CITIESair_URL}/${GeneralAPIendpoints.raw}/${school_id}/${sensor_location_short}/${aggregationType}?isSample=${isSample}`;
 }

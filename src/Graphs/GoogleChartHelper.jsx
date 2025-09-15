@@ -244,6 +244,7 @@ export const returnChartControlUI = (props) => {
         },
         annotations: hideAnnotations,
         legend: null,
+        pointSize: 0
       }
     };
   }

@@ -3,7 +3,7 @@ import { ToggleButton, ToggleButtonGroup, Typography, Stack } from '@mui/materia
 import AggregationType from './AggregationType';
 
 export default function AggregationTypeToggle({ aggregationType, setAggregationType }) {
-  const handleChange = (event, newType) => {
+  const handleChange = (_, newType) => {
     if (newType !== null) {
       setAggregationType(newType);
     }
@@ -16,7 +16,7 @@ export default function AggregationTypeToggle({ aggregationType, setAggregationT
       spacing={1}
     >
       <Typography variant="caption" display="block" color="text.secondary">
-        DATA AVERAGE
+        AVERAGE
       </Typography>
 
       <ToggleButtonGroup
@@ -27,23 +27,18 @@ export default function AggregationTypeToggle({ aggregationType, setAggregationT
         aria-label="aggregation type toggle for graph average"
         size="small"
       >
-        <ToggleButton
-          size="small"
-          sx={{ textTransform: "capitalize !important", px: 1.25, py: 0.5 }}
-          value={AggregationType.hourly}
-          aria-label={AggregationType.hourly}
-        >
-          {AggregationType.hourly}
-        </ToggleButton>
-        <ToggleButton
-          size="small"
-          sx={{ textTransform: "capitalize !important", px: 1.25, py: 0.5 }}
-          value={AggregationType.daily}
-          aria-label={AggregationType.daily}
-        >
-          {AggregationType.daily}
-        </ToggleButton>
+        {Object.values(AggregationType).map(type => (
+          <ToggleButton
+            key={type}
+            size="small"
+            sx={{ textTransform: "capitalize !important", px: 1.25, py: 0.5 }}
+            value={type}
+            aria-label={type}
+          >
+            {type}
+          </ToggleButton>
+        ))}
       </ToggleButtonGroup>
-    </Stack >
+    </Stack>
   );
 }

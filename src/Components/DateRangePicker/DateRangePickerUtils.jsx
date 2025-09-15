@@ -6,49 +6,61 @@ import { Paper } from '@mui/material';
 import { addDays, endOfDay, startOfDay, format } from "date-fns";
 import AggregationType from './AggregationType';
 
-export const returnCustomStaticRanges = ({ today, minDateOfDataset, aggregationType }) => {
-  const hourlyReturn = [
-    {
-      label: "Last 14d",
-      range: () => ({
-        startDate: startOfDay(addDays(today, -14)),
-        endDate: endOfDay(today)
-      })
-    },
-    {
-      label: "Last 30d",
-      range: () => ({
-        startDate: startOfDay(addDays(today, -30)),
-        endDate: endOfDay(today)
-      })
-    }
-  ];
+const today = new Date();
 
-  const dailyReturn = [{
-    label: "Last 90d",
-    range: () => ({
-      startDate: startOfDay(addDays(today, -90)),
-      endDate: endOfDay(today)
-    })
-  },
-  {
-    label: "Last 365d",
-    range: () => ({
-      startDate: startOfDay(addDays(today, -365)),
-      endDate: endOfDay(today)
-    })
-  },
-  {
-    label: "All Time",
+const last14Days = {
+  label: "Last 14d",
+  range: () => ({
+    startDate: startOfDay(addDays(today, -14)),
+    endDate: endOfDay(today)
+  })
+};
+
+const last30Days = {
+  label: "Last 30d",
+  range: () => ({
+    startDate: startOfDay(addDays(today, -30)),
+    endDate: endOfDay(today)
+  })
+};
+
+const last365Days = {
+  label: "Last 365d",
+  range: () => ({
+    startDate: startOfDay(addDays(today, -365)),
+    endDate: endOfDay(today)
+  })
+};
+
+const allTime = ({ minDateOfDataset }) => {
+  const formattedMinDate = format(minDateOfDataset, "MMM yyyy");
+  return {
+    label: `All Time (${formattedMinDate} - Now)`,
     range: () => ({
       startDate: minDateOfDataset,
       endDate: endOfDay(today)
     })
   }
-  ];
-
-  return (aggregationType === AggregationType.hourly) ? hourlyReturn : [...hourlyReturn, ...dailyReturn];
 };
+
+export const returnCustomStaticRanges = ({ minDateOfDataset, aggregationType }) => {
+  switch (aggregationType) {
+    case AggregationType.day:
+      return [last30Days, last365Days];
+    case AggregationType.month:
+    case AggregationType.year:
+      return [allTime({ minDateOfDataset })];
+    default:
+      return [last14Days, last30Days];
+  }
+};
+
+export const MaxNumberOfDaysPerAggregationType = {
+  [AggregationType.hour]: 30,
+  [AggregationType.day]: 365,
+  [AggregationType.month]: Infinity,
+  [AggregationType.year]: Infinity
+}
 
 export const StyledDateRangePicker = styled(Paper, {
   shouldForwardProp: (prop) => prop !== 'showPickerPanel' && prop !== 'smallScreen',
