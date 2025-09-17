@@ -1,4 +1,4 @@
-import { Grid, Typography, Container, Stack, Skeleton } from '@mui/material';
+import { Grid, Typography, Stack, Skeleton, Box } from '@mui/material';
 import { useContext, useEffect } from 'react';
 import { MetadataContext } from '../../ContextProviders/MetadataContext';
 import { fetchDataFromURL } from '../../API/ApiFetch';
@@ -37,15 +37,26 @@ const ByTheNumber = (props) => {
       {
         value !== null && value !== undefined
           ? (
-            <Typography color="text.primary" variant="h4" fontWeight="500">
-              {value}
+            <Typography
+              color="text.primary"
+              sx={{ typography: { xs: "h6", sm: "h4" }, }}
+            >
+              <Box fontWeight="500">
+                {value}
+              </Box>
             </Typography>
           )
           : <Skeleton variant="text" sx={{ width: "50%", fontSize: '3rem' }} />
       }
 
-      <Typography color="text.secondary" variant="h6" fontWeight="400" textTransform="uppercase">
-        {text}
+      <Typography
+        color="text.secondary"
+        sx={{ typography: { xs: "body2", sm: "h6" } }}
+        textTransform="uppercase"
+      >
+        <Box fontWeight="400">
+          {text}
+        </Box>
       </Typography>
     </Stack>
   );
@@ -70,32 +81,30 @@ const AtAGlance = () => {
 
 
   return (
-    <Container>
-      <Grid
-        container
-        justifyContent="center"
-        textAlign="center"
-        spacing={1}
-        m={0}
-      >
-        {jsonData.atAGlance.content.map((item, index) => (
-          <Grid
-            key={`by-the-number-${index}`}
-            item
-            justifyContent="center"
-            alignItems="center"
-            sm={3}
-            xs={6}
-          >
-            <ByTheNumber
-              iconString={item.icon}
-              value={stats ? stats[item.id] : null}
-              text={item.text}
-            />
-          </Grid>
-        ))}
-      </Grid>
-    </Container>
+    <Grid
+      container
+      justifyContent="center"
+      textAlign="center"
+      gap={1}
+      m={0}
+    >
+      {jsonData.atAGlance.content.map((item, index) => (
+        <Grid
+          key={`by-the-number-${index}`}
+          item
+          justifyContent="center"
+          alignItems="center"
+          sm={2.75}
+          xs={5.5}
+        >
+          <ByTheNumber
+            iconString={item.icon}
+            value={stats ? stats[item.id] : null}
+            text={item.text}
+          />
+        </Grid>
+      ))}
+    </Grid>
   );
 }
 

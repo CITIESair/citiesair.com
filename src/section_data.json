@@ -85,12 +85,12 @@
         "content": [
             {
                 "id": "schools",
-                "text": "participating schools",
+                "text": "schools",
                 "icon": "SchoolIcon"
             },
             {
                 "id": "sensors",
-                "text": "air quality sensors",
+                "text": "sensors",
                 "icon": "SensorsIcon"
             },
             {
