@@ -207,6 +207,10 @@ export const returnGenericOptions = (props) => {
     },
   };
 
+  if (isPortrait) {
+    options.pointSize = 0;
+  }
+
   return options;
 }
 

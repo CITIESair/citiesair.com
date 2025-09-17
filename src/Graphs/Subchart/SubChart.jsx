@@ -588,7 +588,7 @@ export default function SubChart(props) {
           }}
         >
           {seriesSelector &&
-            <Grid item
+            <Grid item xs="auto"
               sx={{
                 [theme.breakpoints.down('sm')]: { width: '100%' }
               }}
@@ -605,13 +605,22 @@ export default function SubChart(props) {
           }
           {
             dateRangePicker &&
-            <Grid item
+            <Grid
+              container
+              item
+              xs="auto"
+              justifyContent="stretch"
               sx={{
-                height: "2rem",
-                width: { [theme.breakpoints.down('sm')]: { width: '100%' } }
-              }} >
-              <CustomDateRangePicker dataType={selectedDataType} minDateOfDataset={new Date(dateRangePicker.minDate)} />
+                gap: 2,
+                [theme.breakpoints.down('sm')]: { gap: 1, width: '100%' }
+              }}
+            >
+              <CustomDateRangePicker
+                dataType={selectedDataType}
+                minDateOfDataset={new Date(dateRangePicker.minDate)}
+              />
             </Grid>
+
           }
           {selectableAxes &&
             <AxesPicker

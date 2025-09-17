@@ -55,11 +55,23 @@ export const returnCustomStaticRanges = ({ minDateOfDataset, aggregationType }) 
   }
 };
 
-export const MaxNumberOfDaysPerAggregationType = {
-  [AggregationType.hour]: 30,
-  [AggregationType.day]: 365,
-  [AggregationType.month]: Infinity,
-  [AggregationType.year]: Infinity
+export const AggregationTypeMetadata = {
+  [AggregationType.hour]: {
+    maxDays: 30,
+    label: "Hourly"
+  },
+  [AggregationType.day]: {
+    maxDays: 365,
+    label: "Daily"
+  },
+  [AggregationType.month]: {
+    maxDays: Infinity,
+    label: "Monthly"
+  },
+  [AggregationType.year]: {
+    maxDays: Infinity,
+    label: "Yearly"
+  }
 }
 
 export const StyledDateRangePicker = styled(Paper, {

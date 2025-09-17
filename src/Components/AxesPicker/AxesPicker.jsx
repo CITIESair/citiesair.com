@@ -60,7 +60,7 @@ const AxesPicker = (props) => {
       setVAxis(receivedVAxis);
       setHAxis(receivedHAxis);
     }
-  }, [selectedAxes]);
+  }, [selectedAxes, hAxis, vAxis, setHAxis, setVAxis]);
 
   const handleHAxisChange = (event) => {
     const newHAxis = event.target.value;
@@ -127,7 +127,7 @@ const AxesPicker = (props) => {
   }
 
   return (
-    <Grid container spacing={1} alignItems="center">
+    <Grid container item spacing={1} alignItems="center">
       <Grid item xs={12} sm="auto">
         <Stack direction="row" spacing={0}>
           <LeftSelect fullWidth size="small">
