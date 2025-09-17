@@ -64,7 +64,6 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
   }
 
   const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
-  console.log(isSmallScreen)
   const displayDashboardButtons = () => {
     const isOnlyNYUADButton = currentSchoolID === NYUAD && authenticationState.authenticated;
 

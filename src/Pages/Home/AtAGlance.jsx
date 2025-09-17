@@ -11,6 +11,8 @@ import FaceIcon from '@mui/icons-material/Face';
 import SensorsIcon from '@mui/icons-material/Sensors';
 import SchoolIcon from '@mui/icons-material/School';
 
+import jsonData from "../../section_data.json";
+
 const IconLoader = ({ iconString }) => {
   switch (iconString) {
     case 'GroupsIcon':
@@ -31,11 +33,7 @@ const ByTheNumber = (props) => {
 
   return (
     <Stack direction="column" alignItems="center">
-      {
-        iconString
-          ? <IconLoader iconString={iconString} />
-          : <Skeleton variant="circular" width={40} height={40} />
-      }
+      <IconLoader iconString={iconString} />
 
       {
         value !== null && value !== undefined
@@ -47,15 +45,9 @@ const ByTheNumber = (props) => {
           : <Skeleton variant="text" sx={{ width: "50%", fontSize: '3rem' }} />
       }
 
-      {
-        text
-          ? (
-            <Typography color="text.secondary" variant="h6" fontWeight="400" textTransform="uppercase">
-              {text}
-            </Typography>
-          )
-          : <Skeleton variant="text" sx={{ width: "80%", fontSize: '2rem' }} />
-      }
+      <Typography color="text.secondary" variant="h6" fontWeight="400" textTransform="uppercase">
+        {text}
+      </Typography>
     </Stack>
   );
 }
@@ -77,8 +69,6 @@ const AtAGlance = () => {
     }
   }, [stats, setStats]);
 
-  // Create an array of size 4 for loading skeletons
-  const skeletonArray = Array(4).fill(null);
 
   return (
     <Container>
@@ -89,7 +79,7 @@ const AtAGlance = () => {
         spacing={1}
         m={0}
       >
-        {(isValidArray(stats) ? stats : skeletonArray).map((stat, index) => (
+        {jsonData.atAGlance.content.map((item, index) => (
           <Grid
             key={`by-the-number-${index}`}
             item
@@ -99,9 +89,9 @@ const AtAGlance = () => {
             xs={6}
           >
             <ByTheNumber
-              iconString={stat?.icon}
-              value={stat?.value}
-              text={stat?.text}
+              iconString={item.icon}
+              value={stats ? stats[item.id] : null}
+              text={item.text}
             />
           </Grid>
         ))}
