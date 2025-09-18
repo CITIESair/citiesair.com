@@ -14,7 +14,7 @@ import ThemePreferences from '../../Themes/ThemePreferences';
 
 import AirQualityIndexLegendQuickGlance from '../../Components/AirQuality/AirQualityIndexLegendQuickGlance';
 
-import jsonData from '../../section_data.json';
+import sectionData from '../../section_data.json';
 
 import FullWidthBox from '../../Components/FullWidthBox';
 
@@ -179,14 +179,14 @@ const Project = () => {
         </Container>
       </FullWidthBox>
 
-      <Box id={jsonData.charts.id}>
+      <Box id={sectionData.charts.id}>
         {displayCharts(allChartsData)}
       </Box>
       <Divider />
 
       {/* Temporarily not using HyvorTalk comment anymore
       {displayCommentSection === true &&
-        <FullWidthBox id={jsonData.commentSection.id} sx={{ pt: 3, pb: 4 }}>
+        <FullWidthBox id={sectionData.commentSection.id} sx={{ pt: 3, pb: 4 }}>
           <CommentSection pageID={HYVOR_PAGE_NAME} />
         </FullWidthBox>
       } */}

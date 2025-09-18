@@ -11,6 +11,7 @@ import {
   Container,
   Paper,
   Divider,
+  Stack,
 } from "@mui/material";
 
 import { UserContext } from "../../ContextProviders/UserContext";
@@ -28,10 +29,6 @@ import { LoginTypes } from "./Utils";
 import { useSnackbar } from "notistack";
 import { SnackbarMetadata } from "../../Utils/SnackbarMetadata";
 import UserTypeSelector from "./UserTypeSelector";
-
-import parse from 'html-react-parser';
-import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
-import jsonData from '../../section_data.json';
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 
@@ -140,198 +137,194 @@ export default function SignUp() {
   return (
     <Container maxWidth="sm" sx={{ my: 3 }}>
       <Paper sx={{ p: 3 }} elevation={3}>
-        <Typography variant="h5" fontWeight={500} gutterBottom>
-          Sign Up
-        </Typography>
+        <Stack direction="column" gap={3}>
+          <Typography variant="h5" fontWeight={500} gutterBottom>
+            Sign Up
+          </Typography>
 
-        <UserTypeSelector />
+          <UserTypeSelector route={AppRoutes.signUp} />
 
-        {
-          isSchoolForLogin === null ? null :
-            (
-              <>
-                <Typography variant="caption" fontStyle="italic">
+          {
+            isSchoolForLogin === null ? null :
+              (
+                <>
                   {
-                    parse(isSchoolForLogin ? jsonData.signup.content.school : jsonData.signup.content.nyuad, {
-                      replace: replacePlainHTMLWithMuiComponents,
-                    })
-                  }
-                </Typography>
+                    isSchoolForLogin === true ? null :
+                      (
+                        <Box component="form" onSubmit={handleSubmit} noValidate>
+                          <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="email"
+                            label="Email Address"
+                            name="email"
+                            autoComplete="email"
+                            autoFocus
+                            onChange={(e) => setEmail(e.target.value)}
+                            sx={{
+                              my: 1,
+                              "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                  borderColor: validateEmail(email) ? "green" : "",
+                                },
+                                "&.Mui-focused fieldset": {
+                                  borderColor: validateEmail(email) ? "green" : "",
+                                },
+                                "&:hover fieldset": {
+                                  borderColor: validateEmail(email) ? "green" : "",
+                                },
+                              },
+                            }}
+                          />
 
-                {
-                  isSchoolForLogin === true ? null :
-                    (
-                      <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                        <TextField
-                          margin="normal"
-                          required
-                          fullWidth
-                          id="email"
-                          label="Email Address"
-                          name="email"
-                          autoComplete="email"
-                          autoFocus
-                          onChange={(e) => setEmail(e.target.value)}
-                          sx={{
-                            "& .MuiOutlinedInput-root": {
-                              "& fieldset": {
-                                borderColor: validateEmail(email) ? "green" : "",
+                          <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="password"
+                            label={`Password (Minimum ${MINIMUM_PASSWORD_LENGTH} characters)`}
+                            type="password"
+                            id="password"
+                            onChange={(e) => setPassword(e.target.value)}
+                            onFocus={() => setIsPasswordFieldFocused(true)}
+                            onBlur={() => setIsPasswordFieldFocused(false)}
+                            sx={{
+                              my: 1,
+                              "& .MuiOutlinedInput-root": {
+                                "&.Mui-focused fieldset": {
+                                  borderColor:
+                                    password.length >= MINIMUM_PASSWORD_LENGTH
+                                      ? "green"
+                                      : "red",
+                                },
+                                "& fieldset": {
+                                  borderColor:
+                                    password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "",
+                                },
+                                "&:hover fieldset": {
+                                  borderColor:
+                                    password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "",
+                                },
                               },
-                              "&.Mui-focused fieldset": {
-                                borderColor: validateEmail(email) ? "green" : "",
-                              },
-                              "&:hover fieldset": {
-                                borderColor: validateEmail(email) ? "green" : "",
-                              },
-                            },
-                          }}
-                        />
-
-                        <TextField
-                          margin="normal"
-                          required
-                          fullWidth
-                          name="password"
-                          label={`Password (Minimum ${MINIMUM_PASSWORD_LENGTH} characters)`}
-                          type="password"
-                          id="password"
-                          onChange={(e) => setPassword(e.target.value)}
-                          onFocus={() => setIsPasswordFieldFocused(true)}
-                          onBlur={() => setIsPasswordFieldFocused(false)}
-                          sx={{
-                            "& .MuiOutlinedInput-root": {
-                              "&.Mui-focused fieldset": {
-                                borderColor:
-                                  password.length >= MINIMUM_PASSWORD_LENGTH
-                                    ? "green"
-                                    : "red",
-                              },
-                              "& fieldset": {
-                                borderColor:
-                                  password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "",
-                              },
-                              "&:hover fieldset": {
-                                borderColor:
-                                  password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "",
-                              },
-                            },
-                          }}
-                        />
-                        {isPasswordFieldFocused && (
-                          <Typography
-                            variant="caption"
-                            color={
-                              password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "red"
-                            }
-                          >
-                            {password.length >= MINIMUM_PASSWORD_LENGTH ? (
-                              <em>
-                                <b>✔</b> Password at least {MINIMUM_PASSWORD_LENGTH}{" "}
-                                characters
-                              </em>
-                            ) : (
-                              <em>
-                                <b>!</b> Password must be at least {MINIMUM_PASSWORD_LENGTH}{" "}
-                                characters
-                              </em>
-                            )}
-                          </Typography>
-                        )}
-                        <TextField
-                          margin="normal"
-                          required
-                          fullWidth
-                          name="confirmPassword"
-                          label="Confirm Password"
-                          type="password"
-                          id="confirmPassword"
-                          onChange={(e) => setConfirmPassword(e.target.value)}
-                          onFocus={() => setIsConfirmPasswordFieldFocused(true)}
-                          onBlur={() => setIsConfirmPasswordFieldFocused(false)}
-                          sx={{
-                            "& .MuiOutlinedInput-root": {
-                              "& fieldset": {
-                                borderColor:
-                                  password.length >= MINIMUM_PASSWORD_LENGTH &&
-                                    password === confirmPassword
-                                    ? "green"
-                                    : "",
-                              },
-                              "&.Mui-focused fieldset": {
-                                borderColor:
-                                  password.length >= MINIMUM_PASSWORD_LENGTH &&
-                                    password === confirmPassword
-                                    ? "green"
-                                    : "red",
-                              },
-                              "&:hover fieldset": {
-                                borderColor:
-                                  password.length >= MINIMUM_PASSWORD_LENGTH &&
-                                    password === confirmPassword
-                                    ? "green"
-                                    : "",
-                              },
-                            },
-                          }}
-                        />
-                        {isConfirmPasswordFieldFocused && (
-                          <Typography
-                            variant="caption"
-                            color={
-                              password.length >= MINIMUM_PASSWORD_LENGTH &&
-                                password === confirmPassword
-                                ? "green"
-                                : "red"
-                            }
-                          >
-                            {password.length >= MINIMUM_PASSWORD_LENGTH &&
-                              password === confirmPassword ? (
-                              <em>
-                                <b>✔</b> Passwords matched
-                              </em>
-                            ) : (
-                              <em>
-                                <b>!</b> Passwords must match
-                              </em>
-                            )}
-                          </Typography>
-                        )}
-
-                        <Button
-                          type="submit"
-                          fullWidth
-                          variant="contained"
-                          sx={{ mt: 3, mb: 1 }}
-                        >
-                          {loading ? (
-                            <CircularProgress disableShrink color="inherit" size="1.5rem" />
-                          ) : (
-                            "Sign Up"
+                            }}
+                          />
+                          {isPasswordFieldFocused && (
+                            <Typography
+                              variant="caption"
+                              color={
+                                password.length >= MINIMUM_PASSWORD_LENGTH ? "green" : "red"
+                              }
+                            >
+                              {password.length >= MINIMUM_PASSWORD_LENGTH ? (
+                                <em>
+                                  <b>✔</b> Password at least {MINIMUM_PASSWORD_LENGTH}{" "}
+                                  characters
+                                </em>
+                              ) : (
+                                <em>
+                                  <b>!</b> Password must be at least {MINIMUM_PASSWORD_LENGTH}{" "}
+                                  characters
+                                </em>
+                              )}
+                            </Typography>
                           )}
-                        </Button>
+                          <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="confirmPassword"
+                            label="Confirm Password"
+                            type="password"
+                            id="confirmPassword"
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            onFocus={() => setIsConfirmPasswordFieldFocused(true)}
+                            onBlur={() => setIsConfirmPasswordFieldFocused(false)}
+                            sx={{
+                              my: 1,
+                              "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                  borderColor:
+                                    password.length >= MINIMUM_PASSWORD_LENGTH &&
+                                      password === confirmPassword
+                                      ? "green"
+                                      : "",
+                                },
+                                "&.Mui-focused fieldset": {
+                                  borderColor:
+                                    password.length >= MINIMUM_PASSWORD_LENGTH &&
+                                      password === confirmPassword
+                                      ? "green"
+                                      : "red",
+                                },
+                                "&:hover fieldset": {
+                                  borderColor:
+                                    password.length >= MINIMUM_PASSWORD_LENGTH &&
+                                      password === confirmPassword
+                                      ? "green"
+                                      : "",
+                                },
+                              },
+                            }}
+                          />
+                          {isConfirmPasswordFieldFocused && (
+                            <Typography
+                              variant="caption"
+                              color={
+                                password.length >= MINIMUM_PASSWORD_LENGTH &&
+                                  password === confirmPassword
+                                  ? "green"
+                                  : "red"
+                              }
+                            >
+                              {password.length >= MINIMUM_PASSWORD_LENGTH &&
+                                password === confirmPassword ? (
+                                <em>
+                                  <b>✔</b> Passwords matched
+                                </em>
+                              ) : (
+                                <em>
+                                  <b>!</b> Passwords must match
+                                </em>
+                              )}
+                            </Typography>
+                          )}
 
-                        <Divider sx={{ mb: 1 }}>
-                          <Typography color="text.secondary">or</Typography>
-                        </Divider>
+                          <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{ my: 1 }}
+                          >
+                            {loading ? (
+                              <CircularProgress disableShrink color="inherit" size="1.5rem" />
+                            ) : (
+                              "Sign Up"
+                            )}
+                          </Button>
 
-                        <Box width="100%">
-                          <GoogleOAuthButtonAndPopupHandler />
+                          <Divider sx={{ mb: 1 }}>
+                            <Typography color="text.secondary">or</Typography>
+                          </Divider>
+
+                          <Box width="100%">
+                            <GoogleOAuthButtonAndPopupHandler />
+                          </Box>
                         </Box>
-                      </Box>
-                    )
-                }
-              </>
-            )
-        }
+                      )
+                  }
+                </>
+              )
+          }
+        </Stack>
       </Paper>
-
       <Divider textAlign="center" sx={{ my: 3 }}>
         <Typography variant="body1" align="center" color="text.secondary">
           Already have an account?
         </Typography>
       </Divider>
 
-      <Paper sx={{ p: 0, mx: 3 }} elevation={3}>
+      <Paper sx={{ p: 0 }} elevation={3}>
         <Button fullWidth onClick={() => navigate(AppRoutes.login)}>
           Login
         </Button>
@@ -340,6 +333,6 @@ export default function SignUp() {
         open={showVerificationDialog}
         email={email}
       />
-    </Container>
+    </Container >
   );
 }

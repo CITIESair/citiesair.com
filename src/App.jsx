@@ -28,7 +28,7 @@ import { DashboardProvider } from "./ContextProviders/DashboardContext";
 import { PreferenceContext } from "./ContextProviders/PreferenceContext";
 import { MetadataContext } from "./ContextProviders/MetadataContext";
 
-import jsonData from "./section_data.json";
+import sectionData from "./section_data.json";
 
 import { CITIESair } from "./Utils/GlobalVariables";
 import GoogleOAuthCallback from "./Components/Account/OAuth/GoogleOAuthCallback";
@@ -103,7 +103,7 @@ function App() {
         >
           <SpeedDialButton
             chartsTitlesList={chartsTitlesList}
-            topAnchorID={jsonData.topAnchor.id}
+            topAnchorID={sectionData.topAnchor.id}
           />
 
           <Suspense

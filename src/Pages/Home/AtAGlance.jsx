@@ -10,7 +10,7 @@ import FaceIcon from '@mui/icons-material/Face';
 import SensorsIcon from '@mui/icons-material/Sensors';
 import SchoolIcon from '@mui/icons-material/School';
 
-import jsonData from "../../section_data.json";
+import sectionData from "../../section_data.json";
 
 const IconLoader = ({ iconString }) => {
   switch (iconString) {
@@ -88,7 +88,7 @@ const AtAGlance = () => {
       gap={1}
       m={0}
     >
-      {jsonData.atAGlance.content.map((item, index) => (
+      {sectionData.atAGlance.content.map((item, index) => (
         <Grid
           key={`by-the-number-${index}`}
           item

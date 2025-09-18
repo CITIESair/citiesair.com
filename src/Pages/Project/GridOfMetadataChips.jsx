@@ -14,7 +14,7 @@ import EmailIcon from '@mui/icons-material/Email';
 // import * as Tracking from '../../Utils/Tracking';
 // import { scrollToSection } from "../../Components/Header/MenuItemAsNavLink";
 
-// import jsonData from '../../section_data.json';
+// import sectionData from '../../section_data.json';
 // import { HYVOR_PAGE_NAME, NYUAD } from "../../Utils/GlobalVariables";
 
 
@@ -68,11 +68,11 @@ const GridOfMetadataChips = () => {
                     label={`${Object.keys(allChartsData).length || "..."} Chart${Object.keys(allChartsData).length !== 1 ? 's' : ''}`}
                     tooltipTitle="Number of Charts"
                     onClick={() => {
-                        scrollToSection(jsonData.charts.id);
+                        scrollToSection(sectionData.charts.id);
                         Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
                             {
-                                destination_id: jsonData.charts.id,
-                                destination_label: jsonData.chartData?.toString(),
+                                destination_id: sectionData.charts.id,
+                                destination_label: sectionData.chartData?.toString(),
                                 origin_id: 'chip'
                             });
                     }}
@@ -88,11 +88,11 @@ const GridOfMetadataChips = () => {
                             label={`${commentCounts[HYVOR_PAGE_NAME]} Comment${commentCounts[HYVOR_PAGE_NAME] > 1 ? "s" : ""}`}
                             tooltipTitle="Number of Comments"
                             onClick={() => {
-                                scrollToSection(jsonData.commentSection.id);
+                                scrollToSection(sectionData.commentSection.id);
                                 Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
                                     {
-                                        destination_id: jsonData.commentSection.id,
-                                        destination_label: jsonData.commentSection.toString(),
+                                        destination_id: sectionData.commentSection.id,
+                                        destination_label: sectionData.commentSection.toString(),
                                         origin_id: 'chip'
                                     })
                             }}

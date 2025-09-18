@@ -17,7 +17,7 @@ export function UserProvider({ children }) {
   const [user, setUser] = useState(EMPTY_USER_DATA);
 
   // School (private) or NYUAD (can register new account publicly)
-  const [isSchoolForLogin, setIsSchoolForLogin] = useState(null);
+  const [isSchoolForLogin, setIsSchoolForLogin] = useState(true);
 
   const { enqueueSnackbar } = useSnackbar()
 
@@ -41,7 +41,7 @@ export function UserProvider({ children }) {
         setUser(EMPTY_USER_DATA);
         console.log(error);
       });
-  }, []);
+  }, [authenticationState.checkedAuthentication]);
 
   const providerValue = useMemo(() => ({
     authenticationState, setAuthenticationState,
@@ -59,7 +59,7 @@ export function UserProvider({ children }) {
         ...SnackbarMetadata.error, persist: true
       });
     }
-  }, [user]);
+  }, [user, authenticationState, enqueueSnackbar]);
 
   // return context provider
   return (

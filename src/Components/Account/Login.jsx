@@ -3,7 +3,7 @@
 import { useState, useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 
-import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper, Divider } from "@mui/material";
+import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper, Divider, Grid, Stack } from "@mui/material";
 
 import { UserContext } from '../../ContextProviders/UserContext';
 import { getApiUrl } from '../../API/ApiUrls';
@@ -18,11 +18,6 @@ import { LoginTypes } from './Utils';
 
 import { useSnackbar } from "notistack";
 import UserTypeSelector from './UserTypeSelector';
-
-import parse from 'html-react-parser';
-import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
-import jsonData from '../../section_data.json';
-
 
 export default function Login() {
   const { enqueueSnackbar } = useSnackbar()
@@ -121,25 +116,16 @@ export default function Login() {
   return (
     <Container maxWidth="sm" sx={{ my: 3 }}>
       <Paper sx={{ p: 3 }} elevation={3}>
-        <Typography variant="h5" fontWeight={500} gutterBottom>
-          Login
-        </Typography>
+        <Stack direction="column" gap={3}>
+          <Typography variant="h5" fontWeight={500}>
+            Login
+          </Typography>
 
-        <UserTypeSelector />
-
-        {
-          isSchoolForLogin === null ? null :
-            (
-              <>
-                <Typography variant="caption" fontStyle="italic">
-                  {
-                    parse(isSchoolForLogin ? jsonData.login.content.school : jsonData.login.content.nyuad, {
-                      replace: replacePlainHTMLWithMuiComponents,
-                    })
-                  }
-                </Typography>
-
-                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <UserTypeSelector route={AppRoutes.login} />
+          {
+            isSchoolForLogin === null ? null :
+              (
+                <Box component="form" onSubmit={handleSubmit} noValidate>
                   <TextField
                     margin="normal"
                     required
@@ -148,8 +134,8 @@ export default function Login() {
                     label={isSchoolForLogin ? "School ID" : "Email"}
                     name="schoolID"
                     autoComplete="username"
-                    autoFocus
                     onChange={e => setUserName(e.target.value)}
+                    sx={{ mt: 0, mb: 1 }}
                   />
                   <TextField
                     margin="normal"
@@ -161,43 +147,19 @@ export default function Login() {
                     id="password"
                     autoComplete="current-password"
                     onChange={e => setPassword(e.target.value)}
+                    sx={{ my: 1 }}
                   />
                   <FormControlLabel
                     control={<Checkbox value={rememberMe} color="primary" />}
                     onChange={e => setRememberMe(e.target.checked)}
-                    sx={{
-                      mb: isSchoolForLogin ? -1 : 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      ...(isSchoolForLogin && {
-                        '& .MuiCheckbox-root': {
-                          pt: 0.25
-                        }
-                      })
-                    }}
-                    label={
-                      <Typography lineHeight={isSchoolForLogin ? 1.25 : "unset"}>
-                        Remember this device
-                        {
-                          isSchoolForLogin === true ?
-                            (
-                              <>
-                                <br />
-                                <Typography variant='caption' color='text.secondary'>
-                                  (Recommended for public air quality screens that need to run autonomously)
-                                </Typography>
-                              </>
-                            ) : null
-                        }
-                      </Typography>
-                    }
+                    label="Remember Me"
                   />
 
                   <Button
                     type="submit"
                     fullWidth
                     variant="contained"
-                    sx={{ mt: 3, mb: 1 }}
+                    sx={{ my: 1 }}
                   >
                     {
                       loading
@@ -210,7 +172,7 @@ export default function Login() {
                     isSchoolForLogin === true ? null :
                       (
                         <>
-                          <Divider sx={{ mb: 1 }}>
+                          <Divider sx={{ mx: "40%", mb: 1 }}>
                             <Typography color="text.secondary">or</Typography>
                           </Divider>
 
@@ -222,9 +184,9 @@ export default function Login() {
                   }
 
                 </Box>
-              </>
-            )
-        }
+              )
+          }
+        </Stack>
       </Paper>
 
       {
@@ -237,7 +199,7 @@ export default function Login() {
                 </Typography>
               </Divider>
 
-              <Paper sx={{ p: 0, mx: 3 }} elevation={3}>
+              <Paper sx={{ p: 0 }} elevation={3}>
                 <Button
                   fullWidth
                   onClick={() => navigate(AppRoutes.signUp)}

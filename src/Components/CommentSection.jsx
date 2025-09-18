@@ -4,7 +4,7 @@ import { Comments } from '@hyvor/hyvor-talk-react';
 import { styled } from '@mui/material/styles';
 
 import parse from 'html-react-parser';
-import jsonData from '../section_data.json';
+import sectionData from '../section_data.json';
 import UppercaseTitle from './UppercaseTitle';
 import { replacePlainHTMLWithMuiComponents, capitalizePhrase } from '../Utils/UtilFunctions';
 import { HYVOR_WEBSITE_ID } from '../Utils/GlobalVariables';
@@ -27,11 +27,11 @@ const StyledHyvorTalk = styled(Box)(({ theme }) => ({
 function CommentSection({ pageID }) {
   return (
     <Container>
-      <UppercaseTitle text={capitalizePhrase(jsonData.commentSection.id)} />
+      <UppercaseTitle text={capitalizePhrase(sectionData.commentSection.id)} />
       <Box maxWidth="lg" margin="auto">
         <Paper elevation={2} sx={{ p: 3, pb: 0 }}>
           <Typography variant="body2" color="text.secondary" sx={{ pb: 1 }}>
-            {parse(jsonData.commentSection.content, {
+            {parse(sectionData.commentSection.content, {
               replace: replacePlainHTMLWithMuiComponents,
             })}
           </Typography>

@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 import { MenuList } from '@mui/material';
 
 import HomeIcon from '@mui/icons-material/Home';
+import BarChartIcon from '@mui/icons-material/BarChart';
 
 import MenuItemAsNavLink from './MenuItemAsNavLink';
 import NavLinkBehavior from './NavLinkBehavior';
@@ -18,6 +19,7 @@ import PopupState, { bindHover, bindFocus, bindMenu } from 'material-ui-popup-st
 import LogOut from '../Account/Logout';
 import { AppRoutes } from '../../Utils/AppRoutes';
 import { UserRoles } from '../Account/Utils';
+import { NYUAD } from '../../Utils/GlobalVariables';
 // import { NYUAD } from '../../Utils/GlobalVariables';
 
 const StyledMenuList = styled(MenuList)(({ theme }) => ({
@@ -106,7 +108,7 @@ const NavBar = (props) => {
   ) : (
     <MenuItemAsNavLink
       key="login"
-      label={"Login / Signup"}
+      label={"Login Private Dashboard"}
       behavior={NavLinkBehavior.toNewPage}
       icon={<PersonIcon />}
       analyticsOriginID="navbar"
@@ -114,33 +116,22 @@ const NavBar = (props) => {
     />
   );
 
-  // const nyuadDashboardNavLink = (
-  //   <MenuItemAsNavLink
-  //     key={NYUAD}
-  //     label={"NYUAD Dashboard (Public access)"}
-  //     behavior={NavLinkBehavior.toNewPage}
-  //     to={AppRoutes.nyuad}
-  //     icon={<BarChartIcon />}
-  //     analyticsOriginID="navbar"
-  //     school_id={NYUAD}
-  //   />
-  // );
-
-  // const blogNavLink = (
-  //   <MenuItemAsNavLink
-  //     key="blog"
-  //     label={`${CITIESair} Blog`}
-  //     behavior={NavLinkBehavior.toExternalPage}
-  //     to={UniqueRoutes.blogSubdomain}
-  //     icon={<MenuBookIcon />}
-  //     analyticsOriginID="navbar"
-  //   />
-  // );
+  const nyuadDashboardNavLink = (
+    <MenuItemAsNavLink
+      key={NYUAD}
+      label={"NYUAD Public Dashboard"}
+      behavior={NavLinkBehavior.toNewPage}
+      to={AppRoutes.nyuad}
+      icon={<BarChartIcon />}
+      analyticsOriginID="navbar"
+      school_id={NYUAD}
+    />
+  );
 
   useEffect(() => {
     switch (currentPage) {
       case AppRoutes.home:
-        setNavbar([reservedAreaMenu]);
+        setNavbar([nyuadDashboardNavLink, reservedAreaMenu]);
         break;
       default:
         setNavbar([homeNavLink, reservedAreaMenu]);

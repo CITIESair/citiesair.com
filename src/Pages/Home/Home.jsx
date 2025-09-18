@@ -9,7 +9,7 @@ import FullWidthBox from '../../Components/FullWidthBox';
 
 import About from './About';
 
-import jsonData from '../../section_data.json';
+import sectionData from '../../section_data.json';
 
 import * as Tracking from '../../Utils/Tracking';
 import parse from 'html-react-parser';
@@ -93,7 +93,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
                     : <PersonIcon sx={{ fontSize: '0.8rem' }} />
                   }
                   &nbsp;
-                  {authenticationState.authenticated ? `School Dashboard (Private)` : "Login to Private Dashboard"}
+                  {authenticationState.authenticated ? `School Private Dashboard` : "Login Private Dashboard"}
                 </Button>
               </Grid>
             )
@@ -125,7 +125,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
             }}
           >
             <BarChartIcon sx={{ fontSize: '0.8rem' }} />
-            NYUAD Dashboard {isOnlyNYUADButton ? "" : "(Public)"}
+            NYUAD {isOnlyNYUADButton ? "" : "Public"} Dashboard
           </Button>
         </Grid>
       </Grid>
@@ -142,7 +142,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
           <AtAGlance />
 
           <Typography sx={{ mt: 2 }} variant="body1" color="text.secondary">
-            {parse(jsonData.publicOutdoorStations.content, {
+            {parse(sectionData.publicOutdoorStations.content, {
               replace: replacePlainHTMLWithMuiComponents,
             })}
           </Typography>
@@ -208,7 +208,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
 
       <Divider />
 
-      <FullWidthBox id={jsonData.about.id} sx={{ pt: 3, pb: 4 }}>
+      <FullWidthBox id={sectionData.about.id} sx={{ pt: 3, pb: 4 }}>
         <Container>
           <About />
         </Container>
@@ -216,7 +216,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
 
       <Divider />
 
-      <FullWidthBox id={jsonData.getInTouch.id} sx={{ pt: 3, pb: 4 }}>
+      <FullWidthBox id={sectionData.getInTouch.id} sx={{ pt: 3, pb: 4 }}>
         <Container>
           <GetInTouch />
         </Container>

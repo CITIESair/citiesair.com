@@ -14,12 +14,12 @@ export function MetadataProvider({ children }) {
   // const fetchCommentCounts = async () => {
   //   const commentCountsForAllPages = {};
   //   try {
-  //     const jsonData = await fetchDataFromURL({
+  //     const data = await fetchDataFromURL({
   //       url: HYVOR_API_URL,
   //       needsAuthorization: false,
   //       includesContentTypeHeader: false
   //     });
-  //     jsonData.forEach((item) => {
+  //     data.forEach((item) => {
   //       commentCountsForAllPages[item.identifier] = item.comments_count;
   //     });
   //     return commentCountsForAllPages;
