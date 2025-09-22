@@ -14,6 +14,7 @@ import { AQI_Database } from '../../Utils/AirQuality/AirQualityIndexHelper';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import ThemePreferences from '../../Themes/ThemePreferences';
 import { NYUAD } from '../../Utils/GlobalVariables';
+import { getTranslation } from '../../Utils/UtilFunctions';
 
 const NYUADbanner = (props) => {
   const { themePreference } = useContext(PreferenceContext);
@@ -245,7 +246,7 @@ const NYUADbanner = (props) => {
 };
 
 const AQIscale = ({ isSmallScreen, isOnBannerPage, showLabel = true }) => {
-  const { themePreference } = useContext(PreferenceContext);
+  const { themePreference, language } = useContext(PreferenceContext);
 
   return (
     <Stack
@@ -256,7 +257,7 @@ const AQIscale = ({ isSmallScreen, isOnBannerPage, showLabel = true }) => {
       {AQI_Database.map((element, index) => (
         <Tooltip
           key={index}
-          title={!isOnBannerPage && isSmallScreen && element.category}
+          title={!isOnBannerPage && isSmallScreen && getTranslation(element.category, language)}
           slotProps={{
             popper: {
               modifiers: [
@@ -301,7 +302,7 @@ const AQIscale = ({ isSmallScreen, isOnBannerPage, showLabel = true }) => {
                   px: 0.25
                 }}
               >
-                <small>{element.category}</small>
+                <small>{getTranslation(element.category, language)}</small>
               </Typography>
             }
           </Stack>

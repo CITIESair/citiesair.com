@@ -1,6 +1,6 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useContext } from 'react';
 import * as d3 from 'd3';
 import { AQI_Database } from '../../../Utils/AirQuality/AirQualityIndexHelper';
 import { SensorStatus } from '../SensorStatus';
@@ -8,15 +8,16 @@ import { Box } from '@mui/material';
 
 import { areDOMOverlapped } from './ScreenUtils';
 
-import ThemePreferences from '../../../Themes/ThemePreferences';
-import { capitalizePhrase } from '../../../Utils/UtilFunctions';
+import { capitalizePhrase, getTranslation } from '../../../Utils/UtilFunctions';
 import { INACTIVE_SENSOR_COLORS } from '../../../Themes/CustomColors';
 import { useTheme } from '@mui/material';
+import { PreferenceContext } from '../../../ContextProviders/PreferenceContext';
 
 const numberOfHoursForHistoricalData = 6;
 
 const RecentHistoricalGraph = (props) => {
   const { data } = props;
+  const { language } = useContext(PreferenceContext);
   const theme = useTheme();
 
   const graphContainer = useRef();
@@ -25,7 +26,7 @@ const RecentHistoricalGraph = (props) => {
   const layerXaxisWrapper = useRef();
   const layerLines = useRef();
 
-  let svg, width, height, xAxis, yAxis;
+  let width, height, xAxis, yAxis;
   let maxAQItoDisplay = 200;
   const xTickPeriod = 120; // xAxis ticks every 2 hour
   const dotRadius = 10;
@@ -50,7 +51,6 @@ const RecentHistoricalGraph = (props) => {
     if (!layerXaxisWrapper.current) return;
     if (!layerLines.current) return;
 
-    svg = d3.select(graphContainer.current);
     width = graphContainer.current.clientWidth;
     height = graphContainer.current.clientHeight - margin.top;
 
@@ -107,9 +107,9 @@ const RecentHistoricalGraph = (props) => {
     let marginText = Math.floor(font_size / 5);
     // 4. Loop through all the aqi_category and add each category into the graph
     for (let i = 0; i < AQI_Database.length; i++) {
-      const category = AQI_Database[i];
-      const upper = category.aqiUS.high === Infinity ? maxAQItoDisplay : category.aqiUS.high;
-      const lower = category.aqiUS.low;
+      const element = AQI_Database[i];
+      const upper = element.aqiUS.high === Infinity ? maxAQItoDisplay : element.aqiUS.high;
+      const lower = element.aqiUS.low;
 
       if (maxAQItoDisplay <= lower) break;
 
@@ -121,7 +121,7 @@ const RecentHistoricalGraph = (props) => {
         .attr("y", height - (upper / maxAQItoDisplay) * height + margin.top)
         .attr("width", width)
         .attr("height", aqiRange / maxAQItoDisplay * height)
-        .attr("fill", category.color.Light);
+        .attr("fill", element.color.Light);
 
       // Add the AQI categories numbers
       d3.select(layerTexts.current)
@@ -130,12 +130,12 @@ const RecentHistoricalGraph = (props) => {
         .attr(
           "y",
           height -
-          (category.aqiUS.low / maxAQItoDisplay) * height -
+          (element.aqiUS.low / maxAQItoDisplay) * height -
           3.5 * marginText + margin.top
         )
-        .attr("fill", category.color.Light)
+        .attr("fill", element.color.Light)
         .attr("font-size", font_size)
-        .text(Math.floor(category.aqiUS.low / 50) * 50);
+        .text(Math.floor(element.aqiUS.low / 50) * 50);
 
       d3.select(layerTexts.current)
         .append("text")
@@ -143,11 +143,11 @@ const RecentHistoricalGraph = (props) => {
         .attr("x", marginText + 2)
         .attr(
           "y",
-          height - (category.aqiUS.low / maxAQItoDisplay) * height - marginText + margin.top
+          height - (element.aqiUS.low / maxAQItoDisplay) * height - marginText + margin.top
         )
-        .attr("fill", category.color.Light)
+        .attr("fill", element.color.Light)
         .attr("font-size", font_size / 2)
-        .text(category.category);
+        .text(getTranslation(element.category, language));
     };
 
     // 5. Add the xAxisWrapper and its texts
@@ -216,8 +216,8 @@ const RecentHistoricalGraph = (props) => {
             ")"
           )
           .attr("fill",
-            sensorData?.current?.aqi?.category ?
-              theme.palette.text.aqi[sensorData.current.aqi.category] :
+            sensorData?.current?.aqi?.categoryIndex !== null ?
+              theme.palette.text.aqi[sensorData.current.aqi.categoryIndex] :
               INACTIVE_SENSOR_COLORS.screen
           )
           ;
@@ -261,7 +261,7 @@ const RecentHistoricalGraph = (props) => {
       }
     });
 
-  }, [data])
+  }, [data, language])
 
   return (
     <Box

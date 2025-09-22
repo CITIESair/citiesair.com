@@ -16,6 +16,9 @@ import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import { CurrentAQIGridSize, ElementSizes } from './CurrentAQIGridSize';
 import { useTheme } from '@mui/material';
 import { INACTIVE_SENSOR_COLORS } from '../../Themes/CustomColors';
+import { getTranslation } from '../../Utils/UtilFunctions';
+
+import sectionData from '../../section_data.json';
 
 const CurrentAQIGrid = (props) => {
   const {
@@ -47,6 +50,10 @@ const CurrentAQIGrid = (props) => {
   const CurrentAQISingleSensor = (props) => {
     const { sensor, current, gridSizes, isScreen } = props;
     const theme = useTheme();
+    const { language } = useContext(PreferenceContext);
+
+    const categoryObject = AQI_Database[current?.aqi?.categoryIndex];
+    const categoryText = categoryObject ? getTranslation(AQI_Database[current?.aqi?.categoryIndex]?.category, language) : null;
 
     return (
       <Grid
@@ -58,8 +65,8 @@ const CurrentAQIGrid = (props) => {
             <Box>
               <Box sx={{
                 '& .MuiTypography-root': {
-                  color: (current?.aqi?.category && sensor.sensor_status === SensorStatus.active) ?
-                    theme.palette.text.aqi[current.aqi.category]
+                  color: (sensor?.aqi?.categoryIndex !== null && sensor?.sensor_status === SensorStatus.active) ?
+                    theme.palette.text.aqi[current.aqi.categoryIndex]
                     : (isScreen ? INACTIVE_SENSOR_COLORS.screen : theme.palette.text.aqi[SensorStatus.offline])
                 }
               }}>
@@ -84,7 +91,7 @@ const CurrentAQIGrid = (props) => {
                     overflow: 'hidden'
                   }}
                 >
-                  {current?.aqi?.category || '--'}
+                  {categoryText || "--"}
                 </Typography>
               </Box>
 
@@ -129,7 +136,7 @@ const CurrentAQIGrid = (props) => {
         {
           sensor?.sensor_status !== SensorStatus.active &&
           <Typography variant={ElementSizes[size].sensorStatus} className="condensedFont">
-            {returnSensorStatusString(current)}
+            {returnSensorStatusString(current, language)}
           </Typography>
         }
       </Grid>
@@ -143,7 +150,7 @@ const CurrentAQIGrid = (props) => {
       spacing={1}
       sx={{
         '& .MuiSvgIcon-root': {
-          verticalAlign: 'sub',
+          verticalAlign: 'middle',
           fontSize: ElementSizes[size].icon
         },
         '& *': {
@@ -250,8 +257,8 @@ export const SimpleCurrentAQIlist = (props) => {
                 <Box
                   component="span"
                   color={
-                    (sensorData?.current?.aqi?.category && sensorData.sensor?.sensor_status) ?
-                      theme.palette.text.aqi[sensorData.current.aqi.category] :
+                    (sensorData?.current?.aqi?.categoryIndex !== null && sensorData.sensor?.sensor_status) ?
+                      theme.palette.text.aqi[sensorData.current.aqi.categoryIndex] :
                       'text.secondary'
                   }
                 >
@@ -276,6 +283,10 @@ export const SimpleCurrentAQIlist = (props) => {
 
 const displayLastUpdateAndSensorStatus = ({ sensor, size, isScreen }) => {
   const theme = useTheme();
+  const { language } = useContext(PreferenceContext);
+
+  const offlineText = getTranslation(sectionData.status.content.offline, language);
+  const lastUpdateText = getTranslation(sectionData.status.content.lastUpdate, language);
 
   if (isScreen && sensor?.sensor_status === SensorStatus.active) return null;
   else
@@ -295,14 +306,14 @@ const displayLastUpdateAndSensorStatus = ({ sensor, size, isScreen }) => {
             <ErrorIcon
               sx={{
                 '& *': {
-                  color: `${theme.palette.text.aqi[AQI_Database[3].category]} !important` // red
+                  color: `${theme.palette.text.aqi[3]} !important` // red
                 },
                 mr: 0.5
               }} />
-            Offline.&nbsp;
+            {offlineText}.&nbsp;
           </>
         }
-        {`Last update: ${getFormattedLastSeen(sensor?.lastSeenInMinutes)}`}
+        {`${lastUpdateText}: ${getFormattedLastSeen(sensor?.lastSeenInMinutes, language)}`}
       </Typography>
     )
 }

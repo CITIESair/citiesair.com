@@ -1,7 +1,6 @@
 import { calculateSensorStatus } from "../Components/AirQuality/SensorStatus";
-import { AQI_Database } from "../Utils/AirQuality/AirQualityIndexHelper";
-import parse from 'html-react-parser';
 import { SupportedFetchExtensions, RESTmethods } from "./Utils";
+
 
 const genericErrorMessage = 'Network response was not OK';
 
@@ -93,27 +92,12 @@ export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {
         const now = new Date();
         const lastSeenTimestamp = new Date(sensorData.sensor?.last_seen || sensorData.current?.timestamp);
         const lastSeenInMinutes = Math.round((now - lastSeenTimestamp) / 1000 / 60);
-        const sensor_status = calculateSensorStatus(lastSeenInMinutes);
-
-        // Update current data
-        if (sensorData.current) {
-          const aqi = sensorData.current.aqi;
-          if (typeof aqi?.categoryIndex === 'number' && !isNaN(aqi?.categoryIndex)) {
-            const { healthSuggestions } = AQI_Database[aqi.categoryIndex];
-            const healthSuggestion = parse(healthSuggestions[sensorData.sensor?.location_type] || "");
-
-            sensorData.current = {
-              ...sensorData.current,
-              healthSuggestion
-            }
-          }
-        }
 
         // Update sensor metadata
         sensorData.sensor = {
           ...sensorData.sensor,
           lastSeenInMinutes,
-          sensor_status
+          sensor_status: calculateSensorStatus(lastSeenInMinutes)
         }
       });
       return data;

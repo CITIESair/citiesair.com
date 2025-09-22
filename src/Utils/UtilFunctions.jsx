@@ -142,3 +142,30 @@ export const validateEmail = (email) => {
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
 };
+
+export const getTranslation = (field, lang = "en", replacements = {}) => {
+  if (field === null || field === undefined) return null;
+
+  const template =
+    typeof field === "string" ? field : field[lang] || field.en;
+
+  // If no placeholders, just return string
+  if (!template.includes("{{")) {
+    return template;
+  }
+
+  // Otherwise, split and replace placeholders
+  const parts = template.split(/(\{\{.*?\}\})/g);
+
+  return parts.map((part, i) => {
+    const match = part.match(/\{\{(.*?)\}\}/);
+    if (match) {
+      const key = match[1].trim();
+      if (replacements[key] !== undefined) {
+        return <Fragment key={i}>{replacements[key]}</Fragment>;
+      }
+      return ""; // fallback: drop unknown placeholder
+    }
+    return part; // plain text
+  });
+};

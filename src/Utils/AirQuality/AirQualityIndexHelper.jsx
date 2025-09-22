@@ -7,7 +7,7 @@ import { SensorStatus } from '../../Components/AirQuality/SensorStatus';
 export const AQI_Database = [
   {
     id: 0,
-    category: 'Good',
+    category: { en: 'Good', lg: 'Mulungi' },
     color: {
       Light: colors.green[lightShade],
       Dark: colors.green[darkShade]
@@ -30,7 +30,7 @@ export const AQI_Database = [
     },
     description: 'Air quality is satisfactory, and air pollution poses little or no risk',
     healthSuggestions: {
-      outdoors: 'Enjoy outdoor activities, the air is great!',
+      outdoors: { en: 'Enjoy outdoor activities, the air is great!', lg: 'Placeholder' },
       indoors_generic: 'Enjoy clean indoor air',
       indoors_dining_hall: 'Enjoy clean dining hall air',
       indoors_gym: 'Enjoy clean air for physical activities indoors',
@@ -39,7 +39,7 @@ export const AQI_Database = [
   },
   {
     id: 1,
-    category: 'Moderate',
+    category: { en: 'Moderate', lg: 'Ekigero' },
     color: {
       Light: "#ffb600",
       Dark: colors.yellow[darkShade + 200]
@@ -62,7 +62,7 @@ export const AQI_Database = [
     },
     description: 'Air quality is acceptable. However, there may be a risk for some people, particularly those who are unusually sensitive to air pollution',
     healthSuggestions: {
-      outdoors: 'Children and individuals with respiratory issues might need to reduce prolonged outdoor exertion',
+      outdoors: { en: 'Children and individuals with respiratory issues might need to reduce prolonged outdoor exertion', lg: 'Placeholder' },
       indoors_generic: 'Indoor air is acceptable, but not great',
       indoors_dining_hall: 'Indoor air is acceptable, but not great<br>Avoid Grill area',
       indoors_gym: 'Indoor air is acceptable, but not great',
@@ -71,7 +71,7 @@ export const AQI_Database = [
   },
   {
     id: 2,
-    category: 'Unhealthy for Sensitive Groups',
+    category: { en: 'Unhealthy for Sensitive Groups', lg: 'Gwabulabe Eri Abantu Abamu' },
     color: {
       Light: colors.orange[lightShade],
       Dark: colors.orange[darkShade]
@@ -94,7 +94,7 @@ export const AQI_Database = [
     },
     description: 'Members of sensitive groups may experience health effects. The general public is less likely to be affected',
     healthSuggestions: {
-      outdoors: 'Children and individuals with respiratory issues should limit outdoor exertion',
+      outdoors: { en: 'Children and individuals with respiratory issues should limit outdoor exertion', lg: 'Placeholder' },
       indoors_dining_hall: 'Consider take-aways<br>Avoid Grill area',
       indoors_gym: 'Individuals with respiratory issues should lower the intensity of indoor exercises',
       indoors_vulnerable: 'Monitor closely individuals with respiratory issues for any symptom'
@@ -102,7 +102,7 @@ export const AQI_Database = [
   },
   {
     id: 3,
-    category: 'Unhealthy',
+    category: { en: 'Unhealthy', lg: 'Gwabulabe' },
     color: {
       Light: colors.red[lightShade],
       Dark: colors.red[darkShade]
@@ -125,7 +125,7 @@ export const AQI_Database = [
     },
     description: 'Some members of the general public may experience health effects; members of sensitive groups may experience more serious health effects',
     healthSuggestions: {
-      outdoors: 'Everyone should limit outdoor activities<br>Wear masks when going outside',
+      outdoors: { en: 'Everyone should limit outdoor activities<br>Wear masks when going outside', lg: 'Placeholder' },
       indoors_dining_hall:
         'Consider take-aways<br>Avoid Grill area<br>Come back at off-peak hours',
       indoors_gym: 'Everyone should lower the intensity of indoor exercises',
@@ -134,7 +134,7 @@ export const AQI_Database = [
   },
   {
     id: 4,
-    category: 'Very Unhealthy',
+    category: { en: 'Very Unhealthy', lg: 'Gwabulabe Nnyo' },
     color: {
       Light: colors.purple[lightShade],
       Dark: colors.purple[darkShade]
@@ -157,7 +157,7 @@ export const AQI_Database = [
     },
     description: 'Health alert: The risk of health effects is increased for everyone',
     healthSuggestions: {
-      outdoors: 'Avoid outdoor activities at all cost<br>Wear N95 masks when going outside',
+      outdoors: { en: 'Avoid outdoor activities at all cost<br>Wear N95 masks when going outside', lg: 'Placeholder' },
       indoors_dining_hall:
         'Consider take-aways<br>Avoid Grill area<br>Come back at off-peak hours',
       indoors_gym: 'Indoor air quality is not suitable for any physical activities',
@@ -166,7 +166,7 @@ export const AQI_Database = [
   },
   {
     id: 5,
-    category: 'Hazardous',
+    category: { en: 'Hazardous', lg: 'Placeholder' },
     color: {
       Light: maroon[lightShade],
       Dark: maroon[darkShade]
@@ -189,7 +189,7 @@ export const AQI_Database = [
     },
     description: 'Health warning of emergency conditions: everyone is more likely to be affected',
     healthSuggestions: {
-      outdoors: 'Avoid outdoor activities at all cost<br>Wear N95 masks when going outside',
+      outdoors: { en: 'Avoid outdoor activities at all cost<br>Wear N95 masks when going outside', lg: 'Placeholder' },
       indoors_dining_hall:
         'Consider take-aways<br>Avoid Grill area<br>Come back at off-peak hours',
       indoors_gym: 'Indoor air quality is not suitable for any physical activities',
@@ -305,7 +305,7 @@ export const HeatIndex_Database = [
     },
     description: 'No special precautions needed. Comfortable conditions for most people.',
     healthSuggestions: {
-      outdoors: 'Enjoy outdoor activities as usual.',
+      outdoors: { en: 'Enjoy outdoor activities as usual.', lg: 'Placeholder' },
       indoors_generic: 'No special precautions needed.',
       indoors_vulnerable: 'No special precautions needed.'
     }
@@ -327,7 +327,7 @@ export const HeatIndex_Database = [
     },
     description: 'Fatigue possible with prolonged exposure and physical activity.',
     healthSuggestions: {
-      outdoors: 'Take breaks in the shade and stay hydrated.',
+      outdoors: { en: 'Take breaks in the shade and stay hydrated.', lg: 'Placeholder' },
       indoors_generic: 'Ensure good ventilation and stay hydrated.',
       indoors_vulnerable: 'Monitor for signs of heat stress.'
     }
@@ -349,7 +349,7 @@ export const HeatIndex_Database = [
     },
     description: 'Heat cramps and heat exhaustion possible with prolonged exposure and/or physical activity.',
     healthSuggestions: {
-      outdoors: 'Limit strenuous outdoor activities. Take frequent breaks.',
+      outdoors: { en: 'Limit strenuous outdoor activities. Take frequent breaks.', lg: 'Placeholder' },
       indoors_generic: 'Use fans or air conditioning if available.',
       indoors_vulnerable: 'Check on vulnerable individuals regularly.'
     }
@@ -371,7 +371,7 @@ export const HeatIndex_Database = [
     },
     description: 'Heat cramps and heat exhaustion likely; heat stroke possible with prolonged exposure and/or physical activity.',
     healthSuggestions: {
-      outdoors: 'Avoid strenuous activities. Stay in the shade or indoors.',
+      outdoors: { en: 'Avoid strenuous activities. Stay in the shade or indoors.', lg: 'Placeholder' },
       indoors_generic: 'Use air conditioning. Stay hydrated.',
       indoors_vulnerable: 'Extreme caution for elderly, children, and those with health conditions.'
     }
@@ -393,7 +393,7 @@ export const HeatIndex_Database = [
     },
     description: 'Heat stroke highly likely with continued exposure.',
     healthSuggestions: {
-      outdoors: 'Avoid all outdoor activities. Seek cool environments immediately.',
+      outdoors: { en: 'Avoid all outdoor activities. Seek cool environments immediately.', lg: 'Placeholder' },
       indoors_generic: 'Stay in air-conditioned spaces. Drink plenty of fluids.',
       indoors_vulnerable: 'Immediate action required to prevent heat stroke.'
     }
@@ -472,7 +472,7 @@ export const getTextColorsForAQI = ({ themePreference = ThemePreferences.light }
     .reduce((acc, category) => {
       return ({
         ...acc,
-        [category.category]: category.color[themePreference]
+        [category.id]: category.color[themePreference]
       })
     }, {});
 
@@ -481,3 +481,4 @@ export const getTextColorsForAQI = ({ themePreference = ThemePreferences.light }
 
   return obj;
 }
+

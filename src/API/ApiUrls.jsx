@@ -13,7 +13,8 @@ export const getAlertsApiUrl = ({ endpoint, school_id, alert_id }) => {
 
 export const getApiUrl = ({
   endpoint,
-  school_id
+  school_id,
+  screen_id
 }) => {
 
   switch (endpoint) {
@@ -24,11 +25,9 @@ export const getApiUrl = ({
       return `${API_CITIESair_URL}/${endpoint}/${school_id}`;
 
     case GeneralAPIendpoints.screen:
-      const currentUrl = window.location.href;
-      const regex = /\/screen\/(.+)/;
-      const match = currentUrl.match(regex);
-      if (match && match.length > 1) return `${API_CITIESair_URL}/${endpoint}/${match[1]}`
-      else return;
+      return screen_id !== undefined
+        ? `${API_CITIESair_URL}/${endpoint}/${school_id}/${screen_id}`
+        : `${API_CITIESair_URL}/${endpoint}/${school_id}`;
 
     default:
       return `${API_CITIESair_URL}/${endpoint}`;

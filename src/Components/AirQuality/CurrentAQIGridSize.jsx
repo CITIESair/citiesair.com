@@ -6,15 +6,15 @@ export const CurrentAQIGridSize = {
 export const ElementSizes = {
   [CurrentAQIGridSize.large]: {
     icon: null,
-    locationAndCategory: 'h4',
+    locationAndCategory: 'h3',
     aqi: 'h1',
     aqiLineHeight: 0.8,
-    sensorStatus: 'h6',
-    heatIndex: 'body1',
-    meteroDataMarginTop: 2,
-    metero: 'h6',
-    rawValues: 'h6',
-    importantFontWeight: '500 !important'
+    sensorStatus: 'h5',
+    heatIndex: 'h5',
+    meteroDataMarginTop: 3,
+    metero: 'h4',
+    rawValues: 'h4',
+    importantFontWeight: '00 !important'
   },
   [CurrentAQIGridSize.medium]: {
     icon: '1rem',

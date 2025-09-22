@@ -1,6 +1,6 @@
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, styled } from '@mui/material';
 import parse from 'html-react-parser';
-import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
+import { getTranslation, replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 import { AQI_Database } from '../../Utils/AirQuality/AirQualityIndexHelper';
 import { useContext } from 'react';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
@@ -25,7 +25,7 @@ export const StyledTable = styled(Table, {
 }));
 
 function AirQualityIndexTable(props) {
-  const { themePreference } = useContext(PreferenceContext);
+  const { themePreference, language } = useContext(PreferenceContext);
 
   const { tiny, hideAQIDescription } = props;
 
@@ -72,7 +72,7 @@ function AirQualityIndexTable(props) {
                   <Box sx={{ width: '1em', height: '1em', backgroundColor: element.color[themePreference] }} />
                 </TableCell>
                 <TableCell sx={{ pl: 1 }}>
-                  {element.category}
+                  {getTranslation(element.category, language)}
                 </TableCell>
                 <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
                   {returnFormattedBreakpoints(element.aqiUS.low, element.aqiUS.high)}
@@ -85,7 +85,7 @@ function AirQualityIndexTable(props) {
                   && (
                     <TableCell align="left">
                       {
-                        parse(element.healthSuggestions.outdoors, {
+                        parse(getTranslation(element.healthSuggestions.outdoors, language), {
                           replace: replacePlainHTMLWithMuiComponents,
                         })
                       }

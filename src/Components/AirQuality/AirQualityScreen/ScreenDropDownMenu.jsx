@@ -20,7 +20,11 @@ const ScreenDropDownMenu = ({ onButtonClick }) => {
   if (!isValidArray(screens)) return null;
 
   const handleSingleScreenClick = () => {
-    handleRestrictedAccess(() => navigate(`/screen/${currentSchoolID}`));
+    handleRestrictedAccess(() => {
+      const screen_name = screens && screens[0]?.screen_name;
+      if (screen_name === "screen") navigate(`/screen/${currentSchoolID}`);
+      else navigate(`/screen/${currentSchoolID}/${screen_name}`);
+    });
   };
 
   // If there is only 1 screen, show a single button

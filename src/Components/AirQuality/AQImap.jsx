@@ -106,7 +106,7 @@ const circleMarkerWithLabelClass = 'circle-marker-with-label';
 const emptyValue = "--";
 
 const AQImap = (props) => {
-    const { themePreference, temperatureUnitPreference } = useContext(PreferenceContext);
+    const { themePreference, temperatureUnitPreference, language } = useContext(PreferenceContext);
     const {
         tileOption,
         centerCoordinates,
@@ -205,8 +205,8 @@ const AQImap = (props) => {
                                 key={key}
                                 center={[location.sensor?.coordinates?.latitude, location.sensor?.coordinates?.longitude]}
                                 pathOptions={{
-                                    fillColor: (location?.current?.aqi?.category && location?.sensor?.sensor_status === SensorStatus.active) ?
-                                        theme.palette.text.aqi[location.current.aqi.category] : theme.palette.text.aqi[SensorStatus.offline],
+                                    fillColor: (location?.current?.aqi?.categoryIndex !== null && location?.sensor?.sensor_status === SensorStatus.active) ?
+                                        theme.palette.text.aqi[location.current.aqi.categoryIndex] : theme.palette.text.aqi[SensorStatus.offline],
                                     radius: 3,
                                     weight: 0,
                                     fillOpacity: 1
@@ -327,8 +327,8 @@ const AQImap = (props) => {
                 <AttributionControl position="bottomright" prefix={false} />
                 {
                     mapData ? Object.entries(mapData).map(([key, location]) => {
-                        const markerColor = (location?.current?.aqi?.category && location?.sensor?.sensor_status === SensorStatus.active) ?
-                            theme.palette.text.aqi[location.current.aqi.category] : theme.palette.text.aqi[SensorStatus.offline];
+                        const markerColor = (location?.current?.aqi?.categoryIndex !== null && location?.sensor?.sensor_status === SensorStatus.active) ?
+                            theme.palette.text.aqi[location.current.aqi.categoryIndex] : theme.palette.text.aqi[SensorStatus.offline];
 
                         const markerIcon = new L.DivIcon({
                             className: aqiMarkerIconClass,
@@ -438,7 +438,7 @@ const AQImap = (props) => {
                                             <Typography variant='caption' fontWeight="500">Status:</Typography>
                                             &nbsp;
                                             {
-                                                `${location.sensor?.sensor_status} (${getFormattedLastSeen(location.sensor?.lastSeenInMinutes)})`
+                                                `${location.sensor?.sensor_status} (${getFormattedLastSeen(location.sensor?.lastSeenInMinutes, language)})`
                                             }
                                         </Typography>
                                     </StyledLeafletPopup>

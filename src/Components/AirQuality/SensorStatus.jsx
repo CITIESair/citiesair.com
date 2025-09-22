@@ -1,6 +1,9 @@
+import sectionData from '../../section_data.json';
+import { getTranslation } from '../../Utils/UtilFunctions';
+
 export const SensorStatus = {
   active: "active",
-  temporaryOffline: "temporarily offline",
+  temporaryOffline: "temporaryOffline",
   offline: "offline",
   unknown: "unknown"
 };
@@ -44,29 +47,30 @@ export const calculateSensorStatus = (lastSeenInMinutes) => {
   }
 };
 
-export const getFormattedLastSeen = (lastSeenInMinutes) => {
+export const getFormattedLastSeen = (lastSeenInMinutes, language = 'en') => {
+  const agoText = getTranslation(sectionData.status.content.ago, language);
   if (lastSeenInMinutes === null || isNaN(lastSeenInMinutes) || typeof lastSeenInMinutes !== "number") {
     return "--";
   }
   else if (lastSeenInMinutes >= 0 && lastSeenInMinutes < 60) {
-    return `${lastSeenInMinutes}m ago`;
+    return `${lastSeenInMinutes}m ${agoText}`;
   }
   else if (lastSeenInMinutes >= 60 && lastSeenInMinutes < 1440) {
-    return `${Math.floor(lastSeenInMinutes / 60)}h ago`;
+    return `${Math.floor(lastSeenInMinutes / 60)}h ${agoText}`;
   }
   else {
-    return `${Math.floor(lastSeenInMinutes / 1440)}d ago`;
+    return `${Math.floor(lastSeenInMinutes / 1440)}d ${agoText}`;
   }
 };
 
-export const returnSensorStatusString = (sensorData) => {
+export const returnSensorStatusString = (sensorData, language = "en") => {
   switch (sensorData?.sensor_status) {
     case SensorStatus.active:
       return null;
     case SensorStatus.temporaryOffline:
-      return `Last seen: ${sensorData?.lastSeen}h ago`;
+      return `${getTranslation(sectionData.status.content.lastUpdate, language)}: ${sensorData?.lastSeen}h ${getTranslation(sectionData.status.content.ago, language)}`;
     case SensorStatus.offline:
-      return "Sensor offline";
+      return getTranslation(sectionData.status.content.offline, language);
     default:
       return null;
   }

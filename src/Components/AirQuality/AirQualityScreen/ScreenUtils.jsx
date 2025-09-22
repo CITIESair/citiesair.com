@@ -1,11 +1,7 @@
-export const getDomainName = (url) => {
-  return new URL(url).hostname;
-}
-
-export const getUrlAfterScreen = (url) => {
-  const screenString = 'screen';
-  const urlComponents = url.split(screenString);
-  return `${screenString}${urlComponents.pop()}`;
+export const TypesOfScreen = {
+  bothIndoors: 1,
+  bothOutdoors: 2,
+  indoorsVsOutdoors: 3
 }
 
 export const removeLastDirectoryFromURL = (url) => {

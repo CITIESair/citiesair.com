@@ -1,21 +1,16 @@
 // disable eslint for this file
 /* eslint-disable */
 import { useState, useEffect, useContext } from 'react';
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from '../ContextProviders/UserContext';
 
-import { Box, Grid, Typography, Stack, List, ListItem, ListItemText } from '@mui/material';
+import { Box, Grid, Typography, Stack } from '@mui/material';
 
 import CITIESlogoLinkToHome from '../Components/Header/CITIESlogoLinkToHome';
-
-import { SensorStatus } from '../Components/AirQuality/SensorStatus';
-import { getDomainName, getUrlAfterScreen } from '../Components/AirQuality/AirQualityScreen/ScreenUtils';
 
 import RecentHistoricalGraph from '../Components/AirQuality/AirQualityScreen/RecentHistoricalGraph';
 
 import { AQI_Database } from '../Utils/AirQuality/AirQualityIndexHelper';
-
-import QRCode from "react-qr-code";
 
 import CurrentAQIGrid from '../Components/AirQuality/CurrentAQIGrid';
 import { CurrentAQIGridSize } from '../Components/AirQuality/CurrentAQIGridSize';
@@ -24,8 +19,16 @@ import { GeneralAPIendpoints } from "../API/Utils";
 import { fetchAndProcessCurrentSensorsData } from '../API/ApiFetch';
 import { AppRoutes } from '../Utils/AppRoutes';
 import { PreferenceContext } from '../ContextProviders/PreferenceContext';
-import { CITIESair } from '../Utils/GlobalVariables';
+import { CITIESair, KAMPALA } from '../Utils/GlobalVariables';
 import { INACTIVE_SENSOR_COLORS } from '../Themes/CustomColors';
+import { DashboardContext } from '../ContextProviders/DashboardContext';
+import { getTranslation, isValidArray } from '../Utils/UtilFunctions';
+
+import sectionData from '../section_data.json';
+
+import ScreenQRcode from '../Components/AirQuality/AirQualityScreen/ScreenQRcode';
+import ScreenHealthSuggestions from '../Components/AirQuality/AirQualityScreen/ScreenHealthSuggestions';
+import { TypesOfScreen } from '../Components/AirQuality/AirQualityScreen/ScreenUtils';
 
 // Helper function to parse displayHours
 function isWithinDisplayHours(location) {
@@ -45,9 +48,11 @@ function isWithinDisplayHours(location) {
   }
 }
 
-
 const Screen = ({ title }) => {
-  const { temperatureUnitPreference, themePreference } = useContext(PreferenceContext);
+  const { school_id_param, screen_id_param } = useParams()
+
+  const { temperatureUnitPreference, language, setLanguage } = useContext(PreferenceContext);
+  const { schoolMetadata, currentSchoolID } = useContext(DashboardContext);
 
   const { authenticationState } = useContext(UserContext);
   const navigate = useNavigate();
@@ -56,12 +61,28 @@ const Screen = ({ title }) => {
   const locationPath = location.pathname;
 
   const [shouldDisplayScreen, setShouldDisplayScreen] = useState(isWithinDisplayHours(location));
+  const [typeOfScreen, setTypeOfScreen] = useState(isWithinDisplayHours(TypesOfScreen.indoorsVsOutdoors));
+
+  // Timer loop:
+  // - Check if the screen should be displayed (or black screen to save energy)
+  // - Rotate between different languages (if exists)
   useEffect(() => {
+    if (!schoolMetadata || !isValidArray(schoolMetadata.languages)) return;
+
+    const languages = schoolMetadata.languages;
+    if (languages.length <= 1) return;
+
     const intervalId = setInterval(() => {
+      // Update display check
       setShouldDisplayScreen(isWithinDisplayHours(location));
-    }, 60000); // Check every minute
+
+      // Rotate language once per minute
+      const minute = new Date().getMinutes();
+      setLanguage(languages[minute % languages.length]);
+    }, 1000 * 60); // check once per minute
+
     return () => clearInterval(intervalId);
-  }, []);
+  }, [schoolMetadata, location, setLanguage]);
 
   // Update the page's title
   useEffect(() => {
@@ -107,12 +128,29 @@ const Screen = ({ title }) => {
       // Do nothing if the data has been fetched before
       if (Object.keys(data).length != 0) return;
 
-      const url = getApiUrl({ endpoint: GeneralAPIendpoints.screen });
-      if (!url) return;
+      const url = getApiUrl({
+        endpoint: GeneralAPIendpoints.screen,
+        school_id: school_id_param || currentSchoolID,
+        screen_id: screen_id_param
+      });
 
       fetchAndProcessCurrentSensorsData(url)
         .then((data) => {
           setData(data);
+
+          // Determine the type of screen
+          const hasOutdoor = data.some(({ sensor }) => sensor.location_type === "outdoors");
+          const hasIndoor = data.some(({ sensor }) => sensor.location_type.startsWith("indoors"));
+
+          const screenType = hasIndoor && hasOutdoor
+            ? TypesOfScreen.indoorsVsOutdoors
+            : hasIndoor
+              ? TypesOfScreen.bothIndoors
+              : hasOutdoor
+                ? TypesOfScreen.bothOutdoors
+                : null;
+
+          if (screenType) setTypeOfScreen(screenType);
         })
         .catch((error) => {
           console.log(error);
@@ -137,42 +175,8 @@ const Screen = ({ title }) => {
     }
   }, [authenticationState]);
 
-  const AirQualityComparison = () => {
-    // Only display air quality comparison if every sensor is currently active
-    if (!Object.values(data).every((sensorData) => sensorData.sensor?.sensor_status === SensorStatus.active)) return null;
-
-    let outdoorsAQI, indoorsAQI;
-    // Don't display comparison if outdoor air is good
-    for (let i = 0; i < Object.values(data).length; i++) {
-      const sensorData = Object.values(data)[i];
-      if (sensorData.sensor?.location_type === "outdoors") {
-        outdoorsAQI = sensorData.current.aqi;
-        if (outdoorsAQI <= AQI_Database[0].aqiUS.high) return null;
-      }
-      else indoorsAQI = sensorData.current.aqi;
-    }
-
-    const ratio = outdoorsAQI / indoorsAQI;
-    let comparison;
-    if (ratio >= 2) comparison = `${parseFloat(ratio).toFixed(1)} times`;
-    else if (ratio > 1.2) comparison = `${Math.round(100 * ((outdoorsAQI - indoorsAQI) / indoorsAQI))}%`;
-    else return null;
-
-    return (
-      <ListItem>
-        <ListItemText primary={
-          <>Indoors air is
-            <Typography
-              component="span"
-              color={`${AQI_Database[0].color[themePreference]} !important`}
-            >
-              {` ${comparison} `}
-            </Typography>
-            better than outdoors</>
-        } />
-      </ListItem>
-    );
-  }
+  const aqiTitle = getTranslation(sectionData.screen.content.aqiTitle, language);
+  const pm25Title = getTranslation(sectionData.screen.content.pm25Title, language);
 
   if (shouldDisplayScreen) return (
     <Grid
@@ -230,11 +234,11 @@ const Screen = ({ title }) => {
           textAlign="center"
         >
           <Box>
-            <Typography variant="h3" fontWeight="500" color="white">
-              AIR QUALITY INDEX
+            <Typography variant="h2" fontWeight="500" color="white">
+              {aqiTitle}
             </Typography>
-            <Typography variant="h4" className='condensedFont' color={INACTIVE_SENSOR_COLORS.screen}>
-              Particulate Matter PM2.5
+            <Typography variant="h3" className='condensedFont' color={INACTIVE_SENSOR_COLORS.screen}>
+              {pm25Title}
             </Typography>
           </Box>
 
@@ -247,41 +251,11 @@ const Screen = ({ title }) => {
               temperatureUnitPreference={temperatureUnitPreference}
               isScreen={true}
               size={CurrentAQIGridSize.large}
+              showHeatIndex={currentSchoolID === KAMPALA ? false : true}
             />
           </Grid>
 
-          <List
-            className='condensedFont'
-            sx={{
-              listStyleType: 'disclosure-closed',
-              '& .MuiTypography-root': {
-                fontSize: '1.5rem',
-              },
-              '& .MuiListItem-root': {
-                display: 'list-item',
-                ml: 3,
-                p: 0,
-                pr: 3,
-              },
-              '& .MuiTypography-root, .MuiListItem-root': {
-                color: INACTIVE_SENSOR_COLORS.screen
-              }
-            }}>
-            <AirQualityComparison />
-            {
-              Object.entries(data).map(([key, sensorData]) => (
-                sensorData.current?.healthSuggestion &&
-                <ListItem
-                  key={key}
-                  className={sensorData.current?.aqi >= AQI_Database[2].aqiUS.low ? 'flashingRed' : ''}
-                >
-                  <ListItemText
-                    primary={sensorData.current?.healthSuggestion}
-                  />
-                </ListItem>
-              ))
-            }
-          </List>
+          <ScreenHealthSuggestions typeOfScreen={typeOfScreen} data={data} />
         </Stack>
       </Grid>
 
@@ -307,19 +281,21 @@ const Screen = ({ title }) => {
           textAlign="center"
         >
           <Grid item xs={12} sx={{ pt: 3, px: 2 }}>
-            <Typography variant="h3" fontWeight="500" sx={{ color: 'black' }}>
+            <Typography variant="h2" sx={{ color: 'black' }}>
               {CITIESair}
             </Typography>
+            {
+              currentSchoolID === KAMPALA && (
+                <Typography variant="h5" color="text.secondary">
+                  {getTranslation(sectionData.screen.content.dataProvider, language)}: AirQo
+                </Typography>
+              )
+            }
           </Grid>
+
           <Grid item xs={2}>
-            <Box height="auto" width="100%">
-              <QRCode
-                size={256}
-                style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-                value={
-                  `${getDomainName(document.location.href)}?source=${getUrlAfterScreen(document.location.href)}`
-                } viewBox={`0 0 256 256`}
-              />
+            <Box height="auto" width="90%">
+              <ScreenQRcode />
             </Box>
           </Grid>
           <Grid

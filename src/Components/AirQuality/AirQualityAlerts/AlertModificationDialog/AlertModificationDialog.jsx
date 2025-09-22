@@ -67,7 +67,6 @@ const AlertModificationDialog = (props) => {
     const newBody = { ...body };
     delete newBody[AirQualityAlertKeys.child_alert];
     delete newBody[AirQualityAlertKeys.has_child_alert];
-    console.log(newBody)
     return newBody;
   }
 

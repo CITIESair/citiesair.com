@@ -1,4 +1,5 @@
 export const NYUAD = "nyuad";
+export const KAMPALA = "kampala";
 
 export const NUMBER_OF_CHARTS_TO_LOAD_INITIALLY = 2;
 

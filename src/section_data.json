@@ -106,5 +106,55 @@
                 "icon": "GroupsIcon"
             }
         ]
+    },
+    "screen": {
+        "id": "screen",
+        "content": {
+            "aqiTitle": {
+                "en": "Air Quality Index",
+                "lg": "Ekipimo ky'omutindo gw'empewo"
+            },
+            "pm25Title": {
+                "en": "Particulate Matter PM2.5",
+                "lg": "Obukutubba obusangibwa mu mpewo"
+            },
+            "dataProvider": {
+                "en": "Data provider",
+                "lg": "Ensibuko yo’bubaka"
+            },
+            "indoorsVsOutdoors": {
+                "en": "Indoor air is {{value}} better than outdoor air",
+                "lg": "placeholder1 {{value}} placeholder2"
+            }
+        }
+    },
+    "status": {
+        "id": "status",
+        "content": {
+            "ago": {
+                "en": "ago",
+                "lg": "..."
+            },
+            "offline": {
+                "en": "Sensor offline",
+                "lg": "..."
+            },
+            "temporaryOffline": {
+                "en": "Temporary offline",
+                "lg": "..."
+            },
+            "active": {
+                "en": "Active",
+                "lg": "..."
+            },
+            "unknown": {
+                "en": "Unknown",
+                "lg": "..."
+            },
+            "lastUpdate": {
+                "en": "Last update",
+                "lg": "..."
+            }
+        }
     }
 }

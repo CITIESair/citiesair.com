@@ -42,7 +42,7 @@ export default function DatasetDownloadDialog({ onButtonClick }) {
           location_type: item.sensor.location_type,
           location_short: item.sensor.location_short,
           location_long: item.sensor.location_long,
-          last_seen: item.sensor.last_seen.split('T')[0],
+          last_seen: item.sensor.last_seen?.split('T')[0],
           rawDatasets: Object.keys(AggregationType).reverse().reduce((datasetAcc, datasetKey) => {
             datasetAcc[AggregationType[datasetKey]] = {
               sample: null,

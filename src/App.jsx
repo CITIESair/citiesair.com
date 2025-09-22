@@ -198,10 +198,19 @@ function App() {
                 }
               />
 
-              <Route
-                path={AppRoutes.anyScreen}
-                element={<Screen title={`${CITIESair} | Screen`} />}
-              />
+              {[AppRoutes.screenWithoutScreenID, AppRoutes.screenWithScreenID].map(
+                (path) => (
+                  <Route
+                    key={path}
+                    path={path}
+                    element={
+                      <DashboardProvider>
+                        <Screen title={`${CITIESair} | Screen`} />
+                      </DashboardProvider>
+                    }
+                  />
+                )
+              )}
 
               <Route path={AppRoutes.nyuadMap} element={<NYUADmap />} />
 
