@@ -119,61 +119,54 @@ const Screen = ({ title }) => {
     };
   }, []);
 
-  // Fetch air quality data from database, depends on the state of 'user' object
+  // Fetch air quality data from database
   useEffect(() => {
-    // Only attempt to fetch data if the user has been authenticated
-    if (authenticationState.checkedAuthentication === false) return;
+    // Do nothing if the data has been fetched before
+    if (Object.keys(data).length != 0) return;
 
-    if (authenticationState.authenticated === true) {
-      // Do nothing if the data has been fetched before
-      if (Object.keys(data).length != 0) return;
+    const url = getApiUrl({
+      endpoint: GeneralAPIendpoints.screen,
+      school_id: school_id_param || currentSchoolID,
+      screen_id: screen_id_param
+    });
 
-      const url = getApiUrl({
-        endpoint: GeneralAPIendpoints.screen,
-        school_id: school_id_param || currentSchoolID,
-        screen_id: screen_id_param
+    fetchAndProcessCurrentSensorsData(url)
+      .then((data) => {
+        setData(data);
+
+        // Determine the type of screen
+        const hasOutdoor = data.some(({ sensor }) => sensor.location_type === "outdoors");
+        const hasIndoor = data.some(({ sensor }) => sensor.location_type.startsWith("indoors"));
+
+        const screenType = hasIndoor && hasOutdoor
+          ? TypesOfScreen.indoorsVsOutdoors
+          : hasIndoor
+            ? TypesOfScreen.bothIndoors
+            : hasOutdoor
+              ? TypesOfScreen.bothOutdoors
+              : null;
+
+        if (screenType) setTypeOfScreen(screenType);
+      })
+      .catch((error) => {
+        console.log(error);
       });
 
+    // Create an interval that fetch new data every 5 minute
+    const fetchInterval = 5 * 60 * 1000; // 5min
+    const intervalId = setInterval(() => {
       fetchAndProcessCurrentSensorsData(url)
         .then((data) => {
           setData(data);
-
-          // Determine the type of screen
-          const hasOutdoor = data.some(({ sensor }) => sensor.location_type === "outdoors");
-          const hasIndoor = data.some(({ sensor }) => sensor.location_type.startsWith("indoors"));
-
-          const screenType = hasIndoor && hasOutdoor
-            ? TypesOfScreen.indoorsVsOutdoors
-            : hasIndoor
-              ? TypesOfScreen.bothIndoors
-              : hasOutdoor
-                ? TypesOfScreen.bothOutdoors
-                : null;
-
-          if (screenType) setTypeOfScreen(screenType);
         })
-        .catch((error) => {
-          console.log(error);
-        });
-
-      // Create an interval that fetch new data every 5 minute
-      const fetchInterval = 5 * 60 * 1000; // 5min
-      const intervalId = setInterval(() => {
-        fetchAndProcessCurrentSensorsData(url)
-          .then((data) => {
-            setData(data);
-          })
-          .catch((error) => console.log(error))
-      },
-        fetchInterval);
-      // Clean up the interval when the component unmounts
-      return () => {
-        clearInterval(intervalId);
-      };
-    } else {
-      navigate(`${AppRoutes.login}?${AppRoutes.redirectQuery}=${locationPath}`);
+        .catch((error) => console.log(error))
+    },
+      fetchInterval);
+    // Clean up the interval when the component unmounts
+    return () => {
+      clearInterval(intervalId);
     }
-  }, [authenticationState]);
+  }, []);
 
   const aqiTitle = getTranslation(sectionData.screen.content.aqiTitle, language);
   const pm25Title = getTranslation(sectionData.screen.content.pm25Title, language);
