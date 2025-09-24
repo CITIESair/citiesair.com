@@ -50,32 +50,16 @@ const AxesPicker = (props) => {
   const [shouldDisableApplyButton, setShouldDisableApplyButton] = useState(true);
 
   useEffect(() => {
-    const { hAxis: receivedHAxis, vAxis: receivedVAxis } = selectedAxes;
+    const { hAxis: receivedHAxis, vAxis: receivedVAxis } = selectedAxes || {};
+
     if (!(receivedHAxis && receivedVAxis)) {
       setShouldDisableApplyButton(true);
       return;
-    };
-
-    if (!(hAxis === receivedHAxis && vAxis === receivedVAxis)) {
-      setVAxis(receivedVAxis);
-      setHAxis(receivedHAxis);
     }
-  }, [selectedAxes, hAxis, vAxis, setHAxis, setVAxis]);
 
-  const handleHAxisChange = (event) => {
-    const newHAxis = event.target.value;
-    setHAxis(newHAxis);
-    if (newHAxis === vAxis) {
-      setVAxis('');
-    }
-  };
-
-  const handleVAxisChange = (event) => {
-    setVAxis(event.target.value);
-    if (event.target.value === hAxis) {
-      setHAxis('');
-    }
-  };
+    setHAxis(receivedHAxis);
+    setVAxis(receivedVAxis);
+  }, [selectedAxes, setHAxis, setVAxis]);
 
   useEffect(() => {
     const { hAxis: receivedHAxis, vAxis: receivedVAxis } = selectedAxes;
@@ -136,7 +120,9 @@ const AxesPicker = (props) => {
               labelId="x-axis-select-label"
               value={hAxis || selectedAxes?.hAxis || null}
               label="X Axis"
-              onChange={handleHAxisChange}
+              onChange={(event) => {
+                setHAxis(event.target.value)
+              }}
               autoWidth
             >
               {allowedAxes?.map(option => (
@@ -157,7 +143,9 @@ const AxesPicker = (props) => {
               labelId="y-axis-select-label"
               value={vAxis || selectedAxes?.vAxis || null}
               label="Y Axis"
-              onChange={handleVAxisChange}
+              onChange={(event) => {
+                setVAxis(event.target.value)
+              }}
               autoWidth
             >
               {allowedAxes?.map(option => (
@@ -181,7 +169,7 @@ const AxesPicker = (props) => {
           fullWidth
           sx={{ height: "100%" }}
           onClick={applyChanges}
-          disabled={shouldDisableApplyButton}
+          disabled={shouldDisableApplyButton || isFetchingData}
         >
           {renderApplyButtonLabel()}
         </Button>

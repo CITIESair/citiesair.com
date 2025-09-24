@@ -207,7 +207,7 @@ export const returnGenericOptions = (props) => {
     },
   };
 
-  if (isPortrait) {
+  if (isPortrait && chartData?.chartType === "LineChart") {
     options.pointSize = 0;
   }
 
