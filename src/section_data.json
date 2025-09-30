@@ -133,27 +133,27 @@
         "content": {
             "ago": {
                 "en": "ago",
-                "lg": "..."
+                "lg": "akaseera akayise"
             },
             "offline": {
                 "en": "Sensor offline",
-                "lg": "..."
+                "lg": "Toli ku mpewo"
             },
             "temporaryOffline": {
                 "en": "Temporary offline",
-                "lg": "..."
+                "lg": "Toli ku mpewo okumala akaseera akatono"
             },
             "active": {
                 "en": "Active",
-                "lg": "..."
+                "lg": "Oli kumpewo"
             },
             "unknown": {
                 "en": "Unknown",
-                "lg": "..."
+                "lg": "Tekimanyiddwa"
             },
             "lastUpdate": {
                 "en": "Last update",
-                "lg": "..."
+                "lg": "Ekipimo ekikyasembyeyo"
             }
         }
     }

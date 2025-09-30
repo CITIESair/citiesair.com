@@ -99,6 +99,11 @@ export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {
           lastSeenInMinutes,
           sensor_status: calculateSensorStatus(lastSeenInMinutes)
         }
+        if (sensorData.sensor.location_long === "CITIES@NYUAD") {
+          console.log(sensorData)
+
+        }
+
       });
       return data;
 

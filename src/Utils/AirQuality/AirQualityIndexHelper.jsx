@@ -30,7 +30,9 @@ export const AQI_Database = [
     },
     description: 'Air quality is satisfactory, and air pollution poses little or no risk',
     healthSuggestions: {
-      outdoors: { en: 'Enjoy outdoor activities, the air is great!', lg: 'Placeholder' },
+      outdoors: {
+        en: 'Enjoy outdoor activities, the air is great!', lg: 'Nyumirwa byokola nga oli bweru, empewo nungi nnyo'
+      },
       indoors_generic: 'Enjoy clean indoor air',
       indoors_dining_hall: 'Enjoy clean dining hall air',
       indoors_gym: 'Enjoy clean air for physical activities indoors',
@@ -62,7 +64,9 @@ export const AQI_Database = [
     },
     description: 'Air quality is acceptable. However, there may be a risk for some people, particularly those who are unusually sensitive to air pollution',
     healthSuggestions: {
-      outdoors: { en: 'Children and individuals with respiratory issues might need to reduce prolonged outdoor exertion', lg: 'Placeholder' },
+      outdoors: {
+        en: 'Children and individuals with respiratory issues might need to reduce prolonged outdoor exertion', lg: "Abaana n'abantu abalina obuzibu mu kussa bandyetaaga okukendeeza ku budde bwebamala ebweeru"
+      },
       indoors_generic: 'Indoor air is acceptable, but not great',
       indoors_dining_hall: 'Indoor air is acceptable, but not great<br>Avoid Grill area',
       indoors_gym: 'Indoor air is acceptable, but not great',
@@ -94,7 +98,9 @@ export const AQI_Database = [
     },
     description: 'Members of sensitive groups may experience health effects. The general public is less likely to be affected',
     healthSuggestions: {
-      outdoors: { en: 'Children and individuals with respiratory issues should limit outdoor exertion', lg: 'Placeholder' },
+      outdoors: {
+        en: 'Children and individuals with respiratory issues should limit outdoor exertion', lg: "Abaana ne bassekinoomu abalina obuzibu mu kussa balina okukendeeza obudde bwebamala ebweru w'ebizimbe"
+      },
       indoors_dining_hall: 'Consider take-aways<br>Avoid Grill area',
       indoors_gym: 'Individuals with respiratory issues should lower the intensity of indoor exercises',
       indoors_vulnerable: 'Monitor closely individuals with respiratory issues for any symptom'
@@ -125,7 +131,9 @@ export const AQI_Database = [
     },
     description: 'Some members of the general public may experience health effects; members of sensitive groups may experience more serious health effects',
     healthSuggestions: {
-      outdoors: { en: 'Everyone should limit outdoor activities<br>Wear masks when going outside', lg: 'Placeholder' },
+      outdoors: {
+        en: 'Everyone should limit outdoor activities<br>Wear masks when going outside', lg: "Buli muntu akendeze ku byakolera ebweru w'enju<br>Wandyambedde masiki nga oli bweru"
+      },
       indoors_dining_hall:
         'Consider take-aways<br>Avoid Grill area<br>Come back at off-peak hours',
       indoors_gym: 'Everyone should lower the intensity of indoor exercises',
@@ -157,7 +165,9 @@ export const AQI_Database = [
     },
     description: 'Health alert: The risk of health effects is increased for everyone',
     healthSuggestions: {
-      outdoors: { en: 'Avoid outdoor activities at all cost<br>Wear N95 masks when going outside', lg: 'Placeholder' },
+      outdoors: {
+        en: 'Avoid outdoor activities at all cost<br>Wear N95 masks when going outside', lg: 'Okulabula eri obulamu: Obulabe eri obulamu bweyongedde eri buli muntu'
+      },
       indoors_dining_hall:
         'Consider take-aways<br>Avoid Grill area<br>Come back at off-peak hours',
       indoors_gym: 'Indoor air quality is not suitable for any physical activities',
@@ -166,7 +176,7 @@ export const AQI_Database = [
   },
   {
     id: 5,
-    category: { en: 'Hazardous', lg: 'Placeholder' },
+    category: { en: 'Hazardous', lg: 'Gwabulabe' },
     color: {
       Light: maroon[lightShade],
       Dark: maroon[darkShade]
@@ -189,7 +199,7 @@ export const AQI_Database = [
     },
     description: 'Health warning of emergency conditions: everyone is more likely to be affected',
     healthSuggestions: {
-      outdoors: { en: 'Avoid outdoor activities at all cost<br>Wear N95 masks when going outside', lg: 'Placeholder' },
+      outdoors: { en: 'Avoid outdoor activities at all cost<br>Wear N95 masks when going outside', lg: "Okulabula eri okwamangu eri eby'obulamu: Buli bulamu bw’omuntu bwandikosebwa" },
       indoors_dining_hall:
         'Consider take-aways<br>Avoid Grill area<br>Come back at off-peak hours',
       indoors_gym: 'Indoor air quality is not suitable for any physical activities',

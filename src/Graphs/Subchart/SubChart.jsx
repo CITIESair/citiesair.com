@@ -452,14 +452,13 @@ export default function SubChart(props) {
         setRenderChartNow(true);
         const dataTable = google.visualization.arrayToDataTable(dataArray);
 
-        // Call functions for formatting the number if numberFormat is specified 
+        // Call functions for formatting the number if numberFormat/dateFormat is specified 
         if (formatters && typeof formatters === 'object') {
           if (formatters.hasOwnProperty("numberFormatter")) {
             const numberFormat = new google.visualization.NumberFormat(formatters.numberFormatter.numberFormat);
             formatters.numberFormatter.columns.forEach(col => numberFormat.format(dataTable, col));
           }
         }
-
         setDataTable(dataTable);
       }
     }

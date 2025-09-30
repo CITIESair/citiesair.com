@@ -17,7 +17,6 @@ import { CurrentAQIGridSize } from '../Components/AirQuality/CurrentAQIGridSize'
 import { getApiUrl } from '../API/ApiUrls';
 import { GeneralAPIendpoints } from "../API/Utils";
 import { fetchAndProcessCurrentSensorsData } from '../API/ApiFetch';
-import { AppRoutes } from '../Utils/AppRoutes';
 import { PreferenceContext } from '../ContextProviders/PreferenceContext';
 import { CITIESair, KAMPALA } from '../Utils/GlobalVariables';
 import { INACTIVE_SENSOR_COLORS } from '../Themes/CustomColors';
@@ -71,6 +70,13 @@ const Screen = ({ title }) => {
 
     const languages = schoolMetadata.languages;
     if (languages.length <= 1) return;
+
+    // Update display check
+    setShouldDisplayScreen(isWithinDisplayHours(location));
+
+    // Rotate language once per minute
+    const minute = new Date().getMinutes();
+    setLanguage(languages[minute % languages.length]);
 
     const intervalId = setInterval(() => {
       // Update display check
@@ -244,6 +250,7 @@ const Screen = ({ title }) => {
               temperatureUnitPreference={temperatureUnitPreference}
               isScreen={true}
               size={CurrentAQIGridSize.large}
+              showWeather={currentSchoolID === KAMPALA ? false : true}
               showHeatIndex={currentSchoolID === KAMPALA ? false : true}
             />
           </Grid>
