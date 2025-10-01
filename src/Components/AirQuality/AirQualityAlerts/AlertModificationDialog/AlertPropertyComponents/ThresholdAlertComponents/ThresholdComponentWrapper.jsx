@@ -4,6 +4,9 @@ import { AirQualityAlertKeys, useAirQualityAlert } from "../../../../../../Conte
 import { AQI_Database, HeatIndex_Database, VOC_Database } from "../../../../../../Utils/AirQuality/AirQualityIndexHelper";
 import { useTheme } from '@mui/material';
 import { generateCssBackgroundGradient } from "../../../../../../Utils/Gradient/GradientUtils";
+import { getTranslation } from "../../../../../../Utils/UtilFunctions";
+import { useContext } from "react";
+import { PreferenceContext } from "../../../../../../ContextProviders/PreferenceContext";
 
 export const ThresholdComponentWrapper = (props) => {
     const {
@@ -16,8 +19,8 @@ export const ThresholdComponentWrapper = (props) => {
     } = props;
 
     const { editingAlert } = useAirQualityAlert();
-
     const theme = useTheme();
+    const { language } = useContext(PreferenceContext);
 
     let thresholdSlider = null;
 
@@ -56,11 +59,11 @@ export const ThresholdComponentWrapper = (props) => {
         if (database) {
             marks = database
                 .filter((_, index) => index !== 0) // do not return the lowest category
-                .map((elem) => {
-                    const val = elem[dataType.threshold_mapping_name].low;
+                .map((element) => {
+                    const val = element[dataType.threshold_mapping_name].low;
                     return {
                         value: val,
-                        label: elem.category
+                        label: getTranslation(element.category, language)
                     }
                 })
         }
