@@ -28,6 +28,7 @@ import sectionData from '../section_data.json';
 import ScreenQRcode from '../Components/AirQuality/AirQualityScreen/ScreenQRcode';
 import ScreenHealthSuggestions from '../Components/AirQuality/AirQualityScreen/ScreenHealthSuggestions';
 import { TypesOfScreen } from '../Components/AirQuality/AirQualityScreen/ScreenUtils';
+import AggregationType from '../Components/DateRangePicker/AggregationType';
 
 // Helper function to parse displayHours
 function isWithinDisplayHours(location) {
@@ -53,11 +54,7 @@ const Screen = ({ title }) => {
   const { temperatureUnitPreference, language, setLanguage } = useContext(PreferenceContext);
   const { schoolMetadata, currentSchoolID } = useContext(DashboardContext);
 
-  const { authenticationState } = useContext(UserContext);
-  const navigate = useNavigate();
-
   const location = useLocation();
-  const locationPath = location.pathname;
 
   const [shouldDisplayScreen, setShouldDisplayScreen] = useState(isWithinDisplayHours(location));
   const [typeOfScreen, setTypeOfScreen] = useState(isWithinDisplayHours(TypesOfScreen.indoorsVsOutdoors));
@@ -130,13 +127,16 @@ const Screen = ({ title }) => {
     // Do nothing if the data has been fetched before
     if (Object.keys(data).length != 0) return;
 
+    const school_id = school_id_param || currentSchoolID;
+    const aggregationType = school_id === KAMPALA ? AggregationType.hour : null;
     const url = getApiUrl({
       endpoint: GeneralAPIendpoints.screen,
-      school_id: school_id_param || currentSchoolID,
-      screen_id: screen_id_param
+      school_id,
+      screen_id: screen_id_param,
+      aggregationType
     });
 
-    fetchAndProcessCurrentSensorsData(url)
+    fetchAndProcessCurrentSensorsData(url, aggregationType)
       .then((data) => {
         setData(data);
 
@@ -252,6 +252,7 @@ const Screen = ({ title }) => {
               size={CurrentAQIGridSize.large}
               showWeather={currentSchoolID === KAMPALA ? false : true}
               showHeatIndex={currentSchoolID === KAMPALA ? false : true}
+              showLastUpdate={currentSchoolID === KAMPALA ? true : false}
             />
           </Grid>
 

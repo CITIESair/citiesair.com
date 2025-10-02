@@ -14,7 +14,8 @@ export const getAlertsApiUrl = ({ endpoint, school_id, alert_id }) => {
 export const getApiUrl = ({
   endpoint,
   school_id,
-  screen_id
+  screen_id,
+  aggregationType
 }) => {
 
   switch (endpoint) {
@@ -24,10 +25,18 @@ export const getApiUrl = ({
     case GeneralAPIendpoints.alertsEmails:
       return `${API_CITIESair_URL}/${endpoint}/${school_id}`;
 
-    case GeneralAPIendpoints.screen:
-      return screen_id !== undefined
-        ? `${API_CITIESair_URL}/${endpoint}/${school_id}/${screen_id}`
-        : `${API_CITIESair_URL}/${endpoint}/${school_id}`;
+    case GeneralAPIendpoints.screen: {
+      const path = [API_CITIESair_URL, endpoint, school_id, screen_id]
+        .filter(Boolean) // removes undefined or null values
+        .join('/');
+
+      const params = new URLSearchParams();
+      if (aggregationType !== undefined) {
+        params.append('aggregationType', aggregationType);
+      }
+
+      return params.toString() ? `${path}?${params}` : path;
+    }
 
     default:
       return `${API_CITIESair_URL}/${endpoint}`;

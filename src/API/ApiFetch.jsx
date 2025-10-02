@@ -78,7 +78,7 @@ export const fetchDataFromURL = async ({
 
 };
 
-export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {
+export const fetchAndProcessCurrentSensorsData = async (apiUrl, aggregationType = null) => {
   try {
     const data = await fetchDataFromURL({ url: apiUrl });
 
@@ -97,9 +97,10 @@ export const fetchAndProcessCurrentSensorsData = async (apiUrl) => {
         sensorData.sensor = {
           ...sensorData.sensor,
           lastSeenInMinutes,
-          sensor_status: calculateSensorStatus(lastSeenInMinutes)
+          sensor_status: calculateSensorStatus(lastSeenInMinutes, aggregationType)
         }
       });
+
       return data;
 
     } catch (error) {

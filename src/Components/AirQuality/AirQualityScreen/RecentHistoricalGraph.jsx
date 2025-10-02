@@ -12,6 +12,7 @@ import { capitalizePhrase, getTranslation } from '../../../Utils/UtilFunctions';
 import { INACTIVE_SENSOR_COLORS } from '../../../Themes/CustomColors';
 import { useTheme } from '@mui/material';
 import { PreferenceContext } from '../../../ContextProviders/PreferenceContext';
+import AggregationType from '../../DateRangePicker/AggregationType';
 
 const numberOfHoursForHistoricalData = 6;
 
@@ -28,7 +29,6 @@ const RecentHistoricalGraph = (props) => {
 
   let width, height, xAxis, yAxis;
   let maxAQItoDisplay = 200;
-  const xTickPeriod = 120; // xAxis ticks every 2 hour
   const dotRadius = 10;
   const margin = { top: 30, right: 80, bottom: 0, left: 70 };
 
@@ -50,6 +50,10 @@ const RecentHistoricalGraph = (props) => {
     if (!layerTexts.current) return;
     if (!layerXaxisWrapper.current) return;
     if (!layerLines.current) return;
+
+    const viewHours = data?.[0]?.metadata?.viewHours || numberOfHoursForHistoricalData;
+    const aggregationType = data?.[0]?.metadata?.aggregationType;
+    const xTickInterval = aggregationType === AggregationType.hour ? 4 : 1; // every 4 hours for .hour and 1 hour otherwise
 
     width = graphContainer.current.clientWidth;
     height = graphContainer.current.clientHeight - margin.top;
@@ -93,7 +97,7 @@ const RecentHistoricalGraph = (props) => {
     // 1. Set up the xAxis domain and range
     let xAxisMax = new Date();
     let xAxisMin = new Date();
-    xAxisMin.setHours(xAxisMin.getHours() - numberOfHoursForHistoricalData);
+    xAxisMin.setHours(xAxisMin.getHours() - viewHours);
     xAxis = d3.scaleTime().domain([xAxisMin, xAxisMax]).rangeRound([margin.left, width - margin.right]); // width is inclusive of margin
 
     // 2. Set up the yAxis domain and range
@@ -160,23 +164,29 @@ const RecentHistoricalGraph = (props) => {
       .attr("fill", "white");
 
     // 6. Add the X Axis on top of the graph, as well as ticks
-    let formatHour = d3.timeFormat("%H:%M");
+    // Floor xAxisMax to the top of the hour (e.g. 11:34 → 11:00)
+    xAxisMax.setMinutes(0, 0, 0);
+    // Generate tick array starting from floored max
+    const ticks = [];
+    for (let t = new Date(xAxisMax); t >= xAxisMin; t.setHours(t.getHours() - xTickInterval)) {
+      ticks.push(new Date(t));
+    }
+    ticks.reverse(); // earliest → latest
+    // Now apply these ticks to the axis
     d3.select(layerXaxisWrapper.current)
       .append("g")
       .attr("transform", `translate(0,${margin.top})`)
       .call(
-        d3
-          .axisTop(xAxis)
-          .tickSize(-height) // negative length to make vertical lines
-          .ticks(d3.timeMinute.every(xTickPeriod))
-          .tickFormat(function (d) {
-            return formatHour(d);
-          })
+        d3.axisTop(xAxis)
+          .tickSize(-height)
+          .tickValues(ticks)
+          .tickFormat(d3.timeFormat("%H:%M"))
       )
       .attr("font-size", height / 20)
       .attr("color", INACTIVE_SENSOR_COLORS.screen)
       .select(".domain")
       .remove();
+
     d3.select(layerXaxisWrapper.current)
       .selectAll('line')
       .attr('stroke', 'white')

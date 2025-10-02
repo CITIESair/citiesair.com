@@ -32,7 +32,7 @@ import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import AQIexplanation from '../../Components/AirQuality/AQIexplanation';
 import { DateRangePickerProvider } from '../../ContextProviders/DateRangePickerContext';
 import { AxesPickerProvider } from '../../ContextProviders/AxesPickerContext';
-import { NYUAD } from '../../Utils/GlobalVariables';
+import { KAMPALA, NYUAD } from '../../Utils/GlobalVariables';
 
 import ProjectReservedArea from './ProjectReservedArea';
 import GridOfMetadataChips from './GridOfMetadataChips';
@@ -42,7 +42,7 @@ import LoadMoreButton from './LoadMoreButton';
 const Project = () => {
   const { setChartsTitlesList } = useContext(MetadataContext);
 
-  const { schoolMetadata, currentSensorMeasurements, allChartsData } = useContext(DashboardContext);
+  const { schoolMetadata, currentSensorMeasurements, allChartsData, currentSchoolID } = useContext(DashboardContext);
   const { themePreference, temperatureUnitPreference } = useContext(PreferenceContext);
 
   // Temporarily not using HyvorTalk comment anymore
@@ -168,6 +168,8 @@ const Project = () => {
                 currentSensorsData={currentSensorMeasurements}
                 isScreen={false}
                 temperatureUnitPreference={temperatureUnitPreference}
+                showHeatIndex={currentSchoolID === KAMPALA && false}
+                showWeather={currentSchoolID === KAMPALA && false}
               />
             </Box>)
           }

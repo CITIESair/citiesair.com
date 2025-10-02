@@ -66,7 +66,7 @@ const CurrentAQIGrid = (props) => {
               <Box sx={{
                 '& .MuiTypography-root': {
                   color: (sensor?.aqi?.categoryIndex !== null && sensor?.sensor_status === SensorStatus.active) ?
-                    theme.palette.text.aqi[current.aqi.categoryIndex]
+                    theme.palette.text.aqi[current?.aqi?.categoryIndex]
                     : (isScreen ? INACTIVE_SENSOR_COLORS.screen : theme.palette.text.aqi[SensorStatus.offline])
                 }
               }}>
@@ -129,7 +129,7 @@ const CurrentAQIGrid = (props) => {
           }
 
           {
-            showLastUpdate && displayLastUpdateAndSensorStatus({ sensor, size, isScreen })
+            (showLastUpdate || (!showLastUpdate && sensor?.sensor_status !== SensorStatus.active)) && displayLastUpdateAndSensorStatus({ sensor, size })
           }
         </Box>
 
@@ -281,41 +281,39 @@ export const SimpleCurrentAQIlist = (props) => {
   );
 }
 
-const displayLastUpdateAndSensorStatus = ({ sensor, size, isScreen }) => {
+const displayLastUpdateAndSensorStatus = ({ sensor, size }) => {
   const theme = useTheme();
   const { language } = useContext(PreferenceContext);
 
   const offlineText = getTranslation(sectionData.status.content.offline, language);
   const lastUpdateText = getTranslation(sectionData.status.content.lastUpdate, language);
 
-  if (isScreen && sensor?.sensor_status === SensorStatus.active) return null;
-  else
-    return (
-      <Typography
-        variant={ElementSizes[size].sensorStatus}
-        display="block"
-        sx={{
-          mt: 0,
-          fontWeight: ElementSizes[size].importantFontWeight
-        }}
-      >
-        {
-          sensor?.sensor_status !== SensorStatus.active
-          &&
-          <>
-            <ErrorIcon
-              sx={{
-                '& *': {
-                  color: `${theme.palette.text.aqi[3]} !important` // red
-                },
-                mr: 0.5
-              }} />
-            {offlineText}.&nbsp;
-          </>
-        }
-        {`${lastUpdateText}: ${getFormattedLastSeen(sensor?.lastSeenInMinutes, language)}`}
-      </Typography>
-    )
+  return (
+    <Typography
+      variant={ElementSizes[size].sensorStatus}
+      display="block"
+      sx={{
+        mt: 0,
+        fontWeight: ElementSizes[size].importantFontWeight
+      }}
+    >
+      {
+        sensor?.sensor_status !== SensorStatus.active
+        &&
+        <>
+          <ErrorIcon
+            sx={{
+              '& *': {
+                color: `${theme.palette.text.aqi[3]} !important` // red
+              },
+              mr: 0.5
+            }} />
+          {offlineText}.&nbsp;
+        </>
+      }
+      {`${lastUpdateText}: ${getFormattedLastSeen(sensor?.lastSeenInMinutes, language)}`}
+    </Typography>
+  )
 }
 
 const displayWeather = ({ size, current, temperatureUnitPreference, roundTemperature, showWeatherText }) => {

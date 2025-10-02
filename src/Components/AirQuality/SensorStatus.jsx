@@ -1,5 +1,6 @@
 import sectionData from '../../section_data.json';
 import { getTranslation } from '../../Utils/UtilFunctions';
+import AggregationType from '../DateRangePicker/AggregationType';
 
 export const SensorStatus = {
   active: "active",
@@ -8,44 +9,45 @@ export const SensorStatus = {
   unknown: "unknown"
 };
 
-export const SensorStatusCriteria = [
-  {
-    name: SensorStatus.active,
-    cutoffInMinutes: {
-      low: 0,
-      high: 2 * 60 // 2 hours
-    }
-  },
-  {
-    name: SensorStatus.temporaryOffline,
-    cutoffInMinutes: {
-      low: 2 * 60 + 1,
-      high: 6 * 60
-    }
-  },
-  {
-    name: SensorStatus.offline,
-    cutoffInMinutes: {
-      low: 6 * 60 + 1,
-      high: Infinity
-    }
-  }
-];
+const SensorStatusCriteria = (aggregationType = null) => {
+  const isHourly = aggregationType === AggregationType.hour;
 
-export const calculateSensorStatus = (lastSeenInMinutes) => {
-  try {
-    for (let i = 0; i < SensorStatusCriteria.length; i++) {
-      const category = SensorStatusCriteria[i];
-      if (category.cutoffInMinutes.low <= lastSeenInMinutes && lastSeenInMinutes <= category.cutoffInMinutes.high) {
-        return category.name;
+  const activeHigh = isHourly ? 6 * 60 : 2 * 60; // in minutes
+  const tempHigh = isHourly ? 24 * 60 : 6 * 60;
+
+  return [
+    {
+      name: SensorStatus.active,
+      cutoffInMinutes: {
+        low: 0,
+        high: activeHigh
+      }
+    },
+    {
+      name: SensorStatus.temporaryOffline,
+      cutoffInMinutes: {
+        low: activeHigh + 1,
+        high: tempHigh
+      }
+    },
+    {
+      name: SensorStatus.offline,
+      cutoffInMinutes: {
+        low: tempHigh + 1,
+        high: Infinity
       }
     }
-    return SensorStatus.unknown;
-
-  } catch {
-    return SensorStatus.unknown;
-  }
+  ];
 };
+
+export const calculateSensorStatus = (lastSeenInMinutes, aggregationType) => {
+  const match = SensorStatusCriteria(aggregationType).find(({ cutoffInMinutes: { low, high } }) =>
+    lastSeenInMinutes >= low && lastSeenInMinutes <= high
+  );
+
+  return match?.name ?? SensorStatus.unknown;
+};
+
 
 export const getFormattedLastSeen = (lastSeenInMinutes, language = 'en') => {
   const agoText = getTranslation(sectionData.status.content.ago, language);

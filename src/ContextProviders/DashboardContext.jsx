@@ -5,13 +5,14 @@ import { fetchDataFromURL, fetchAndProcessCurrentSensorsData } from '../API/ApiF
 import { getApiUrl, getChartApiUrl } from '../API/ApiUrls';
 import { ChartAPIendpointsOrder, GeneralAPIendpoints } from '../API/Utils';
 import { AppRoutes } from '../Utils/AppRoutes';
-import { NUMBER_OF_CHARTS_TO_LOAD_INITIALLY, NYUAD } from '../Utils/GlobalVariables';
+import { KAMPALA, NUMBER_OF_CHARTS_TO_LOAD_INITIALLY, NYUAD } from '../Utils/GlobalVariables';
 import { LocalStorage } from '../Utils/LocalStorage';
 import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
 import { isValidArray } from '../Utils/UtilFunctions';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { UserContext } from './UserContext';
 import { enqueueSnackbar } from 'notistack';
+import AggregationType from '../Components/DateRangePicker/AggregationType';
 
 export const DashboardContext = createContext("");
 
@@ -147,10 +148,13 @@ export function DashboardProvider({ children }) {
             school_id: school_id
           })
         }),
-        fetchAndProcessCurrentSensorsData(getApiUrl({
-          endpoint: GeneralAPIendpoints.current,
-          school_id: school_id
-        }))
+        fetchAndProcessCurrentSensorsData(
+          getApiUrl({
+            endpoint: GeneralAPIendpoints.current,
+            school_id: school_id
+          }),
+          school_id === KAMPALA ? AggregationType.hour : null
+        )
       ])
 
       setSchoolMetadata(response[0]);
