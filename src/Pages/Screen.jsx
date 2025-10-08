@@ -1,8 +1,7 @@
 // disable eslint for this file
 /* eslint-disable */
 import { useState, useEffect, useContext } from 'react';
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { UserContext } from '../ContextProviders/UserContext';
+import { useLocation, useParams } from "react-router-dom";
 
 import { Box, Grid, Typography, Stack } from '@mui/material';
 
@@ -184,6 +183,7 @@ const Screen = ({ title }) => {
       alignItems="stretch"
       height="100vh"
       sx={{
+        cursor: 'none',
         overflow: 'hidden',
         background: "white",
         '& *': {

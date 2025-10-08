@@ -1,5 +1,5 @@
 // React components
-import { React, useMemo, lazy, Suspense, useContext, useEffect } from "react";
+import { useMemo, lazy, Suspense, useContext, useEffect } from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 
 // MUI components
@@ -59,6 +59,8 @@ const getDesignTokens = (themePreference) => ({
 });
 
 function App() {
+  const params = new URLSearchParams(window.location.search);
+  const isTvScreen = params.get("isTvScreen") === "true";
   const { themePreference, setThemePreference } = useContext(PreferenceContext);
   const { chartsTitlesList } = useContext(MetadataContext);
 
@@ -99,6 +101,8 @@ function App() {
             width: "100%",
             minHeight: "100vh",
             backgroundColor: "customBackground",
+            cursor: isTvScreen ? 'none' : 'unset',
+            overflow: isTvScreen ? 'hidden' : 'auto'
           }}
         >
           <SpeedDialButton
