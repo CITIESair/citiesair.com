@@ -152,15 +152,13 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
       <FullWidthBox sx={{ backgroundColor: 'customAlternateBackground' }}>
         <AQImap
           tileOption={TileOptions.default}
-          themePreference={themePreference}
-          temperatureUnitPreference={temperatureUnitPreference}
           centerCoordinates={[24.46, 54.52]}
           maxBounds={[
             [22.608292, 51.105185],
             [26.407575, 56.456571],
           ]}
           mapData={publicMapData}
-          ariaLabel={`Map of ${CITIESair} public outdoor air quality stations in Abu Dhabi`}
+          ariaLabel={`Map of ${CITIESair} public outdoor air quality stations in UAE`}
         />
 
       </FullWidthBox>
@@ -180,7 +178,6 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
                   initialNyuadCurrentData={currentSensorMeasurements}
                   isOnBannerPage={false}
                   disableInteraction={true}
-                  themePreference={themePreference}
                   minMapHeight={"250px"}
                 />
               ) : (

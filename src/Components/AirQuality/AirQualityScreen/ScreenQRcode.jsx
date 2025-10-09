@@ -10,10 +10,11 @@ const ScreenQRcode = () => {
     const url = document.location.href;
     const urlComponents = url.split('screen');
     const urlAfterScreen = `${'screen'}${urlComponents.pop()}`;
+    const sanitizedUrlAfterScreen = urlAfterScreen.split('?')[0];
 
     const qrValue = isPublic === true
-        ? `${CITIESair_HOST_NAME}/dashboard/${currentSchoolID}?source=${urlAfterScreen}`
-        : `${CITIESair_HOST_NAME}?source=${urlAfterScreen}`;
+        ? `https://${CITIESair_HOST_NAME}/dashboard/${currentSchoolID}?source=${sanitizedUrlAfterScreen}`
+        : `https://${CITIESair_HOST_NAME}?source=${sanitizedUrlAfterScreen}`;
 
     return (
         <QRCode

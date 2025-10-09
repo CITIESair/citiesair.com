@@ -169,3 +169,20 @@ export const getTranslation = (field, lang = "en", replacements = {}) => {
     return part; // plain text
   });
 };
+
+export const isWithinDisplayHours = () => {
+  const params = new URLSearchParams(window.location.search);
+  const displayHours = params.get("displayHours");
+  if (!displayHours) return true; // Show screen if no parameter
+
+  const [start, end] = displayHours.split("-").map(time => parseInt(time.replace(":", ""), 10));
+  const now = parseInt(new Date().toTimeString().slice(0, 5).replace(":", ""), 10);
+
+  if (start <= end) {
+    // Regular range (same day, e.g., 06:00-20:00)
+    return start <= now && now < end;
+  } else {
+    // Overnight range (e.g., 16:00-01:00)
+    return now >= start || now < end;
+  }
+}

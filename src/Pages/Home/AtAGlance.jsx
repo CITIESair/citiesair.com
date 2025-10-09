@@ -39,7 +39,7 @@ const ByTheNumber = (props) => {
           ? (
             <Typography
               color="text.primary"
-              sx={{ typography: { xs: "h6", sm: "h4" }, }}
+              sx={{ typography: { xs: "h6", sm: "h4", lg: "h3" }, }}
             >
               <Box fontWeight="500">
                 {value}
@@ -51,7 +51,7 @@ const ByTheNumber = (props) => {
 
       <Typography
         color="text.secondary"
-        sx={{ typography: { xs: "body2", sm: "h6" } }}
+        sx={{ typography: { xs: "body2", sm: "h6", lg: "h5" } }}
         textTransform="uppercase"
       >
         <Box fontWeight="400">
@@ -66,19 +66,30 @@ const AtAGlance = () => {
   const { stats, setStats } = useContext(MetadataContext);
 
   useEffect(() => {
-    if (!stats) {
+    // Define the fetch logic once
+    const fetchStats = () => {
       fetchDataFromURL({
-        url: getApiUrl({ endpoint: GeneralAPIendpoints.stats })
+        url: getApiUrl({ endpoint: GeneralAPIendpoints.stats }),
       })
         .then((data) => {
           setStats(data);
         })
         .catch((error) => {
-          console.log(error);
-        })
-    }
-  }, [stats, setStats]);
+          console.error("Error fetching stats:", error);
+        });
+    };
 
+    // Initial fetch if stats are missing
+    if (!stats) {
+      fetchStats();
+    }
+
+    // Continuous refresh every 24 hours
+    const intervalId = setInterval(fetchStats, 24 * 60 * 60 * 1000);
+
+    // Cleanup on unmount
+    return () => clearInterval(intervalId);
+  }, [stats, setStats]);
 
   return (
     <Grid

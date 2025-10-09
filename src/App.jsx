@@ -1,9 +1,9 @@
 // React components
-import { useMemo, lazy, Suspense, useContext, useEffect } from "react";
+import { useMemo, lazy, Suspense, useContext, useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 
 // MUI components
-import { Box } from "@mui/material/";
+import { Box, Grid } from "@mui/material/";
 
 // Theme
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -34,6 +34,9 @@ import { CITIESair } from "./Utils/GlobalVariables";
 import GoogleOAuthCallback from "./Components/Account/OAuth/GoogleOAuthCallback";
 import ScrollToTop from "./Components/ScrollToTop";
 import UnsubscribeAlert from "./Pages/UnsubscribeAlert";
+import { isWithinDisplayHours } from "./Utils/UtilFunctions";
+import NYUADScreen from "./Pages/NYUADScreen";
+import { ScreenProvider } from "./ContextProviders/ScreenContext";
 
 // Lazy load pages
 const Home = lazy(() => import("./Pages/Home/Home"));
@@ -59,10 +62,20 @@ const getDesignTokens = (themePreference) => ({
 });
 
 function App() {
-  const params = new URLSearchParams(window.location.search);
-  const isTvScreen = params.get("isTvScreen") === "true";
   const { themePreference, setThemePreference } = useContext(PreferenceContext);
   const { chartsTitlesList } = useContext(MetadataContext);
+
+  const [shouldDisplayScreen, setShouldDisplayScreen] = useState(isWithinDisplayHours());
+  useEffect(() => {
+    setShouldDisplayScreen(isWithinDisplayHours());
+
+    const intervalId = setInterval(() => {
+      // Update display check
+      setShouldDisplayScreen(isWithinDisplayHours());
+    }, 1000 * 60); // check once per minute
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   // Create theme using getDesignTokens
   const theme = useMemo(
@@ -94,147 +107,176 @@ function App() {
     <BrowserRouter basename="/">
       <ScrollToTop />
       <ThemeProvider theme={theme}>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            width: "100%",
-            minHeight: "100vh",
-            backgroundColor: "customBackground",
-            cursor: isTvScreen ? 'none' : 'unset',
-            overflow: isTvScreen ? 'hidden' : 'auto'
-          }}
-        >
-          <SpeedDialButton
-            chartsTitlesList={chartsTitlesList}
-            topAnchorID={sectionData.topAnchor.id}
-          />
+        {
+          shouldDisplayScreen ?
+            (
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  width: "100%",
+                  minHeight: "100vh",
+                  backgroundColor: "customBackground"
+                }}
+              >
+                <SpeedDialButton
+                  chartsTitlesList={chartsTitlesList}
+                  topAnchorID={sectionData.topAnchor.id}
+                />
 
-          <Suspense
-            fallback={<LoadingAnimation optionalText="Loading Dashboard" />}
-          >
-            <Routes>
-              {/* ----- HOME ----- */}
-              <Route
-                path={AppRoutes.home}
-                element={
-                  <Box>
-                    <Header />
-                    <DashboardProvider>
-                      <Home title={CITIESair} />
-                    </DashboardProvider>
-                    <Footer />
-                  </Box>
-                }
-              />
+                <Suspense
+                  fallback={<LoadingAnimation optionalText="Loading Dashboard" />}
+                >
+                  <Routes>
+                    {/* ----- HOME ----- */}
+                    <Route
+                      path={AppRoutes.home}
+                      element={
+                        <Box>
+                          <Header />
+                          <DashboardProvider>
+                            <Home title={CITIESair} />
+                          </DashboardProvider>
+                          <Footer />
+                        </Box>
+                      }
+                    />
 
-              {/* ----- AUTHENTICATION ROUTES ----- */}
-              <Route
-                path={AppRoutes.login}
-                element={
-                  <Box>
-                    <Header />
-                    <Login />
-                    <Footer />
-                  </Box>
-                }
-              />
-              <Route
-                path={AppRoutes.signUp}
-                element={
-                  <Box>
-                    <Header />
-                    <SignUp />
-                    <Footer />
-                  </Box>
-                }
-              />
-              <Route
-                path={AppRoutes.verify}
-                element={
-                  <Box>
-                    <Header />
-                    <Verify />
-                    <Footer />
-                  </Box>
-                }
-              />
-              <Route
-                path={AppRoutes.googleCallback}
-                element={
-                  <Box>
-                    <Header />
-                    <GoogleOAuthCallback />
-                    <Footer />
-                  </Box>
-                }
-              />
+                    {/* ----- AUTHENTICATION ROUTES ----- */}
+                    <Route
+                      path={AppRoutes.login}
+                      element={
+                        <Box>
+                          <Header />
+                          <Login />
+                          <Footer />
+                        </Box>
+                      }
+                    />
+                    <Route
+                      path={AppRoutes.signUp}
+                      element={
+                        <Box>
+                          <Header />
+                          <SignUp />
+                          <Footer />
+                        </Box>
+                      }
+                    />
+                    <Route
+                      path={AppRoutes.verify}
+                      element={
+                        <Box>
+                          <Header />
+                          <Verify />
+                          <Footer />
+                        </Box>
+                      }
+                    />
+                    <Route
+                      path={AppRoutes.googleCallback}
+                      element={
+                        <Box>
+                          <Header />
+                          <GoogleOAuthCallback />
+                          <Footer />
+                        </Box>
+                      }
+                    />
 
-              {/* ----- DASHBOARD ROUTES ----- */}
-              {[AppRoutes.dashboard, AppRoutes.dashboardWithParam].map(
-                (path) => (
-                  <Route
-                    key={path}
-                    path={path}
-                    element={
-                      <Box>
-                        <Header />
+                    {/* ----- DASHBOARD ROUTES ----- */}
+                    {[AppRoutes.dashboard, AppRoutes.dashboardWithParam].map(
+                      (path) => (
+                        <Route
+                          key={path}
+                          path={path}
+                          element={
+                            <Box>
+                              <Header />
+                              <DashboardProvider>
+                                <Dashboard />
+                              </DashboardProvider>
+                              <Footer />
+                            </Box>
+                          }
+                        />
+                      )
+                    )}
+
+                    {/* ----- OTHER ROUTES: SCREENS, MAPS, BANNERS... ----- */}
+
+                    <Route
+                      path={AppRoutes.nyuadScreen}
+                      element={
                         <DashboardProvider>
-                          <Dashboard />
+                          <ScreenProvider>
+                            <NYUADScreen />
+                          </ScreenProvider>
                         </DashboardProvider>
-                        <Footer />
-                      </Box>
-                    }
-                  />
-                )
-              )}
+                      }
+                    />
 
-              {/* ----- OTHER ROUTES: SCREENS, MAPS, BANNERS... ----- */}
+                    <Route
+                      path={AppRoutes.unsubscribeAlert}
+                      element={
+                        <Box>
+                          <Header />
+                          <UnsubscribeAlert />
+                          <Footer />
+                        </Box>
+                      }
+                    />
 
-              <Route
-                path={AppRoutes.unsubscribeAlert}
-                element={
-                  <Box>
-                    <Header />
-                    <UnsubscribeAlert />
-                    <Footer />
-                  </Box>
-                }
+                    {[AppRoutes.screenWithoutScreenID, AppRoutes.screenWithScreenID].map(
+                      (path) => (
+                        <Route
+                          key={path}
+                          path={path}
+                          element={
+                            <DashboardProvider>
+                              <ScreenProvider>
+                                <Screen title={`${CITIESair} | Screen`} />
+                              </ScreenProvider>
+                            </DashboardProvider>
+                          }
+                        />
+                      )
+                    )}
+
+                    <Route path={AppRoutes.nyuadMap} element={<NYUADmap />} />
+
+                    <Route
+                      path={AppRoutes.nyuadBanner}
+                      element={<NYUADbanner isOnBannerPage={true} />}
+                    />
+
+                    {/* ----- 404 ROUTES ----- */}
+                    <Route
+                      path={AppRoutes[404]}
+                      element={<FourOhFour title={`${CITIESair} | Page Not Found`} />}
+                    />
+                    <Route
+                      path="*"
+                      element={<Navigate replace to={AppRoutes[404]} />}
+                    />
+                  </Routes>
+                </Suspense>
+              </Box>
+            ) : (
+              <Grid
+                container
+                alignContent="stretch"
+                alignItems="stretch"
+                height="100vh"
+                sx={{
+                  overflow: 'hidden',
+                  background: "black",
+                }}
               />
+            )
+        }
 
-              {[AppRoutes.screenWithoutScreenID, AppRoutes.screenWithScreenID].map(
-                (path) => (
-                  <Route
-                    key={path}
-                    path={path}
-                    element={
-                      <DashboardProvider>
-                        <Screen title={`${CITIESair} | Screen`} />
-                      </DashboardProvider>
-                    }
-                  />
-                )
-              )}
 
-              <Route path={AppRoutes.nyuadMap} element={<NYUADmap />} />
-
-              <Route
-                path={AppRoutes.nyuadBanner}
-                element={<NYUADbanner isOnBannerPage={true} />}
-              />
-
-              {/* ----- 404 ROUTES ----- */}
-              <Route
-                path={AppRoutes[404]}
-                element={<FourOhFour title={`${CITIESair} | Page Not Found`} />}
-              />
-              <Route
-                path="*"
-                element={<Navigate replace to={AppRoutes[404]} />}
-              />
-            </Routes>
-          </Suspense>
-        </Box>
       </ThemeProvider>
     </BrowserRouter>
   );

@@ -14,7 +14,12 @@ const Comparison = ({ data }) => {
     const { language } = useContext(PreferenceContext);
 
     // Only display air quality comparison if every sensor is currently active
-    if (!Object.values(data).every((sensorData) => sensorData.sensor?.sensor_status === SensorStatus.active)) return null;
+    if (
+        !Object.values(data).length ||
+        !Object.values(data).every(
+            (sensorData) => sensorData.sensor?.sensor_status === SensorStatus.active
+        )
+    ) return null;
 
     const outdoorsSensor = data.find(d => d.sensor?.location_type === "outdoors");
     const outdoorsAQI = outdoorsSensor.current.aqi.val;

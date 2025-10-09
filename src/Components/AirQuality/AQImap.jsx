@@ -108,6 +108,7 @@ const emptyValue = "--";
 const AQImap = (props) => {
     const { themePreference, temperatureUnitPreference, language } = useContext(PreferenceContext);
     const {
+        overridenThemePreference = null,
         tileOption,
         centerCoordinates,
         maxBounds,
@@ -124,6 +125,10 @@ const AQImap = (props) => {
         ariaLabel = "A map of air quality sensors"
     } = props;
 
+    // If the parent component passes an overridenThemePreference prop (e.g. 'dark' or 'light'),
+    // use that instead of the global themePreference from context.
+    const effectiveThemePreference = overridenThemePreference || themePreference;
+
     const placeholderText = ariaLabel;
 
     const disableZoomParameters = {
@@ -137,7 +142,6 @@ const AQImap = (props) => {
         tap: false
     }
 
-    // const [mapData, setMapData] = useState({});
     const theme = useTheme();
     const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -172,7 +176,7 @@ const AQImap = (props) => {
                 bounds={bounds}
                 pathOptions={{
                     weight: 1,
-                    ...getMiniMapBoundOptions({ themePreference })
+                    ...getMiniMapBoundOptions({ themePreference: effectiveThemePreference })
                 }}
             />
         );
@@ -196,7 +200,7 @@ const AQImap = (props) => {
                     attributionControl={false}
                 >
                     <TileLayer
-                        url={getTileUrl({ tileOption, themePreference, isMiniMap: true })}
+                        url={getTileUrl({ tileOption, themePreference: effectiveThemePreference, isMiniMap: true })}
                         accessToken={tileAccessToken}
                     />
                     {
@@ -313,13 +317,13 @@ const AQImap = (props) => {
 
                 {tileOption === TileOptions.nyuad ? (
                     <ImageOverlay
-                        url={getTileUrl({ tileOption, themePreference })}
+                        url={getTileUrl({ tileOption, themePreference: effectiveThemePreference })}
                         bounds={nyuadMapBounds}
                     />
                 ) : (
                     <TileLayer
                         attribution={tileAttribution}
-                        url={getTileUrl({ tileOption, themePreference })}
+                        url={getTileUrl({ tileOption, themePreference: effectiveThemePreference })}
                         bounds={maxBounds}
                         accessToken={tileAccessToken}
                     />

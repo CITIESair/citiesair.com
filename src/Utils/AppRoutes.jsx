@@ -4,6 +4,7 @@ export const AppRoutes = {
   nyuad: "/dashboard/nyuad",
   nyuadMap: "/nyuadMap",
   nyuadBanner: "/nyuadBanner",
+  nyuadScreen: "/nyuadScreen",
   login: "/login",
   signUp: "/signup",
   verify: "/verify",

@@ -203,7 +203,7 @@ export default function Header() {
                     color="text.primary"
                     fontWeight="medium"
                   >
-                    CITIESair
+                    {CITIESair}
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
                     {parse(sectionData.siteDescription, {
