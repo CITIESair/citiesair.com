@@ -23,7 +23,7 @@ const NYUADmap = () => {
   }, []);
 
   return (
-    <FullWidthBox height="100vh" backgroundColor='customAlternateBackground'>
+    <FullWidthBox width="100%" height="100vh" backgroundColor='customAlternateBackground'>
       <AQImap
         tileOption={TileOptions.nyuad}
         centerCoordinates={[24.5238, 54.43449]}

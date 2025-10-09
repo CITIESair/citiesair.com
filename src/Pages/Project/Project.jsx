@@ -156,7 +156,6 @@ const Project = () => {
               <NYUADbanner
                 initialNyuadCurrentData={currentSensorMeasurements}
                 isOnBannerPage={false}
-                themePreference={themePreference}
                 minMapHeight={"250px"}
               />
             )

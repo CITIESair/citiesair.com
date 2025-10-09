@@ -3,6 +3,8 @@ export const KAMPALA = "kampala";
 
 export const NUMBER_OF_CHARTS_TO_LOAD_INITIALLY = 2;
 
+export const FETCH_CURRENT_DATA_EVERY_MS = 5 * 60 * 1000; // 5 minutes
+
 export const CITIESair = "CITIESair";
 
 export const CITIESair_HOST_NAME = "citiesair.com";

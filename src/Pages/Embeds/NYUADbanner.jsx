@@ -13,7 +13,7 @@ import { CurrentAQIGridSize } from '../../Components/AirQuality/CurrentAQIGridSi
 import { AQI_Database } from '../../Utils/AirQuality/AirQualityIndexHelper';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import ThemePreferences from '../../Themes/ThemePreferences';
-import { NYUAD } from '../../Utils/GlobalVariables';
+import { FETCH_CURRENT_DATA_EVERY_MS, NYUAD } from '../../Utils/GlobalVariables';
 import { getTranslation } from '../../Utils/UtilFunctions';
 
 const NYUADbanner = (props) => {
@@ -52,16 +52,33 @@ const NYUADbanner = (props) => {
   });
 
   useEffect(() => {
-    if (initialNyuadCurrentData) setNYUADcurrentData(initialNyuadCurrentData);
-
-    else {
+    if (initialNyuadCurrentData) {
+      // Set initial data if available
+      setNYUADcurrentData(initialNyuadCurrentData);
+    } else {
+      // Otherwise, fetch immediately
       fetchAndProcessCurrentSensorsData(url)
         .then((data) => {
           setNYUADcurrentData(data);
         })
-        .catch((error) => console.log(error));
+        .catch((error) => console.error(error));
     }
-  }, [initialNyuadCurrentData]);
+
+    // Set up interval to refresh data periodically
+    const intervalId = setInterval(() => {
+      fetchAndProcessCurrentSensorsData(url)
+        .then((data) => {
+          setNYUADcurrentData(data);
+        })
+        .catch((error) => console.error(error));
+    }, FETCH_CURRENT_DATA_EVERY_MS);
+
+    // Cleanup interval when component unmounts or dependencies change
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [initialNyuadCurrentData, url]);
+
 
   useEffect(() => {
     if (!nyuadCurrentData) return;

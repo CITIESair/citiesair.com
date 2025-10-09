@@ -1,7 +1,7 @@
 // disable eslint for this file
 /* eslint-disable */
 import { useState, useEffect, useContext } from 'react';
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import { Box, Grid, Typography, Stack } from '@mui/material';
 
@@ -17,7 +17,7 @@ import { getApiUrl } from '../API/ApiUrls';
 import { GeneralAPIendpoints } from "../API/Utils";
 import { fetchAndProcessCurrentSensorsData } from '../API/ApiFetch';
 import { PreferenceContext } from '../ContextProviders/PreferenceContext';
-import { CITIESair, KAMPALA } from '../Utils/GlobalVariables';
+import { CITIESair, FETCH_CURRENT_DATA_EVERY_MS, KAMPALA } from '../Utils/GlobalVariables';
 import { INACTIVE_SENSOR_COLORS } from '../Themes/CustomColors';
 import { DashboardContext } from '../ContextProviders/DashboardContext';
 import { getTranslation, isValidArray } from '../Utils/UtilFunctions';
@@ -28,35 +28,16 @@ import ScreenQRcode from '../Components/AirQuality/AirQualityScreen/ScreenQRcode
 import ScreenHealthSuggestions from '../Components/AirQuality/AirQualityScreen/ScreenHealthSuggestions';
 import { TypesOfScreen } from '../Components/AirQuality/AirQualityScreen/ScreenUtils';
 import AggregationType from '../Components/DateRangePicker/AggregationType';
-
-// Helper function to parse displayHours
-function isWithinDisplayHours(location) {
-  const params = new URLSearchParams(location.search);
-  const displayHours = params.get("displayHours");
-  if (!displayHours) return true; // Show screen if no parameter
-
-  const [start, end] = displayHours.split("-").map(time => parseInt(time.replace(":", ""), 10));
-  const now = parseInt(new Date().toTimeString().slice(0, 5).replace(":", ""), 10);
-
-  if (start <= end) {
-    // Regular range (same day, e.g., 06:00-20:00)
-    return start <= now && now < end;
-  } else {
-    // Overnight range (e.g., 16:00-01:00)
-    return now >= start || now < end;
-  }
-}
+import { ScreenContext } from '../ContextProviders/ScreenContext';
 
 const Screen = ({ title }) => {
   const { school_id_param, screen_id_param } = useParams()
 
+  const { isLayoutReversed } = useContext(ScreenContext);
   const { temperatureUnitPreference, language, setLanguage } = useContext(PreferenceContext);
   const { schoolMetadata, currentSchoolID } = useContext(DashboardContext);
 
-  const location = useLocation();
-
-  const [shouldDisplayScreen, setShouldDisplayScreen] = useState(isWithinDisplayHours(location));
-  const [typeOfScreen, setTypeOfScreen] = useState(isWithinDisplayHours(TypesOfScreen.indoorsVsOutdoors));
+  const [typeOfScreen, setTypeOfScreen] = useState(TypesOfScreen.indoorsVsOutdoors);
 
   // Timer loop:
   // - Check if the screen should be displayed (or black screen to save energy)
@@ -67,59 +48,25 @@ const Screen = ({ title }) => {
     const languages = schoolMetadata.languages;
     if (languages.length <= 1) return;
 
-    // Update display check
-    setShouldDisplayScreen(isWithinDisplayHours(location));
-
     // Rotate language once per minute
     const minute = new Date().getMinutes();
     setLanguage(languages[minute % languages.length]);
 
     const intervalId = setInterval(() => {
-      // Update display check
-      setShouldDisplayScreen(isWithinDisplayHours(location));
-
       // Rotate language once per minute
       const minute = new Date().getMinutes();
       setLanguage(languages[minute % languages.length]);
     }, 1000 * 60); // check once per minute
 
     return () => clearInterval(intervalId);
-  }, [schoolMetadata, location, setLanguage]);
+  }, [schoolMetadata, setLanguage]);
 
   // Update the page's title
   useEffect(() => {
     document.title = title;
   }, [title]);
 
-  const [isLayoutReversed, setIsLayoutReversed] = useState();
-
   const [data, setData] = useState({});
-
-  // Tweak the layout of the screen to prevent burn-in
-  useEffect(() => {
-    // Helper function to change layout of the screen based on current's month
-    // (arrange the left and right sections of the screen)
-    // to mitigate burn-in if the same static image is displayed over a long period of time
-    function returnIsLayoutReversed() {
-      let months = [0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1]; // 12 months of a year, change the layout every two months
-      let now = new Date();
-      let thisMonthIndex = now.getMonth(); // get the index of this Month (0-11)
-      // Return a boolean value if the layout should be reversed
-      return (months[thisMonthIndex] !== 0);
-    }
-
-    setIsLayoutReversed(returnIsLayoutReversed());
-
-    // Set up an interval to call the function every day
-    const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
-    const intervalId = setInterval(() => {
-      setIsLayoutReversed(returnIsLayoutReversed());
-    }, oneDayInMilliseconds);
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
 
   // Fetch air quality data from database
   useEffect(() => {
@@ -157,8 +104,7 @@ const Screen = ({ title }) => {
         console.log(error);
       });
 
-    // Create an interval that fetch new data every 5 minute
-    const fetchInterval = 5 * 60 * 1000; // 5min
+    // Create an interval that fetch new data every FETCH_CURRENT_DATA_EVERY_MS
     const intervalId = setInterval(() => {
       fetchAndProcessCurrentSensorsData(url)
         .then((data) => {
@@ -166,7 +112,7 @@ const Screen = ({ title }) => {
         })
         .catch((error) => console.log(error))
     },
-      fetchInterval);
+      FETCH_CURRENT_DATA_EVERY_MS);
     // Clean up the interval when the component unmounts
     return () => {
       clearInterval(intervalId);
@@ -176,7 +122,7 @@ const Screen = ({ title }) => {
   const aqiTitle = getTranslation(sectionData.screen.content.aqiTitle, language);
   const pm25Title = getTranslation(sectionData.screen.content.pm25Title, language);
 
-  if (shouldDisplayScreen) return (
+  return (
     <Grid
       container
       alignContent="stretch"
@@ -312,18 +258,6 @@ const Screen = ({ title }) => {
 
       </Grid>
     </Grid>
-  );
-  else return (
-    <Grid
-      container
-      alignContent="stretch"
-      alignItems="stretch"
-      height="100vh"
-      sx={{
-        overflow: 'hidden',
-        background: "black",
-      }}
-    />
   )
 };
 

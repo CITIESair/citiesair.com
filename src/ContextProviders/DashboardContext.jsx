@@ -5,7 +5,7 @@ import { fetchDataFromURL, fetchAndProcessCurrentSensorsData } from '../API/ApiF
 import { getApiUrl, getChartApiUrl } from '../API/ApiUrls';
 import { ChartAPIendpointsOrder, GeneralAPIendpoints } from '../API/Utils';
 import { AppRoutes } from '../Utils/AppRoutes';
-import { KAMPALA, NUMBER_OF_CHARTS_TO_LOAD_INITIALLY, NYUAD } from '../Utils/GlobalVariables';
+import { FETCH_CURRENT_DATA_EVERY_MS, KAMPALA, NUMBER_OF_CHARTS_TO_LOAD_INITIALLY, NYUAD } from '../Utils/GlobalVariables';
 import { LocalStorage } from '../Utils/LocalStorage';
 import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
 import { isValidArray } from '../Utils/UtilFunctions';
@@ -34,6 +34,7 @@ export function DashboardProvider({ children }) {
   const [loadMoreCharts, setLoadMoreCharts] = useState(false);
 
   const [publicMapData, setPublicMapData] = useState();
+  const shouldFetchPublicMapData = [AppRoutes.home, AppRoutes.nyuadScreen].includes(locationPath);
 
   const setIndividualChartData = (chartID, chartData) => {
     setAllChartsData(prevData => ({
@@ -52,15 +53,32 @@ export function DashboardProvider({ children }) {
   }), [currentSchoolID, schoolMetadata, currentSensorMeasurements, allChartsData, loadMoreCharts, publicMapData]);
 
   useEffect(() => {
-    if (isHomePage && !publicMapData) {
+    if (shouldFetchPublicMapData && !publicMapData) {
       const mapUrl = getApiUrl({ endpoint: GeneralAPIendpoints.map });
+
+      // Initial fetch
       fetchAndProcessCurrentSensorsData(mapUrl)
         .then((data) => {
-          setPublicMapData(data)
+          setPublicMapData(data);
         })
-        .catch((error) => console.log(error));
+        .catch((error) => console.error(error));
+
+      // Create an interval that fetches new data every FETCH_CURRENT_DATA_EVERY_MS
+      const intervalId = setInterval(() => {
+        fetchAndProcessCurrentSensorsData(mapUrl)
+          .then((data) => {
+            setPublicMapData(data);
+          })
+          .catch((error) => console.error(error));
+      }, FETCH_CURRENT_DATA_EVERY_MS);
+
+      // Clean up the interval when the component unmounts
+      return () => {
+        clearInterval(intervalId);
+      };
     }
-  }, [isHomePage]);
+  }, [shouldFetchPublicMapData, publicMapData]);
+
 
   useEffect(() => {
     if (!authenticationState.checkedAuthentication) return;
