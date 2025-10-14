@@ -18,7 +18,7 @@ import sectionData from '../../section_data.json';
 
 import FullWidthBox from '../../Components/FullWidthBox';
 
-import CurrentAQIGrid from '../../Components/AirQuality/CurrentAQIGrid';
+import CurrentAQIGrid from '../../Components/AirQuality/CurrentAQI/CurrentAQIGrid';
 
 import LoadingAnimation from '../../Components/LoadingAnimation';
 
@@ -38,6 +38,7 @@ import ProjectReservedArea from './ProjectReservedArea';
 import GridOfMetadataChips from './GridOfMetadataChips';
 import ProjectDescription from './ProjectDescription';
 import LoadMoreButton from './LoadMoreButton';
+import CurrentAQIMapWithGrid from '../../Components/AirQuality/CurrentAQI/CurrentAQIMapWithGrid';
 
 const Project = () => {
   const { setChartsTitlesList } = useContext(MetadataContext);
@@ -47,20 +48,6 @@ const Project = () => {
 
   // Temporarily not using HyvorTalk comment anymore
   // const [displayCommentSection, setDisplayCommentSection] = useState(false);
-
-  const [displayMapOfSensors, setDisplayMapOfSensors] = useState(false);
-
-  // If NYUAD, display comment section and map of sensors
-  useEffect(() => {
-    if (!schoolMetadata) return;
-
-    const isNYUAD = schoolMetadata.school_id === NYUAD;
-
-    // Temporarily not using HyvorTalk comment anymore
-    // setDisplayCommentSection(isNYUAD);
-
-    setDisplayMapOfSensors(isNYUAD);
-  }, [schoolMetadata]);
 
   // Update the chart title list for quick navigation
   useEffect(() => {
@@ -151,17 +138,24 @@ const Project = () => {
             </Grid>
           </Grid>
 
-          {displayMapOfSensors === true &&
+          {schoolMetadata?.has_map === true &&
+            // (
+            //   <NYUADbanner
+            //     initialNyuadCurrentData={currentSensorMeasurements}
+            //     isOnBannerPage={false}
+            //     minMapHeight={"250px"}
+            //   />
+            // )
             (
-              <NYUADbanner
-                initialNyuadCurrentData={currentSensorMeasurements}
+              <CurrentAQIMapWithGrid
+                currentSensorsData={currentSensorMeasurements}
                 isOnBannerPage={false}
                 minMapHeight={"250px"}
               />
             )
           }
 
-          {displayMapOfSensors === false &&
+          {schoolMetadata?.has_map === false &&
             (<Box textAlign="center" sx={{ mb: 2 }}>
               <CurrentAQIGrid
                 currentSensorsData={currentSensorMeasurements}

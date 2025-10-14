@@ -2,11 +2,12 @@
 /* eslint-disable */
 import { useState, useEffect } from 'react';
 import FullWidthBox from '../../Components/FullWidthBox';
-import AQImap, { LocationTitles, TileOptions } from '../../Components/AirQuality/AQImap';
+import AQImap from '../../Components/AirQuality/AirQualityMap/AQImap';
 import { getApiUrl } from '../../API/ApiUrls';
 import { GeneralAPIendpoints } from "../../API/Utils";
 import { fetchAndProcessCurrentSensorsData } from '../../API/ApiFetch';
 import { NYUAD } from '../../Utils/GlobalVariables';
+import { LocationTitles, TileOptions } from '../../Components/AirQuality/AirQualityMap/AirQualityMapUtils';
 
 const NYUADmap = () => {
   const [nyuadCurrentData, setNYUADcurrentData] = useState();
@@ -26,11 +27,6 @@ const NYUADmap = () => {
     <FullWidthBox width="100%" height="100vh" backgroundColor='customAlternateBackground'>
       <AQImap
         tileOption={TileOptions.nyuad}
-        centerCoordinates={[24.5238, 54.43449]}
-        maxBounds={[
-          [24.52038, 54.42612],
-          [24.52808, 54.44079]
-        ]}
         defaultZoom={16.25}
         minZoom={16.25}
         maxZoom={16.25}

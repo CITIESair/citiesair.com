@@ -25,7 +25,6 @@ export function DashboardProvider({ children }) {
   const location = useLocation();
   const locationPath = location.pathname;
   const isDashboardPage = locationPath.includes(AppRoutes.dashboard);
-  const isHomePage = locationPath === AppRoutes.home;
 
   const [schoolMetadata, setSchoolMetadata] = useState();
   const [currentSensorMeasurements, setCurrentSensorMeasurements] = useState();
@@ -83,11 +82,18 @@ export function DashboardProvider({ children }) {
   useEffect(() => {
     if (!authenticationState.checkedAuthentication) return;
 
+    // CASE: NYUAD BANNER
+    if (locationPath === AppRoutes.nyuadBanner) {
+      setCurrentSchoolID(NYUAD);
+      fetchInitialDataForDashboard(NYUAD);
+      return;
+    }
+
     // If the user isn't logged in (after checking authentication status)
     // Navigate to the login if in dashboard page (rather than NYUAD)
     // or just fetch NYUAD if in homepage
     if (authenticationState.authenticated === false) {
-      if (school_id_param === NYUAD || isHomePage) {
+      if (school_id_param === NYUAD || locationPath === AppRoutes.home) {
         setCurrentSchoolID(NYUAD);
         fetchInitialDataForDashboard(NYUAD);
         return;
@@ -152,7 +158,7 @@ export function DashboardProvider({ children }) {
         navigate(AppRoutes.nyuad); // else, if there is no valid allowedSchools for this user, route to public NYUAD dashboard
       }
     }
-  }, [user, authenticationState, school_id_param, isDashboardPage]);
+  }, [user, authenticationState, school_id_param, isDashboardPage, locationPath]);
 
   const fetchInitialDataForDashboard = async (school_id) => {
     try {

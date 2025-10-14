@@ -15,9 +15,7 @@ import * as Tracking from '../../Utils/Tracking';
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 
-import AQImap, { TileOptions } from '../../Components/AirQuality/AQImap';
-
-import CurrentAQIGrid from '../../Components/AirQuality/CurrentAQIGrid';
+import CurrentAQIGrid from '../../Components/AirQuality/CurrentAQI/CurrentAQIGrid';
 
 import BarChartIcon from '@mui/icons-material/BarChart';
 import PersonIcon from '@mui/icons-material/Person';
@@ -26,13 +24,14 @@ import GetInTouch from './GetInTouch';
 import { AppRoutes } from '../../Utils/AppRoutes';
 import { SensorStatus } from "../../Components/AirQuality/SensorStatus";
 import AQIexplanation from '../../Components/AirQuality/AQIexplanation';
-import { CITIESair, NYUAD } from '../../Utils/GlobalVariables';
+import { NYUAD } from '../../Utils/GlobalVariables';
 import AtAGlance from './AtAGlance';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
 import { UserContext } from '../../ContextProviders/UserContext';
 import NYUADbanner from '../Embeds/NYUADbanner';
+import OutdoorStationUAE from '../../Components/AirQuality/AirQualityMap/OutdoorStationUAE';
 
-function Home({ themePreference, temperatureUnitPreference, title }) {
+function Home({ temperatureUnitPreference, title }) {
   // Update the page's title
   useEffect(() => {
     document.title = title;
@@ -46,7 +45,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
     setChartsTitlesList([]);
   }, [setCurrentPage, setChartsTitlesList]);
 
-  const { currentSchoolID, currentSensorMeasurements, publicMapData } = useContext(DashboardContext);
+  const { currentSchoolID, currentSensorMeasurements } = useContext(DashboardContext);
   const { authenticationState } = useContext(UserContext);
 
   const displaySensorCounts = () => {
@@ -150,17 +149,7 @@ function Home({ themePreference, temperatureUnitPreference, title }) {
       </FullWidthBox>
 
       <FullWidthBox sx={{ backgroundColor: 'customAlternateBackground' }}>
-        <AQImap
-          tileOption={TileOptions.default}
-          centerCoordinates={[24.46, 54.52]}
-          maxBounds={[
-            [22.608292, 51.105185],
-            [26.407575, 56.456571],
-          ]}
-          mapData={publicMapData}
-          ariaLabel={`Map of ${CITIESair} public outdoor air quality stations in UAE`}
-        />
-
+        <OutdoorStationUAE />
       </FullWidthBox>
 
       <FullWidthBox sx={{ backgroundColor: 'customAlternateBackground' }}>

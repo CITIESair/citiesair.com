@@ -1,4 +1,3 @@
-import { React } from 'react';
 import { Typography, Container, CircularProgress, Stack } from '@mui/material/';
 
 export default function LoadingAnimation({ optionalText }) {

@@ -81,7 +81,7 @@ This folder groups components that are specifically for displaying air quality m
 
       ![aqi-grid-on-screen-page](/documentation/screen-page.png)
 
-  - Apart from the usual `BIG` font grid, this file also contains `SimpleCurrentAQIlist` that displays the list of sensors in less space, useful for `/dashboard/nyuad` and `/nyuadBanner` where there are 10+ sensors. This strips down unnecessary data from each sensor such as `weather` and `last_seen` and only show the sensor's name with current AQI readings (with color scheme):
+  - Apart from the usual `BIG` font grid, this file also contains `SimpleAQIList` that displays the list of sensors in less space, useful for `/dashboard/nyuad` and `/nyuadBanner` where there are 10+ sensors. This strips down unnecessary data from each sensor such as `weather` and `last_seen` and only show the sensor's name with current AQI readings (with color scheme):
     ![simple-aqi-list](/documentation/simple-aqi-list.png)
 
   - It also makes use of [**CurrentAQIGridSize.jsx**](./CurrentAQIGridSize.jsx)'s enumeration to determine the size of each element depends on each use case:

@@ -1,8 +1,9 @@
 import { Box, createTheme, Grid, Stack, ThemeProvider, Typography } from "@mui/material";
 import AtAGlance from "./Home/AtAGlance";
-import AQImap, { LocationTitles, TileOptions } from "../Components/AirQuality/AQImap";
+import AQImap from "../Components/AirQuality/AirQualityMap/AQImap";
+import { LocationTitles } from '../Components/AirQuality/AirQualityMap/AirQualityMapUtils';
+import { TileOptions } from '../Components/AirQuality/AirQualityMap/AirQualityMapUtils';
 import { useContext, useEffect, useState } from "react";
-import { DashboardContext } from "../ContextProviders/DashboardContext";
 import { CITIESair, CITIESair_URL, FETCH_CURRENT_DATA_EVERY_MS, NYUAD } from "../Utils/GlobalVariables";
 import CITIESlogoLinkToHome from "../Components/Header/CITIESlogoLinkToHome";
 import { ScreenContext } from "../ContextProviders/ScreenContext";
@@ -12,6 +13,7 @@ import QRCode from "react-qr-code";
 import { getApiUrl } from "../API/ApiUrls";
 import { GeneralAPIendpoints } from "../API/Utils";
 import { fetchAndProcessCurrentSensorsData } from "../API/ApiFetch";
+import OutdoorStationUAE from "../Components/AirQuality/AirQualityMap/OutdoorStationUAE";
 
 const darkOnlyTheme = createTheme({
     palette: {
@@ -22,7 +24,6 @@ const darkOnlyTheme = createTheme({
 });
 
 const NYUADScreen = () => {
-    const { publicMapData } = useContext(DashboardContext);
     const { isLayoutReversed } = useContext(ScreenContext);
 
     const [nyuadCurrentData, setNYUADcurrentData] = useState();
@@ -95,16 +96,7 @@ const NYUADScreen = () => {
                             </Stack>
                         </Stack>
 
-
-                        <AQImap
-                            overridenThemePreference={ThemePreferences.light}
-                            tileOption={TileOptions.default}
-                            centerCoordinates={[24.44, 54.45]}
-                            defaultZoom={11}
-                            disableInteraction={true}
-                            mapData={publicMapData}
-                            ariaLabel={`Map of ${CITIESair} public outdoor air quality stations in UAE`}
-                        />
+                        <OutdoorStationUAE overridenThemePreference={ThemePreferences.light} />
                     </Stack>
                 </Grid>
 
@@ -138,7 +130,7 @@ const NYUADScreen = () => {
                         Learn More!
                     </Typography>
 
-                    <Box height="auto" width="7vw" sx={{ mb: 4 }}>
+                    <Box height="auto" width="7vw">
                         <QRCode
                             size={256}
                             style={{ height: "auto", maxWidth: "100%", width: "100%" }}
@@ -147,18 +139,13 @@ const NYUADScreen = () => {
                         />
                     </Box>
 
-                    <Box width="100%" flex={1}>
+                    <Box width="100%" flex={1} my={1}>
                         <AQImap
                             tileOption={TileOptions.nyuad}
                             themePreference={ThemePreferences.light}
-                            centerCoordinates={[24.5237, 54.4343]}
-                            maxBounds={[
-                                [24.52, 54.42612],
-                                [24.53, 54.44079]
-                            ]}
-                            defaultZoom={17.9}
-                            minZoom={17.9}
-                            maxZoom={17.9}
+                            defaultZoom={17.5}
+                            minZoom={17.5}
+                            maxZoom={17.5}
                             disableInteraction={true}
                             displayMinimap={false}
                             locationTitle={LocationTitles.short}

@@ -45,7 +45,7 @@ function CollapsibleSubtitle({ text, wordLimit = 40, reference }) {
 
     while (target != null) {
       // Check if a chart is clicked
-      if (chartElements.has(target.tagName)) {
+      if (chartElements.has(target?.tagName)) {
         // If the chart element and the subtitle element share the same container
         // it means that the click is on the chart associated with the subtitle
         // As such, we should not collapse the subtitle

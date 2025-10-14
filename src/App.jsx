@@ -247,7 +247,12 @@ function App() {
 
                     <Route
                       path={AppRoutes.nyuadBanner}
-                      element={<NYUADbanner isOnBannerPage={true} />}
+                      element={
+                        <DashboardProvider>
+                          <NYUADbanner isOnBannerPage={true} />
+                        </DashboardProvider>
+
+                      }
                     />
 
                     {/* ----- 404 ROUTES ----- */}

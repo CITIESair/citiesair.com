@@ -12,8 +12,8 @@ The application has three main pages:
 ![homepage-1](/documentation/home-page-1.png)
 
 - [Home.jsx](./Home/Home.jsx): Contains first-impression information on what CITIESair is about:
-  - A live view of 3 most important air quality sensors at NYU Abu Dhabi, with the use of the UI component [CurrentAQIGrid](/src/Components/AirQuality/CurrentAQIGrid.jsx)
-  - A map of all public outdoor air quality sensors of the network, with [AQImap](/src/Components/AirQuality/AQImap.jsx)
+  - A live view of 3 most important air quality sensors at NYU Abu Dhabi, with the use of the UI component [CurrentAQIGrid](/src/Components/AirQuality/CurrentAQI/CurrentAQIGrid.jsx)
+  - A map of all public outdoor air quality sensors of the network, with [AQImap](/src/Components/AirQuality/AirQualityMap/AQImap.jsx)
 
 - [About.jsx]('./Home/About.jsx'): Presents an overview of the project, sourcing its content from `section_data.json`. It uses Material-UI's `Stack`, `Typography`, and `Paper` for layout and styling, and our custom utility functions (defined in [src/Utils](../Utils)) for text formatting and HTML to MUI conversion.
 

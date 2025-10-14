@@ -11,8 +11,8 @@ import RecentHistoricalGraph from '../Components/AirQuality/AirQualityScreen/Rec
 
 import { AQI_Database } from '../Utils/AirQuality/AirQualityIndexHelper';
 
-import CurrentAQIGrid from '../Components/AirQuality/CurrentAQIGrid';
-import { CurrentAQIGridSize } from '../Components/AirQuality/CurrentAQIGridSize';
+import CurrentAQIGrid from '../Components/AirQuality/CurrentAQI/CurrentAQIGrid';
+import { CurrentAQIGridSize } from '../Components/AirQuality/CurrentAQI/CurrentAQIGridSize';
 import { getApiUrl } from '../API/ApiUrls';
 import { GeneralAPIendpoints } from "../API/Utils";
 import { fetchAndProcessCurrentSensorsData } from '../API/ApiFetch';

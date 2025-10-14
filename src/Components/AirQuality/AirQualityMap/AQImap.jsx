@@ -9,96 +9,21 @@ import L from 'leaflet';
 
 import LaunchIcon from '@mui/icons-material/Launch';
 
-import { getFormattedLastSeen, SensorStatus } from "./SensorStatus";
+import { getFormattedLastSeen, SensorStatus } from "../SensorStatus";
 
-import { getFormattedTemperature, TemperatureUnits } from '../../Utils/AirQuality/TemperatureUtils';
-
-import ThemePreferences from '../../Themes/ThemePreferences';
+import { getFormattedTemperature, TemperatureUnits } from '../../../Utils/AirQuality/TemperatureUtils';
 
 import { styled } from '@mui/material/styles';
-import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
-import { NYUAD } from '../../Utils/GlobalVariables';
+import { PreferenceContext } from '../../../ContextProviders/PreferenceContext';
+import { calculateCenterAndBounds, disableInteractionParameters, disableZoomParameters, FitMapToDatapoints, getMiniMapColors, getTileUrl, LocationTitles, MapPlaceholder, POSITION_CLASSES, tileAccessToken, tileAttribution, TileOptions } from './AirQualityMapUtils';
+import { isValidArray } from '../../../Utils/UtilFunctions';
+import LoadingAnimation from '../../LoadingAnimation';
 
 const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
     '& .leaflet-popup-tip-container': {
         display: 'none !important'
     }
 }));
-
-const MapPlaceholder = ({ placeholderText }) => {
-    return (
-        <p>
-            {placeholderText}
-            <noscript>You need to enable JavaScript to see this map.</noscript>
-        </p>
-    )
-}
-export const TileOptions = {
-    default: 'default',
-    nyuad: NYUAD
-};
-
-const Tiles = {
-    default: {
-        light: 'jawg-light',
-        dark: 'jawg-dark'
-    },
-    nyuad: {
-        light: '/images/nyuad-campus-map/light.svg',
-        dark: '/images/nyuad-campus-map/dark.svg'
-    }
-}
-
-const getTileUrl = ({ tileOption, themePreference, isMiniMap }) => {
-    let tileTheme;
-    let svgUrl;
-    switch (themePreference) {
-        case ThemePreferences.dark:
-            tileTheme = isMiniMap ? 'light' : 'dark';
-            if (tileOption === TileOptions.nyuad) svgUrl = Tiles.nyuad.dark;
-            break
-        default:
-            tileTheme = isMiniMap ? 'dark' : 'light';
-            if (tileOption === TileOptions.nyuad) svgUrl = Tiles.nyuad.light;
-            break
-    }
-
-    if (tileOption === TileOptions.nyuad) return svgUrl;
-    else return `https://{s}.tile.jawg.io/${Tiles[tileOption][tileTheme]}/{z}/{x}/{y}{r}.png?access-token={accessToken}`;
-}
-const getMiniMapBoundOptions = ({ themePreference }) => {
-    switch (themePreference) {
-        case ThemePreferences.dark:
-            return {
-                fillColor: "#000",
-                color: "#000"
-            }
-        default:
-            return {
-                fillColor: "#fff",
-                color: "#fff"
-            }
-    }
-}
-const tileAttribution = '<a href="https://leafletjs.com/" target="_blank"><b>Leaflet</b></a> | <a href="https://jawg.io" target="_blank">&copy; <b>Jawg</b>Maps</a> <a href="https://www.openstreetmap.org/copyright">&copy; OpenStreetMap</a> contributors';
-const tileAccessToken = 'N4ppJQTC3M3uFOAsXTbVu6456x1MQnQTYityzGPvAkVB3pS27NMwJ4b3AfebMfjY';
-
-const POSITION_CLASSES = {
-    bottomleft: 'leaflet-bottom leaflet-left',
-    bottomright: 'leaflet-bottom leaflet-right',
-    topleft: 'leaflet-top leaflet-left',
-    topright: 'leaflet-top leaflet-right',
-}
-
-export const TypeOfAQImap = {
-    publicOutdoorStations: 'publicOutdoorStations',
-    nyuadSensors: 'nyuadSensors'
-}
-
-export const LocationTitles = {
-    short: 'short',
-    long: 'long'
-}
 
 const aqiMarkerIconClass = 'aqi-marker-icons';
 const circleMarkerWithLabelClass = 'circle-marker-with-label';
@@ -113,8 +38,8 @@ const AQImap = (props) => {
         centerCoordinates,
         maxBounds,
         minZoom = 8,
-        maxZoom = 12,
-        defaultZoom = 10,
+        maxZoom = 14,
+        defaultZoom,
         disableInteraction = false,
         displayMinimap = true,
         fullSizeMap = false,
@@ -125,27 +50,42 @@ const AQImap = (props) => {
         ariaLabel = "A map of air quality sensors"
     } = props;
 
+    // Filter out invalid mapData entries 
+    const sanitizedMapData = useMemo(() => {
+        if (!mapData || typeof mapData !== 'object') return {};
+
+        return Object.fromEntries(
+            Object.entries(mapData).filter(([_, location]) => {
+                const coords = location?.sensor?.coordinates;
+                return (
+                    coords &&
+                    typeof coords.latitude === 'number' &&
+                    typeof coords.longitude === 'number' &&
+                    !Number.isNaN(coords.latitude) &&
+                    !Number.isNaN(coords.longitude)
+                );
+            })
+        );
+    }, [mapData]);
+
+    // Calculate the center coordinate dynamically
+    const { center, fitBounds, maxBounds: computedMaxBounds } = useMemo(
+        () => {
+            const coords = Object.values(sanitizedMapData).map(loc => ({
+                latitude: loc.sensor.coordinates.latitude,
+                longitude: loc.sensor.coordinates.longitude
+            }));
+            return calculateCenterAndBounds(coords);
+        },
+        [sanitizedMapData]
+    );
+
     // If the parent component passes an overridenThemePreference prop (e.g. 'dark' or 'light'),
     // use that instead of the global themePreference from context.
     const effectiveThemePreference = overridenThemePreference || themePreference;
 
-    const placeholderText = ariaLabel;
-
-    const disableZoomParameters = {
-        doubleClickZoom: false,
-        attributionControl: false,
-        zoomControl: false
-    }
-
-    const disableInteractionParameters = {
-        dragging: false,
-        tap: false
-    }
-
     const theme = useTheme();
     const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
-    const nyuadMapBounds = [[24.521723, 54.43135], [24.52609, 54.43779]];
 
     const MinimapBounds = ({ parentMap, zoom }) => {
         const minimap = useMap()
@@ -176,7 +116,7 @@ const AQImap = (props) => {
                 bounds={bounds}
                 pathOptions={{
                     weight: 1,
-                    ...getMiniMapBoundOptions({ themePreference: effectiveThemePreference })
+                    ...getMiniMapColors({ themePreference: effectiveThemePreference })
                 }}
             />
         );
@@ -203,24 +143,35 @@ const AQImap = (props) => {
                         url={getTileUrl({ tileOption, themePreference: effectiveThemePreference, isMiniMap: true })}
                         accessToken={tileAccessToken}
                     />
-                    {
-                        mapData ? Object.entries(mapData).map(([key, location]) => (
-                            <CircleMarker
-                                key={key}
-                                center={[location.sensor?.coordinates?.latitude, location.sensor?.coordinates?.longitude]}
-                                pathOptions={{
-                                    fillColor: (location?.current?.aqi?.categoryIndex !== null && location?.sensor?.sensor_status === SensorStatus.active) ?
-                                        theme.palette.text.aqi[location.current.aqi.categoryIndex] : theme.palette.text.aqi[SensorStatus.offline],
-                                    radius: 3,
-                                    weight: 0,
-                                    fillOpacity: 1
-                                }}
-                                keyboard={false}
-                            >
-                            </CircleMarker>
+                    {mapData
+                        ? Object.entries(mapData)
+                            .filter(([_, location]) => {
+                                const coords = location.sensor?.coordinates;
+                                return (
+                                    coords &&
+                                    typeof coords.latitude === 'number' &&
+                                    typeof coords.longitude === 'number'
+                                );
+                            })
+                            .map(([key, location]) => (
+                                <CircleMarker
+                                    key={key}
+                                    center={[location.sensor.coordinates.latitude, location.sensor.coordinates.longitude]}
+                                    pathOptions={{
+                                        fillColor:
+                                            location?.current?.aqi?.categoryIndex !== null &&
+                                                location?.sensor?.sensor_status === SensorStatus.active
+                                                ? theme.palette.text.aqi[location.current.aqi.categoryIndex]
+                                                : theme.palette.text.aqi[SensorStatus.offline],
+                                        radius: 3,
+                                        weight: 0,
+                                        fillOpacity: 1,
+                                    }}
+                                    keyboard={false}
+                                />
+                            ))
+                        : null}
 
-                        )) : null
-                    }
                     <MinimapBounds parentMap={parentMap} zoom={mapZoom} />
                 </MapContainer>
             ),
@@ -260,6 +211,24 @@ const AQImap = (props) => {
                 {location.current["pm2.5"]} µg/m<sup>3</sup>
             </>
         )
+    }
+
+    // Only render map when data and computed geometry are available
+    if (!sanitizedMapData || !isValidArray(center) || !isValidArray(fitBounds)) {
+        return (
+            <Box
+                aria-label={ariaLabel}
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: fullSizeMap ? '100%' : '55vh',
+                    color: 'text.secondary'
+                }}
+            >
+                <LoadingAnimation optionalText={"Loading Map..."} />
+            </Box>
+        );
     }
 
     return (
@@ -303,22 +272,27 @@ const AQImap = (props) => {
                 }
             }}>
             <MapContainer
-                center={centerCoordinates}
+                center={centerCoordinates || center}
                 zoom={defaultZoom}
-                maxBounds={maxBounds}
-                scrollWheelZoom={false}
-                placeholder={<MapPlaceholder placeholderText={placeholderText} />}
-                attributionControl={false}
-                {...(disableInteraction ? { ...disableInteractionParameters, ...disableZoomParameters } : {})}
                 minZoom={minZoom}
                 maxZoom={maxZoom}
+                maxBounds={maxBounds || computedMaxBounds}
+                scrollWheelZoom={false}
+                placeholder={<MapPlaceholder placeholderText={ariaLabel} />}
+                attributionControl={false}
+                {...(disableInteraction ? { ...disableInteractionParameters, ...disableZoomParameters } : {})}
             >
-                {displayMinimap === true && <MinimapControl position="bottomleft" mapData={mapData} />}
+                {/* If defaultZoom isn't supplied, then automatically fit the viewport to the fetched data points  */}
+                {!defaultZoom && sanitizedMapData && isValidArray(fitBounds) && <FitMapToDatapoints bounds={fitBounds} />}
 
+                {/* Display mini map here */}
+                {displayMinimap === true && <MinimapControl position="bottomleft" mapData={sanitizedMapData} />}
+
+                {/* Use either an image or fetch map tile */}
                 {tileOption === TileOptions.nyuad ? (
                     <ImageOverlay
                         url={getTileUrl({ tileOption, themePreference: effectiveThemePreference })}
-                        bounds={nyuadMapBounds}
+                        bounds={[[24.521723, 54.43135], [24.52609, 54.43779]]}
                     />
                 ) : (
                     <TileLayer
@@ -328,9 +302,13 @@ const AQImap = (props) => {
                         accessToken={tileAccessToken}
                     />
                 )}
+
+                {/* Attribution to Leaflet */}
                 <AttributionControl position="bottomright" prefix={false} />
+
+                {/* Markers */}
                 {
-                    mapData ? Object.entries(mapData).map(([key, location]) => {
+                    sanitizedMapData ? Object.entries(sanitizedMapData).map(([key, location]) => {
                         const markerColor = (location?.current?.aqi?.categoryIndex !== null && location?.sensor?.sensor_status === SensorStatus.active) ?
                             theme.palette.text.aqi[location.current.aqi.categoryIndex] : theme.palette.text.aqi[SensorStatus.offline];
 
