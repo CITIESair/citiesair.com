@@ -91,14 +91,14 @@
                 "icon": "SchoolIcon"
             },
             {
-                "id": "sensors",
-                "text": "sensors",
-                "icon": "SensorsIcon"
-            },
-            {
                 "id": "students",
                 "text": "protected students",
                 "icon": "FaceIcon"
+            },
+            {
+                "id": "sensors",
+                "text": "sensors",
+                "icon": "SensorsIcon"
             },
             {
                 "id": "communityMembers",
