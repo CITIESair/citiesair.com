@@ -51,16 +51,20 @@ const GridOfMetadataChips = () => {
                 />
             </Grid>
 
-            <Grid item>
-                <CustomChip
-                    icon={<EmailIcon />}
-                    label={schoolMetadata?.contactEmail}
-                    tooltipTitle="Contact Email"
-                    component="a"
-                    href={`mailto:${schoolMetadata?.contactEmail}`}
-                    clickable
-                />
-            </Grid>
+            {schoolMetadata?.contactEmails?.map((email, index) => (
+                <Grid item>
+                    <CustomChip
+                        key={index}
+                        icon={<EmailIcon />}
+                        label={email}
+                        tooltipTitle="Contact Email"
+                        component="a"
+                        href={`mailto:${email}`}
+                        clickable
+                        sx={{ mr: 1, mb: 1 }}
+                    />
+                </Grid>
+            ))}
 
             {/* <Grid item>
                 <CustomChip
