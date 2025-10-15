@@ -8,9 +8,16 @@ const CustomChip = (props) => {
         <Chip
             size="small"
             label={label || <Skeleton variant="text" sx={{ minWidth: '5rem' }} />}
+            sx={{
+                userSelect: 'text',
+                '& .MuiChip-label': {
+                    userSelect: 'text'
+                }
+            }}
             {...otherProps}
         />
     );
+
 
     return tooltipTitle ? (
         <Tooltip title={tooltipTitle} enterDelay={0} leaveDelay={200}>

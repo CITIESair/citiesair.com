@@ -47,7 +47,7 @@ export const returnGenericOptions = (props) => {
 
   // ---- Formulate the options for this specific chart:
   // 1. Populate first with subchart's options (if any)
-  let options = chartData.subcharts?.[subchartIndex].options
+  let options = chartData.subcharts?.[subchartIndex]?.options
     ? { ...chartData.subcharts[subchartIndex].options }
     : {};
 

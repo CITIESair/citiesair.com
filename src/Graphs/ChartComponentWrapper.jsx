@@ -19,6 +19,7 @@ import { useDateRangePicker } from '../ContextProviders/DateRangePickerContext';
 import { returnFormattedDates } from '../Components/DateRangePicker/DateRangePickerUtils';
 import { useAxesPicker } from '../ContextProviders/AxesPickerContext';
 import StyledTabs from '../Components/StyledTabs';
+import NoChartToRender from './Subchart/NoChartToRender';
 
 const DEBOUNCE_IN_MILLISECONDS = 100;
 
@@ -98,6 +99,7 @@ function ChartComponentWrapper(props) {
 
   // Retrieve the hAxis and vAxis for chart with AxesPicker
   const { hAxis, vAxis } = useAxesPicker();
+
 
   useEffect(() => {
     // Using keys returned from backend,
@@ -204,7 +206,7 @@ function ChartComponentWrapper(props) {
     setPreviousTab(currentTab);
     setCurrentTab(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentSchoolID])
+  }, [currentSchoolID]);
 
   if (chartData.chartType !== 'Calendar' && !chartHeight) {
     chartHeight = isPortrait ? '80vw' : '35vw';
@@ -213,6 +215,9 @@ function ChartComponentWrapper(props) {
 
   // Function to render only one chart (no subchart --> no tab control)
   const renderOnlyOneChart = () => {
+    if (!isValidArray(chartData.dataArray)) {
+      return <NoChartToRender customMessage={"Not enough historical data to display this chart"} />
+    }
     return (
       <SubChart
         selectedDataType={selectedDataType}
@@ -439,7 +444,7 @@ function ChartComponentWrapper(props) {
         </Box>
 
         <ChartStyleWrapper height="100%">
-          {chartData.subcharts ? renderMultipleSubcharts() : renderOnlyOneChart()}
+          {isValidArray(chartData.subcharts) ? renderMultipleSubcharts() : renderOnlyOneChart()}
 
           {/* Render subtitle and reference below */}
           <Box sx={{ my: 3 }}>

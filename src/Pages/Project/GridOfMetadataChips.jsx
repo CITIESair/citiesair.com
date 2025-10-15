@@ -7,7 +7,6 @@ import SchoolSelector from "../../Components/SchoolSelector";
 import CustomChip from "../../Components/CustomChip";
 
 import PersonIcon from '@mui/icons-material/Person';
-import EmailIcon from '@mui/icons-material/Email';
 // import BarChartIcon from '@mui/icons-material/BarChart';
 // import CommentIcon from '@mui/icons-material/Comment';
 
@@ -20,8 +19,12 @@ import EmailIcon from '@mui/icons-material/Email';
 
 // Temporarily not using HyvorTalk comment anymore
 // const GridOfMetadataChips = ({ displayCommentSection }) => {
+
+
 const GridOfMetadataChips = () => {
     const { schoolMetadata } = useContext(DashboardContext);
+
+    if (!schoolMetadata) return;
 
     // Temporarily not using HyvorTalk comment anymore
     // const { commentCounts, fetchCommentCounts, setCommentCounts } = useContext(MetadataContext);
@@ -46,42 +49,13 @@ const GridOfMetadataChips = () => {
             <Grid item>
                 <CustomChip
                     icon={<PersonIcon />}
-                    label={schoolMetadata?.contactPerson}
-                    tooltipTitle="Contact Person"
+                    label={`${schoolMetadata.contactPerson} <${schoolMetadata.contactEmail}>`}
+                    tooltipTitle="Main Contact"
+                    component="a"
+                    href={`mailto:${schoolMetadata?.contactEmail}`}
+                    clickable
                 />
             </Grid>
-
-            {schoolMetadata?.contactEmails?.map((email, index) => (
-                <Grid item>
-                    <CustomChip
-                        key={index}
-                        icon={<EmailIcon />}
-                        label={email}
-                        tooltipTitle="Contact Email"
-                        component="a"
-                        href={`mailto:${email}`}
-                        clickable
-                        sx={{ mr: 1, mb: 1 }}
-                    />
-                </Grid>
-            ))}
-
-            {/* <Grid item>
-                <CustomChip
-                    icon={<BarChartIcon />}
-                    label={`${Object.keys(allChartsData).length || "..."} Chart${Object.keys(allChartsData).length !== 1 ? 's' : ''}`}
-                    tooltipTitle="Number of Charts"
-                    onClick={() => {
-                        scrollToSection(sectionData.charts.id);
-                        Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
-                            {
-                                destination_id: sectionData.charts.id,
-                                destination_label: sectionData.chartData?.toString(),
-                                origin_id: 'chip'
-                            });
-                    }}
-                />
-            </Grid> */}
 
             {/* Temporarily not using HyvorTalk comment anymore
             {(displayCommentSection === true && commentCounts !== null) ?
