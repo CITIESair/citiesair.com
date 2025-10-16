@@ -24,6 +24,7 @@ import { returnSelectedDataType } from '../../Utils/AirQuality/DataTypes';
 import AxesPicker from '../../Components/AxesPicker/AxesPicker';
 
 import NoChartToRender from './NoChartToRender';
+import TimeRangeSelector from '../../Components/AirQuality/AirQualityAlerts/AlertModificationDialog/AlertPropertyComponents/TimeRangeSelector';
 
 export default function SubChart(props) {
   // Props
@@ -578,16 +579,9 @@ export default function SubChart(props) {
   const showAuxiliaryControls = () => {
     if (!isFirstRender) {
       return (
-        <Grid
-          container
-          mt={1}
-          sx={{
-            gap: 2,
-            [theme.breakpoints.down('sm')]: { gap: 1 }
-          }}
-        >
+        <>
           {seriesSelector &&
-            <Grid item xs="auto"
+            <Grid item xs="auto" lg={12}
               sx={{
                 [theme.breakpoints.down('sm')]: { width: '100%' }
               }}
@@ -602,26 +596,16 @@ export default function SubChart(props) {
               />
             </Grid>
           }
+
           {
             dateRangePicker &&
-            <Grid
-              container
-              item
-              xs="auto"
-              justifyContent="stretch"
-              sx={{
-                gap: 2,
-                [theme.breakpoints.down('sm')]: { gap: 1, width: '100%' }
-              }}
-            >
-              <CustomDateRangePicker
-                dataType={selectedDataType}
-                minDateOfDataset={new Date(dateRangePicker.minDate)}
-                chartIndex={chartData.id}
-              />
-            </Grid>
-
+            <CustomDateRangePicker
+              dataType={selectedDataType}
+              minDateOfDataset={new Date(dateRangePicker.minDate)}
+              chartIndex={chartData.id}
+            />
           }
+
           {selectableAxes &&
             <AxesPicker
               allowedAxes={selectableAxes.allowedAxes}
@@ -629,7 +613,24 @@ export default function SubChart(props) {
               dataType={selectedDataType}
             />
           }
-        </Grid >
+
+          {
+            <Grid item xs="auto" lg={12}
+              sx={{
+                [theme.breakpoints.down('sm')]: { width: '100%' }
+              }}
+            >
+              <TimeRangeSelector
+                value={[0, 60]}
+                handleChange={() => {
+                  return null;
+                }}
+                isResponsive
+                hasTitle
+              />
+            </Grid>
+          }
+        </>
       );
     } else {
       return null;
@@ -652,8 +653,25 @@ export default function SubChart(props) {
             <LoadingAnimation />
           </Box>
         )}
-        {showAuxiliaryControls()}
-        {renderChart()}
+        <Grid container alignItems="start"
+          sx={{
+          }}
+        >
+          <Grid lg={2} container item
+            sx={{
+              mt: 1,
+              ml: 2,
+              gap: 2,
+              [theme.breakpoints.down('lg')]: { gap: 1, ml: 0 }
+            }}
+          >
+            {showAuxiliaryControls()}
+          </Grid>
+          <Grid item xs>
+            {renderChart()}
+          </Grid>
+        </Grid>
+
         {gradientBackgroundColor ? <BackgroundGradient id={gradientBackgroundId} colors={svgFillGradient} /> : null}
       </GoogleChartStyleWrapper> :
       (

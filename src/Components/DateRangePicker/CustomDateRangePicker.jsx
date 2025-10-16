@@ -6,7 +6,7 @@ import { DateRangePicker, createStaticRanges } from 'react-date-range';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 
-import { Box, CircularProgress, Grid, useMediaQuery, useTheme } from '@mui/material';
+import { Box, CircularProgress, Grid, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 import { AggregationTypeMetadata, StyledDateRangePicker, returnCustomStaticRanges, returnFormattedDates } from './DateRangePickerUtils';
 import { getHistoricalChartApiUrl } from '../../API/ApiUrls';
@@ -32,6 +32,7 @@ const CustomDateRangePicker = (props) => {
   const today = new Date();
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const isLargeScreen = useMediaQuery(theme => theme.breakpoints.up('lg'));
 
   // Keep track of the date range and aggregationType  selected by the user
   const { dateRange, setDateRange, aggregationType, setAggregationType } = useDateRangePicker();
@@ -143,92 +144,105 @@ const CustomDateRangePicker = (props) => {
 
   return (
     <>
-      <Grid item alignItems={showPickerPanel ? "start" : "stretch"} xs={12} sm="auto">
-        <AggregationTypeToggle
-          aggregationType={aggregationType}
-          setAggregationType={setAggregationType}
-          smallScreen={smallScreen}
-        />
+      <Grid item alignItems={showPickerPanel ? "start" : "stretch"} xs sm="auto" lg>
+        <Stack direction="column" alignItems="stretch" gap={0.5} width="100%">
+          {
+            isLargeScreen ? <Typography color="text.secondary" sx={{ textTransform: "uppercase" }}>Averaging Period</Typography> : null
+          }
+          <AggregationTypeToggle
+            aggregationType={aggregationType}
+            setAggregationType={setAggregationType}
+            smallScreen={smallScreen}
+          />
+        </Stack>
       </Grid>
 
       <Grid
         item
         sx={{
           height: "2rem",
-          width: { [theme.breakpoints.down("sm")]: { width: "100%" } },
+          flex: 1,
+          [theme.breakpoints.up('lg')]: { minHeight: '4rem' },
+          [theme.breakpoints.down('lg')]: { marginBottom: '5px' }
+          // width: { [theme.breakpoints.down("sm")]: { width: "100%" } },
         }}
       >
-        <StyledDateRangePicker
-          showPickerPanel={showPickerPanel}
-          smallScreen={smallScreen}
-          ref={paperRef}
-          elevation={8}
-          onClick={() => setShowPickerPanel(true)}
-          sx={{ position: "relative" }}
-        >
-          {/* Calendar wrapper with blur on loading */}
-          <Box
-            sx={{
-              filter: (isFetchingData && showPickerPanel) ? "blur(2px)" : "none",
-              pointerEvents: isFetchingData ? "none" : "auto",
-              transition: "filter 0.2s ease-in-out",
-            }}
+        <Stack direction="column" alignItems="stretch" gap={0.5}>
+          {
+            isLargeScreen ? <Typography color="text.secondary" sx={{ textTransform: "uppercase" }}>Date Range</Typography> : null
+          }
+          <StyledDateRangePicker
+            showPickerPanel={showPickerPanel}
+            smallScreen={smallScreen}
+            ref={paperRef}
+            elevation={8}
+            onClick={() => setShowPickerPanel(true)}
+            sx={{ position: "relative" }}
           >
-            <DateRangePicker
-              ranges={[dateRange]}
-              onChange={(ranges) => {
-                if (!ranges) return;
-                setDateRange(ranges.selection);
-              }}
-              staticRanges={createStaticRanges(
-                returnCustomStaticRanges({ minDateOfDataset, aggregationType })
-              )}
-              inputRanges={[]}
-              rangeColors={[
-                theme.palette.primary.main,
-                theme.palette.secondary.main,
-                theme.palette.text.secondary,
-              ]}
-              minDate={minDateOfDataset}
-              maxDate={today}
-              months={1}
-              showMonthAndYearPickers={true}
-              direction="horizontal"
-              fixedHeight={true}
-              preventSnapRefocus={true}
-              startDatePlaceholder="Start Date"
-              endDatePlaceholder="End Date"
-              editableDateInputs={true}
-              showMonthArrow={true}
-              weekStartsOn={1}
-            />
-          </Box>
-
-          {/* Overlay spinner */}
-          {isFetchingData && (
+            {/* Calendar wrapper with blur on loading */}
             <Box
               sx={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "rgba(0,0,0,0.5)",
-                zIndex: 10,
+                filter: (isFetchingData && showPickerPanel) ? "blur(2px)" : "none",
+                pointerEvents: isFetchingData ? "none" : "auto",
+                transition: "filter 0.2s ease-in-out",
               }}
             >
-              <CircularProgress
-                disableShrink
-                size={showPickerPanel ? "2.5rem" : "1.25rem"}
-                color="primary"
+              <DateRangePicker
+                ranges={[dateRange]}
+                onChange={(ranges) => {
+                  if (!ranges) return;
+                  setDateRange(ranges.selection);
+                }}
+                staticRanges={createStaticRanges(
+                  returnCustomStaticRanges({ minDateOfDataset, aggregationType })
+                )}
+                inputRanges={[]}
+                rangeColors={[
+                  theme.palette.primary.main,
+                  theme.palette.secondary.main,
+                  theme.palette.text.secondary,
+                ]}
+                minDate={minDateOfDataset}
+                maxDate={today}
+                months={1}
+                showMonthAndYearPickers={true}
+                direction="vertical"
+                fixedHeight={true}
+                preventSnapRefocus={true}
+                startDatePlaceholder="Start Date"
+                endDatePlaceholder="End Date"
+                editableDateInputs={true}
+                showMonthArrow={true}
+                weekStartsOn={1}
               />
             </Box>
-          )}
-        </StyledDateRangePicker>
-      </Grid>
+
+            {/* Overlay spinner */}
+            {isFetchingData && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "rgba(0,0,0,0.25)",
+                  zIndex: 10,
+                }}
+              >
+                <CircularProgress
+                  disableShrink
+                  size={showPickerPanel ? "2.5rem" : "1.25rem"}
+                  color="primary"
+                />
+              </Box>
+            )}
+          </StyledDateRangePicker>
+        </Stack>
+      </Grid >
 
     </>
   );

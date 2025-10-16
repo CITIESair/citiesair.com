@@ -210,7 +210,7 @@ function ChartComponentWrapper(props) {
 
   if (chartData.chartType !== 'Calendar' && !chartHeight) {
     chartHeight = isPortrait ? '80vw' : '35vw';
-    chartMaxHeight = isPortrait ? '800px' : '500px';
+    chartMaxHeight = isPortrait ? '800px' : '450px';
   }
 
   // Function to render only one chart (no subchart --> no tab control)

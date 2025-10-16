@@ -29,7 +29,7 @@ export const SimplePicker = (props) => {
         fullWidth
         size='small'
         disabled={disabled}
-        sx={{ minWidth: "100px", marginLeft: "0 !important" }}
+        sx={{ minWidth: "5rem", marginLeft: "0 !important" }}
       >
         <InputLabel id={`${label}-picker-label`}>{label}</InputLabel>
         <Select

@@ -98,22 +98,30 @@ export const StyledDateRangePicker = styled(Paper, {
   maxWidth: '100%',
   background: showPickerPanel ? theme.palette.customAlternateBackground : 'transparent',
   boxShadow: showPickerPanel === false && 'none',
+  '& .rdrDateInput::before': {
+    display: "none !important"
+  },
+  '& .rdrDateInput': {
+    borderRadius: theme.shape.borderRadius,
+    boxShadow: 'none',
+    padding: 0
+  },
   '& .rdrDayToday .rdrDayNumber span:after': {
     background: theme.palette.secondary
   },
   '& .rdrDateDisplayWrapper, .rdrCalendarWrapper, .rdrDefinedRangesWrapper, .rdrStaticRange, .rdrDateDisplayItem': {
     background: 'transparent'
   },
-  '& .rdrDateInput': {
-    borderRadius: theme.shape.borderRadius,
-    boxShadow: 'none'
-  },
   '& .rdrDateDisplayItemActive': {
     border: showPickerPanel === false && 'none'
   },
   '& .rdrDateDisplay': {
     margin: 0,
-    minWidth: "20rem"
+    minWidth: "10rem",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "2rem"
   },
   '& .rdrDateDisplayItem': {
     margin: 0,
@@ -148,7 +156,8 @@ export const StyledDateRangePicker = styled(Paper, {
     margin: "auto"
   },
   '& .rdrDateDisplayWrapper': {
-    minWidth: '18rem',
+    minWidth: '9rem',
+    height: '2rem',
     borderRadius: theme.shape.borderRadius,
     border: showPickerPanel ? "none" : `1px solid ${theme.palette.action.disabled}`,
     "&:hover": {
@@ -161,7 +170,7 @@ export const StyledDateRangePicker = styled(Paper, {
   },
   '& .rdrStaticRanges': {
     flexDirection: 'row',
-    minWidth: '21rem'
+    minWidth: '10.5rem'
   },
   '& .rdrStaticRangeLabel': {
     color: theme.palette.text.secondary,
