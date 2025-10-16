@@ -617,6 +617,7 @@ export default function SubChart(props) {
               <CustomDateRangePicker
                 dataType={selectedDataType}
                 minDateOfDataset={new Date(dateRangePicker.minDate)}
+                chartIndex={chartData.id}
               />
             </Grid>
 

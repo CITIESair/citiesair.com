@@ -22,13 +22,12 @@ import { useDateRangePicker } from '../../ContextProviders/DateRangePickerContex
 import { useSnackbar } from "notistack";
 import { SnackbarMetadata } from '../../Utils/SnackbarMetadata';
 
-const historicalChartIndex = ChartAPIendpointsOrder.findIndex(endpoint => endpoint === ChartAPIendpoints.historical);
-
 const CustomDateRangePicker = (props) => {
   const { enqueueSnackbar } = useSnackbar()
 
-  const { minDateOfDataset, dataType } = props;
+  const { minDateOfDataset, dataType, chartIndex } = props;
   const { currentSchoolID, setIndividualChartData } = useContext(DashboardContext);
+  const [isFirstRequest, setIsFirstRequest] = useState(true);
 
   const today = new Date();
   const theme = useTheme();
@@ -37,9 +36,28 @@ const CustomDateRangePicker = (props) => {
   // Keep track of the date range and aggregationType  selected by the user
   const { dateRange, setDateRange, aggregationType, setAggregationType } = useDateRangePicker();
 
+  // Set aggregationType
+  useEffect(() => {
+    // Initialize with the range of the first static range (default)
+    const defaultRange = {
+      ...returnCustomStaticRanges({
+        aggregationType: aggregationType || AggregationType.hour,
+        minDateOfDataset
+      })[0].range(), key: 'selection'
+    };
+    setDateRange(defaultRange);
+  }, [aggregationType]);
+
+  // Set date range and trigger new API call if
   useEffect(() => {
     const { startDate, endDate } = dateRange || {};
     if (!startDate || !endDate) return;
+
+    if (isFirstRequest) {
+      // Early return if this is the first request (already fetched by <Dashboard/> component)
+      setIsFirstRequest(false);
+      return;
+    }
 
     // Start date and end date can't be the same date
     if (isSameDay(startDate, endDate)) {
@@ -54,7 +72,7 @@ const CustomDateRangePicker = (props) => {
     }
 
     requestNewDataFromApi();
-  }, [dateRange])
+  }, [dateRange]);
 
 
   const [chartUrl, setChartUrl] = useState();
@@ -79,23 +97,6 @@ const CustomDateRangePicker = (props) => {
     };
   }, [paperRef]);
 
-  // Set aggregationType and request data from API if it changes
-  useEffect(() => {
-    if (!aggregationType) {
-      setAggregationType(AggregationType.hour);
-    }
-    // Initialize with the range of the first static range (default)
-    const defaultRange = {
-      ...returnCustomStaticRanges({
-        aggregationType: aggregationType || AggregationType.hour,
-        minDateOfDataset
-      })[0].range(), key: 'selection'
-    };
-    setDateRange(defaultRange);
-
-    requestNewDataFromApi(defaultRange);
-  }, [aggregationType]);
-
   // Send query request to backend when APPLY button is clicked
   // Check if a new date range is selected as well
   const requestNewDataFromApi = (_dateRange = null) => {
@@ -106,14 +107,18 @@ const CustomDateRangePicker = (props) => {
       startDateObject: range.startDate,
       endDateObject: range.endDate
     });
-    const newUrl = getHistoricalChartApiUrl({
-      endpoint: ChartAPIendpoints.historical,
-      school_id: currentSchoolID,
-      aggregationType: aggregationType,
-      dataType: dataType,
-      startDate: formattedDates.startDate,
-      endDate: formattedDates.endDate
-    });
+
+    let newUrl;
+    if (ChartAPIendpointsOrder[chartIndex] === ChartAPIendpoints.historical) {
+      newUrl = getHistoricalChartApiUrl({
+        endpoint: ChartAPIendpoints.historical,
+        school_id: currentSchoolID,
+        aggregationType: aggregationType,
+        dataType: dataType,
+        startDate: formattedDates.startDate,
+        endDate: formattedDates.endDate
+      });
+    }
 
     if (newUrl !== chartUrl) {
       setIsFetchingData(true);
@@ -125,7 +130,7 @@ const CustomDateRangePicker = (props) => {
           setIsFetchingData(false);
           setShowPickerPanel(false);
 
-          setIndividualChartData(historicalChartIndex, data);
+          setIndividualChartData(chartIndex, data);
           setChartUrl(newUrl);
         })
         .catch((error) => {

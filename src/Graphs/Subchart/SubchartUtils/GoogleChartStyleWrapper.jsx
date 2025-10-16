@@ -4,6 +4,9 @@ import { styled } from '@mui/material/styles';
 const GoogleChartStyleWrapper = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'gradientBackgroundId' && prop !== 'isPortrait',
 })(({ theme, isPortrait, gradientBackgroundId }) => ({
+  '& [id*="google-visualization-errors-all"]': {
+    display: 'none !important',
+  },
   // CSS for optional gradient background 
   '& svg>g:nth-of-type(2)>rect:first-of-type': {
     fill: `url(#${gradientBackgroundId})`,
