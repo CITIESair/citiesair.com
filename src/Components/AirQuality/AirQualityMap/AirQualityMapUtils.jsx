@@ -154,8 +154,7 @@ export const calculateCenterAndBounds = (coords) => {
 
 // Adaptive padding based on spatial range
 const getAdaptivePaddingFactor = (range) => {
-    if (range < 0.1) return 1; // very tight cluster
-    if (range < 1) return 0.5;  // city
-    if (range < 10) return 0.2;  // regional
+    if (range < 0.5) return 1.5; // very tight cluster
+    if (range < 5) return 0.5;  // regional
     return 0.1; // continental/global
 };
