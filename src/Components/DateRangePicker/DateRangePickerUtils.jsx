@@ -8,6 +8,14 @@ import AggregationType from './AggregationType';
 
 const today = new Date();
 
+const yesterday = {
+  label: "Yesterday",
+  range: () => ({
+    startDate: startOfDay(addDays(today, -1)),
+    endDate: endOfDay(today)
+  })
+};
+
 const last14Days = {
   label: "Last 14d",
   range: () => ({
@@ -45,6 +53,8 @@ const allTime = ({ minDateOfDataset }) => {
 
 export const returnCustomStaticRanges = ({ minDateOfDataset, aggregationType }) => {
   switch (aggregationType) {
+    case AggregationType.minute:
+      return [yesterday];
     case AggregationType.day:
       return [last30Days, last365Days];
     case AggregationType.month:
@@ -56,6 +66,10 @@ export const returnCustomStaticRanges = ({ minDateOfDataset, aggregationType }) 
 };
 
 export const AggregationTypeMetadata = {
+  [AggregationType.minute]: {
+    maxDays: 1,
+    label: "Live"
+  },
   [AggregationType.hour]: {
     maxDays: 30,
     label: "Hourly"

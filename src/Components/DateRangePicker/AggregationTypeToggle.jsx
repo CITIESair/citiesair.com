@@ -2,8 +2,21 @@ import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 
 import AggregationType from './AggregationType';
 import { AggregationTypeMetadata } from './DateRangePickerUtils';
+import { useContext } from 'react';
+import { DashboardContext } from '../../ContextProviders/DashboardContext';
+import { KAMPALA } from '../../Utils/GlobalVariables';
 
 export default function AggregationTypeToggle({ aggregationType, setAggregationType }) {
+  const { currentSchoolID } = useContext(DashboardContext);
+
+  // Filter out AggregationType.minute if the school is Kampala
+  const aggregationTypesToShow = Object.values(AggregationType).filter(type => {
+    if (currentSchoolID === KAMPALA && type === AggregationType.minute) {
+      return false;
+    }
+    return true;
+  });
+
   const handleChange = (_, newType) => {
     if (newType !== null) {
       setAggregationType(newType);
@@ -21,7 +34,7 @@ export default function AggregationTypeToggle({ aggregationType, setAggregationT
       fullWidth
       sx={{ height: "100%" }}
     >
-      {Object.values(AggregationType).map(type => (
+      {Object.values(aggregationTypesToShow).map(type => (
         <ToggleButton
           key={type}
           size="small"

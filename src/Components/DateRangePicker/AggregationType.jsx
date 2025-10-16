@@ -1,4 +1,5 @@
 const AggregationType = {
+  minute: 'minute',
   hour: 'hour',
   day: 'day',
   month: 'month',
