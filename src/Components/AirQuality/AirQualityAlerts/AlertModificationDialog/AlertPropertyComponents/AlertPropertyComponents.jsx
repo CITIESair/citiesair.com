@@ -5,12 +5,12 @@ import { SimplePicker } from "./SimplePicker";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PlaceIcon from '@mui/icons-material/Place';
 import { SharedColumnHeader } from "../../Utils";
-import TimeRangeSelector from "./TimeRangeSelector";
+import TimeRangeSelector from "../../../../TimeRange/TimeRangeSelector";
 import { DataTypes } from "../../../../../Utils/AirQuality/DataTypes";
 import { capitalizePhrase } from "../../../../../Utils/UtilFunctions";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { DashboardContext } from "../../../../../ContextProviders/DashboardContext";
-import { HOURS } from "./HOURS";
+import { HOURS } from "../../../../TimeRange/TimeRangeUtils";
 import { Checkbox, DialogContentText, FormControlLabel, FormGroup, Grid, Stack, Switch, Typography, useTheme } from "@mui/material";
 
 import OptionalMessage from "./OptionalMessage";
@@ -87,7 +87,8 @@ export const AlertPropertyComponents = ({ alertTypeKey, crudType }) => {
                     <Grid container columnSpacing={2} rowSpacing={0.5}>
                         <Grid item xs={12} md={6}>
                             <TimeRangeSelector
-                                value={editingAlert[AirQualityAlertKeys.time_range]}
+                                timeRange={editingAlert[AirQualityAlertKeys.time_range]}
+                                defaultTimeRange={getAlertDefaultPlaceholder(AlertTypes.threshold.id)[AirQualityAlertKeys.time_range]}
                                 disabled={isDisabled(AirQualityAlertKeys.time_range)}
                                 handleChange={(newRange) => {
                                     setEditingAlert({

@@ -63,9 +63,13 @@ export default function AggregationTypeToggle({ aggregationType, setAggregationT
           {type === AggregationType.minute && (
             <RadioButtonCheckedIcon
               sx={{
-                position: "absolute",
-                left: "50%",
-                transform: "translateX(calc(-50% - 1.25rem))",
+                ...(isLargeScreen ? {
+                  position: 'absolute',
+                  left: '50%',
+                  transform: 'translateX(calc(-50% - 1.25rem))',
+                } : {
+                  mr: 0.3,
+                }),
                 color: AQI_Database[3].color.Light,
                 fontSize: "0.75rem",
                 animation: `${pulse} 2s infinite ease-in-out`,

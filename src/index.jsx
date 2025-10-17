@@ -8,12 +8,15 @@ import { GoogleProvider } from './ContextProviders/GoogleContext';
 import { PreferenceProvider } from './ContextProviders/PreferenceContext';
 import { MetadataProvider } from './ContextProviders/MetadataContext';
 import { SnackbarProvider } from 'notistack';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const container = document.getElementById('root');
 const root = createRoot(container);
+const queryClient = new QueryClient();
 
 root.render(
-  <React.StrictMode>
+  // <React.StrictMode>
+  <QueryClientProvider client={queryClient}>
     <GoogleProvider>
       <MetadataProvider>
         <PreferenceProvider>
@@ -32,7 +35,7 @@ root.render(
         </PreferenceProvider>
       </MetadataProvider>
     </GoogleProvider>
-  </React.StrictMode>
+  </QueryClientProvider>
+  // </React.StrictMode>
 );
-// these are no logic behind the order of encapsulation of the ContextProviders, they are sorted by alphabetical order
-// except: `SnackbarProvider` should always be a parent of `UserContext` as the latter makes use of the former.
+// `SnackbarProvider` should always be a parent of `UserContext` as the latter makes use of the former.

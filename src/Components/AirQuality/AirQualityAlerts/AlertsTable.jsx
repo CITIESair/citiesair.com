@@ -13,7 +13,7 @@ import { ThresholdAlertTypes } from './AlertTypes';
 import { isValidArray } from '../../../Utils/UtilFunctions';
 import AlertModificationDialog from './AlertModificationDialog/AlertModificationDialog';
 
-import { returnHoursFromMinutesPastMidnight, CrudTypes, SharedColumnHeader } from './Utils';
+import { CrudTypes, SharedColumnHeader } from './Utils';
 import { TransitionGroup } from 'react-transition-group';
 
 import { fetchDataFromURL } from '../../../API/ApiFetch';
@@ -25,6 +25,7 @@ import { useSnackbar } from 'notistack';
 import { UserRoles } from '../../Account/Utils';
 import { DataTypes } from '../../../Utils/AirQuality/DataTypes';
 import { DAYS_OF_WEEK } from './AlertModificationDialog/AlertPropertyComponents/DAYS_OF_WEEK';
+import { returnHoursFromMinutesPastMidnight } from '../../TimeRange/TimeRangeUtils';
 
 const returnDaysOfWeekString = (days_of_week) => {
   if (!days_of_week || !isValidArray(days_of_week)) return "N/A";

@@ -1,13 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Select, MenuItem, FormControl, InputLabel, Button, Stack, Grid, CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useAxesPicker } from '../../ContextProviders/AxesPickerContext';
-import { getCorrelationChartApiUrl } from '../../API/ApiUrls';
-import { ChartAPIendpoints, ChartAPIendpointsOrder } from "../../API/Utils";
+import { ChartAPIendpointsOrder } from "../../API/Utils";
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
-import { fetchDataFromURL } from '../../API/ApiFetch';
-
-const correlationChartIndex = ChartAPIendpointsOrder.findIndex(endpoint => endpoint === ChartAPIendpoints.correlationDailyAverage);
 
 // Define custom styled components for shared border radius
 const LeftSelect = styled(FormControl)(({ theme }) => ({
@@ -40,12 +36,10 @@ const RightSelect = styled(FormControl)(({ theme }) => ({
   },
 }));
 
-
 const AxesPicker = (props) => {
-  const { currentSchoolID, setIndividualChartData } = useContext(DashboardContext);
-  const { allowedAxes, selectedAxes, dataType } = props;
+  const { currentSchoolID, setIndividualChartConfig } = useContext(DashboardContext);
+  const { chartID, allowedAxes, selectedAxes, dataType } = props;
   const { hAxis, vAxis, setHAxis, setVAxis } = useAxesPicker();
-  const [chartUrl, setChartUrl] = useState();
   const [isFetchingData, setIsFetchingData] = useState(false);
   const [shouldDisableApplyButton, setShouldDisableApplyButton] = useState(true);
 
@@ -74,29 +68,15 @@ const AxesPicker = (props) => {
   const applyChanges = () => {
     if (!(vAxis && hAxis)) return;
 
-    const newUrl = getCorrelationChartApiUrl({
-      endpoint: ChartAPIendpoints.correlationDailyAverage,
+    setIndividualChartConfig(chartID, {
+      endpoint: ChartAPIendpointsOrder[chartID],
       school_id: currentSchoolID,
-      dataType: dataType,
-      sensorX: hAxis,
-      sensorY: vAxis
+      queryParams: {
+        dataType: dataType,
+        sensorX: hAxis,
+        sensorY: vAxis
+      }
     });
-
-    if (newUrl !== chartUrl) {
-      setIsFetchingData(true);
-
-      fetchDataFromURL({
-        url: newUrl
-      })
-        .then((data) => {
-          setIndividualChartData(correlationChartIndex, data);
-          setChartUrl(newUrl);
-          setIsFetchingData(false);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
   }
 
   const renderApplyButtonLabel = () => {

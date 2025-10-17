@@ -8,7 +8,7 @@ import { isValidArray } from '../Utils/UtilFunctions';
 import { DataTypes } from '../Utils/AirQuality/DataTypes';
 import { enqueueSnackbar } from 'notistack';
 import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
-import { PREDEFINED_TIMERANGES } from '../Components/AirQuality/AirQualityAlerts/AlertModificationDialog/AlertPropertyComponents/PREDEFINED_TIMERANGES';
+import { PREDEFINED_TIMERANGES } from "../Components/TimeRange/TimeRangeUtils";
 
 const AirQualityAlertContext = createContext();
 
@@ -47,7 +47,7 @@ export const getAlertDefaultPlaceholder = (alert_type = AlertTypes.daily.id) => 
     [AirQualityAlertKeys.sensor_id]: '',
     [AirQualityAlertKeys.datatypekey]: '',
     [AirQualityAlertKeys.days_of_week]: [0, 1, 2, 3, 4],
-    [AirQualityAlertKeys.time_range]: alert_type === AlertTypes.threshold.id ? [PREDEFINED_TIMERANGES.schoolHour.from, PREDEFINED_TIMERANGES.schoolHour.to] : null,
+    [AirQualityAlertKeys.time_range]: alert_type === AlertTypes.threshold.id ? [PREDEFINED_TIMERANGES.schoolHour.start, PREDEFINED_TIMERANGES.schoolHour.end] : null,
     [AirQualityAlertKeys.threshold_value]: -1,
     [AirQualityAlertKeys.minutespastmidnight]: '',
     [AirQualityAlertKeys.is_enabled]: true,

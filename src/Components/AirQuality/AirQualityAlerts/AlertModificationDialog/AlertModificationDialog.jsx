@@ -258,6 +258,12 @@ const AlertModificationDialog = (props) => {
 
   // Disable / Enable save button depends on context
   useEffect(() => {
+    // startTime cannot be larger than endTime
+    if (editingAlert[AirQualityAlertKeys.time_range]?.[0] > editingAlert[AirQualityAlertKeys.time_range]?.[1]) {
+      setShouldDisableButton(true);
+      return;
+    }
+
     switch (crudType) {
       case CrudTypes.add:
         const placeholder = getAlertDefaultPlaceholder(alertTypeKey);

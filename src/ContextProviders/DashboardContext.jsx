@@ -2,10 +2,10 @@
 
 import { useState, createContext, useMemo, useEffect, useContext } from 'react';
 import { fetchDataFromURL, fetchAndProcessCurrentSensorsData } from '../API/ApiFetch';
-import { getApiUrl, getChartApiUrl } from '../API/ApiUrls';
+import { getApiUrl } from '../API/ApiUrls';
 import { ChartAPIendpointsOrder, GeneralAPIendpoints } from '../API/Utils';
 import { AppRoutes } from '../Utils/AppRoutes';
-import { FETCH_CURRENT_DATA_EVERY_MS, KAMPALA, NUMBER_OF_CHARTS_TO_LOAD_INITIALLY, NYUAD } from '../Utils/GlobalVariables';
+import { FETCH_CURRENT_DATA_EVERY_MS, KAMPALA, NYUAD } from '../Utils/GlobalVariables';
 import { LocalStorage } from '../Utils/LocalStorage';
 import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
 import { isValidArray } from '../Utils/UtilFunctions';
@@ -26,14 +26,43 @@ export function DashboardProvider({ children }) {
   const locationPath = location.pathname;
   const isDashboardPage = locationPath.includes(AppRoutes.dashboard);
 
+  const [currentSchoolID, setCurrentSchoolID] = useState();
   const [schoolMetadata, setSchoolMetadata] = useState();
   const [currentSensorMeasurements, setCurrentSensorMeasurements] = useState();
+
+  const [allChartsConfigs, setAllChartsConfigs] = useState(() =>
+    ChartAPIendpointsOrder.reduce((acc, endpoint, index) => {
+      acc[index] = { endpoint, queryParams: {} };
+      return acc;
+    }, {})
+  );
   const [allChartsData, setAllChartsData] = useState({});
-  const [currentSchoolID, setCurrentSchoolID] = useState();
   const [loadMoreCharts, setLoadMoreCharts] = useState(false);
 
   const [publicMapData, setPublicMapData] = useState();
   const shouldFetchPublicMapData = [AppRoutes.home, AppRoutes.nyuadScreen].includes(locationPath);
+
+  /** --- SETTERS --- **/
+  const setIndividualChartConfig = (chartID, chartConfig) => {
+    setAllChartsConfigs(prevData => ({
+      ...prevData,
+      [chartID]: chartConfig
+    }));
+  };
+
+  const updateIndividualChartConfigQueryParams = (chartID, newQueryParams) => {
+    setAllChartsConfigs(prev => ({
+      ...prev,
+      [chartID]: {
+        ...prev[chartID],
+        queryParams: {
+          ...prev[chartID].queryParams,
+          ...newQueryParams
+        }
+      }
+    }));
+  };
+
 
   const setIndividualChartData = (chartID, chartData) => {
     setAllChartsData(prevData => ({
@@ -46,11 +75,13 @@ export function DashboardProvider({ children }) {
     currentSchoolID, setCurrentSchoolID,
     schoolMetadata, setSchoolMetadata,
     currentSensorMeasurements, setCurrentSensorMeasurements,
+    allChartsConfigs, setIndividualChartConfig, updateIndividualChartConfigQueryParams,
     allChartsData, setIndividualChartData,
     loadMoreCharts, setLoadMoreCharts,
     publicMapData
-  }), [currentSchoolID, schoolMetadata, currentSensorMeasurements, allChartsData, loadMoreCharts, publicMapData]);
+  }), [currentSchoolID, schoolMetadata, currentSensorMeasurements, allChartsConfigs, allChartsData, loadMoreCharts, publicMapData]);
 
+  /** --- FETCH PUBLIC MAP DATA --- **/
   useEffect(() => {
     if (shouldFetchPublicMapData && !publicMapData) {
       const mapUrl = getApiUrl({ endpoint: GeneralAPIendpoints.map });
@@ -78,7 +109,36 @@ export function DashboardProvider({ children }) {
     }
   }, [shouldFetchPublicMapData, publicMapData]);
 
+  /** --- FETCH INITIAL DASHBOARD DATA --- **/
+  const fetchInitialDataForDashboard = async (school_id) => {
+    try {
+      setSchoolMetadata();
+      setCurrentSensorMeasurements();
 
+      const response = await Promise.all([
+        fetchDataFromURL({
+          url: getApiUrl({
+            endpoint: GeneralAPIendpoints.schoolmetadata,
+            school_id: school_id
+          })
+        }),
+        fetchAndProcessCurrentSensorsData(
+          getApiUrl({
+            endpoint: GeneralAPIendpoints.current,
+            school_id: school_id
+          }),
+          school_id === KAMPALA ? AggregationType.hour : null
+        )
+      ])
+
+      setSchoolMetadata(response[0]);
+      setCurrentSensorMeasurements(response[1]);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  /** --- AUTH / SCHOOL SELECTION LOGIC --- **/
   useEffect(() => {
     if (!authenticationState.checkedAuthentication) return;
 
@@ -159,58 +219,6 @@ export function DashboardProvider({ children }) {
       }
     }
   }, [user, authenticationState, school_id_param, isDashboardPage, locationPath]);
-
-  const fetchInitialDataForDashboard = async (school_id) => {
-    try {
-      setSchoolMetadata();
-      setCurrentSensorMeasurements();
-
-      const response = await Promise.all([
-        fetchDataFromURL({
-          url: getApiUrl({
-            endpoint: GeneralAPIendpoints.schoolmetadata,
-            school_id: school_id
-          })
-        }),
-        fetchAndProcessCurrentSensorsData(
-          getApiUrl({
-            endpoint: GeneralAPIendpoints.current,
-            school_id: school_id
-          }),
-          school_id === KAMPALA ? AggregationType.hour : null
-        )
-      ])
-
-      setSchoolMetadata(response[0]);
-      setCurrentSensorMeasurements(response[1]);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  useEffect(() => {
-    if (loadMoreCharts === true) {
-      const restOfCharts = ChartAPIendpointsOrder.slice(NUMBER_OF_CHARTS_TO_LOAD_INITIALLY);
-      restOfCharts.forEach((endpoint, index) => {
-        const chartIndexInPage = NUMBER_OF_CHARTS_TO_LOAD_INITIALLY + index;
-        setIndividualChartData(chartIndexInPage, {}); // set empty chartData to create a placeholder for this chart
-
-        fetchDataFromURL({
-          url: getChartApiUrl({
-            endpoint: endpoint,
-            school_id: currentSchoolID
-          })
-        })
-          .then(data => {
-            setIndividualChartData(chartIndexInPage, data);
-          })
-          .catch((error) => {
-            console.log(error);
-          })
-      });
-    }
-
-  }, [loadMoreCharts]);
 
   return (
     <DashboardContext.Provider value={providerValue}>

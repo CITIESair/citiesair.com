@@ -1,13 +1,12 @@
 import { Box } from '@mui/material/';
 import { styled } from '@mui/material/styles';
 
-const isProduction = process.env.REACT_APP_ENV === "production";
 
 const GoogleChartStyleWrapper = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'gradientBackgroundId' && prop !== 'isPortrait',
 })(({ theme, isPortrait, gradientBackgroundId }) => ({
   '& [id*="google-visualization-errors-all"]': {
-    display: isProduction ? 'none !important' : 'unset',
+    display: 'none !important'
   },
   // CSS for optional gradient background 
   '& svg>g:nth-of-type(2)>rect:first-of-type': {

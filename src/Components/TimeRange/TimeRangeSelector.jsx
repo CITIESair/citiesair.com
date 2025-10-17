@@ -1,44 +1,42 @@
 import { useState, useEffect, useCallback } from "react";
 import { Box, Stack, ToggleButtonGroup, ToggleButton, useMediaQuery, useTheme, Typography } from "@mui/material";
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
-import { SimplePicker } from "./SimplePicker";
-import { HOURS } from "./HOURS";
-import { isValidArray } from "../../../../../Utils/UtilFunctions";
-import { PREDEFINED_TIMERANGES } from "./PREDEFINED_TIMERANGES";
-import { getAlertDefaultPlaceholder, AirQualityAlertKeys } from "../../../../../ContextProviders/AirQualityAlertContext";
-import AlertTypes from "../../AlertTypes";
+import { SimplePicker } from "../AirQuality/AirQualityAlerts/AlertModificationDialog/AlertPropertyComponents/SimplePicker";
+import { HOURS } from "./TimeRangeUtils";
+import { isValidArray } from "../../Utils/UtilFunctions";
+import { PREDEFINED_TIMERANGES } from "./TimeRangeUtils";
 
-const TimeRangeSelector = ({ value: timeRange, disabled, handleChange, isResponsive = false, hasTitle = false }) => {
+const TimeRangeSelector = (props) => {
+    const { timeRange, defaultTimeRange, disabled, handleChange, isResponsive = false, hasTitle = false } = props;
+
     const theme = useTheme();
     const isLargeScreen = useMediaQuery(theme => theme.breakpoints.up('lg'));
 
     const [displayFromToPickers, setDisplayFromToPickers] = useState(false);
 
     // Always normalize into a [string, string]
-    const [fromValue, toValue] = isValidArray(timeRange)
-        ? timeRange
-        : getAlertDefaultPlaceholder(AlertTypes.threshold.id)[AirQualityAlertKeys.time_range];
+    const [startTime, endTime] = isValidArray(timeRange) ? timeRange : defaultTimeRange;
 
     const [predefinedRange, setPredefinedRange] = useState(() => {
         // Sync initial toggle‑button state
         const match = Object.values(PREDEFINED_TIMERANGES)
-            .find(r => r.from === fromValue && r.to === toValue);
+            .find(r => r.start === startTime && r.end === endTime);
         return match ? match.id : PREDEFINED_TIMERANGES.custom.id;
     });
 
     // When `timeRange` actually changes, keep buttons in sync:
     useEffect(() => {
         const match = Object.values(PREDEFINED_TIMERANGES)
-            .find(r => r.from === fromValue && r.to === toValue);
+            .find(r => r.start === startTime && r.end === endTime);
         setPredefinedRange(match ? match.id : PREDEFINED_TIMERANGES.custom.id);
-    }, [fromValue, toValue]);
+    }, [startTime, endTime]);
 
     const handleModeChange = useCallback((_, newMode) => {
         if (!newMode) return;
         setPredefinedRange(newMode);
         const range = PREDEFINED_TIMERANGES[newMode];
-        if (range.from != null && range.to != null) {
-            handleChange([range.from, range.to]);
+        if (range.start != null && range.end != null) {
+            handleChange([range.start, range.end]);
         }
 
         // only display the hour pickers if custom time is used
@@ -99,9 +97,9 @@ const TimeRangeSelector = ({ value: timeRange, disabled, handleChange, isRespons
                             size="small"
                         >
                             {range.label}
-                            {range.fromToLabel && (
+                            {range.timeRangeLabel && (
                                 <>
-                                    &nbsp;({range.fromToLabel})
+                                    &nbsp;({range.timeRangeLabel})
                                 </>
                             )
                             }
@@ -114,18 +112,27 @@ const TimeRangeSelector = ({ value: timeRange, disabled, handleChange, isRespons
                         <Stack direction="row" flex={1} gap={1}>
                             <SimplePicker
                                 label="From"
-                                value={fromValue}
+                                value={startTime}
                                 options={HOURS}
                                 disabled={disabled || predefinedRange !== "custom"}
-                                handleChange={e => handleChange([e.target.value, toValue])}
+                                handleChange={(e) => {
+                                    // Set toValue to null if new startTime is larger than endTime's current value
+                                    if (e.target.value > endTime) {
+                                        handleChange([e.target.value, null]);
+                                    }
+                                    // Else, proceed with startTime
+                                    else {
+                                        handleChange([e.target.value, endTime])
+                                    }
+                                }}
                                 flex={1}
                             />
                             <SimplePicker
                                 label="To"
-                                value={toValue}
-                                options={HOURS.filter(h => h.value > fromValue)}
+                                value={endTime}
+                                options={HOURS.filter(h => h.value > startTime)}
                                 disabled={disabled || predefinedRange !== "custom"}
-                                handleChange={e => handleChange([fromValue, e.target.value])}
+                                handleChange={e => handleChange([startTime, e.target.value])}
                                 flex={1}
                             />
                         </Stack>
