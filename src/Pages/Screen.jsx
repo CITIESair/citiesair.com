@@ -17,7 +17,7 @@ import { getApiUrl } from '../API/ApiUrls';
 import { GeneralAPIendpoints } from "../API/Utils";
 import { fetchAndProcessCurrentSensorsData } from '../API/ApiFetch';
 import { PreferenceContext } from '../ContextProviders/PreferenceContext';
-import { CITIESair, FETCH_CURRENT_DATA_EVERY_MS, KAMPALA } from '../Utils/GlobalVariables';
+import { CITIESair, CURRENT_DATA_EXPIRATION_TIME_MS, KAMPALA } from '../Utils/GlobalVariables';
 import { INACTIVE_SENSOR_COLORS } from '../Themes/CustomColors';
 import { DashboardContext } from '../ContextProviders/DashboardContext';
 import { getTranslation, isValidArray } from '../Utils/UtilFunctions';
@@ -29,15 +29,52 @@ import ScreenHealthSuggestions from '../Components/AirQuality/AirQualityScreen/S
 import { TypesOfScreen } from '../Components/AirQuality/AirQualityScreen/ScreenUtils';
 import AggregationType from '../Components/DateRangePicker/AggregationType';
 import { ScreenContext } from '../ContextProviders/ScreenContext';
+import useSchoolMetadata from '../hooks/useSchoolMetadata';
+import { useQuery } from '@tanstack/react-query';
 
 const Screen = ({ title }) => {
-  const { school_id_param, screen_id_param } = useParams()
-
   const { isLayoutReversed } = useContext(ScreenContext);
   const { temperatureUnitPreference, language, setLanguage } = useContext(PreferenceContext);
-  const { schoolMetadata, currentSchoolID } = useContext(DashboardContext);
 
-  const [typeOfScreen, setTypeOfScreen] = useState(TypesOfScreen.indoorsVsOutdoors);
+  // ---- DATA FETCHING FOR SCREEN ----
+  const { currentSchoolID } = useContext(DashboardContext);
+  const { school_id_param, screen_id_param } = useParams()
+  const { data: schoolMetadata } = useSchoolMetadata();
+  const school_id = school_id_param || currentSchoolID;
+  const aggregationType = school_id === KAMPALA ? AggregationType.hour : null;
+
+  const url = getApiUrl({
+    endpoint: GeneralAPIendpoints.screen,
+    school_id,
+    screen_id: screen_id_param,
+    aggregationType,
+  });
+
+  const { data } = useQuery({
+    queryKey: ['screenSensorsData', school_id, screen_id_param],
+    queryFn: async () => {
+      const screenData = await fetchAndProcessCurrentSensorsData(url, aggregationType);
+
+      // Determine the type of screen
+      const hasOutdoor = screenData.some(({ sensor }) => sensor.location_type === "outdoors");
+      const hasIndoor = screenData.some(({ sensor }) => sensor.location_type.startsWith("indoors"));
+      const screenType = hasIndoor && hasOutdoor
+        ? TypesOfScreen.indoorsVsOutdoors
+        : hasIndoor
+          ? TypesOfScreen.bothIndoors
+          : hasOutdoor
+            ? TypesOfScreen.bothOutdoors
+            : null;
+
+      return { screenData, screenType };
+    },
+    refetchInterval: CURRENT_DATA_EXPIRATION_TIME_MS,
+    refetchOnWindowFocus: true,
+    staleTime: CURRENT_DATA_EXPIRATION_TIME_MS,
+    enabled: Boolean(school_id && screen_id_param),
+    placeholderData: (prev) => prev,
+  });
+  const { screenData, screenType } = data || { screenType: TypesOfScreen.indoorsVsOutdoors };
 
   // Timer loop:
   // - Check if the screen should be displayed (or black screen to save energy)
@@ -65,59 +102,6 @@ const Screen = ({ title }) => {
   useEffect(() => {
     document.title = title;
   }, [title]);
-
-  const [data, setData] = useState({});
-
-  // Fetch air quality data from database
-  useEffect(() => {
-    // Do nothing if the data has been fetched before
-    if (Object.keys(data).length != 0) return;
-
-    const school_id = school_id_param || currentSchoolID;
-    const aggregationType = school_id === KAMPALA ? AggregationType.hour : null;
-    const url = getApiUrl({
-      endpoint: GeneralAPIendpoints.screen,
-      school_id,
-      screen_id: screen_id_param,
-      aggregationType
-    });
-
-    fetchAndProcessCurrentSensorsData(url, aggregationType)
-      .then((data) => {
-        setData(data);
-
-        // Determine the type of screen
-        const hasOutdoor = data.some(({ sensor }) => sensor.location_type === "outdoors");
-        const hasIndoor = data.some(({ sensor }) => sensor.location_type.startsWith("indoors"));
-
-        const screenType = hasIndoor && hasOutdoor
-          ? TypesOfScreen.indoorsVsOutdoors
-          : hasIndoor
-            ? TypesOfScreen.bothIndoors
-            : hasOutdoor
-              ? TypesOfScreen.bothOutdoors
-              : null;
-
-        if (screenType) setTypeOfScreen(screenType);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-
-    // Create an interval that fetch new data every FETCH_CURRENT_DATA_EVERY_MS
-    const intervalId = setInterval(() => {
-      fetchAndProcessCurrentSensorsData(url)
-        .then((data) => {
-          setData(data);
-        })
-        .catch((error) => console.log(error))
-    },
-      FETCH_CURRENT_DATA_EVERY_MS);
-    // Clean up the interval when the component unmounts
-    return () => {
-      clearInterval(intervalId);
-    }
-  }, []);
 
   const aqiTitle = getTranslation(sectionData.screen.content.aqiTitle, language);
   const pm25Title = getTranslation(sectionData.screen.content.pm25Title, language);
@@ -192,7 +176,7 @@ const Screen = ({ title }) => {
             justifyContent="space-around"
           >
             <CurrentAQIGrid
-              currentSensorsData={data}
+              currentSensorsData={screenData}
               temperatureUnitPreference={temperatureUnitPreference}
               isScreen={true}
               size={CurrentAQIGridSize.large}
@@ -202,7 +186,7 @@ const Screen = ({ title }) => {
             />
           </Grid>
 
-          <ScreenHealthSuggestions typeOfScreen={typeOfScreen} data={data} />
+          <ScreenHealthSuggestions typeOfScreen={screenType} data={screenData} />
         </Stack>
       </Grid>
 
@@ -252,7 +236,7 @@ const Screen = ({ title }) => {
             className='condensedFont'
             sx={{ '& *': { fontWeight: '600 !important' } }}
           >
-            <RecentHistoricalGraph data={data} />
+            <RecentHistoricalGraph data={screenData} />
           </Grid>
         </Grid>
 

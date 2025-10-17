@@ -1,5 +1,5 @@
 
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Container, Box, Grid, Typography, Stack, Tooltip } from '@mui/material/';
 import { useMediaQuery, useTheme } from '@mui/material';
 
@@ -16,7 +16,6 @@ import { PreferenceContext } from '../../../ContextProviders/PreferenceContext';
 import ThemePreferences from '../../../Themes/ThemePreferences';
 import { KAMPALA, NYUAD } from '../../../Utils/GlobalVariables';
 import { getTranslation } from '../../../Utils/UtilFunctions';
-import { DashboardContext } from '../../../ContextProviders/DashboardContext';
 
 const returnSpecialCenterCoordinatesForNYUAD = (isOnBannerPage) => {
     return isOnBannerPage ? [24.523, 54.4343] : null
@@ -33,26 +32,41 @@ const returnDefaultZoom = (currentSchoolID) => {
     }
 }
 
+const NUM_SENSORS_FIRST_ROW = 1;
+const NUM_SENSORS_SECOND_ROW = 2;
+
 const CurrentAQIMapWithGrid = (props) => {
     const {
-        currentSensorsData
-    } = props;
-
-    const { themePreference } = useContext(PreferenceContext);
-    const { currentSchoolID } = useContext(DashboardContext);
-    const isNYUAD = currentSchoolID === NYUAD;
-
-    const {
+        currentSensorsData,
+        schoolID,
         disableInteraction = false,
         isOnBannerPage = true,
         minMapHeight = "230px"
     } = props;
 
+    // --- This is needed because Leaflet map won't correctly resize otherwise if data from currentSensorsData is passed directly
+    // (Leaflet + React Querry's quirk)
+    const [mapData, setMapData] = useState(null);
+    // Reset map data on schoolID change
+    useEffect(() => {
+        setMapData(null);
+    }, [schoolID]);
+    // Set mapData when new data arrives, with a short delay
+    useEffect(() => {
+        if (currentSensorsData) {
+            const timer = setTimeout(() => {
+                setMapData({ ...currentSensorsData });
+            }, 1);
+            return () => clearTimeout(timer);
+        }
+    }, [currentSensorsData]);
+
+    const { themePreference } = useContext(PreferenceContext);
+    const isNYUAD = schoolID === NYUAD;
+
     const theme = useTheme();
-
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
-
-    const defaultZoom = returnDefaultZoom(currentSchoolID);
+    const defaultZoom = returnDefaultZoom(schoolID);
 
     return (
         <Grid
@@ -77,7 +91,7 @@ const CurrentAQIMapWithGrid = (props) => {
                 >
                     <Container >
                         <Typography color="text.primary" variant="h5" textAlign="center" fontWeight="500">
-                            {currentSchoolID?.toUpperCase()} Air Quality
+                            {schoolID?.toUpperCase()} Air Quality
                         </Typography>
                     </Container>
                 </Grid>
@@ -111,7 +125,7 @@ const CurrentAQIMapWithGrid = (props) => {
                         locationTitle={LocationTitles.short}
                         fullSizeMap={true}
                         showAttribution={false}
-                        mapData={currentSensorsData}
+                        mapData={mapData}
                         markerSizeInRem={isSmallScreen ? 0.75 : 0.9}
                         ariaLabel={"A map of all air quality sensors at NYU Abu Dhabi"}
                     />
@@ -122,10 +136,9 @@ const CurrentAQIMapWithGrid = (props) => {
                     (isOnBannerPage === true) ? (
                         <Box textAlign="center" sx={{ mt: isSmallScreen ? -4 : -10 }}>
                             <CurrentAQIGrid
-                                currentSensorsData={currentSensorsData?.slice(0, 1)}
+                                currentSensorsData={currentSensorsData?.slice(0, NUM_SENSORS_FIRST_ROW)}
                                 showWeather={true}
                                 showWeatherText={true}
-                                showHeatIndex={false}
                                 showAQI={false}
                                 showRawMeasurements={false}
                                 roundTemperature={true}
@@ -166,9 +179,9 @@ const CurrentAQIMapWithGrid = (props) => {
                         >
                             <Grid item xs={12}>
                                 <CurrentAQIGrid
-                                    currentSensorsData={currentSensorsData?.slice(0, 1)}
-                                    showWeather={!isOnBannerPage && (currentSchoolID === KAMPALA && false)}
-                                    showHeatIndex={!isOnBannerPage}
+                                    currentSensorsData={currentSensorsData?.slice(0, NUM_SENSORS_FIRST_ROW)}
+                                    showWeather={!isOnBannerPage && (schoolID === KAMPALA && false)}
+                                    showHeatIndex={!isOnBannerPage && (schoolID === KAMPALA && false)}
                                     showRawMeasurements={!isOnBannerPage}
                                     useLocationShort={true}
                                     roundTemperature={isOnBannerPage && true}
@@ -179,8 +192,8 @@ const CurrentAQIMapWithGrid = (props) => {
 
                             <Grid item xs={12} >
                                 <CurrentAQIGrid
-                                    currentSensorsData={currentSensorsData?.slice(1, 3)}
-                                    showWeather={!isOnBannerPage}
+                                    currentSensorsData={currentSensorsData?.slice(NUM_SENSORS_FIRST_ROW, NUM_SENSORS_FIRST_ROW + NUM_SENSORS_SECOND_ROW)}
+                                    showWeather={!isOnBannerPage && (schoolID === KAMPALA && false)}
                                     showRawMeasurements={!isOnBannerPage}
                                     showHeatIndex={false}
                                     showLastUpdate={!isOnBannerPage}
@@ -190,7 +203,7 @@ const CurrentAQIMapWithGrid = (props) => {
 
                             <Grid item xs={isSmallScreen ? 10 : 12} mb={1}>
                                 <SimpleAQIList
-                                    currentSensorsData={currentSensorsData?.slice(3)}
+                                    currentSensorsData={currentSensorsData?.slice(NUM_SENSORS_FIRST_ROW + NUM_SENSORS_SECOND_ROW)}
                                     useLocationShort={isSmallScreen}
                                     isOnBannerPage={isOnBannerPage}
                                     showCategory={false}
@@ -281,5 +294,4 @@ const AQIscale = ({ isSmallScreen, isOnBannerPage, showLabel = true }) => {
     )
 }
 
-export default CurrentAQIMapWithGrid; export const tileAccessToken = 'N4ppJQTC3M3uFOAsXTbVu6456x1MQnQTYityzGPvAkVB3pS27NMwJ4b3AfebMfjY';
-
+export default CurrentAQIMapWithGrid;

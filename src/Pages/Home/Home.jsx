@@ -30,6 +30,7 @@ import { DashboardContext } from '../../ContextProviders/DashboardContext';
 import { UserContext } from '../../ContextProviders/UserContext';
 import NYUADbanner from '../Embeds/NYUADbanner';
 import OutdoorStationUAE from '../../Components/AirQuality/AirQualityMap/OutdoorStationUAE';
+import useCurrentSensorsData from '../../hooks/useCurrentSensorsData';
 
 function Home({ temperatureUnitPreference, title }) {
   // Update the page's title
@@ -45,18 +46,19 @@ function Home({ temperatureUnitPreference, title }) {
     setChartsTitlesList([]);
   }, [setCurrentPage, setChartsTitlesList]);
 
-  const { currentSchoolID, currentSensorMeasurements } = useContext(DashboardContext);
+  const { currentSchoolID } = useContext(DashboardContext);
+  const { data: currentSensorsData } = useCurrentSensorsData();
   const { authenticationState } = useContext(UserContext);
 
   const displaySensorCounts = () => {
-    if (!currentSensorMeasurements) return null;
+    if (!currentSensorsData) return null;
 
     return (
       <Grid item xs={12}>
         <Typography variant='body2' color="text.secondary">
           <b>Sensors status: </b>{
-            currentSensorMeasurements.reduce((count, obj) => obj?.sensor?.sensor_status === SensorStatus.active ? count + 1 : count, 0)
-          } active out of {currentSensorMeasurements.length}
+            currentSensorsData.reduce((count, obj) => obj?.sensor?.sensor_status === SensorStatus.active ? count + 1 : count, 0)
+          } active out of {currentSensorsData.length}
         </Typography>
       </Grid>
     );
@@ -164,7 +166,7 @@ function Home({ temperatureUnitPreference, title }) {
             {
               (currentSchoolID === NYUAD || currentSchoolID === null || currentSchoolID === undefined) ? (
                 <NYUADbanner
-                  initialNyuadCurrentData={currentSensorMeasurements}
+                  initialNyuadCurrentData={currentSensorsData}
                   isOnBannerPage={false}
                   disableInteraction={true}
                   minMapHeight={"250px"}
@@ -172,7 +174,7 @@ function Home({ temperatureUnitPreference, title }) {
               ) : (
                 <Grid item xs={12} lg={10}>
                   <CurrentAQIGrid
-                    currentSensorsData={currentSensorMeasurements?.slice(0, 3)}
+                    currentSensorsData={currentSensorsData?.slice(0, 3)}
                     isScreen={false}
                     temperatureUnitPreference={temperatureUnitPreference}
                     firstSensorOwnLine={true}

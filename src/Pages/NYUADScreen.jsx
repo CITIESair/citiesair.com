@@ -3,17 +3,15 @@ import AtAGlance from "./Home/AtAGlance";
 import AQImap from "../Components/AirQuality/AirQualityMap/AQImap";
 import { LocationTitles } from '../Components/AirQuality/AirQualityMap/AirQualityMapUtils';
 import { TileOptions } from '../Components/AirQuality/AirQualityMap/AirQualityMapUtils';
-import { useContext, useEffect, useState } from "react";
-import { CITIESair, CITIESair_URL, FETCH_CURRENT_DATA_EVERY_MS, NYUAD } from "../Utils/GlobalVariables";
+import { useContext } from "react";
+import { CITIESair, CITIESair_URL, NYUAD } from "../Utils/GlobalVariables";
 import CITIESlogoLinkToHome from "../Components/Header/CITIESlogoLinkToHome";
 import { ScreenContext } from "../ContextProviders/ScreenContext";
 import ThemePreferences from "../Themes/ThemePreferences";
 import CustomThemes from "../Themes/CustomThemes";
 import QRCode from "react-qr-code";
-import { getApiUrl } from "../API/ApiUrls";
-import { GeneralAPIendpoints } from "../API/Utils";
-import { fetchAndProcessCurrentSensorsData } from "../API/ApiFetch";
 import OutdoorStationUAE from "../Components/AirQuality/AirQualityMap/OutdoorStationUAE";
+import useCurrentSensorsData from "../hooks/useCurrentSensorsData";
 
 const darkOnlyTheme = createTheme({
     palette: {
@@ -25,35 +23,7 @@ const darkOnlyTheme = createTheme({
 
 const NYUADScreen = () => {
     const { isLayoutReversed } = useContext(ScreenContext);
-
-    const [nyuadCurrentData, setNYUADcurrentData] = useState();
-
-    const url = getApiUrl({
-        endpoint: GeneralAPIendpoints.current,
-        school_id: NYUAD
-    });
-
-    useEffect(() => {
-        fetchAndProcessCurrentSensorsData(url)
-            .then((data) => {
-                setNYUADcurrentData(data);
-            })
-            .catch((error) => console.error(error));
-
-        // Set up interval to refresh data periodically
-        const intervalId = setInterval(() => {
-            fetchAndProcessCurrentSensorsData(url)
-                .then((data) => {
-                    setNYUADcurrentData(data);
-                })
-                .catch((error) => console.error(error));
-        }, FETCH_CURRENT_DATA_EVERY_MS);
-
-        // Cleanup interval when component unmounts or dependencies change
-        return () => {
-            clearInterval(intervalId);
-        };
-    }, [url]);
+    const { data: currentSensorsData } = useCurrentSensorsData(NYUAD);
 
     return (
         <Grid
@@ -151,7 +121,7 @@ const NYUADScreen = () => {
                             locationTitle={LocationTitles.short}
                             fullSizeMap={true}
                             showAttribution={false}
-                            mapData={nyuadCurrentData}
+                            mapData={currentSensorsData}
                             markerSizeInRem={1.5}
                             ariaLabel={"A map of all air quality sensors at NYU Abu Dhabi"}
                         />

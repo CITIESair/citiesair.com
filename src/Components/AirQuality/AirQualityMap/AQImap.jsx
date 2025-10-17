@@ -1,6 +1,6 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useState, useMemo, useCallback, useContext } from 'react';
+import { useState, useMemo, useCallback, useContext, useRef } from 'react';
 import { Box, Typography, Stack, Link } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { MapContainer, TileLayer, Marker, Popup, useMap, AttributionControl, useMapEvent, Rectangle, CircleMarker, ImageOverlay } from 'react-leaflet';
@@ -226,7 +226,7 @@ const AQImap = (props) => {
                     color: 'text.secondary'
                 }}
             >
-                <LoadingAnimation optionalText={"Loading Map..."} />
+                <LoadingAnimation />
             </Box>
         );
     }

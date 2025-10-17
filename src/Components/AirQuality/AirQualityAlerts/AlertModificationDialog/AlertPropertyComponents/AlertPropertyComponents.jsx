@@ -5,12 +5,10 @@ import { SimplePicker } from "./SimplePicker";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PlaceIcon from '@mui/icons-material/Place';
 import { SharedColumnHeader } from "../../Utils";
-import TimeRangeSelector from "./TimeRangeSelector";
+import TimeRangeSelector from "../../../../TimeRange/TimeRangeSelector";
 import { DataTypes } from "../../../../../Utils/AirQuality/DataTypes";
 import { capitalizePhrase } from "../../../../../Utils/UtilFunctions";
-import { useContext } from "react";
-import { DashboardContext } from "../../../../../ContextProviders/DashboardContext";
-import { HOURS } from "./HOURS";
+import { HOURS } from "../../../../TimeRange/TimeRangeUtils";
 import { Checkbox, DialogContentText, FormControlLabel, FormGroup, Grid, Stack, Switch, Typography, useTheme } from "@mui/material";
 
 import OptionalMessage from "./OptionalMessage";
@@ -21,6 +19,8 @@ import { DialogData } from "../DialogData";
 import { MaxOnceADayCheckbox } from "./MaxOnceADayCheckbox";
 import { ThresholdType, ThresholdTypeToggle } from "./ThresholdAlertComponents/ThresholdTypeToggle";
 
+import useSchoolMetadata from "../../../../../hooks/useSchoolMetadata";
+
 const returnFormattedStatusString = (editingAlert) => {
     const status = editingAlert[AirQualityAlertKeys.is_enabled] ? "enabled" : "disabled";
     const tense = editingAlert[AirQualityAlertKeys.id] ? "is" : "will be"; // if this alert doesn't have id, it's not d in DB yet, thus we use future tense 
@@ -29,7 +29,7 @@ const returnFormattedStatusString = (editingAlert) => {
 }
 
 export const AlertPropertyComponents = ({ alertTypeKey, crudType }) => {
-    const { schoolMetadata } = useContext(DashboardContext);
+    const { data: schoolMetadata } = useSchoolMetadata();
     const { editingAlert, allowedDataTypesForSensor, setEditingAlert } = useAirQualityAlert();
 
     const theme = useTheme();
@@ -87,7 +87,8 @@ export const AlertPropertyComponents = ({ alertTypeKey, crudType }) => {
                     <Grid container columnSpacing={2} rowSpacing={0.5}>
                         <Grid item xs={12} md={6}>
                             <TimeRangeSelector
-                                value={editingAlert[AirQualityAlertKeys.time_range]}
+                                timeRange={editingAlert[AirQualityAlertKeys.time_range]}
+                                defaultTimeRange={getAlertDefaultPlaceholder(AlertTypes.threshold.id)[AirQualityAlertKeys.time_range]}
                                 disabled={isDisabled(AirQualityAlertKeys.time_range)}
                                 handleChange={(newRange) => {
                                     setEditingAlert({

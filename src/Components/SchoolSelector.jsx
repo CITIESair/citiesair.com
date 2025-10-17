@@ -1,6 +1,3 @@
-// disable eslint for this file
-/* eslint-disable */
-
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -18,33 +15,22 @@ import { UserContext } from "../ContextProviders/UserContext";
 
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import useSchoolMetadata from "../hooks/useSchoolMetadata";
 
 const SchoolSelector = () => {
-  const { currentSchoolID, schoolMetadata } = useContext(DashboardContext);
+  const { currentSchoolID } = useContext(DashboardContext);
+  const { data: schoolMetadata } = useSchoolMetadata();
   const { user } = useContext(UserContext);
+  const navigate = useNavigate();
 
-  // If there is only one school, return a Chip displaying the name of that school
-  if (!Array.isArray(user.allowedSchools) || user.allowedSchools.length <= 1)
-    return (
-      <CustomChip
-        icon={<PlaceIcon />}
-        label={schoolMetadata?.name || "No School Name Given"}
-        tooltipTitle={"School"}
-      />
-    );
-
-  // Else, display a drop down menu that allows choosing between different schools
   const [anchorEl, setAnchorEl] = useState(null);
-
+  const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  const navigate = useNavigate();
 
   const handleItemSelect = (newSchoolID) => () => {
     if (currentSchoolID !== newSchoolID) {
@@ -62,29 +48,24 @@ const SchoolSelector = () => {
     handleClose();
   };
 
-  const returnChipLabel = () => {
-    return (
-      <Box sx={{
-        '& svg': {
-          fontSize: "1rem", verticalAlign: "sub", marginLeft: "0.25rem"
-        }
-      }
-      }>
-        {schoolMetadata?.name || "Loading..."}
-        {Boolean(anchorEl) ? (
-          <ArrowDropUpIcon />
-        ) : (
-          <ArrowDropDownIcon />
-        )}
-      </Box>
-    );
-  };
+  if (!schoolMetadata) return;
 
+  // If there is only one school, return a Chip displaying the name of that school
+  if (!Array.isArray(user.allowedSchools) || user.allowedSchools.length <= 1)
+    return (
+      <CustomChip
+        icon={<PlaceIcon />}
+        label={schoolMetadata.name || "No School Name Given"}
+        tooltipTitle={"School"}
+      />
+    );
+
+  // Else, display a drop down menu that allows choosing between different schools
   return (
     <>
       <CustomChip
         icon={<PlaceIcon />}
-        label={returnChipLabel()}
+        label={returnChipLabel(schoolMetadata.name, open)}
         tooltipTitle={"Click to Select School"}
         clickable
         onClick={handleClick}
@@ -94,7 +75,7 @@ const SchoolSelector = () => {
       />
       <Menu
         anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
+        open={open}
         onClose={handleClose}
         MenuListProps={{
           'aria-labelledby': 'basic-button',
@@ -112,6 +93,24 @@ const SchoolSelector = () => {
         </MenuList>
       </Menu>
     </>
+  );
+};
+
+const returnChipLabel = (name, open) => {
+  return (
+    <Box sx={{
+      '& svg': {
+        fontSize: "1rem", verticalAlign: "sub", marginLeft: "0.25rem"
+      }
+    }
+    }>
+      {name || "Loading..."}
+      {open ? (
+        <ArrowDropUpIcon />
+      ) : (
+        <ArrowDropDownIcon />
+      )}
+    </Box>
   );
 };
 

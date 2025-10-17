@@ -29,22 +29,18 @@ export function MetadataProvider({ children }) {
   //   }
   // };
 
-  // ------ At a Glance's statistics metadata -------
-  const [stats, setStats] = useState(null);
-
   // ------ Current page and chart title list metadata -----
   const [currentPage, setCurrentPage] = useState(null);
   const [chartsTitlesList, setChartsTitlesList] = useState([]);
 
   const providerValue = useMemo(() => ({
     // commentCounts, fetchCommentCounts, setCommentCounts,
-    stats, setStats,
     currentPage, setCurrentPage,
     chartsTitlesList, setChartsTitlesList
   }), [
     // Temporarily not using HyvorTalk comment anymore
     // commentCounts, 
-    stats, currentPage, chartsTitlesList]);
+    currentPage, chartsTitlesList]);
 
   // return context provider
   return (

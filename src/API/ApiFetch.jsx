@@ -1,7 +1,6 @@
 import { calculateSensorStatus } from "../Components/AirQuality/SensorStatus";
 import { SupportedFetchExtensions, RESTmethods } from "./Utils";
 
-
 const genericErrorMessage = 'Network response was not OK';
 
 export const fetchDataFromURL = async ({
@@ -10,14 +9,23 @@ export const fetchDataFromURL = async ({
   needsAuthorization = true,
   restMethod = RESTmethods.GET,
   body = null,
-  includesContentTypeHeader = true
+  includesContentTypeHeader = true,
+  timeoutMs = 30000 // default: 30 seconds
 }) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
   try {
+    if (!navigator.onLine) {
+      throw new Error('You appear to be offline. Please check your internet connection.');
+    }
+
     const fetchOptions = {
       method: restMethod,
       credentials: needsAuthorization ? 'include' : 'omit',
       ...(body && { body: JSON.stringify(body) }),
-      headers: {}
+      headers: {},
+      signal: controller.signal
     };
 
     if (includesContentTypeHeader) {
@@ -34,30 +42,27 @@ export const fetchDataFromURL = async ({
     }
 
     const response = await fetch(url, fetchOptions);
+    clearTimeout(timeoutId);
 
-    // Case: 500
     if (response.status === 500) {
-      return Promise.reject(new Error('The server encountered an error. Please try again later.'));
+      throw new Error('The server encountered an error. Please try again later.');
     }
 
-    // Proceed with case OK 204
     if (response.status === 204) {
       return true;
     }
 
-    // All other errors
     if (!response.ok) {
       const contentType = response.headers.get('Content-Type');
       if (contentType && contentType.includes('application/json')) {
         const errorData = await response.json();
-        return Promise.reject(new Error(errorData.message || genericErrorMessage));
+        throw new Error(errorData.message || genericErrorMessage);
       } else {
         const errorText = await response.text();
-        return Promise.reject(new Error(errorText || genericErrorMessage));
+        throw new Error(errorText || genericErrorMessage);
       }
     }
 
-    // OK
     switch (extension) {
       case SupportedFetchExtensions.json:
         return await response.json();
@@ -66,8 +71,14 @@ export const fetchDataFromURL = async ({
       default:
         return response;
     }
+
   } catch (error) {
-    // Check if it's a network error
+    clearTimeout(timeoutId);
+
+    if (error.name === 'AbortError') {
+      throw new Error('The request timed out. Please check your internet connection and try again.');
+    }
+
     if (error.message === 'Failed to fetch') {
       throw new Error('Unable to connect to the server. Please check your internet connection and try again.');
     }
@@ -75,7 +86,6 @@ export const fetchDataFromURL = async ({
     // For other errors, preserve the original message
     throw new Error(error.message);
   }
-
 };
 
 export const fetchAndProcessCurrentSensorsData = async (apiUrl, aggregationType = null) => {

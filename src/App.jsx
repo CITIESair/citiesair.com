@@ -37,6 +37,7 @@ import UnsubscribeAlert from "./Pages/UnsubscribeAlert";
 import { isWithinDisplayHours } from "./Utils/UtilFunctions";
 import NYUADScreen from "./Pages/NYUADScreen";
 import { ScreenProvider } from "./ContextProviders/ScreenContext";
+import { useNetworkStatus } from "./hooks/useNetworkStatus";
 
 // Lazy load pages
 const Home = lazy(() => import("./Pages/Home/Home"));
@@ -62,6 +63,8 @@ const getDesignTokens = (themePreference) => ({
 });
 
 function App() {
+  useNetworkStatus();
+
   const { themePreference, setThemePreference } = useContext(PreferenceContext);
   const { chartsTitlesList } = useContext(MetadataContext);
 
@@ -243,7 +246,11 @@ function App() {
                       )
                     )}
 
-                    <Route path={AppRoutes.nyuadMap} element={<NYUADmap />} />
+                    <Route path={AppRoutes.nyuadMap} element={
+                      <DashboardProvider>
+                        <NYUADmap />
+                      </DashboardProvider>
+                    } />
 
                     <Route
                       path={AppRoutes.nyuadBanner}

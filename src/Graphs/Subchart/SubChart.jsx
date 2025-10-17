@@ -24,7 +24,8 @@ import { returnSelectedDataType } from '../../Utils/AirQuality/DataTypes';
 import AxesPicker from '../../Components/AxesPicker/AxesPicker';
 
 import NoChartToRender from './NoChartToRender';
-import TimeRangeSelector from '../../Components/AirQuality/AirQualityAlerts/AlertModificationDialog/AlertPropertyComponents/TimeRangeSelector';
+import { PREDEFINED_TIMERANGES } from '../../Components/TimeRange/TimeRangeUtils';
+import TimeRangeSelectorWrapperForDataHook from '../../Components/TimeRange/TimeRangeSelectorWrapperForDataHook';
 
 export default function SubChart(props) {
   // Props
@@ -152,8 +153,9 @@ export default function SubChart(props) {
   // Properties for selecting (showing or hiding) the serie(s)
   const seriesSelector = options.seriesSelector || false;
 
-  // Properties for date-range-picker
+  // Properties for date-range-picker and time range selector
   const dateRangePicker = options.dateRangePicker || null;
+  const timeRangeSelector = options.timeRangeSelector || null;
 
   // Properties for data formatters
   const formatters = options.formatters || null;
@@ -600,7 +602,6 @@ export default function SubChart(props) {
           {
             dateRangePicker &&
             <CustomDateRangePicker
-              dataType={selectedDataType}
               minDateOfDataset={new Date(dateRangePicker.minDate)}
               chartIndex={chartData.id}
             />
@@ -608,6 +609,7 @@ export default function SubChart(props) {
 
           {selectableAxes &&
             <AxesPicker
+              chartID={chartData.id}
               allowedAxes={selectableAxes.allowedAxes}
               selectedAxes={selectableAxes.selectedAxes}
               dataType={selectedDataType}
@@ -615,18 +617,20 @@ export default function SubChart(props) {
           }
 
           {
+            timeRangeSelector &&
             <Grid item xs="auto" lg={12}
               sx={{
                 [theme.breakpoints.down('sm')]: { width: '100%' }
               }}
             >
-              <TimeRangeSelector
-                value={[0, 60]}
+              <TimeRangeSelectorWrapperForDataHook
+                defaultTimeRange={[PREDEFINED_TIMERANGES.allday.start, PREDEFINED_TIMERANGES.allday.end]}
                 handleChange={() => {
                   return null;
                 }}
                 isResponsive
                 hasTitle
+                chartIndex={chartData.id}
               />
             </Grid>
           }
@@ -639,61 +643,63 @@ export default function SubChart(props) {
 
   return (
     shouldRenderChart ?
-      <GoogleChartStyleWrapper
-        isPortrait={isPortrait}
-        gradientBackgroundId={gradientBackgroundId}
-        className={chartData.chartType}
-        position="relative"
-        height="100%"
-        minHeight={chartData.chartType === 'Calendar' && '200px'}
-      >
-        {/* Conditionally display loading animation here */}
-        {isFirstRender && (
-          <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-            <LoadingAnimation />
-          </Box>
-        )}
-        <Grid container alignItems="start"
-          sx={{
-          }}
+      (
+        <GoogleChartStyleWrapper
+          isPortrait={isPortrait}
+          gradientBackgroundId={gradientBackgroundId}
+          className={chartData.chartType}
+          position="relative"
+          height="100%"
+          minHeight={chartData.chartType === 'Calendar' && '200px'}
         >
-          <Grid lg={2} container item
+          {/* Conditionally display loading animation here */}
+          {isFirstRender && (
+            <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+              <LoadingAnimation />
+            </Box>
+          )}
+          <Grid container alignItems="start"
             sx={{
-              mt: 1,
-              ml: 2,
-              gap: 2,
-              [theme.breakpoints.down('lg')]: { gap: 1, ml: 0 }
             }}
           >
-            {showAuxiliaryControls()}
+            <Grid lg={2} container item
+              sx={{
+                mt: 1,
+                ml: 2,
+                gap: 2,
+                [theme.breakpoints.down('lg')]: { gap: 1, ml: 0 }
+              }}
+            >
+              {showAuxiliaryControls()}
+            </Grid>
+            <Grid item xs>
+              {renderChart()}
+            </Grid>
           </Grid>
-          <Grid item xs>
-            {renderChart()}
-          </Grid>
-        </Grid>
 
-        {gradientBackgroundColor ? <BackgroundGradient id={gradientBackgroundId} colors={svgFillGradient} /> : null}
-      </GoogleChartStyleWrapper> :
+          {gradientBackgroundColor ? <BackgroundGradient id={gradientBackgroundId} colors={svgFillGradient} /> : null}
+        </GoogleChartStyleWrapper>
+      ) :
       (
-        <>
-          {selectableAxes &&
-            <Box mt={1}>
-              <AxesPicker
-                allowedAxes={selectableAxes.allowedAxes}
-                selectedAxes={selectableAxes.selectedAxes}
-                dataType={selectedDataType}
-              />
-            </Box>
-          }
-          <NoChartToRender
-            dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })}
-            selectableAxes={selectableAxes}
-            // If the visualization has a series selector or control, we need to account for its height
-            // And since the height is a string, we need to parse it to a number before adding to it
-            height={seriesSelector || hasChartControl ? (parseFloat(height) * 1.2 + 'vw') : height}
+        // <>
+        //   {selectableAxes &&
+        //     <Box mt={1}>
+        //       <AxesPicker
+        //         allowedAxes={selectableAxes.allowedAxes}
+        //         selectedAxes={selectableAxes.selectedAxes}
+        //         dataType={selectedDataType}
+        //       />
+        //     </Box>
+        //   }
+        <NoChartToRender
+          dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })}
+          selectableAxes={selectableAxes}
+          // If the visualization has a series selector or control, we need to account for its height
+          // And since the height is a string, we need to parse it to a number before adding to it
+          height={seriesSelector || hasChartControl ? (parseFloat(height) * 1.2 + 'vw') : height}
 
-          />
-        </>
+        />
+        // </>
       )
   );
 }

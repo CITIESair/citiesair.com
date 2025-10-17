@@ -1,12 +1,11 @@
 import { Skeleton, Typography, useTheme } from "@mui/material";
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from "../../Utils/UtilFunctions";
-import { useContext } from "react";
-import { DashboardContext } from "../../ContextProviders/DashboardContext";
+import useSchoolMetadata from "../../hooks/useSchoolMetadata";
 
 const ProjectDescription = () => {
     const theme = useTheme();
-    const { schoolMetadata } = useContext(DashboardContext);
+    const { data: schoolMetadata } = useSchoolMetadata();
 
     if (schoolMetadata) return (
         <Typography

@@ -1,6 +1,4 @@
 import { Grid, Typography, Stack, Skeleton, Box } from '@mui/material';
-import { useContext, useEffect } from 'react';
-import { MetadataContext } from '../../ContextProviders/MetadataContext';
 import { fetchDataFromURL } from '../../API/ApiFetch';
 import { GeneralAPIendpoints } from '../../API/Utils';
 import { getApiUrl } from '../../API/ApiUrls';
@@ -11,6 +9,8 @@ import SensorsIcon from '@mui/icons-material/Sensors';
 import SchoolIcon from '@mui/icons-material/School';
 
 import sectionData from "../../section_data.json";
+import { useQuery } from '@tanstack/react-query';
+
 
 const IconLoader = ({ iconString }) => {
   switch (iconString) {
@@ -63,33 +63,17 @@ const ByTheNumber = (props) => {
 }
 
 const AtAGlance = () => {
-  const { stats, setStats } = useContext(MetadataContext);
-
-  useEffect(() => {
-    // Define the fetch logic once
-    const fetchStats = () => {
-      fetchDataFromURL({
-        url: getApiUrl({ endpoint: GeneralAPIendpoints.stats }),
-      })
-        .then((data) => {
-          setStats(data);
-        })
-        .catch((error) => {
-          console.error("Error fetching stats:", error);
-        });
-    };
-
-    // Initial fetch if stats are missing
-    if (!stats) {
-      fetchStats();
-    }
-
-    // Continuous refresh every 24 hours
-    const intervalId = setInterval(fetchStats, 24 * 60 * 60 * 1000);
-
-    // Cleanup on unmount
-    return () => clearInterval(intervalId);
-  }, [stats, setStats]);
+  const { data: stats } = useQuery({
+    queryKey: ['stats'],
+    queryFn: async () => {
+      const url = getApiUrl({ endpoint: GeneralAPIendpoints.stats });
+      return fetchDataFromURL({ url });
+    },
+    staleTime: 1000 * 60 * 60 * 24,
+    refetchInterval: 1000 * 60 * 60 * 24, // actively refresh every day
+    refetchOnWindowFocus: true,
+    placeholderData: (prev) => prev
+  });
 
   return (
     <Grid

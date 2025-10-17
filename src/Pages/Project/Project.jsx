@@ -1,14 +1,8 @@
-// disable eslint for this file
-/* eslint-disable */
-import { useState, useEffect, useContext } from 'react';
+import { useContext } from 'react';
 import ChartComponentWrapper from '../../Graphs/ChartComponentWrapper';
 import UppercaseTitle from '../../Components/UppercaseTitle';
 
-// Temporarily not using HyvorTalk comment anymore
-// import CommentSection from '../../Components/CommentSection';
-// import { HYVOR_PAGE_NAME } from '../../Utils/GlobalVariables';
-
-import { Box, Container, Divider, Grid, Stack } from '@mui/material';
+import { Box, Container, Divider, Grid } from '@mui/material';
 
 import ThemePreferences from '../../Themes/ThemePreferences';
 
@@ -20,97 +14,43 @@ import FullWidthBox from '../../Components/FullWidthBox';
 
 import CurrentAQIGrid from '../../Components/AirQuality/CurrentAQI/CurrentAQIGrid';
 
-import LoadingAnimation from '../../Components/LoadingAnimation';
-
-import { MetadataContext } from '../../ContextProviders/MetadataContext';
-
-import NYUADbanner from '../Embeds/NYUADbanner';
-
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 
 import AQIexplanation from '../../Components/AirQuality/AQIexplanation';
-import { DateRangePickerProvider } from '../../ContextProviders/DateRangePickerContext';
 import { AxesPickerProvider } from '../../ContextProviders/AxesPickerContext';
-import { KAMPALA, NYUAD } from '../../Utils/GlobalVariables';
+import { KAMPALA, NUMBER_OF_CHARTS_TO_LOAD_INITIALLY } from '../../Utils/GlobalVariables';
 
 import ProjectReservedArea from './ProjectReservedArea';
 import GridOfMetadataChips from './GridOfMetadataChips';
 import ProjectDescription from './ProjectDescription';
 import LoadMoreButton from './LoadMoreButton';
 import CurrentAQIMapWithGrid from '../../Components/AirQuality/CurrentAQI/CurrentAQIMapWithGrid';
+import { ChartAPIendpointsOrder } from '../../API/Utils';
+import useCurrentSensorsData from '../../hooks/useCurrentSensorsData';
+import useSchoolMetadata from '../../hooks/useSchoolMetadata';
+
+// Temporarily not using HyvorTalk comment anymore
+// import CommentSection from '../../Components/CommentSection';
+// import { HYVOR_PAGE_NAME } from '../../Utils/GlobalVariables';
 
 const Project = () => {
-  const { setChartsTitlesList } = useContext(MetadataContext);
+  const { currentSchoolID, loadMoreCharts } = useContext(DashboardContext);
+  const { data: currentSensorsData } = useCurrentSensorsData();
+  const { data: schoolMetadata } = useSchoolMetadata();
 
-  const { schoolMetadata, currentSensorMeasurements, allChartsData, currentSchoolID } = useContext(DashboardContext);
+  const chartsToRender = loadMoreCharts
+    ? ChartAPIendpointsOrder.length
+    : NUMBER_OF_CHARTS_TO_LOAD_INITIALLY;
+
   const { themePreference, temperatureUnitPreference } = useContext(PreferenceContext);
 
   // Temporarily not using HyvorTalk comment anymore
   // const [displayCommentSection, setDisplayCommentSection] = useState(false);
 
-  // Update the chart title list for quick navigation
-  useEffect(() => {
-    if (!allChartsData) return;
-
-    const chartsTitles = Object.keys(allChartsData).map((key, index) => ({ chartTitle: allChartsData[key]?.title || "", chartID: `chart-${index + 1}` }));
-
-    setChartsTitlesList(chartsTitles);
-  }, [allChartsData]);
-
   const getDashboardTitle = () => {
     if (schoolMetadata?.school_id) return `Air Quality | ${schoolMetadata?.school_id}`
   }
-
-  const displayCharts = () => {
-    // Display if there are at least one chart
-    if (Object.keys(allChartsData).length > 0) {
-      return (
-        <>
-          {Object.keys(allChartsData).map((chartID, index) => (
-            <FullWidthBox
-              key={chartID}
-              backgroundColor={index % 2 !== 0 ? 'customAlternateBackground' : ''}
-            >
-              <Container
-                sx={{ pt: 4, pb: 4 }}
-                height="auto"
-                className={themePreference === ThemePreferences.dark ? 'dark' : ''}
-                id={`chart-${index + 1}`}
-              >
-
-                <AxesPickerProvider>
-                  <DateRangePickerProvider>
-                    <ChartComponentWrapper
-                      chartTitle={allChartsData[chartID].title}
-                      generalChartSubtitle={allChartsData[chartID].subtitle}
-                      generalChartReference={allChartsData[chartID].reference}
-                      chartData={{
-                        chartIndex: index,
-                        ...allChartsData[chartID],
-                      }}
-                      chartID={chartID}
-                      chartIndex={index}
-                    />
-                  </DateRangePickerProvider>
-                </AxesPickerProvider>
-                {
-                  // Optionally display the button to load more charts at the bottom of the last chart
-                  // (if not already fetched every chart)
-                  (index === Object.keys(allChartsData).length - 1) ?
-                    <LoadMoreButton /> : null
-                }
-              </Container>
-            </FullWidthBox>
-          ))}
-
-        </>
-      );
-    } else {
-      // Else display loading animation
-      return <LoadingAnimation optionalText="Loading Visualizations" />;
-    }
-  };
 
   return (
     <Box width="100%">
@@ -139,16 +79,10 @@ const Project = () => {
           </Grid>
 
           {schoolMetadata?.has_map === true &&
-            // (
-            //   <NYUADbanner
-            //     initialNyuadCurrentData={currentSensorMeasurements}
-            //     isOnBannerPage={false}
-            //     minMapHeight={"250px"}
-            //   />
-            // )
             (
               <CurrentAQIMapWithGrid
-                currentSensorsData={currentSensorMeasurements}
+                currentSensorsData={currentSensorsData}
+                schoolID={currentSchoolID}
                 isOnBannerPage={false}
                 minMapHeight={"250px"}
               />
@@ -158,7 +92,7 @@ const Project = () => {
           {schoolMetadata?.has_map === false &&
             (<Box textAlign="center" sx={{ mb: 2 }}>
               <CurrentAQIGrid
-                currentSensorsData={currentSensorMeasurements}
+                currentSensorsData={currentSensorsData}
                 isScreen={false}
                 temperatureUnitPreference={temperatureUnitPreference}
                 showHeatIndex={currentSchoolID === KAMPALA && false}
@@ -175,7 +109,30 @@ const Project = () => {
       </FullWidthBox>
 
       <Box id={sectionData.charts.id}>
-        {displayCharts(allChartsData)}
+        {ChartAPIendpointsOrder.slice(0, chartsToRender).map((_, index) => (
+          <FullWidthBox
+            key={index}
+            backgroundColor={index % 2 !== 0 ? 'customAlternateBackground' : ''}
+          >
+            <Container
+              sx={{ pt: 4, pb: 4 }}
+              height="auto"
+              className={themePreference === ThemePreferences.dark ? 'dark' : ''}
+              id={`chart-${index + 1}`}
+            >
+
+              <AxesPickerProvider>
+                <ChartComponentWrapper chartID={index} />
+              </AxesPickerProvider>
+
+              {
+                // Optionally display the button to load more charts at the bottom of the last chart
+                // (if not already fetched every chart)
+                index === chartsToRender - 1 && !loadMoreCharts && <LoadMoreButton />
+              }
+            </Container>
+          </FullWidthBox>
+        ))}
       </Box>
       <Divider />
 

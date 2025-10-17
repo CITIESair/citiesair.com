@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { Box, TextField, Chip, Menu, MenuItem, Grid, Typography, Button, Stack, useMediaQuery, Alert, Tooltip, Link } from '@mui/material';
+import { Box, TextField, Chip, Menu, MenuItem, Grid, Typography, Button, Stack, useMediaQuery, Alert, Tooltip, Link, CircularProgress } from '@mui/material';
 import { fetchDataFromURL } from "../../../API/ApiFetch";
 import { RESTmethods } from "../../../API/Utils";
 import { getApiUrl } from '../../../API/ApiUrls';
@@ -9,18 +9,55 @@ import { isValidArray } from '../../../Utils/UtilFunctions';
 import { SnackbarMetadata } from '../../../Utils/SnackbarMetadata';
 import { validateEmail } from '../../../Utils/UtilFunctions';
 import { useSnackbar } from 'notistack';
-import { useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 const compareArrays = (arr1, arr2) => {
   return JSON.stringify(arr1) === JSON.stringify(arr2);
 }
 
 const EmailsInput = () => {
-  const { currentSchoolID } = useContext(DashboardContext);
-
-  const { alertEmails, setAlertEmails } = useAirQualityAlert();
-
   const { enqueueSnackbar } = useSnackbar()
+
+  const { currentSchoolID } = useContext(DashboardContext);
+  const { data: alertEmails = [] } = useQuery({
+    queryKey: ['alertEmails', currentSchoolID],
+    queryFn: async () => {
+      const url = getApiUrl({
+        endpoint: GeneralAPIendpoints.alertsEmails,
+        school_id: currentSchoolID
+      });
+      return fetchDataFromURL({
+        url,
+        extension: 'json',
+        needsAuthorization: true
+      });
+    },
+    enabled: !!currentSchoolID,
+    staleTime: 0
+  });
+
+  const queryClient = useQueryClient();
+  const saveEmailsMutation = useMutation({
+    mutationFn: async (emailsToSave) => {
+      const url = getApiUrl({
+        endpoint: GeneralAPIendpoints.alertsEmails,
+        school_id: currentSchoolID
+      });
+      return fetchDataFromURL({
+        url,
+        restMethod: RESTmethods.POST,
+        body: emailsToSave
+      });
+    },
+    onSuccess: (data) => {
+      // Update cache immediately so UI updates without refetch
+      queryClient.setQueryData(['alertEmails', currentSchoolID], data);
+      enqueueSnackbar('Email recipients saved successfully.', SnackbarMetadata.success);
+    },
+    onError: () => {
+      enqueueSnackbar('There was an error saving email recipients. Please try again.', SnackbarMetadata.error);
+    }
+  });
 
   const smallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
@@ -99,27 +136,12 @@ const EmailsInput = () => {
 
   const handleSaveEmails = (_emails) => {
     const emailsToSave = isValidArray(_emails) ? _emails : (isValidArray(localEmails) ? localEmails : []);
-
-    fetchDataFromURL({
-      url: getApiUrl({
-        endpoint: GeneralAPIendpoints.alertsEmails,
-        school_id: currentSchoolID
-      }),
-      restMethod: RESTmethods.POST,
-      body: emailsToSave
-    }).then((data) => {
-      setAlertEmails(data);
-      enqueueSnackbar('Email list saved successfully!', SnackbarMetadata.success);
-    }).catch(() => {
-      enqueueSnackbar('There was an error saving the email. Please try again.', SnackbarMetadata.error);
-    })
-
-    return;
+    saveEmailsMutation.mutate(emailsToSave);
   }
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
-      if (localEmails !== alertEmails) {
+      if (!compareArrays(localEmails, alertEmails)) {
         event.preventDefault();
         event.returnValue = '';
       }
@@ -257,9 +279,9 @@ const EmailsInput = () => {
               onClick={handleSaveEmails}
               variant="contained"
               sx={{ width: smallScreen ? "100%" : "fit-content" }}
-              disabled={!emailsListChanged}
+              disabled={!emailsListChanged || saveEmailsMutation.isPending}
             >
-              SAVE EMAIL LIST
+              {saveEmailsMutation.isPending ? <CircularProgress disableShrink color="inherit" size="1.5rem" /> : "SAVE EMAIL LIST"}
             </Button>
           </span>
         </Tooltip>

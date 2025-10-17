@@ -19,11 +19,13 @@ import CustomDialog from '../CustomDialog/CustomDialog';
 import { CITIESair } from '../../Utils/GlobalVariables';
 import useLoginHandler from '../Account/useLoginHandler';
 import AggregationType from '../DateRangePicker/AggregationType';
+import useCurrentSensorsData from '../../hooks/useCurrentSensorsData';
 
 export default function DatasetDownloadDialog({ onButtonClick }) {
   const { handleRestrictedAccess } = useLoginHandler(onButtonClick);
 
-  const { currentSchoolID, currentSensorMeasurements } = useContext(DashboardContext);
+  const { currentSchoolID } = useContext(DashboardContext);
+  const { data: currentSensorsData } = useCurrentSensorsData();
 
   const [sensorsDatasets, updateSensorsDatasets] = useState({});
 
@@ -31,9 +33,9 @@ export default function DatasetDownloadDialog({ onButtonClick }) {
 
   // Construct the structure of sensorsDatasets based on current data
   useEffect(() => {
-    if (!currentSensorMeasurements) return;
+    if (!currentSensorsData) return;
 
-    const sensorsDatasets = currentSensorMeasurements
+    const sensorsDatasets = currentSensorsData
       .filter(item => item && item.sensor)  // Filter out null or undefined items and sensors
       .reduce((acc, item) => {
         // Use location_short as the key for each sensor
@@ -55,7 +57,7 @@ export default function DatasetDownloadDialog({ onButtonClick }) {
       }, {});
 
     updateSensorsDatasets(sensorsDatasets);
-  }, [currentSensorMeasurements]);
+  }, [currentSensorsData]);
 
   return (
     <CustomDialog

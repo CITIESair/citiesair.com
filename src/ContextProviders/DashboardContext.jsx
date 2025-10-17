@@ -1,18 +1,13 @@
-/* eslint-disable */
-
 import { useState, createContext, useMemo, useEffect, useContext } from 'react';
-import { fetchDataFromURL, fetchAndProcessCurrentSensorsData } from '../API/ApiFetch';
-import { getApiUrl, getChartApiUrl } from '../API/ApiUrls';
-import { ChartAPIendpointsOrder, GeneralAPIendpoints } from '../API/Utils';
+import { ChartAPIendpointsOrder } from '../API/Utils';
 import { AppRoutes } from '../Utils/AppRoutes';
-import { FETCH_CURRENT_DATA_EVERY_MS, KAMPALA, NUMBER_OF_CHARTS_TO_LOAD_INITIALLY, NYUAD } from '../Utils/GlobalVariables';
+import { NYUAD } from '../Utils/GlobalVariables';
 import { LocalStorage } from '../Utils/LocalStorage';
 import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
 import { isValidArray } from '../Utils/UtilFunctions';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { UserContext } from './UserContext';
 import { enqueueSnackbar } from 'notistack';
-import AggregationType from '../Components/DateRangePicker/AggregationType';
 
 export const DashboardContext = createContext("");
 
@@ -26,14 +21,38 @@ export function DashboardProvider({ children }) {
   const locationPath = location.pathname;
   const isDashboardPage = locationPath.includes(AppRoutes.dashboard);
 
-  const [schoolMetadata, setSchoolMetadata] = useState();
-  const [currentSensorMeasurements, setCurrentSensorMeasurements] = useState();
-  const [allChartsData, setAllChartsData] = useState({});
   const [currentSchoolID, setCurrentSchoolID] = useState();
+
+  const [allChartsConfigs, setAllChartsConfigs] = useState(() =>
+    ChartAPIendpointsOrder.reduce((acc, endpoint, index) => {
+      acc[index] = { endpoint, queryParams: {} };
+      return acc;
+    }, {})
+  );
+  const [allChartsData, setAllChartsData] = useState({});
   const [loadMoreCharts, setLoadMoreCharts] = useState(false);
 
-  const [publicMapData, setPublicMapData] = useState();
-  const shouldFetchPublicMapData = [AppRoutes.home, AppRoutes.nyuadScreen].includes(locationPath);
+  /** --- SETTERS --- **/
+  const setIndividualChartConfig = (chartID, chartConfig) => {
+    setAllChartsConfigs(prevData => ({
+      ...prevData,
+      [chartID]: chartConfig
+    }));
+  };
+
+  const updateIndividualChartConfigQueryParams = (chartID, newQueryParams) => {
+    setAllChartsConfigs(prev => ({
+      ...prev,
+      [chartID]: {
+        ...prev[chartID],
+        queryParams: {
+          ...prev[chartID].queryParams,
+          ...newQueryParams
+        }
+      }
+    }));
+  };
+
 
   const setIndividualChartData = (chartID, chartData) => {
     setAllChartsData(prevData => ({
@@ -44,58 +63,27 @@ export function DashboardProvider({ children }) {
 
   const providerValue = useMemo(() => ({
     currentSchoolID, setCurrentSchoolID,
-    schoolMetadata, setSchoolMetadata,
-    currentSensorMeasurements, setCurrentSensorMeasurements,
+    allChartsConfigs, setIndividualChartConfig, updateIndividualChartConfigQueryParams,
     allChartsData, setIndividualChartData,
-    loadMoreCharts, setLoadMoreCharts,
-    publicMapData
-  }), [currentSchoolID, schoolMetadata, currentSensorMeasurements, allChartsData, loadMoreCharts, publicMapData]);
+    loadMoreCharts, setLoadMoreCharts
+  }), [currentSchoolID, allChartsConfigs, allChartsData, loadMoreCharts]);
 
-  useEffect(() => {
-    if (shouldFetchPublicMapData && !publicMapData) {
-      const mapUrl = getApiUrl({ endpoint: GeneralAPIendpoints.map });
-
-      // Initial fetch
-      fetchAndProcessCurrentSensorsData(mapUrl)
-        .then((data) => {
-          setPublicMapData(data);
-        })
-        .catch((error) => console.error(error));
-
-      // Create an interval that fetches new data every FETCH_CURRENT_DATA_EVERY_MS
-      const intervalId = setInterval(() => {
-        fetchAndProcessCurrentSensorsData(mapUrl)
-          .then((data) => {
-            setPublicMapData(data);
-          })
-          .catch((error) => console.error(error));
-      }, FETCH_CURRENT_DATA_EVERY_MS);
-
-      // Clean up the interval when the component unmounts
-      return () => {
-        clearInterval(intervalId);
-      };
-    }
-  }, [shouldFetchPublicMapData, publicMapData]);
-
-
+  /** --- AUTH / SCHOOL SELECTION LOGIC --- **/
   useEffect(() => {
     if (!authenticationState.checkedAuthentication) return;
 
     // CASE: NYUAD BANNER
     if (locationPath === AppRoutes.nyuadBanner) {
       setCurrentSchoolID(NYUAD);
-      fetchInitialDataForDashboard(NYUAD);
       return;
     }
 
     // If the user isn't logged in (after checking authentication status)
     // Navigate to the login if in dashboard page (rather than NYUAD)
-    // or just fetch NYUAD if in homepage
+    // or just set to NYUAD if in homepage
     if (authenticationState.authenticated === false) {
       if (school_id_param === NYUAD || locationPath === AppRoutes.home) {
         setCurrentSchoolID(NYUAD);
-        fetchInitialDataForDashboard(NYUAD);
         return;
       }
 
@@ -128,15 +116,11 @@ export function DashboardProvider({ children }) {
         if (isDashboardPage) {
           navigate(school_id, { replace: true }); // navigate to the correct url: /dashboard/:school_id_param
         }
-
-        // If there is no schoolMetadata or current or chartData, then fetch them
-        if (!(!schoolMetadata && !currentSensorMeasurements && !allChartsData)) fetchInitialDataForDashboard(school_id);
       }
       // If there is school_id_param, check if school_id_param is in the allowedSchools
       else {
         if (user.allowedSchools.map((school) => school.school_id).includes(school_id_param)) {
           setCurrentSchoolID(school_id_param);
-          fetchInitialDataForDashboard(school_id_param);
           localStorage.setItem(LocalStorage.schoolID, school_id_param);
         }
         // If the school_id_param is not in the allowedSchools
@@ -144,7 +128,6 @@ export function DashboardProvider({ children }) {
           // NYUAD case
           if (school_id_param === NYUAD) {
             setCurrentSchoolID(NYUAD);
-            fetchInitialDataForDashboard(NYUAD);
           } else {
             enqueueSnackbar("You don't have permission to view this school or this school does not exist.", SnackbarMetadata.error);
             navigate(AppRoutes[404], { replace: true });
@@ -153,64 +136,11 @@ export function DashboardProvider({ children }) {
       }
     } else {
       setCurrentSchoolID(NYUAD);
-      fetchInitialDataForDashboard(NYUAD);
       if (isDashboardPage) {
         navigate(AppRoutes.nyuad); // else, if there is no valid allowedSchools for this user, route to public NYUAD dashboard
       }
     }
-  }, [user, authenticationState, school_id_param, isDashboardPage, locationPath]);
-
-  const fetchInitialDataForDashboard = async (school_id) => {
-    try {
-      setSchoolMetadata();
-      setCurrentSensorMeasurements();
-
-      const response = await Promise.all([
-        fetchDataFromURL({
-          url: getApiUrl({
-            endpoint: GeneralAPIendpoints.schoolmetadata,
-            school_id: school_id
-          })
-        }),
-        fetchAndProcessCurrentSensorsData(
-          getApiUrl({
-            endpoint: GeneralAPIendpoints.current,
-            school_id: school_id
-          }),
-          school_id === KAMPALA ? AggregationType.hour : null
-        )
-      ])
-
-      setSchoolMetadata(response[0]);
-      setCurrentSensorMeasurements(response[1]);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  useEffect(() => {
-    if (loadMoreCharts === true) {
-      const restOfCharts = ChartAPIendpointsOrder.slice(NUMBER_OF_CHARTS_TO_LOAD_INITIALLY);
-      restOfCharts.forEach((endpoint, index) => {
-        const chartIndexInPage = NUMBER_OF_CHARTS_TO_LOAD_INITIALLY + index;
-        setIndividualChartData(chartIndexInPage, {}); // set empty chartData to create a placeholder for this chart
-
-        fetchDataFromURL({
-          url: getChartApiUrl({
-            endpoint: endpoint,
-            school_id: currentSchoolID
-          })
-        })
-          .then(data => {
-            setIndividualChartData(chartIndexInPage, data);
-          })
-          .catch((error) => {
-            console.log(error);
-          })
-      });
-    }
-
-  }, [loadMoreCharts]);
+  }, [user, authenticationState, school_id_param, isDashboardPage, locationPath, navigate]);
 
   return (
     <DashboardContext.Provider value={providerValue}>

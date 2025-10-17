@@ -15,8 +15,8 @@ const Comparison = ({ data }) => {
 
     // Only display air quality comparison if every sensor is currently active
     if (
-        !Object.values(data).length ||
-        !Object.values(data).every(
+        !Object.values(data ?? {}).length ||
+        !Object.values(data ?? {}).every(
             (sensorData) => sensorData.sensor?.sensor_status === SensorStatus.active
         )
     ) return null;
@@ -82,7 +82,7 @@ const ScreenHealthSuggestions = ({ typeOfScreen, data }) => {
 
     // Collect unique suggestions + whether they are unhealthy
     const suggestionsMap = new Map();
-    Object.values(data).forEach((sensorData) => {
+    Object.values(data ?? {}).forEach((sensorData) => {
         const suggestion = getHealthSuggestion(sensorData);
         if (!suggestion) return;
 

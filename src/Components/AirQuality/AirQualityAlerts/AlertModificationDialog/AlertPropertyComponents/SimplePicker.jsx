@@ -3,7 +3,7 @@ import { useTheme } from '@mui/material';
 import { isValidArray } from '../../../../../Utils/UtilFunctions';
 
 export const SimplePicker = (props) => {
-  const { icon, label, value, options, handleChange, disabled, ...otherProps } = props;
+  const { icon, label, value, options, handleChange, disabled, isExtraSmall, ...otherProps } = props;
   const theme = useTheme();
 
   return (
@@ -29,7 +29,15 @@ export const SimplePicker = (props) => {
         fullWidth
         size='small'
         disabled={disabled}
-        sx={{ minWidth: "5rem", marginLeft: "0 !important" }}
+        sx={{
+          minWidth: "5rem",
+          marginLeft: "0 !important",
+          "& .MuiInputBase-root": {
+            [theme.breakpoints.down('sm')]: {
+              fontSize: isExtraSmall ?? "0.75rem"
+            }
+          }
+        }}
       >
         <InputLabel id={`${label}-picker-label`}>{label}</InputLabel>
         <Select
@@ -41,7 +49,7 @@ export const SimplePicker = (props) => {
         >
           {isValidArray(options) &&
             options.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
+              <MenuItem key={option.value} value={option.value} is>
                 {option.label}
               </MenuItem>
             ))}

@@ -102,7 +102,6 @@ const CurrentAQISingleSensor = (props) => {
                         sensor={sensor}
                         size={size}
                         current={current}
-                        showWeatherText={showWeatherText}
                     />
                 }
 

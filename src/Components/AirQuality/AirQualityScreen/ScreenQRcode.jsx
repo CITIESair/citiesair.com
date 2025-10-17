@@ -2,9 +2,11 @@ import { useContext } from "react";
 import QRCode from "react-qr-code";
 import { DashboardContext } from "../../../ContextProviders/DashboardContext";
 import { CITIESair_HOST_NAME } from "../../../Utils/GlobalVariables";
+import useSchoolMetadata from "../../../hooks/useSchoolMetadata";
 
 const ScreenQRcode = () => {
-    const { schoolMetadata, currentSchoolID } = useContext(DashboardContext);
+    const { currentSchoolID } = useContext(DashboardContext);
+    const { data: schoolMetadata } = useSchoolMetadata();
     const isPublic = schoolMetadata?.is_public;
 
     const url = document.location.href;

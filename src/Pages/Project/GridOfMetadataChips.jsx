@@ -1,5 +1,3 @@
-import { useContext } from "react";
-import { DashboardContext } from "../../ContextProviders/DashboardContext";
 // import { MetadataContext } from "../../ContextProviders/MetadataContext";
 import { Grid } from "@mui/material";
 
@@ -7,22 +5,20 @@ import SchoolSelector from "../../Components/SchoolSelector";
 import CustomChip from "../../Components/CustomChip";
 
 import PersonIcon from '@mui/icons-material/Person';
+import useSchoolMetadata from "../../hooks/useSchoolMetadata";
 // import BarChartIcon from '@mui/icons-material/BarChart';
 // import CommentIcon from '@mui/icons-material/Comment';
-
 // import * as Tracking from '../../Utils/Tracking';
 // import { scrollToSection } from "../../Components/Header/MenuItemAsNavLink";
-
 // import sectionData from '../../section_data.json';
 // import { HYVOR_PAGE_NAME, NYUAD } from "../../Utils/GlobalVariables";
-
 
 // Temporarily not using HyvorTalk comment anymore
 // const GridOfMetadataChips = ({ displayCommentSection }) => {
 
 
 const GridOfMetadataChips = () => {
-    const { schoolMetadata } = useContext(DashboardContext);
+    const { data: schoolMetadata } = useSchoolMetadata();
 
     if (!schoolMetadata) return;
 

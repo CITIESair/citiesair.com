@@ -5,9 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { DashboardContext } from "../../../ContextProviders/DashboardContext";
 import { isValidArray } from "../../../Utils/UtilFunctions";
 import useLoginHandler from "../../Account/useLoginHandler";
+import useSchoolMetadata from "../../../hooks/useSchoolMetadata";
 
 const ScreenDropDownMenu = ({ onButtonClick }) => {
-  const { currentSchoolID, schoolMetadata } = useContext(DashboardContext);
+  const { currentSchoolID } = useContext(DashboardContext);
+  const { data: schoolMetadata } = useSchoolMetadata();
   const { handleRestrictedAccess } = useLoginHandler(onButtonClick);
 
   const [anchorEl, setAnchorEl] = useState(null);

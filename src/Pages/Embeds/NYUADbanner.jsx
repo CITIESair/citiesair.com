@@ -1,14 +1,14 @@
-import { useContext } from "react";
 import CurrentAQIMapWithGrid from "../../Components/AirQuality/CurrentAQI/CurrentAQIMapWithGrid";
-import { DashboardContext } from "../../ContextProviders/DashboardContext";
-
+import useCurrentSensorsData from "../../hooks/useCurrentSensorsData";
+import { NYUAD } from "../../Utils/GlobalVariables";
 
 const NYUADbanner = () => {
-  const { currentSensorMeasurements } = useContext(DashboardContext);
+  const { data: currentSensorsData } = useCurrentSensorsData(NYUAD);
 
   return (
     <CurrentAQIMapWithGrid
-      currentSensorsData={currentSensorMeasurements}
+      currentSensorsData={currentSensorsData}
+      schoolID={NYUAD}
       isOnBannerPage={true}
       minMapHeight={"250px"}
     />

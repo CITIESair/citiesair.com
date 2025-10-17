@@ -15,5 +15,9 @@ export const SnackbarMetadata = {
     success: {
         variant: 'success',
         duration: 3000
+    },
+    offline: {
+        variant: 'warning',
+        persist: true
     }
 };

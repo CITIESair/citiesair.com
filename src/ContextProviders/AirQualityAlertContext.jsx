@@ -1,14 +1,13 @@
 import { createContext, useMemo, useState, useContext, useEffect, useCallback } from 'react';
 import { DashboardContext } from './DashboardContext';
 import { fetchDataFromURL } from '../API/ApiFetch';
-import { getAlertsApiUrl, getApiUrl } from '../API/ApiUrls';
+import { getAlertsApiUrl } from '../API/ApiUrls';
 import { GeneralAPIendpoints } from "../API/Utils";
 import AlertTypes, { ThresholdAlertTypes } from '../Components/AirQuality/AirQualityAlerts/AlertTypes';
 import { isValidArray } from '../Utils/UtilFunctions';
 import { DataTypes } from '../Utils/AirQuality/DataTypes';
-import { enqueueSnackbar } from 'notistack';
-import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
-import { PREDEFINED_TIMERANGES } from '../Components/AirQuality/AirQualityAlerts/AlertModificationDialog/AlertPropertyComponents/PREDEFINED_TIMERANGES';
+import { PREDEFINED_TIMERANGES } from "../Components/TimeRange/TimeRangeUtils";
+import useSchoolMetadata from '../hooks/useSchoolMetadata';
 
 const AirQualityAlertContext = createContext();
 
@@ -47,7 +46,7 @@ export const getAlertDefaultPlaceholder = (alert_type = AlertTypes.daily.id) => 
     [AirQualityAlertKeys.sensor_id]: '',
     [AirQualityAlertKeys.datatypekey]: '',
     [AirQualityAlertKeys.days_of_week]: [0, 1, 2, 3, 4],
-    [AirQualityAlertKeys.time_range]: alert_type === AlertTypes.threshold.id ? [PREDEFINED_TIMERANGES.schoolHour.from, PREDEFINED_TIMERANGES.schoolHour.to] : null,
+    [AirQualityAlertKeys.time_range]: alert_type === AlertTypes.threshold.id ? [PREDEFINED_TIMERANGES.schoolHour.start, PREDEFINED_TIMERANGES.schoolHour.end] : null,
     [AirQualityAlertKeys.threshold_value]: -1,
     [AirQualityAlertKeys.minutespastmidnight]: '',
     [AirQualityAlertKeys.is_enabled]: true,
@@ -65,7 +64,8 @@ export const getAlertDefaultPlaceholder = (alert_type = AlertTypes.daily.id) => 
 }
 
 export function AirQualityAlertProvider({ children }) {
-  const { schoolMetadata, currentSchoolID } = useContext(DashboardContext);
+  const { currentSchoolID } = useContext(DashboardContext);
+  const { data: schoolMetadata } = useSchoolMetadata();
 
   const [selectedAlert, setSelectedAlert] = useState(getAlertDefaultPlaceholder());
 
@@ -76,8 +76,6 @@ export function AirQualityAlertProvider({ children }) {
   const [alerts, setAlerts] = useState([]);
 
   const [hasFetchedAlerts, setHasFetchedAlerts] = useState();
-
-  const [alertEmails, setAlertEmails] = useState([]);
 
   const returnAllowedDataTypesForThisSensor = useCallback((sensor) => {
     if (!schoolMetadata) return [];
@@ -171,20 +169,6 @@ export function AirQualityAlertProvider({ children }) {
     }).catch((error) => {
       console.log(error);
     });
-
-    fetchDataFromURL({
-      url: getApiUrl({
-        endpoint: GeneralAPIendpoints.alertsEmails,
-        school_id: currentSchoolID
-      }),
-      extension: 'json',
-      needsAuthorization: true
-    }).then((data) => {
-      setAlertEmails(data);
-    })
-      .catch((error) => {
-        enqueueSnackbar("There was an error loading the alert email list, please try again", SnackbarMetadata.error);
-      });
   }, [currentSchoolID, addChildToAlerts]);
 
   useEffect(() => {
@@ -200,9 +184,8 @@ export function AirQualityAlertProvider({ children }) {
     alerts, setAlerts,
     fetchAlerts,
     hasFetchedAlerts, setHasFetchedAlerts,
-    alertEmails, setAlertEmails,
     addChildToAlerts
-  }), [selectedAlert, editingAlert, allowedDataTypesForSensor, alerts, fetchAlerts, hasFetchedAlerts, setHasFetchedAlerts, alertEmails, setAlertEmails, addChildToAlerts]);
+  }), [selectedAlert, editingAlert, allowedDataTypesForSensor, alerts, fetchAlerts, hasFetchedAlerts, setHasFetchedAlerts, addChildToAlerts]);
 
   return (
     <AirQualityAlertContext.Provider value={contextValue}>

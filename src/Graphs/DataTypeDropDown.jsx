@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button, Menu, MenuItem, Typography } from "@mui/material";
 import { isValidArray } from "../Utils/UtilFunctions";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { returnSelectedDataType } from "../Utils/AirQuality/DataTypes";
+import { DashboardContext } from "../ContextProviders/DashboardContext";
 
-const DataTypeDropDownMenu = ({ selectedDataType, dataTypes, fetchChartDataType }) => {
+const DataTypeDropDownMenu = ({ selectedDataType, dataTypes, chartID }) => {
+  const { updateIndividualChartConfigQueryParams } = useContext(DashboardContext);
+
   const [anchorEl, setAnchorEl] = useState(null);
 
   if (!isValidArray(dataTypes)) return null;
@@ -29,7 +32,7 @@ const DataTypeDropDownMenu = ({ selectedDataType, dataTypes, fetchChartDataType 
   };
 
   const handleMenuItemClick = (dataType) => {
-    fetchChartDataType(dataType);
+    updateIndividualChartConfigQueryParams(chartID, { dataType })
     handleClose();
   };
 

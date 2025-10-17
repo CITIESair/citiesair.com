@@ -1,12 +1,9 @@
 import { useState, useEffect, useContext } from 'react';
 import { styled } from '@mui/material/styles';
-import { Box, Tab, useMediaQuery, Typography, Menu, MenuItem, Stack, Skeleton } from '@mui/material/';
+import { Box, Tab, useMediaQuery, Typography, Menu, MenuItem, Stack } from '@mui/material/';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { DataTypes } from '../Utils/AirQuality/DataTypes';
-import { fetchDataFromURL } from '../API/ApiFetch';
-import { getChartApiUrl, getCorrelationChartApiUrl, getHistoricalChartApiUrl } from "../API/ApiUrls";
-import { ChartAPIendpoints, ChartAPIendpointsOrder } from "../API/Utils";
 import { DashboardContext } from "../ContextProviders/DashboardContext";
 
 import SubChart from './Subchart/SubChart';
@@ -15,11 +12,10 @@ import CollapsibleSubtitle from '../Components/CollapsibleSubtitle';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DataTypeDropDownMenu from './DataTypeDropDown';
 import { isValidArray } from '../Utils/UtilFunctions';
-import { useDateRangePicker } from '../ContextProviders/DateRangePickerContext';
-import { returnFormattedDates } from '../Components/DateRangePicker/DateRangePickerUtils';
-import { useAxesPicker } from '../ContextProviders/AxesPickerContext';
 import StyledTabs from '../Components/StyledTabs';
 import NoChartToRender from './Subchart/NoChartToRender';
+import useChartData from '../hooks/useChartData';
+import LoadingAnimation from '../Components/LoadingAnimation';
 
 const DEBOUNCE_IN_MILLISECONDS = 100;
 
@@ -58,18 +54,10 @@ const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
 }));
 
 // eslint-disable-next-line max-len
-function ChartComponentWrapper(props) {
-  const {
-    chartTitle,
-    generalChartSubtitle,
-    generalChartReference,
-    chartData: passedChartData,
-    chartHeight: passedChartHeight,
-    chartID,
-    chartIndex
-  } = props;
+function ChartComponentWrapper({ chartID }) {
+  const { data: chartData, isLoading, isFetching, error } = useChartData(chartID);
 
-  const { currentSchoolID, setIndividualChartData } = useContext(DashboardContext);
+  const { currentSchoolID } = useContext(DashboardContext);
 
   const isSmallWidth = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
@@ -78,10 +66,6 @@ function ChartComponentWrapper(props) {
     window.innerWidth,
     window.innerHeight,
   ]);
-
-  let chartMaxHeight;
-  let chartHeight = passedChartHeight;
-  const chartData = passedChartData;
 
   // Props for tab panels (multiple data visualizations in the same chart area, navigate with tab panels)
   const [currentTab, setCurrentTab] = useState(0); // start with the first tab
@@ -94,81 +78,54 @@ function ChartComponentWrapper(props) {
   const [allowedDataTypes, setAllowedDataTypes] = useState([]);
   const [selectedDataType, setSelectedDataType] = useState(null);
 
-  // Retrieve the dateRange for chart with DateRangePicker
-  const { dateRange, aggregationType } = useDateRangePicker();
+  const initializeAllowedDataTypes = (chartData, setAllowedDataTypes, setSelectedDataType) => {
+    if (!chartData?.allowedDataTypes) return;
 
-  // Retrieve the hAxis and vAxis for chart with AxesPicker
-  const { hAxis, vAxis } = useAxesPicker();
+    const dataTypesArr = chartData.allowedDataTypes.map((dataType) => {
+      const { name_title, name_short, unit } = DataTypes[dataType];
+      return {
+        key: dataType,
+        name_title,
+        name_short,
+        unit,
+      };
+    });
 
+    setAllowedDataTypes(dataTypesArr);
+    setSelectedDataType(chartData.selectedDataType);
+  };
+
+  const setupResizeListener = (setWindowSize, setIsPortrait, DEBOUNCE_IN_MILLISECONDS) => {
+    let timeoutID = null;
+
+    const handleWindowResize = () => {
+      clearTimeout(timeoutID);
+
+      timeoutID = setTimeout(() => {
+        setIsPortrait(window.matchMedia('(orientation: portrait)').matches);
+        setWindowSize([window.innerWidth, window.innerHeight]);
+      }, DEBOUNCE_IN_MILLISECONDS);
+    };
+
+    window.addEventListener('resize', handleWindowResize);
+
+    return () => {
+      window.removeEventListener('resize', handleWindowResize);
+    };
+  };
 
   useEffect(() => {
-    // Using keys returned from backend,
-    // generate the allowedDataTypes object from DataTypes
-    if (chartData.allowedDataTypes) {
-      const dataTypesArr = [];
-      for (let dataType of chartData.allowedDataTypes) {
-        const { name_title, name_short, unit } = DataTypes[dataType];
-        dataTypesArr.push({
-          key: dataType,
-          name_title,
-          name_short,
-          unit
-        })
-      }
-      setAllowedDataTypes(dataTypesArr);
-    }
-    setSelectedDataType(chartData.selectedDataType)
+    if (!chartData) return;
+
+    // Initialize allowed data types
+    initializeAllowedDataTypes(chartData, setAllowedDataTypes, setSelectedDataType);
+
+    // Setup resize listener
+    const cleanupResize = setupResizeListener(setWindowSize, setIsPortrait, DEBOUNCE_IN_MILLISECONDS);
+
+    // Cleanup listener on unmount
+    return cleanupResize;
   }, [chartData]);
-
-  const fetchChartDataType = async (dataType) => {
-    const endpoint = ChartAPIendpointsOrder[chartID];
-    let url;
-    if (endpoint === ChartAPIendpoints.historical) {
-      const { startDate, endDate } = dateRange || {};
-      if (!startDate || !endDate) return;
-
-      const formattedDates = returnFormattedDates({
-        startDateObject: startDate,
-        endDateObject: endDate
-      });
-      url = getHistoricalChartApiUrl({
-        endpoint: endpoint,
-        school_id: currentSchoolID,
-        startDate: formattedDates.startDate,
-        endDate: formattedDates.endDate,
-        aggregationType: aggregationType,
-        dataType: dataType
-      })
-    }
-    else if (endpoint === ChartAPIendpoints.correlationDailyAverage) {
-      url = getCorrelationChartApiUrl({
-        endpoint: ChartAPIendpoints.correlationDailyAverage,
-        school_id: currentSchoolID,
-        dataType: dataType,
-        sensorX: hAxis,
-        sensorY: vAxis
-      });
-    }
-    else {
-      url = getChartApiUrl({
-        endpoint: endpoint,
-        school_id: currentSchoolID,
-        dataType: dataType
-      });
-    }
-    if (!url) return;
-
-    fetchDataFromURL({
-      url: url
-    })
-      .then(data => {
-        setIndividualChartData(chartID, data);
-        setSelectedDataType(data.selectedDataType);
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-  }
 
   // eventListener for window resize
   // redraw "Calendar" charts and charts with a time filter upon window resize.
@@ -208,7 +165,8 @@ function ChartComponentWrapper(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSchoolID]);
 
-  if (chartData.chartType !== 'Calendar' && !chartHeight) {
+  let chartHeight, chartMaxHeight;
+  if (chartData?.chartType !== 'Calendar') {
     chartHeight = isPortrait ? '80vw' : '35vw';
     chartMaxHeight = isPortrait ? '800px' : '450px';
   }
@@ -410,7 +368,7 @@ function ChartComponentWrapper(props) {
 
   // Function to render remaining subtitles and references for chart with multiple subcharts
   const getSubtitles = () => {
-    let text = generalChartSubtitle || '';
+    let text = chartData.subtitle || '';
     if (chartData.subcharts && chartData.subcharts[currentTab]?.subchartSubtitle) {
       text += '<br/>';
       text += chartData.subcharts[currentTab].subchartSubtitle;
@@ -418,7 +376,7 @@ function ChartComponentWrapper(props) {
     return text;
   }
   const getReferences = () => {
-    let text = generalChartReference || '';
+    let text = chartData.reference || '';
     if (chartData.subcharts && chartData.subcharts[currentTab]?.reference) {
       text += '<br/>';
       text += chartData.subcharts[currentTab].reference;
@@ -426,47 +384,71 @@ function ChartComponentWrapper(props) {
     return text;
   }
 
+  if (!chartData) return;
+
+  if (isLoading) return <LoadingAnimation optionalText={`Loading chart ${chartID + 1}...`} />;
+  if (error) return <NoChartToRender customMessage={`Error loading chart ${chartID + 1}, please try later`} />
+
   return (
-    chartTitle ?
-      <>
-        <Box>
-          <Typography display="inline" variant="h6" color="text.primary">
-            {chartIndex + 1}. {chartTitle}
-            &nbsp;
-          </Typography>
-          <Box display="inline">
-            <DataTypeDropDownMenu
-              selectedDataType={selectedDataType}
-              dataTypes={allowedDataTypes}
-              fetchChartDataType={fetchChartDataType}
-            />
-          </Box>
+    <Box
+      position="relative"
+    >
+      <Box>
+        <Typography display="inline" variant="h6" color="text.primary">
+          {chartID + 1}. {chartData.title}
+          &nbsp;
+        </Typography>
+        <Box display="inline">
+          <DataTypeDropDownMenu
+            selectedDataType={selectedDataType}
+            dataTypes={allowedDataTypes}
+            chartID={chartID}
+          />
         </Box>
+      </Box>
 
-        <ChartStyleWrapper height="100%">
-          {isValidArray(chartData.subcharts) ? renderMultipleSubcharts() : renderOnlyOneChart()}
+      <ChartStyleWrapper height="100%" sx={{
+        filter: isFetching ? 'blur(1px)' : 'none',
+        transition: 'filter 0.2s',
+        pointerEvents: isFetching ? "none" : "auto",
+      }}>
+        {isValidArray(chartData.subcharts) ? renderMultipleSubcharts() : renderOnlyOneChart()}
 
-          {/* Render subtitle and reference below */}
-          <Box sx={{ my: 3 }}>
-            <Typography
-              component="div"
-              variant="body1"
-              color="text.secondary"
-              sx={{ mb: 1 }}
-            >
-              <CollapsibleSubtitle
-                text={getSubtitles()}
-                reference={getReferences()}
-              />
-            </Typography>
-          </Box>
-        </ChartStyleWrapper>
-      </>
+        {/* Render subtitle and reference below */}
+        <Box sx={{ my: 3 }}>
+          <Typography
+            component="div"
+            variant="body1"
+            color="text.secondary"
+            sx={{ mb: 1 }}
+          >
+            <CollapsibleSubtitle
+              text={getSubtitles()}
+              reference={getReferences()}
+            />
+          </Typography>
+        </Box>
+      </ChartStyleWrapper>
 
-      : <>
-        <Skeleton variant='text' sx={{ width: '100%', fontSize: '2rem' }} />
-        <Skeleton variant='rounded' width="100%" height={300} />
-      </>
+      {isFetching && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(255,255,255,0.3)',
+            zIndex: 10,
+          }}
+        >
+          <LoadingAnimation />
+        </Box>
+      )}
+    </Box>
   );
 }
 

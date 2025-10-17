@@ -1,41 +1,55 @@
-/* eslint-disable */
-
 import { useState, useRef, useEffect, useContext } from 'react';
 
 import { DateRangePicker, createStaticRanges } from 'react-date-range';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 
-import { Box, CircularProgress, Grid, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Grid, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 import { AggregationTypeMetadata, StyledDateRangePicker, returnCustomStaticRanges, returnFormattedDates } from './DateRangePickerUtils';
-import { getHistoricalChartApiUrl } from '../../API/ApiUrls';
-import { ChartAPIendpoints, ChartAPIendpointsOrder } from "../../API/Utils";
 import AggregationTypeToggle from './AggregationTypeToggle';
 import AggregationType from './AggregationType';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
 
 import { differenceInDays, isSameDay } from 'date-fns';
-import { fetchDataFromURL } from '../../API/ApiFetch';
-import { useDateRangePicker } from '../../ContextProviders/DateRangePickerContext';
 
 import { useSnackbar } from "notistack";
 import { SnackbarMetadata } from '../../Utils/SnackbarMetadata';
+import useChartData from '../../hooks/useChartData';
 
 const CustomDateRangePicker = (props) => {
-  const { enqueueSnackbar } = useSnackbar()
+  const { minDateOfDataset, chartIndex } = props;
+  const [isFirstRequest, setIsFirstRequest] = useState(true)
 
-  const { minDateOfDataset, dataType, chartIndex } = props;
-  const { currentSchoolID, setIndividualChartData } = useContext(DashboardContext);
-  const [isFirstRequest, setIsFirstRequest] = useState(true);
+  const { enqueueSnackbar } = useSnackbar();
+  const { isFetching } = useChartData(chartIndex);
+
+  const { allChartsConfigs, updateIndividualChartConfigQueryParams } = useContext(DashboardContext);
+  const chartConfig = allChartsConfigs[chartIndex] || {};
+  const queryParams = chartConfig.queryParams || {};
+
+  const [aggregationType, setAggregationType] = useState(queryParams.aggregationType || AggregationType.hour);
+  const [dateRange, setDateRange] = useState(() => {
+    const { startDate, endDate } = queryParams;
+    if (startDate && endDate) {
+      return {
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+        key: 'selection',
+      };
+    }
+    // Default if not set
+    return {
+      startDate: null,
+      endDate: null,
+      key: 'selection',
+    };
+  });
 
   const today = new Date();
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const isLargeScreen = useMediaQuery(theme => theme.breakpoints.up('lg'));
-
-  // Keep track of the date range and aggregationType  selected by the user
-  const { dateRange, setDateRange, aggregationType, setAggregationType } = useDateRangePicker();
 
   // Set aggregationType
   useEffect(() => {
@@ -49,16 +63,16 @@ const CustomDateRangePicker = (props) => {
     setDateRange(defaultRange);
   }, [aggregationType]);
 
-  // Set date range and trigger new API call if
+  // Handle date range change → update DashboardContext queryParams
   useEffect(() => {
-    const { startDate, endDate } = dateRange || {};
-    if (!startDate || !endDate) return;
-
+    // Early return if this is the first request (already fetched by useChartData hook)
     if (isFirstRequest) {
-      // Early return if this is the first request (already fetched by <Dashboard/> component)
       setIsFirstRequest(false);
       return;
     }
+
+    const { startDate, endDate } = dateRange || {};
+    if (!startDate || !endDate) return;
 
     // Start date and end date can't be the same date
     if (isSameDay(startDate, endDate)) {
@@ -67,24 +81,30 @@ const CustomDateRangePicker = (props) => {
     }
 
     // Restrict the selection to only max days per aggregationType
-    if (differenceInDays(endDate, startDate) > AggregationTypeMetadata[aggregationType]?.maxDays) {
+    const maxAllowedDays = AggregationTypeMetadata[aggregationType]?.maxDays;
+    if (differenceInDays(endDate, startDate) > maxAllowedDays) {
       enqueueSnackbar(`${AggregationTypeMetadata[aggregationType]} average is limited to max ${maxAllowedDays}d`, SnackbarMetadata.error);
       return;
     }
 
-    requestNewDataFromApi();
+    // Change the config
+    const formattedDates = returnFormattedDates({
+      startDateObject: startDate,
+      endDateObject: endDate
+    });
+    updateIndividualChartConfigQueryParams(chartIndex, {
+      aggregationType,
+      startDate: formattedDates.startDate,
+      endDate: formattedDates.endDate
+    });
+
   }, [dateRange]);
-
-
-  const [chartUrl, setChartUrl] = useState();
 
   // Control displaying / hiding of the date range picker
   const [showPickerPanel, setShowPickerPanel] = useState(false);
   const paperRef = useRef(null);
 
-  const [isFetchingData, setIsFetchingData] = useState(false);
-
-  // Hide or show the date-range-picker panel
+  // Hide or show the date-range-picker panel on user's manual input
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (paperRef.current && !paperRef.current.contains(event.target)) {
@@ -98,49 +118,12 @@ const CustomDateRangePicker = (props) => {
     };
   }, [paperRef]);
 
-  // Send query request to backend when APPLY button is clicked
-  // Check if a new date range is selected as well
-  const requestNewDataFromApi = (_dateRange = null) => {
-    const range = _dateRange || dateRange;
-    if (!range || !range.startDate || !range.endDate) return;
-
-    const formattedDates = returnFormattedDates({
-      startDateObject: range.startDate,
-      endDateObject: range.endDate
-    });
-
-    let newUrl;
-    if (ChartAPIendpointsOrder[chartIndex] === ChartAPIendpoints.historical) {
-      newUrl = getHistoricalChartApiUrl({
-        endpoint: ChartAPIendpoints.historical,
-        school_id: currentSchoolID,
-        aggregationType: aggregationType,
-        dataType: dataType,
-        startDate: formattedDates.startDate,
-        endDate: formattedDates.endDate
-      });
+  // Hide the panel on data fetching done
+  useEffect(() => {
+    if (!isFetching && showPickerPanel) {
+      setShowPickerPanel(false);
     }
-
-    if (newUrl !== chartUrl) {
-      setIsFetchingData(true);
-
-      fetchDataFromURL({
-        url: newUrl
-      })
-        .then((data) => {
-          setIsFetchingData(false);
-          setShowPickerPanel(false);
-
-          setIndividualChartData(chartIndex, data);
-          setChartUrl(newUrl);
-        })
-        .catch((error) => {
-          setIsFetchingData(false);
-          enqueueSnackbar("Error fetching historical data, please try again", SnackbarMetadata.error);
-          console.log(error);
-        });
-    }
-  }
+  }, [isFetching]);
 
   return (
     <>
@@ -162,8 +145,7 @@ const CustomDateRangePicker = (props) => {
         sx={{
           height: "2rem",
           flex: 1,
-          [theme.breakpoints.up('lg')]: { minHeight: '4rem' },
-          [theme.breakpoints.down('lg')]: { marginBottom: '5px' }
+          [theme.breakpoints.up('lg')]: { minHeight: '4rem' }
           // width: { [theme.breakpoints.down("sm")]: { width: "100%" } },
         }}
       >
@@ -179,12 +161,10 @@ const CustomDateRangePicker = (props) => {
             onClick={() => setShowPickerPanel(true)}
             sx={{ position: "relative" }}
           >
-            {/* Calendar wrapper with blur on loading */}
+
             <Box
               sx={{
-                filter: (isFetchingData && showPickerPanel) ? "blur(2px)" : "none",
-                pointerEvents: isFetchingData ? "none" : "auto",
-                transition: "filter 0.2s ease-in-out",
+                transition: "filter 0.2s ease-in-out"
               }}
             >
               <DateRangePicker
@@ -216,30 +196,6 @@ const CustomDateRangePicker = (props) => {
                 weekStartsOn={1}
               />
             </Box>
-
-            {/* Overlay spinner */}
-            {isFetchingData && (
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: "rgba(0,0,0,0.25)",
-                  zIndex: 10,
-                }}
-              >
-                <CircularProgress
-                  disableShrink
-                  size={showPickerPanel ? "2.5rem" : "1.25rem"}
-                  color="primary"
-                />
-              </Box>
-            )}
           </StyledDateRangePicker>
         </Stack>
       </Grid >
