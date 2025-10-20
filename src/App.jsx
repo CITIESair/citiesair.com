@@ -38,6 +38,7 @@ import { isWithinDisplayHours } from "./Utils/UtilFunctions";
 import NYUADScreen from "./Pages/NYUADScreen";
 import { ScreenProvider } from "./ContextProviders/ScreenContext";
 import { useNetworkStatus } from "./hooks/useNetworkStatus";
+import { GoogleChartGlobalStyles } from "./Graphs/Subchart/SubchartUtils/GoogleChartStyleWrapper";
 
 // Lazy load pages
 const Home = lazy(() => import("./Pages/Home/Home"));
@@ -122,6 +123,8 @@ function App() {
                   backgroundColor: "customBackground"
                 }}
               >
+                <GoogleChartGlobalStyles />
+
                 <SpeedDialButton
                   chartsTitlesList={chartsTitlesList}
                   topAnchorID={sectionData.topAnchor.id}

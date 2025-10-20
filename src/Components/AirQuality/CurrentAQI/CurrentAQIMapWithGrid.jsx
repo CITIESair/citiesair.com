@@ -56,7 +56,7 @@ const CurrentAQIMapWithGrid = (props) => {
         if (currentSensorsData) {
             const timer = setTimeout(() => {
                 setMapData({ ...currentSensorsData });
-            }, 1);
+            }, 10);
             return () => clearTimeout(timer);
         }
     }, [currentSensorsData]);

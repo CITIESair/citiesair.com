@@ -44,9 +44,25 @@ export default function SeriesSelector(props) {
   const [items, setItems] = useState(itemsFromChart);
   const [selectAll, setSelectAll] = useState(allowMultiple); // default: all is selected if multiSelect is true
 
+  // When parent/props change, reconcile selections:
+  // - If the incoming item has an explicit `selected` boolean, prefer it (parent-controlled change).
+  // - Otherwise preserve the previous selection for matching labels.
   useEffect(() => {
-    setItems(itemsFromChart);
-  }, [itemsFromChart]);
+    setItems(prevItems => {
+      const prevMap = new Map(prevItems.map(i => [i.label, i.selected]));
+      return itemsFromChart.map(newIt => {
+        const incomingHasSelected = typeof newIt.selected === 'boolean';
+        if (incomingHasSelected) {
+          // Prefer parent's selection (keeps component in sync when parent updates selection)
+          return { ...newIt };
+        } else {
+          // No explicit selected flag from parent — preserve previous selection if available
+          return { ...newIt, selected: prevMap.has(newIt.label) ? prevMap.get(newIt.label) : !!newIt.selected };
+        }
+      });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [itemsFromChart])
 
   useEffect(() => {
     setSelectAll(items.every(item => item.selected)); // set selectAll if all items are selected

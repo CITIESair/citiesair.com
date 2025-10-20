@@ -18,7 +18,7 @@ import PopupState, { bindHover, bindFocus, bindMenu } from 'material-ui-popup-st
 
 import LogOut from '../Account/Logout';
 import { AppRoutes } from '../../Utils/AppRoutes';
-import { UserRoles } from '../Account/Utils';
+import { getDashboardLabel } from '../Account/Utils';
 import { NYUAD } from '../../Utils/GlobalVariables';
 // import { NYUAD } from '../../Utils/GlobalVariables';
 
@@ -47,27 +47,12 @@ const NavBar = (props) => {
     />
   );
 
-  const getDashboardLabel = () => {
-    const role = user?.user_role;
-
-    switch (role) {
-      case UserRoles.individual.id:
-        if (user.email) {
-          return `My Dashboard`;
-        } else {
-          return `Dashboard (${user.email})`;
-        }
-      default:
-        return `${user.username.toUpperCase()}'s Dashboard`;
-    }
-  };
-
   const reservedAreaMenu = authenticationState.authenticated === true ? (
     isMobile ? (
       [
         <MenuItemAsNavLink
           key="dashboard"
-          label={getDashboardLabel()}
+          label={getDashboardLabel(user)}
           behavior={NavLinkBehavior.toNewPage}
           icon={<PersonIcon />}
           analyticsOriginID="navbar"
@@ -80,7 +65,7 @@ const NavBar = (props) => {
         {(popupState) => (
           <>
             <MenuItemAsNavLink
-              label={getDashboardLabel()}
+              label={getDashboardLabel(user)}
               behavior={NavLinkBehavior.hoverMenu}
               icon={<PersonIcon />}
               analyticsOriginID="navbar"

@@ -3,7 +3,7 @@
 import { styled } from '@mui/material/styles';
 import { Paper } from '@mui/material';
 
-import { addDays, endOfDay, startOfDay, format } from "date-fns";
+import { addDays, endOfDay, startOfDay, format, addHours } from "date-fns";
 import AggregationType from './AggregationType';
 
 const today = new Date();
@@ -11,8 +11,8 @@ const today = new Date();
 const yesterday = {
   label: "Yesterday",
   range: () => ({
-    startDate: startOfDay(addDays(today, -1)),
-    endDate: endOfDay(today)
+    startDate: startOfDay(addHours(today, -48)),
+    endDate: today
   })
 };
 
@@ -67,8 +67,8 @@ export const returnCustomStaticRanges = ({ minDateOfDataset, aggregationType }) 
 
 export const AggregationTypeMetadata = {
   [AggregationType.minute]: {
-    maxDays: 1,
-    label: "Live"
+    maxDays: 2,
+    label: "Real-time"
   },
   [AggregationType.hour]: {
     maxDays: 30,

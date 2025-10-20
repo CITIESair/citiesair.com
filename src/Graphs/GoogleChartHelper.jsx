@@ -1,12 +1,5 @@
 /* eslint-disable */
 
-export const ChartControlType = {
-  CategoryFilter: { position: 'top', stackDirection: 'column' },
-  DateRangeFilter: { position: 'bottom', stackDirection: 'column-reverse' },
-  ChartRangeFilter: { position: 'bottom', stackDirection: 'column-reverse' },
-  NumberRangeFilter: { position: 'top', stackDirection: 'column' }
-}
-
 // Function to generate a random ID for the google chart container
 export const generateRandomID = () => {
   return Math.random().toString(36).substr(2, 9); // Generates a random string of length 9
@@ -63,7 +56,7 @@ export const returnGenericOptions = (props) => {
       ...chartData.options?.chartArea,
       width: isPortrait ? (chartData.options?.chartArea?.width?.portrait || '80%') : (chartData.options?.chartArea?.width?.landscape || '80%'),
       height: isPortrait ? (chartData.options?.chartArea?.height?.portrait || '60%') : (chartData.options?.chartArea?.height?.landscape || '80%'),
-      top: !isPortrait && 10
+      top: !isPortrait && 20
     },
     width: isPortrait ? (chartData.options?.width?.portrait || '100%') : (chartData.options?.width?.landscape || '100%'),
     // if there is a filter, we make space for the chartFilter from the chart's height.

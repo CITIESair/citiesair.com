@@ -13,7 +13,7 @@ import sectionData from '../../section_data.json';
 
 import * as Tracking from '../../Utils/Tracking';
 import parse from 'html-react-parser';
-import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
+import { isValidArray, replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 
 import CurrentAQIGrid from '../../Components/AirQuality/CurrentAQI/CurrentAQIGrid';
 
@@ -32,8 +32,97 @@ import OutdoorStationUAE from '../../Components/AirQuality/AirQualityMap/Outdoor
 import useCurrentSensorsData from '../../hooks/useCurrentSensorsData';
 import CurrentAQIMapWithGrid from '../../Components/AirQuality/CurrentAQI/CurrentAQIMapWithGrid';
 import useSchoolMetadata from '../../hooks/useSchoolMetadata';
+import { getDashboardLabel } from '../../Components/Account/Utils';
+
+const displaySensorCounts = (currentSensorsData) => {
+  if (!currentSensorsData) return null;
+
+  return (
+    <Grid item xs={12}>
+      <Typography variant='body2' color="text.secondary">
+        <b>Sensors status: </b>{
+          currentSensorsData.reduce((count, obj) => obj?.sensor?.sensor_status === SensorStatus.active ? count + 1 : count, 0)
+        } active out of {currentSensorsData.length}
+      </Typography>
+    </Grid>
+  );
+}
+
+const displayDashboardButtons = (authenticationState, user, isSmallScreen) => {
+  const isAllowedOnlyNYUAD =
+    isValidArray(user?.allowedSchools) &&
+    user.allowedSchools.length === 1 &&
+    user.allowedSchools[0].school_id === NYUAD;
+
+  return (
+    <Grid item container spacing={1} justifyContent="center" alignItems="center">
+      <Grid item xs={12} sm="auto">
+        <Button
+          component={RouterLink}
+          variant='contained'
+          sx={{ width: "fit-content" }}
+          to={authenticationState.authenticated ? AppRoutes.dashboard : AppRoutes.login}
+          onClick={() => {
+            Tracking.sendEventAnalytics(
+              Tracking.Events.internalNavigation,
+              {
+                destination_id: authenticationState.authenticated ? AppRoutes.dashboard : AppRoutes.login,
+                origin_id: AppRoutes.home
+              }
+            );
+          }}
+        >
+          {authenticationState.authenticated ?
+            <BarChartIcon sx={{ fontSize: '0.8rem' }} />
+            : <PersonIcon sx={{ fontSize: '0.8rem' }} />
+          }
+          &nbsp;
+          {authenticationState.authenticated ? getDashboardLabel(user, isAllowedOnlyNYUAD ? NYUAD : null) : "Login Private Dashboard"}
+        </Button>
+      </Grid>
+
+      {
+        (isAllowedOnlyNYUAD === false && isSmallScreen === false) && (
+          <Grid item xs={12} sm="auto">
+            <Typography color="text.secondary">|</Typography>
+          </Grid>
+        )
+      }
+
+      {
+        isAllowedOnlyNYUAD ? null :
+          (
+            <Grid item xs={12} sm="auto">
+              <Button
+                component={RouterLink}
+                variant={isSmallScreen ? 'text' : 'outlined'}
+                sx={{ width: "fit-content" }}
+                to={AppRoutes.nyuad}
+                onClick={() => {
+                  Tracking.sendEventAnalytics(
+                    Tracking.Events.internalNavigation,
+                    {
+                      destination_id: AppRoutes.nyuad,
+                      destination_school_id: NYUAD,
+                      origin_id: AppRoutes.home
+                    }
+                  );
+                }}
+              >
+                <BarChartIcon sx={{ fontSize: '0.8rem' }} />
+                &nbsp;
+                NYUAD Public Dashboard
+              </Button>
+            </Grid>
+          )
+      }
+    </Grid>
+  );
+}
 
 function Home({ temperatureUnitPreference, title }) {
+  const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
+
   // Update the page's title
   useEffect(() => {
     document.title = title;
@@ -50,90 +139,7 @@ function Home({ temperatureUnitPreference, title }) {
   const { currentSchoolID } = useContext(DashboardContext);
   const { data: currentSensorsData } = useCurrentSensorsData();
   const { data: schoolMetadata } = useSchoolMetadata();
-  const { authenticationState } = useContext(UserContext);
-
-  const displaySensorCounts = () => {
-    if (!currentSensorsData) return null;
-
-    return (
-      <Grid item xs={12}>
-        <Typography variant='body2' color="text.secondary">
-          <b>Sensors status: </b>{
-            currentSensorsData.reduce((count, obj) => obj?.sensor?.sensor_status === SensorStatus.active ? count + 1 : count, 0)
-          } active out of {currentSensorsData.length}
-        </Typography>
-      </Grid>
-    );
-  }
-
-  const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
-  const displayDashboardButtons = () => {
-    const isOnlyNYUADButton = currentSchoolID === NYUAD && authenticationState.authenticated;
-
-    return (
-      <Grid item container spacing={1} justifyContent="center" alignItems="center">
-        {
-          isOnlyNYUADButton ? null :
-            (
-              <Grid item xs={12} sm="auto">
-                <Button
-                  component={RouterLink}
-                  variant='contained'
-                  sx={{ width: "fit-content" }}
-                  to={authenticationState.authenticated ? AppRoutes.dashboard : AppRoutes.login}
-                  onClick={() => {
-                    Tracking.sendEventAnalytics(
-                      Tracking.Events.internalNavigation,
-                      {
-                        destination_id: authenticationState.authenticated ? AppRoutes.dashboard : AppRoutes.login,
-                        origin_id: AppRoutes.home
-                      }
-                    );
-                  }}
-                >
-                  {authenticationState.authenticated ?
-                    <BarChartIcon sx={{ fontSize: '0.8rem' }} />
-                    : <PersonIcon sx={{ fontSize: '0.8rem' }} />
-                  }
-                  &nbsp;
-                  {authenticationState.authenticated ? `School Private Dashboard` : "Login Private Dashboard"}
-                </Button>
-              </Grid>
-            )
-        }
-
-        {
-          isSmallScreen === false && (
-            <Grid item xs={12} sm="auto">
-              <Typography color="text.secondary">|</Typography>
-            </Grid>
-          )
-        }
-
-        <Grid item xs={12} sm="auto">
-          <Button
-            component={RouterLink}
-            variant={isOnlyNYUADButton ? 'contained' : (isSmallScreen ? 'text' : 'outlined')}
-            sx={{ width: "fit-content" }}
-            to={AppRoutes.nyuad}
-            onClick={() => {
-              Tracking.sendEventAnalytics(
-                Tracking.Events.internalNavigation,
-                {
-                  destination_id: AppRoutes.nyuad,
-                  destination_school_id: NYUAD,
-                  origin_id: AppRoutes.home
-                }
-              );
-            }}
-          >
-            <BarChartIcon sx={{ fontSize: '0.8rem' }} />
-            NYUAD {isOnlyNYUADButton ? "" : "Public"} Dashboard
-          </Button>
-        </Grid>
-      </Grid>
-    );
-  }
+  const { authenticationState, user } = useContext(UserContext);
 
   return (
     <Box width="100%">
@@ -186,9 +192,9 @@ function Home({ temperatureUnitPreference, title }) {
               )
             }
 
-            {displaySensorCounts()}
+            {displaySensorCounts(currentSensorsData)}
 
-            {displayDashboardButtons()}
+            {displayDashboardButtons(authenticationState, user, isSmallScreen)}
 
             <Grid item xs={12} textAlign="left">
               <AQIexplanation />

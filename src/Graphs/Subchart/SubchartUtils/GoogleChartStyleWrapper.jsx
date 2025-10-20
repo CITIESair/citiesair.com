@@ -1,6 +1,5 @@
-import { Box } from '@mui/material/';
+import { Box, GlobalStyles, useTheme } from '@mui/material/';
 import { styled } from '@mui/material/styles';
-
 
 const GoogleChartStyleWrapper = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'gradientBackgroundId' && prop !== 'isPortrait',
@@ -14,7 +13,6 @@ const GoogleChartStyleWrapper = styled(Box, {
     fillOpacity: 1,
     filter: 'contrast(0.4) brightness(1.4)'
   },
-
   // CSS for HTML tooltip
   '& .google-visualization-tooltip, .nivo-tooltip': {
     width: 'unset !important',
@@ -47,42 +45,73 @@ const GoogleChartStyleWrapper = styled(Box, {
   '& .goog-menuitem-highlight, .goog-menuitem-hover': {
     backgroundColor: `${theme.palette.primary} !important`
   },
-
   // CategoryFilter
   '& .google-visualization-controls-categoryfilter': {
-    fontSize: '0.85rem',
-    marginTop: '0.75rem',
-    marginBottom: '-0.75rem',
-
-    '& .goog-inline-block > .goog-menu-button': {
-      marginTop: 0
+    display: "flex",
+    flexDirection: "column",
+    fontSize: '0.75rem',
+    gap: theme.spacing(1),
+    [theme.breakpoints.down("lg")]: {
+      marginTop: theme.spacing(0.5),
     },
-
-    '& .goog-menu-button-hover .goog-menu-button-outer-box, .goog-menu-button-hover .goog-menu-button-inner-box': {
-      borderColor: 'inherit !important'
+    '& .goog-menu-button-caption': {
+      marginRight: theme.spacing(0.75)
     },
-
+    '& .goog-menu-button': {
+      marginTop: 0,
+      width: "100%",
+      background: "transparent !important"
+    },
+    '& .goog-menu-button-hover': {
+      '& .goog-menu-button-outer-box': {
+        borderColor: "transparent !important"
+      },
+      '& .goog-menu-button-inner-box': {
+        borderColor: `${theme.palette.text.primary} !important`
+      }
+    },
     '& .google-visualization-controls-label': {
+      [theme.breakpoints.down("lg")]: {
+        display: "none"
+      },
+      fontSize: "1rem !important",
+      fontWeight: "400 !important",
+      textTransform: "uppercase !important",
       color: theme.palette.text.secondary,
-      fontWeight: 500,
-      verticalAlign: 'middle',
-      marginBottom: '0.25rem'
+      verticalAlign: 'middle'
     },
     '& .goog-menu-button-outer-box': {
-      backgroundColor: theme.palette.background.paper,
-      border: 'unset',
+      border: '0',
+      width: "100%",
 
       '& .goog-menu-button-inner-box': {
-        paddingTop: theme.spacing(0.5),
-        paddingBottom: theme.spacing(0.5),
+        display: "flex",
+        height: "2rem",
+        justifyContent: "space-between",
+        paddingTop: theme.spacing(0.8125),
+        paddingBottom: theme.spacing(0.8125),
         paddingLeft: theme.spacing(2),
         paddingRight: theme.spacing(2),
-        border: 'solid',
-        borderWidth: '0.5px',
+        borderColor: theme.palette.divider,
+        borderWidth: '1px',
         borderRadius: theme.shape.borderRadius,
-        borderColor: theme.palette.text.secondary,
+        width: "100%",
 
         '& .goog-menu-button-caption': {
+          color: theme.palette.text.secondary
+        }
+      }
+    },
+    '& .google-visualization-controls-categoryfilter-selected': {
+      '& li': {
+        color: theme.palette.text.secondary,
+        borderRadius: theme.shape.borderRadius,
+        paddingLeft: theme.spacing(0.5),
+        paddingRight: theme.spacing(1),
+        background: theme.palette.background.paper,
+        '& .goog-link-button': {
+          verticalAlign: "top",
+          fontSize: "0.75rem",
           color: theme.palette.text.secondary
         }
       }
@@ -142,5 +171,36 @@ const GoogleChartStyleWrapper = styled(Box, {
     }
   }
 }));
+
+export const GoogleChartGlobalStyles = () => {
+  const theme = useTheme();
+
+  return (
+    <GlobalStyles
+      styles={{
+        '.goog-menu-vertical': {
+          borderColor: "transparent !important",
+          backgroundColor: `${theme.palette.customAlternateBackground} !important`,
+          borderRadius: theme.shape.borderRadius,
+          boxShadow: theme.shadows[4],
+          color: theme.palette.text.primary,
+          zIndex: 1500,
+          '& .goog-menuitem': {
+            paddingTop: theme.spacing(0.75),
+            paddingBottom: theme.spacing(0.75),
+            '& .goog-menuitem-content': {
+              color: theme.palette.text.primary,
+              fontFamily: "'IBM Plex Sans', sans-serif !important",
+            }
+          },
+        },
+        '.goog-menuitem-highlight, .goog-menuitem-hover': {
+          backgroundColor: `${theme.palette.action.hover} !important`,
+          border: "transparent !important"
+        },
+      }}
+    />
+  );
+};
 
 export default GoogleChartStyleWrapper;

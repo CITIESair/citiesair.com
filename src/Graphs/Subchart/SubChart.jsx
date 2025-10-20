@@ -8,7 +8,7 @@ import { Box, Grid, Stack } from '@mui/material/';
 
 import { useTheme } from '@mui/material/styles';
 import SeriesSelector from './SubchartUtils/SeriesSelector';
-import { generateRandomID, returnGenericOptions, returnChartControlUI, ChartControlType, addTouchEventListenerForChartControl } from '../GoogleChartHelper';
+import { generateRandomID, returnGenericOptions, returnChartControlUI, addTouchEventListenerForChartControl } from '../GoogleChartHelper';
 
 import GoogleChartStyleWrapper from './SubchartUtils/GoogleChartStyleWrapper';
 
@@ -168,6 +168,8 @@ export default function SubChart(props) {
     }
   }
 
+  const hasAtLeastOneAuxillaryControl = seriesSelector || dateRangePicker || selectableAxes || timeRangeSelector;
+
   // Set new options prop and re-render the chart if theme or isPortrait changes
   useEffect(() => {
     if (seriesSelector) handleSeriesSelection({ newDataColumns: dataColumns }); // this function set new options, too
@@ -195,79 +197,75 @@ export default function SubChart(props) {
   }, [theme]);
 
   const getInitialColumns = ({ chartWrapper, dataTable, seriesSelector }) => {
+    const prevSelections = dataColumns?.map(c => ({ label: c.label, selected: c.selected })) || [];
+
     // Update the initial DataView's columns (often, all of the series are displayed initially)
-    var initialView = chartWrapper.getView();
     // If (optional) columns is not specified in database
     // Assign it from DataTable
+    let initialView = chartWrapper.getView();
     if (initialView.columns == null) {
       const viewFromDataTable = new google.visualization.DataView(dataTable);
-      chartWrapper.setView({
-        columns: viewFromDataTable.columns
-      });
+      chartWrapper.setView({ columns: viewFromDataTable.columns });
       initialView = chartWrapper.getView();
     }
 
     let shouldAssignDomainRoleToFistColumn = true; // variable to only assign type: 'domain' to the very first column
     let dataSeriesIndex = 0;
+
     const allInitialColumns = initialView.columns.map((col, index) => {
       // A column can either be a number (that denotes the index of the sourceColumn) or an object
       // The code below harmonize all columns to be an object to store crucial data to toggle their visibility
-      if (typeof col === 'number') col = {
-        role: shouldAssignDomainRoleToFistColumn ? 'domain' : 'data',
-        sourceColumn: col
+      if (typeof col === 'number') {
+        col = {
+          role: shouldAssignDomainRoleToFistColumn ? 'domain' : 'data',
+          sourceColumn: col,
+        };
       }
+
       col.label = dataTable.getColumnLabel(col.sourceColumn);
       col.indexInAllInitialColumns = index;
-
-      shouldAssignDomainRoleToFistColumn = shouldAssignDomainRoleToFistColumn && false;
+      shouldAssignDomainRoleToFistColumn = false;
 
       // Set the visibility of data column, 
       if (col.role === 'data') {
-        // If defaultSeriesToDisplayInitially is presented
-        // then, only show these series
-        if (seriesSelector.defaultSeriesToDisplayInitially) {
-          if (seriesSelector.defaultSeriesToDisplayInitially.includes(index)) {
-            col.selected = true;
+        // First, try to restore previous selection by label
+        const prev = prevSelections.find(p => p.label === col.label);
+        if (prev) {
+          col.selected = prev.selected;
+        } else {
+          // Else, fallback to default logic if new series or first load (if defaultSeriesToDisplayInitially is available)
+          if (seriesSelector.defaultSeriesToDisplayInitially) {
+            col.selected = seriesSelector.defaultSeriesToDisplayInitially.includes(index);
           }
-          else {
-            col.selected = false;
-          }
-        }
-        // If no defaultSeriesToDisplayInitially is presented
-        else {
-          // then, all data columns are selected if multiple series are selectable
-          if (seriesSelector.allowMultiple) {
+          // Else of no defaultSeriesToDisplayInitially is presented, then, all data columns are selected if multiple series are selectable
+          else if (seriesSelector.allowMultiple) {
             col.selected = true;
           } else {
-            // else for single serie selector, only first data column is selected
-            if (dataSeriesIndex === 0) {
-              col.selected = true;
-            } else {
-              col.selected = false;
-            }
+            // Else, for single serie selector, only first data column is selected
+            col.selected = (dataSeriesIndex === 0);
           }
         }
-
         col.seriesIndex = dataSeriesIndex;
         dataSeriesIndex++;
       }
+
       return col;
     });
+
     setAllInitialColumns(allInitialColumns);
-    const initialVAxisRange = getInitialVAxisRange({ dataTable: dataTable, allInitialColumns: allInitialColumns });
+
+    const initialVAxisRange = getInitialVAxisRange({ dataTable, allInitialColumns });
     setInitialVAxisRage(initialVAxisRange);
-    // To track selection, only get the columns that are:
-    // role === 'data'
-    // visibleInLegend !== false
-    const dataColumns = allInitialColumns.filter((col) => {
-      return col.role === 'data' && options.series?.[col.seriesIndex]?.visibleInLegend !== false;
-    });
 
-    if (seriesSelector.method === "setViewColumn") setInitialColumnsColors({ dataColumns: dataColumns });
+    const dataCols = allInitialColumns.filter(col => col.role === 'data' && options.series?.[col.seriesIndex]?.visibleInLegend !== false);
 
-    setDataColumns(dataColumns);
-    return { initAllInitialColumns: allInitialColumns, initDataColumns: dataColumns };
+    if (seriesSelector.method === "setViewColumn") setInitialColumnsColors({ dataColumns: dataCols });
+
+    setDataColumns(dataCols);
+
+    return { initAllInitialColumns: allInitialColumns, initDataColumns: dataCols };
   };
+
 
   const setInitialColumnsColors = ({ dataColumns }) => {
     dataColumns.forEach((col) => {
@@ -500,7 +498,7 @@ export default function SubChart(props) {
         thisControlWrapper = new google.visualization.ControlWrapper({
           controlType: chartControl.controlType,
           options: chartControlOptions,
-          containerId: `control-${chartID}`
+          containerId: `${chartControl.controlType === "CategoryFilter" ? "CategoryFilter" : "other-chart-control"}-${chartID}`
         });
         setControlWrapper(thisControlWrapper);
 
@@ -530,34 +528,111 @@ export default function SubChart(props) {
   }, [renderChartNow])
 
   const renderChart = () => {
-    const chartContainer = (
-      <Box
-        id={chartID}
-        sx={{ height: height, maxHeight: maxHeight }}
-      />
-    );
-
-    if (hasChartControl) {
-      return (
-        <Stack
-          id={`dashboard-${chartID}`}
-          direction={ChartControlType[chartControl.controlType]?.stackDirection || 'column-reverse'}
-          sx={{ height: '100%' }}
-        >
-          <Box
-            id={`control-${chartID}`}
+    return (
+      <Grid id={`dashboard-${chartID}`} container alignItems="start">
+        {hasAtLeastOneAuxillaryControl && (
+          <Grid lg={2} container item
             sx={{
-              height: `calc(${height} / 8)`,
-              opacity: 0.8,
-              filter: 'saturate(0.3)'
+              mt: 1,
+              ml: 2,
+              gap: 2,
+              [theme.breakpoints.down('lg')]: { gap: 1, ml: 0 }
             }}
-          />
-          {chartContainer}
-        </Stack>
-      );
-    } else {
-      return chartContainer;
-    }
+          >
+            {
+              isFirstRender === false && (
+                <>
+                  {seriesSelector &&
+                    <Grid item xs="auto" lg={12}
+                      sx={{
+                        [theme.breakpoints.down('sm')]: { width: '100%' }
+                      }}
+                    >
+                      <SeriesSelector
+                        items={dataColumns}
+                        allowMultiple={seriesSelector.allowMultiple}
+                        seriesLabel={seriesSelector.seriesLabel}
+                        selectorID={`${chartData.title}-selector`}
+                        onSeriesSelection={handleSeriesSelection}
+                        displayChip={false}
+                      />
+                    </Grid>
+                  }
+
+                  {
+                    dateRangePicker &&
+                    <CustomDateRangePicker
+                      minDateOfDataset={new Date(dateRangePicker.minDate)}
+                      chartIndex={chartData.id}
+                    />
+                  }
+
+                  {selectableAxes &&
+                    <AxesPicker
+                      chartID={chartData.id}
+                      allowedAxes={selectableAxes.allowedAxes}
+                      selectedAxes={selectableAxes.selectedAxes}
+                      dataType={selectedDataType}
+                    />
+                  }
+
+                  {
+                    timeRangeSelector &&
+                    <Grid item xs="auto" lg={12}
+                      sx={{
+                        [theme.breakpoints.down('sm')]: { width: '100%' }
+                      }}
+                    >
+                      <TimeRangeSelectorWrapperForDataHook
+                        defaultTimeRange={[PREDEFINED_TIMERANGES.allday.start, PREDEFINED_TIMERANGES.allday.end]}
+                        handleChange={() => {
+                          return null;
+                        }}
+                        isResponsive
+                        hasTitle
+                        chartIndex={chartData.id}
+                      />
+                    </Grid>
+                  }
+                </>
+              )
+            }
+
+            <Grid item xs="auto" lg={12}
+              sx={{
+                [theme.breakpoints.down('sm')]: { width: '100%' }
+              }}
+            >
+              {/* Special div for CategoryFilter to align its position with other auxillary controls */}
+              <Box
+                id={`CategoryFilter-${chartID}`} sx={{
+                  display: hasChartControl && chartControl.controlType === 'CategoryFilter' ? "block" : "none"
+                }} />
+            </Grid>
+          </Grid>
+        )}
+
+        <Grid item xs>
+          <Stack>
+            <Box
+              id={chartID}
+              sx={{ height: height, maxHeight: maxHeight }}
+            />
+
+            {/* Div for all other types of chart control */}
+            <Box
+              id={`other-chart-control-${chartID}`}
+              sx={{
+                display: (hasChartControl && chartControl.controlType !== 'CategoryFilter') ? "block" : "none",
+                height: `calc(${height} / 8)`,
+                filter: 'saturate(0.3)',
+                opacity: 0.7
+              }}
+            />
+          </Stack>
+        </Grid>
+      </Grid>
+    )
   };
 
   // Generate the gradient background if it exists in options parameter
@@ -582,58 +657,7 @@ export default function SubChart(props) {
     if (!isFirstRender) {
       return (
         <>
-          {seriesSelector &&
-            <Grid item xs="auto" lg={12}
-              sx={{
-                [theme.breakpoints.down('sm')]: { width: '100%' }
-              }}
-            >
-              <SeriesSelector
-                items={dataColumns}
-                allowMultiple={seriesSelector.allowMultiple}
-                seriesLabel={seriesSelector.seriesLabel}
-                selectorID={`${chartData.title}-selector`}
-                onSeriesSelection={handleSeriesSelection}
-                displayChip={false}
-              />
-            </Grid>
-          }
 
-          {
-            dateRangePicker &&
-            <CustomDateRangePicker
-              minDateOfDataset={new Date(dateRangePicker.minDate)}
-              chartIndex={chartData.id}
-            />
-          }
-
-          {selectableAxes &&
-            <AxesPicker
-              chartID={chartData.id}
-              allowedAxes={selectableAxes.allowedAxes}
-              selectedAxes={selectableAxes.selectedAxes}
-              dataType={selectedDataType}
-            />
-          }
-
-          {
-            timeRangeSelector &&
-            <Grid item xs="auto" lg={12}
-              sx={{
-                [theme.breakpoints.down('sm')]: { width: '100%' }
-              }}
-            >
-              <TimeRangeSelectorWrapperForDataHook
-                defaultTimeRange={[PREDEFINED_TIMERANGES.allday.start, PREDEFINED_TIMERANGES.allday.end]}
-                handleChange={() => {
-                  return null;
-                }}
-                isResponsive
-                hasTitle
-                chartIndex={chartData.id}
-              />
-            </Grid>
-          }
         </>
       );
     } else {
@@ -658,39 +682,11 @@ export default function SubChart(props) {
               <LoadingAnimation />
             </Box>
           )}
-          <Grid container alignItems="start"
-            sx={{
-            }}
-          >
-            <Grid lg={2} container item
-              sx={{
-                mt: 1,
-                ml: 2,
-                gap: 2,
-                [theme.breakpoints.down('lg')]: { gap: 1, ml: 0 }
-              }}
-            >
-              {showAuxiliaryControls()}
-            </Grid>
-            <Grid item xs>
-              {renderChart()}
-            </Grid>
-          </Grid>
-
+          {renderChart()}
           {gradientBackgroundColor ? <BackgroundGradient id={gradientBackgroundId} colors={svgFillGradient} /> : null}
         </GoogleChartStyleWrapper>
       ) :
       (
-        // <>
-        //   {selectableAxes &&
-        //     <Box mt={1}>
-        //       <AxesPicker
-        //         allowedAxes={selectableAxes.allowedAxes}
-        //         selectedAxes={selectableAxes.selectedAxes}
-        //         dataType={selectedDataType}
-        //       />
-        //     </Box>
-        //   }
         <NoChartToRender
           dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })}
           selectableAxes={selectableAxes}
@@ -699,7 +695,6 @@ export default function SubChart(props) {
           height={seriesSelector || hasChartControl ? (parseFloat(height) * 1.2 + 'vw') : height}
 
         />
-        // </>
       )
   );
 }

@@ -83,7 +83,7 @@ const CustomDateRangePicker = (props) => {
     // Restrict the selection to only max days per aggregationType
     const maxAllowedDays = AggregationTypeMetadata[aggregationType]?.maxDays;
     if (differenceInDays(endDate, startDate) > maxAllowedDays) {
-      enqueueSnackbar(`${AggregationTypeMetadata[aggregationType]} average is limited to max ${maxAllowedDays}d`, SnackbarMetadata.error);
+      enqueueSnackbar(`${AggregationTypeMetadata[aggregationType].label} data is limited to maximum ${maxAllowedDays} day${maxAllowedDays > 1 ? "s" : ""}`, SnackbarMetadata.error);
       return;
     }
 

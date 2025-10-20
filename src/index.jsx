@@ -15,38 +15,49 @@ import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persi
 const container = document.getElementById('root');
 const root = createRoot(container);
 const queryClient = new QueryClient();
+
 // Use localStorage as persistence
 const localStoragePersister = createAsyncStoragePersister({
   storage: window.localStorage,
 });
 
+const IS_PRODUCTION = process.env.REACT_APP_ENV === 'production';
+
+const Providers = ({ children }) => (
+  <GoogleProvider>
+    <MetadataProvider>
+      <PreferenceProvider>
+        <SnackbarProvider
+          dense
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          preventDuplicate
+        >
+          <UserProvider>{children}</UserProvider>
+        </SnackbarProvider>
+      </PreferenceProvider>
+    </MetadataProvider>
+  </GoogleProvider>
+);
+
 root.render(
   <React.StrictMode>
-    <PersistQueryClientProvider
-      client={queryClient}
-      persistOptions={{ persister: localStoragePersister }}
-    >
-      {/* <QueryClientProvider client={queryClient}> */}
-      <GoogleProvider>
-        <MetadataProvider>
-          <PreferenceProvider>
-            <SnackbarProvider
-              dense
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-              }}
-              preventDuplicate
-            >
-              <UserProvider>
-                <App />
-              </UserProvider>
-            </SnackbarProvider>
-          </PreferenceProvider>
-        </MetadataProvider>
-      </GoogleProvider>
-      {/* </QueryClientProvider> */}
-    </PersistQueryClientProvider>
+    {IS_PRODUCTION ? (
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{ persister: localStoragePersister }}
+      >
+        <Providers>
+          <App />
+        </Providers>
+      </PersistQueryClientProvider>
+    ) : (
+      <QueryClientProvider client={queryClient}>
+        <Providers>
+          <App />
+        </Providers>
+      </QueryClientProvider>
+    )}
   </React.StrictMode>
 );
+
 // `SnackbarProvider` should always be a parent of `UserContext` as the latter makes use of the former.

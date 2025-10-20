@@ -66,7 +66,7 @@ export default function AggregationTypeToggle({ aggregationType, setAggregationT
                 ...(isLargeScreen ? {
                   position: 'absolute',
                   left: '50%',
-                  transform: 'translateX(calc(-50% - 1.25rem))',
+                  transform: 'translateX(calc(-50% - 2.5rem))',
                 } : {
                   mr: 0.3,
                 }),
