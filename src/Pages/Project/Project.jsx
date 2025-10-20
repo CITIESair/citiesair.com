@@ -78,7 +78,7 @@ const Project = () => {
             </Grid>
           </Grid>
 
-          {schoolMetadata?.has_map === true &&
+          {schoolMetadata?.has_map === true ?
             (
               <CurrentAQIMapWithGrid
                 currentSensorsData={currentSensorsData}
@@ -86,19 +86,17 @@ const Project = () => {
                 isOnBannerPage={false}
                 minMapHeight={"250px"}
               />
+            ) : (
+              <Box textAlign="center" sx={{ mb: 2 }}>
+                <CurrentAQIGrid
+                  currentSensorsData={currentSensorsData}
+                  isScreen={false}
+                  temperatureUnitPreference={temperatureUnitPreference}
+                  showHeatIndex={currentSchoolID === KAMPALA && false}
+                  showWeather={currentSchoolID === KAMPALA && false}
+                />
+              </Box>
             )
-          }
-
-          {schoolMetadata?.has_map === false &&
-            (<Box textAlign="center" sx={{ mb: 2 }}>
-              <CurrentAQIGrid
-                currentSensorsData={currentSensorsData}
-                isScreen={false}
-                temperatureUnitPreference={temperatureUnitPreference}
-                showHeatIndex={currentSchoolID === KAMPALA && false}
-                showWeather={currentSchoolID === KAMPALA && false}
-              />
-            </Box>)
           }
 
           <ProjectDescription />

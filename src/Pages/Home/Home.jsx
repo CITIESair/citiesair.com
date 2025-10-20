@@ -28,9 +28,10 @@ import { NYUAD } from '../../Utils/GlobalVariables';
 import AtAGlance from './AtAGlance';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
 import { UserContext } from '../../ContextProviders/UserContext';
-import NYUADbanner from '../Embeds/NYUADbanner';
 import OutdoorStationUAE from '../../Components/AirQuality/AirQualityMap/OutdoorStationUAE';
 import useCurrentSensorsData from '../../hooks/useCurrentSensorsData';
+import CurrentAQIMapWithGrid from '../../Components/AirQuality/CurrentAQI/CurrentAQIMapWithGrid';
+import useSchoolMetadata from '../../hooks/useSchoolMetadata';
 
 function Home({ temperatureUnitPreference, title }) {
   // Update the page's title
@@ -48,6 +49,7 @@ function Home({ temperatureUnitPreference, title }) {
 
   const { currentSchoolID } = useContext(DashboardContext);
   const { data: currentSensorsData } = useCurrentSensorsData();
+  const { data: schoolMetadata } = useSchoolMetadata();
   const { authenticationState } = useContext(UserContext);
 
   const displaySensorCounts = () => {
@@ -163,10 +165,11 @@ function Home({ temperatureUnitPreference, title }) {
 
           <Grid container spacing={2} justifyContent="center" textAlign="center">
 
-            {
-              (currentSchoolID === NYUAD || currentSchoolID === null || currentSchoolID === undefined) ? (
-                <NYUADbanner
-                  initialNyuadCurrentData={currentSensorsData}
+            {schoolMetadata?.has_map === true ?
+              (
+                <CurrentAQIMapWithGrid
+                  currentSensorsData={currentSensorsData}
+                  schoolID={currentSchoolID || NYUAD}
                   isOnBannerPage={false}
                   disableInteraction={true}
                   minMapHeight={"250px"}
