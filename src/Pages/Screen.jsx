@@ -1,6 +1,6 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useState, useEffect, useContext } from 'react';
+import { useEffect, useContext } from 'react';
 import { useParams } from "react-router-dom";
 
 import { Box, Grid, Typography, Stack } from '@mui/material';
@@ -41,6 +41,7 @@ const Screen = ({ title }) => {
   const { school_id_param, screen_id_param } = useParams()
   const { data: schoolMetadata } = useSchoolMetadata();
   const school_id = school_id_param || currentSchoolID;
+  const screen_id = screen_id_param || "screen";
   const aggregationType = school_id === KAMPALA ? AggregationType.hour : null;
 
   const url = getApiUrl({
@@ -51,7 +52,7 @@ const Screen = ({ title }) => {
   });
 
   const { data } = useQuery({
-    queryKey: ['screenSensorsData', school_id, screen_id_param],
+    queryKey: ['screenSensorsData', school_id, screen_id],
     queryFn: async () => {
       const screenData = await fetchAndProcessCurrentSensorsData(url, aggregationType);
 
@@ -71,7 +72,7 @@ const Screen = ({ title }) => {
     refetchInterval: CURRENT_DATA_EXPIRATION_TIME_MS,
     refetchOnWindowFocus: true,
     staleTime: CURRENT_DATA_EXPIRATION_TIME_MS,
-    enabled: Boolean(school_id && screen_id_param),
+    enabled: Boolean(school_id && screen_id),
     placeholderData: (prev) => prev,
   });
   const { screenData, screenType } = data || { screenType: TypesOfScreen.indoorsVsOutdoors };
