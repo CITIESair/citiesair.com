@@ -54,7 +54,7 @@ const Screen = ({ title }) => {
   const { data } = useQuery({
     queryKey: ['screenSensorsData', school_id, screen_id],
     queryFn: async () => {
-      const screenData = await fetchAndProcessCurrentSensorsData(url, aggregationType);
+      const screenData = await fetchAndProcessCurrentSensorsData({ url, aggregationType });
 
       // Determine the type of screen
       const hasOutdoor = screenData.some(({ sensor }) => sensor.location_type === "outdoors");

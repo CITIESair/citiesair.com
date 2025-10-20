@@ -88,9 +88,9 @@ export const fetchDataFromURL = async ({
   }
 };
 
-export const fetchAndProcessCurrentSensorsData = async (apiUrl, aggregationType = null) => {
+export const fetchAndProcessCurrentSensorsData = async ({ url, aggregationType = null }) => {
   try {
-    const data = await fetchDataFromURL({ url: apiUrl });
+    const data = await fetchDataFromURL({ url });
 
     if (!data) {
       throw new Error('Returned data is empty');

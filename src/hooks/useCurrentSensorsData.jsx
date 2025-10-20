@@ -19,7 +19,10 @@ const useCurrentSensorsData = (schoolID = null) => {
                 school_id: schoolID || currentSchoolID
             });
 
-            return fetchAndProcessCurrentSensorsData(url, currentSchoolID === KAMPALA ? AggregationType.hour : null)
+            return fetchAndProcessCurrentSensorsData({
+                url,
+                aggregationType: currentSchoolID === KAMPALA ? AggregationType.hour : null
+            });
         },
         enabled: !!currentSchoolID, // only run when ready
         staleTime: CURRENT_DATA_EXPIRATION_TIME_MS,
