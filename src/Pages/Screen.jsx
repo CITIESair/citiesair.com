@@ -181,9 +181,9 @@ const Screen = ({ title }) => {
               temperatureUnitPreference={temperatureUnitPreference}
               isScreen={true}
               size={CurrentAQIGridSize.large}
-              showWeather={currentSchoolID === KAMPALA ? false : true}
-              showHeatIndex={currentSchoolID === KAMPALA ? false : true}
-              showLastUpdate={currentSchoolID === KAMPALA ? true : false}
+              showWeather={school_id === KAMPALA ? false : true}
+              showHeatIndex={school_id === KAMPALA ? false : true}
+              showLastUpdate={school_id === KAMPALA ? true : false}
             />
           </Grid>
 
@@ -217,7 +217,7 @@ const Screen = ({ title }) => {
               {CITIESair}
             </Typography>
             {
-              currentSchoolID === KAMPALA && (
+              school_id === KAMPALA && (
                 <Typography variant="h5" color="text.secondary">
                   {getTranslation(sectionData.screen.content.dataProvider, language)}: AirQo
                 </Typography>
@@ -227,7 +227,10 @@ const Screen = ({ title }) => {
 
           <Grid item xs={2}>
             <Box height="auto" width="90%">
-              <ScreenQRcode />
+              {
+                school_id !== KAMPALA &&
+                <ScreenQRcode />
+              }
             </Box>
           </Grid>
           <Grid
