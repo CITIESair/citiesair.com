@@ -6,7 +6,7 @@ import { AQI_Database } from '../../../Utils/AirQuality/AirQualityIndexHelper';
 import { SensorStatus } from '../SensorStatus';
 import { Box } from '@mui/material';
 
-import { areDOMOverlapped } from './ScreenUtils';
+import { areDOMOverlapped, TypesOfScreen } from './ScreenUtils';
 
 import { capitalizePhrase, getTranslation } from '../../../Utils/UtilFunctions';
 import { INACTIVE_SENSOR_COLORS } from '../../../Themes/CustomColors';
@@ -17,7 +17,7 @@ import AggregationType from '../../DateRangePicker/AggregationType';
 const numberOfHoursForHistoricalData = 6;
 
 const RecentHistoricalGraph = (props) => {
-  const { data } = props;
+  const { typeOfScreen, data } = props;
   const { language } = useContext(PreferenceContext);
   const theme = useTheme();
 
@@ -193,9 +193,9 @@ const RecentHistoricalGraph = (props) => {
       .attr('stroke-width', 2)
       .attr('opacity', 0.5);
 
-    Object.entries(data).forEach(([key, sensorData]) => {
+    Object.entries(data).forEach(([_, sensorData], index) => {
       // 7.1. Append the line chart for this location
-      d3.select(layerLines.current)
+      const path = d3.select(layerLines.current)
         .append("path")
         .datum(sensorData.historical || [])
         .attr("x", margin.left)
@@ -203,8 +203,12 @@ const RecentHistoricalGraph = (props) => {
         .attr("d", lineGenerator)
         .attr("fill", "transparent")
         .attr("stroke", "black")
-        .attr("stroke-width", "5px")
-        .attr("opacity", sensorData.sensor?.location_type === "outdoors" ? 1 : 0.5);
+        .attr("stroke-width", "5px");
+      if (typeOfScreen === TypesOfScreen.indoorsVsOutdoors) {
+        path.attr("opacity", sensorData.sensor?.location_type === "outdoors" ? 1 : 0.5);
+      } else {
+        path.attr("opacity", index % 2 === 0 ? 1 : 0.5);
+      }
 
       // 7.2. Append the circle marker at the end of this line chart to denote its liveness
       const mostRecentData = sensorData.historical?.length > 0 ? sensorData.historical?.[0] : null;

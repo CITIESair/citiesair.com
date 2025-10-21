@@ -52,7 +52,7 @@ const Screen = ({ title }) => {
   });
 
   const { data } = useQuery({
-    queryKey: ['screenSensorsData', school_id, screen_id],
+    queryKey: [GeneralAPIendpoints.screen, school_id, screen_id],
     queryFn: async () => {
       const screenData = await fetchAndProcessCurrentSensorsData({ url, aggregationType });
 
@@ -237,7 +237,7 @@ const Screen = ({ title }) => {
             className='condensedFont'
             sx={{ '& *': { fontWeight: '600 !important' } }}
           >
-            <RecentHistoricalGraph data={screenData} />
+            <RecentHistoricalGraph typeOfScreen={screenType} data={screenData} />
           </Grid>
         </Grid>
 
