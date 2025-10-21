@@ -1,4 +1,4 @@
-import { CrudTypes } from '../Utils';
+import { CrudTypes } from '../AlertUtils';
 
 export const DialogData = {
   [CrudTypes.add]: {

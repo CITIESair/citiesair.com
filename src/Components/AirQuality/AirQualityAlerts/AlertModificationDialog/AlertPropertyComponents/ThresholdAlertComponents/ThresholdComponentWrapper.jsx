@@ -1,12 +1,13 @@
 import { ThresholdSlider } from "./ThresholdSlider";
 import { DataTypeKeys, DataTypes } from "../../../../../../Utils/AirQuality/DataTypes";
-import { AirQualityAlertKeys, useAirQualityAlert } from "../../../../../../ContextProviders/AirQualityAlertContext";
 import { AQI_Database, HeatIndex_Database, VOC_Database } from "../../../../../../Utils/AirQuality/AirQualityIndexHelper";
 import { useTheme } from '@mui/material';
 import { generateCssBackgroundGradient } from "../../../../../../Utils/Gradient/GradientUtils";
 import { getTranslation } from "../../../../../../Utils/UtilFunctions";
 import { useContext } from "react";
 import { PreferenceContext } from "../../../../../../ContextProviders/PreferenceContext";
+import { AirQualityAlertKeys } from "../../../AlertUtils";
+import { AirQualityAlertContext } from "../../../../../../ContextProviders/AirQualityAlertContext";
 
 export const ThresholdComponentWrapper = (props) => {
     const {
@@ -18,9 +19,9 @@ export const ThresholdComponentWrapper = (props) => {
         showTip = true
     } = props;
 
-    const { editingAlert } = useAirQualityAlert();
-    const theme = useTheme();
+    const { editingAlert } = useContext(AirQualityAlertContext);
     const { language } = useContext(PreferenceContext);
+    const theme = useTheme();
 
     let thresholdSlider = null;
 

@@ -1,31 +1,22 @@
 import { useContext, useState } from 'react';
 import { Box, Button, IconButton, Stack, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, Alert, Grow, Switch, Chip } from '@mui/material';
-
 import EditIcon from '@mui/icons-material/Edit';
 import AddAlarmIcon from '@mui/icons-material/AddAlarm';
-
 import { useTheme } from '@mui/material';
-import { AirQualityAlertKeys, getAlertDefaultPlaceholder, useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
-
 import AlertTypes from './AlertTypes';
 import { ThresholdAlertTypes } from './AlertTypes';
-
 import { isValidArray } from '../../../Utils/UtilFunctions';
 import AlertModificationDialog from './AlertModificationDialog/AlertModificationDialog';
-
-import { CrudTypes, SharedColumnHeader } from './Utils';
+import { AirQualityAlertKeys, CrudTypes, getAlertDefaultPlaceholder, SharedColumnHeader } from './AlertUtils';
 import { TransitionGroup } from 'react-transition-group';
-
-import { fetchDataFromURL } from '../../../API/ApiFetch';
-import { GeneralAPIendpoints, RESTmethods } from '../../../API/Utils';
-import { DashboardContext } from '../../../ContextProviders/DashboardContext';
 import { SnackbarMetadata } from '../../../Utils/SnackbarMetadata';
-import { getAlertsApiUrl } from '../../../API/ApiUrls';
 import { useSnackbar } from 'notistack';
 import { UserRoles } from '../../Account/Utils';
 import { DataTypes } from '../../../Utils/AirQuality/DataTypes';
 import { DAYS_OF_WEEK } from './AlertModificationDialog/AlertPropertyComponents/DAYS_OF_WEEK';
 import { returnHoursFromMinutesPastMidnight } from '../../TimeRange/TimeRangeUtils';
+import { useEditAlertMutation } from '../../../hooks/alerts/useEditAlertMutation';
+import { AirQualityAlertContext } from '../../../ContextProviders/AirQualityAlertContext';
 
 const returnDaysOfWeekString = (days_of_week) => {
   if (!days_of_week || !isValidArray(days_of_week)) return "N/A";
@@ -61,12 +52,9 @@ const returnAlertNotModifiableString = (owner_role, is_allowed_to_modify) => {
 };
 
 const AlertsTable = (props) => {
-  const { selectedAlert, setSelectedAlert, setAlerts, addChildToAlerts } = useAirQualityAlert();
-  const { currentSchoolID } = useContext(DashboardContext);
+  const { selectedAlert, setSelectedAlert } = useContext(AirQualityAlertContext);
   const { enqueueSnackbar } = useSnackbar()
-
   const { alertTypeKey, alertsForTable } = props;
-
   const theme = useTheme();
 
   const [openAlertModificationDialog, setOpenAlertModificationDialog] = useState(false);
@@ -83,33 +71,42 @@ const AlertsTable = (props) => {
     setSelectedAlert(getAlertDefaultPlaceholder(alertTypeKey));
   }
 
-  const handleEnableClick = ({ alert }) => {
+  const editAlertMutation = useEditAlertMutation();
+  const handleAlertEnableToggling = (alert) => {
+    if (alert[AirQualityAlertKeys.is_allowed_to_modify] === false) {
+      enqueueSnackbar(
+        returnAlertNotModifiableString(
+          alert[AirQualityAlertKeys.owner_role],
+          alert[AirQualityAlertKeys.is_allowed_to_modify]
+        ),
+        SnackbarMetadata.warning
+      );
+      return;
+    }
+
     const currentIsEnabled = alert[AirQualityAlertKeys.is_enabled];
     const newIsEnabled = !currentIsEnabled;
 
-    fetchDataFromURL({
-      url: getAlertsApiUrl({
-        endpoint: GeneralAPIendpoints.alerts,
-        school_id: currentSchoolID,
-        alert_id: alert[AirQualityAlertKeys.id]
-      }),
-      restMethod: RESTmethods.PUT,
-      body: {
-        ...alert,
-        [AirQualityAlertKeys.is_enabled]: newIsEnabled
+    editAlertMutation.mutate(
+      {
+        alertToEdit: {
+          ...alert,
+          [AirQualityAlertKeys.is_enabled]: newIsEnabled
+        }
+      },
+      {
+        onSuccess: () =>
+          enqueueSnackbar(
+            `This alert is now ${newIsEnabled ? "enabled" : "disabled"}`,
+            SnackbarMetadata.success
+          ),
+        onError: (error) =>
+          enqueueSnackbar(
+            error?.message || `There was an error ${newIsEnabled ? "enabling" : "disabling"} this alert, try again!`,
+            SnackbarMetadata.error
+          )
       }
-    }).then((data) => {
-      setAlerts(prevAlerts => {
-        const updatedAlerts = prevAlerts.map(prevAlert =>
-          prevAlert[AirQualityAlertKeys.id] === alert[AirQualityAlertKeys.id] ? data : prevAlert
-        )
-        return addChildToAlerts(updatedAlerts);
-      }
-      );
-      enqueueSnackbar(`This alert will be ${newIsEnabled ? "enabled" : "disabled"}`, SnackbarMetadata.success);
-    }).catch((error) => {
-      enqueueSnackbar(error.message || `There was an error ${newIsEnabled ? "enabling" : "disabling"} this alert, try again!`, SnackbarMetadata.error);
-    });
+    );
   }
 
   return (
@@ -166,19 +163,12 @@ const AlertsTable = (props) => {
                               {/* Wrap <Switch> in a <span> so that <Tooltip> will still display even if it's disabled */}
                               <span
                                 onClick={() => {
-                                  if (alert[AirQualityAlertKeys.is_allowed_to_modify] === false) {
-                                    enqueueSnackbar(
-                                      returnAlertNotModifiableString(alert[AirQualityAlertKeys.owner_role], alert[AirQualityAlertKeys.is_allowed_to_modify]),
-                                      SnackbarMetadata.warning
-                                    );
-                                    return;
-                                  }
-                                  handleEnableClick({ alert });
+                                  handleAlertEnableToggling(alert)
                                 }}
                                 style={{ display: 'inline-block' }}
                               >
                                 <Switch
-                                  size='small'
+                                  size="small"
                                   disabled={alert[AirQualityAlertKeys.is_allowed_to_modify] === false}
                                   checked={alert[AirQualityAlertKeys.is_enabled]}
                                 />
@@ -291,7 +281,7 @@ const AlertsTable = (props) => {
         >
           Add Alert
         </Button>
-      </Stack>
+      </Stack >
 
       <AlertModificationDialog
         alertTypeKey={alertTypeKey}

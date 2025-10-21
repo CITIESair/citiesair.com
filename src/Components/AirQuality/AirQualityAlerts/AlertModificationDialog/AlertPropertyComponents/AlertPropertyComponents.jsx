@@ -1,10 +1,9 @@
-import { AirQualityAlertKeys, getAlertDefaultPlaceholder, useAirQualityAlert } from "../../../../../ContextProviders/AirQualityAlertContext";
 import AlertTypes, { ThresholdAlertTypes } from "../../AlertTypes";
 import { SimplePicker } from "./SimplePicker";
 
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PlaceIcon from '@mui/icons-material/Place';
-import { SharedColumnHeader } from "../../Utils";
+import { AirQualityAlertKeys, getAlertDefaultPlaceholder, SharedColumnHeader } from "../../AlertUtils";
 import TimeRangeSelector from "../../../../TimeRange/TimeRangeSelector";
 import { DataTypes } from "../../../../../Utils/AirQuality/DataTypes";
 import { capitalizePhrase } from "../../../../../Utils/UtilFunctions";
@@ -20,6 +19,8 @@ import { MaxOnceADayCheckbox } from "./MaxOnceADayCheckbox";
 import { ThresholdType, ThresholdTypeToggle } from "./ThresholdAlertComponents/ThresholdTypeToggle";
 
 import useSchoolMetadata from "../../../../../hooks/useSchoolMetadata";
+import { useContext } from "react";
+import { AirQualityAlertContext } from "../../../../../ContextProviders/AirQualityAlertContext";
 
 const returnFormattedStatusString = (editingAlert) => {
     const status = editingAlert[AirQualityAlertKeys.is_enabled] ? "enabled" : "disabled";
@@ -30,7 +31,7 @@ const returnFormattedStatusString = (editingAlert) => {
 
 export const AlertPropertyComponents = ({ alertTypeKey, crudType }) => {
     const { data: schoolMetadata } = useSchoolMetadata();
-    const { editingAlert, allowedDataTypesForSensor, setEditingAlert } = useAirQualityAlert();
+    const { editingAlert, allowedDataTypesForSensor, setEditingAlert } = useContext(AirQualityAlertContext);
 
     const theme = useTheme();
 

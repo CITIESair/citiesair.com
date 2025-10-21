@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Box, Tab, useMediaQuery } from '@mui/material';
 
 import StyledTabs from '../../StyledTabs';
 import AlertsTable from './AlertsTable';
 
-import { AirQualityAlertKeys, getAlertDefaultPlaceholder, useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
 import AlertTypes from './AlertTypes';
 import { isValidArray } from '../../../Utils/UtilFunctions';
+import { AirQualityAlertKeys, getAlertDefaultPlaceholder } from './AlertUtils';
+import { AirQualityAlertContext } from '../../../ContextProviders/AirQualityAlertContext';
+import { useAlerts } from '../../../hooks/alerts/useAlerts';
 
 function AlertTab(props) {
   const { children, value, index, alertType, alertsArray, ...other } = props;
@@ -29,19 +31,17 @@ function AlertTab(props) {
 }
 
 export default function AlertsTabs() {
+  const { setSelectedAlert } = useContext(AirQualityAlertContext);
+  const { data: alerts } = useAlerts();
+
   const smallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
   const [currentTab, setCurrentTab] = useState(0);
-
-  const { setSelectedAlert } = useAirQualityAlert();
-
   const handleTabChange = (_, newVal) => {
     setCurrentTab(newVal);
     setSelectedAlert(
       getAlertDefaultPlaceholder(AlertTypes[Object.keys(AlertTypes)?.[newVal]]?.id)
     );
   };
-
-  const { alerts } = useAirQualityAlert();
 
   // Helper function to return filered alert:
   // - based on alert_type (threshold or daily, depends on which alert tab is visible)
