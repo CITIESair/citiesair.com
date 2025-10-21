@@ -29,6 +29,6 @@ export const getDashboardLabel = (user, schoolID = null) => {
                 return `Dashboard (${user.email})`;
             }
         default:
-            return `${user.username.toUpperCase()}'s Dashboard`;
+            return `${user?.username?.toUpperCase()}'s Dashboard`;
     }
 };

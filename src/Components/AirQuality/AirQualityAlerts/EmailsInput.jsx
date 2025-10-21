@@ -20,7 +20,7 @@ const EmailsInput = () => {
 
   const { currentSchoolID } = useContext(DashboardContext);
   const { data: alertEmails = [] } = useQuery({
-    queryKey: ['alertEmails', currentSchoolID],
+    queryKey: [GeneralAPIendpoints.alertsEmails, currentSchoolID],
     queryFn: async () => {
       const url = getApiUrl({
         endpoint: GeneralAPIendpoints.alertsEmails,
@@ -51,7 +51,7 @@ const EmailsInput = () => {
     },
     onSuccess: (data) => {
       // Update cache immediately so UI updates without refetch
-      queryClient.setQueryData(['alertEmails', currentSchoolID], data);
+      queryClient.setQueryData([GeneralAPIendpoints.alertsEmails, currentSchoolID], data);
       enqueueSnackbar('Email recipients saved successfully.', SnackbarMetadata.success);
     },
     onError: () => {

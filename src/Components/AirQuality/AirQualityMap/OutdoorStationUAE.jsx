@@ -9,7 +9,7 @@ import { GeneralAPIendpoints } from '../../../API/Utils';
 
 const OutdoorStationUAE = ({ overridenThemePreference }) => {
     const { data: publicMapData } = useQuery({
-        queryKey: ['publicMapData'],
+        queryKey: [GeneralAPIendpoints.map],
         queryFn: async () => {
             const url = getApiUrl({ endpoint: GeneralAPIendpoints.map });
             return fetchAndProcessCurrentSensorsData({ url });

@@ -12,7 +12,7 @@ const useCurrentSensorsData = (schoolID = null) => {
     const { currentSchoolID } = useContext(DashboardContext);
 
     return useQuery({
-        queryKey: ['currentSensorsData', schoolID || currentSchoolID],
+        queryKey: [GeneralAPIendpoints.current, schoolID || currentSchoolID],
         queryFn: async () => {
             const url = getApiUrl({
                 endpoint: GeneralAPIendpoints.current,

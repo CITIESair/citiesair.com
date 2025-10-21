@@ -64,7 +64,7 @@ const ByTheNumber = (props) => {
 
 const AtAGlance = () => {
   const { data: stats } = useQuery({
-    queryKey: ['stats'],
+    queryKey: [GeneralAPIendpoints.stats],
     queryFn: async () => {
       const url = getApiUrl({ endpoint: GeneralAPIendpoints.stats });
       return fetchDataFromURL({ url });

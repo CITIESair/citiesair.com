@@ -10,7 +10,7 @@ const useSchoolMetadata = () => {
     const { currentSchoolID } = useContext(DashboardContext);
 
     return useQuery({
-        queryKey: ['schoolMetadata', currentSchoolID],
+        queryKey: [GeneralAPIendpoints.schoolmetadata, currentSchoolID],
         queryFn: async () => {
             const url = getApiUrl({
                 endpoint: GeneralAPIendpoints.schoolmetadata,
