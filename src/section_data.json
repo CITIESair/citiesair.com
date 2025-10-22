@@ -1,19 +1,21 @@
 {
-    "siteDescription": "Providing real-time indoor and outdoor air quality data to schools in Abu Dhabi and beyond since 2021<br/>Empowering data-driven decision-making and designing informed policies to safeguard school communities",
+    "siteDescription": "Providing real-time indoor and outdoor air quality data to educational institutions in Abu Dhabi and beyond since 2021<br/>Empowering data-driven decision-making and designing informed policies to safeguard communities",
     "login": {
         "id": "login",
         "title": "Login",
         "content": {
-            "school": "Login with the provided credentials to access your school private dashboard. Contact us if you don't have the credentials",
-            "nyuad": "Login with your email or <i>Google</i> to your manage air quality alerts and download raw datasets in the NYUAD dashboard"
+            "school": "Login with the provided credentials to access your institution’s private dashboard. Contact us if you don’t have the credentials",
+            "individual": "Login with your email or <i>Google</i> to your manage air quality alerts and download raw datasets in the NYUAD dashboard",
+            "exception": "Don't have an account?"
         }
     },
     "signup": {
         "id": "signup",
         "title": "Sign up",
         "content": {
-            "school": "Self sign up is currently not available for schools. Contact us for an account to access your school private dashboard.",
-            "nyuad": "Create a personal account to manage air quality alerts and download raw datasets in the NYUAD dashboard."
+            "school": "Self sign up is currently not available for (educational) institutions. Contact us for an account to access your institution’s private dashboard.",
+            "individual": "Create a personal account to manage air quality alerts and download raw datasets in the NYUAD dashboard.",
+            "exception": "Already have an account?"
         }
     },
     "charts": {
@@ -29,7 +31,7 @@
                 "mainText": "<b><a href='https://sites.nyuad.nyu.edu/cities/'>The Center for Interacting Urban Networks (CITIES)</a></b> at NYUAD is an interdisciplinary research center dedicated to advance urban science and promote cutting-edge research that is translated into real-world solutions benefiting the society. Our ultimate goal is to foster sustainable, resilient, and equitable cities. To test and showcase its research in real life, CITIES uses the NYUAD campus as a field lab."
             },
             {
-                "mainText": "Air pollution is among the 4th leading factors for premature death, claiming over 6 million lives worldwide in 2019 [1]. Microscopic particulate matter smaller than 2.5 micrometers (PM2.5) can penetrate and lodge into the lungs and internal organs, causing respiratory and cardiovascular diseases [2, 3]. Several countries worldwide experience prolonged periods of PM2.5 concentrations for different reasons. The UAE, in particular, is susceptible to periods of high PM2.5 concentrations due to its exposed desert geographical topography, anthropogenic emissions, and industrial activities.<br/><br/><b>CITIESair</b> is an integrated system of air quality devices and specialized software designed for educational institutions in Abu Dhabi. CITIESair's mission is to empower data-driven decision-making and the design of informed policies to safeguard school communities from outdoor air pollution. This project responds to CITIES' strategic objective of promoting sustainable living, improving the overall well-being of Abu Dhabi citizens, and contributing to the UAE’s efforts to reduce air pollution’s mortality rate from 64.8 in 2017 to 60.2 per 100,000 people by 2030 - <a href='https://gggi.org/uae-national-air-quality-strategy-2021-2031-stakeholders-workshop/'>UAE National Air Quality Strategy (2021-2031)</a>.<br/><br/><b>CITIESair</b> achieves this by equipping schools with data-driven tools to safeguard students, educators, and staff from outdoor air pollution, such as the historical dashboard, offering detailed data analytics and visualizations for hourly, daily, and monthly trends. Each school receives a set of commercial indoor and outdoor air quality sensors, enabling real-time outdoor vs. indoor comparison and encouraging the expansion of indoor sensor coverage for comprehensive indoor air quality monitoring on campuses.<br/><br/> In Fall 2023, <b>CITIESair</b> forged a strategic partnership with <a href='https://www.iqair.com/'>IQAir</a>, a global leader in air quality. This collaboration allows CITIESair to <a href='https://www.iqair.com/profile/6ra7i359e'>share</a> outdoor air quality data on the world's leading website to benefit local communities. Additionally, it offers expert industry support and provides cutting-edge air quality sensors and purifiers for school air quality initiatives.",
+                "mainText": "Air pollution is among the 4th leading factors for premature death, claiming over 6 million lives worldwide in 2019 [1]. Microscopic particulate matter smaller than 2.5 micrometers (PM2.5) can penetrate and lodge into the lungs and internal organs, causing respiratory and cardiovascular diseases [2, 3]. Several countries worldwide experience prolonged periods of PM2.5 concentrations for different reasons. The UAE, in particular, is susceptible to periods of high PM2.5 concentrations due to its exposed desert geographical topography, anthropogenic emissions, and industrial activities.<br/><br/><b>CITIESair</b> is an integrated system of air quality devices and specialized software designed for institutions in Abu Dhabi. Started with educational institutions, we aim to expand to others such as residential communities and offices. CITIESair’s mission is to empower data-driven decision-making and the design of informed policies to safeguard communities from air pollution. This project responds to CITIES’ strategic objective of promoting sustainable living, improving the overall well-being of Abu Dhabi citizens, and contributing to the UAE’s efforts to reduce air pollution's mortality rate from 64.8 in 2017 to 60.2 per 100,000 people by 2030 - <a href='https://gggi.org/uae-national-air-quality-strategy-2021-2031-stakeholders-workshop/'>UAE National Air Quality Strategy (2021-2031)</a>.<br/><br/><b>CITIESair</b> achieves this by equipping each participating institution a set of commercial-grade indoor and outdoor air quality sensors, enabling real-time comparisons and encouraging the expansion of indoor sensor coverage for comprehensive indoor air quality monitoring. Complementing these sensors are historical dashboards that provide detailed analytics and visualizations of hourly, daily, and monthly trends. Together, CITIESair’ tools empower institutions to make data-driven decisions that safeguard their communities from the impacts of outdoor air pollution, students, educators, and employees alike.<br/><br/> Since Fall 2023, <b>CITIESair</b> has forged a strategic partnership with <a href='https://www.iqair.com/'>IQAir</a>, a global leader in air quality. This collaboration allows CITIESair to <a href='https://www.iqair.com/profile/6ra7i359e'>share</a> outdoor air quality data on the world's leading website to benefit local communities. Additionally, it offers expert industry support and provides cutting-edge air quality sensors and purifiers for indoor air purification initiatives.",
                 "reference": "[1] Health Effects Institute. 2020. State of Global Air 2020. Special Report. Boston, MA:Health Effects Institute. <a href='https://www.stateofglobalair.org/sites/default/files/documents/2022-09/soga-2020-report.pdf'>https://www.stateofglobalair.org/sites/default/files/documents/2022-09/soga-2020-report.pdf</a>.<br/>[2] Li, Donghai, et al. “Fluorescent Reconstitution on Deposition of PM 2.5 in Lung and Extrapulmonary Organs.” Proceedings of the National Academy of Sciences, vol. 116, no. 7, 2019, pp. 2488-93, <a href='https://doi.org/10.1073/pnas.1818134116'>https://doi.org/10.1073/pnas.1818134116</a>.<br/>[3] Xing, Yu-Fei et al. “The impact of PM2.5 on the human respiratory system.” Journal of thoracic disease vol. 8,1 (2016): E69-74. <a href='doi:10.3978/j.issn.2072-1439.2016.01.19'>doi:10.3978/j.issn.2072-1439.2016.01.19</a>"
             }
         ]
@@ -44,11 +46,11 @@
     },
     "publicOutdoorStations": {
         "id": "public-outdoor-stations",
-        "content": "<b>CITIESair public outdoor air quality sensors</b> can be found in the map below and on IQAir, the world's most popular air quality monitoring platform, to make data publicly available to the surrounding community, teachers, staff, and parents. The map below does not display indoor sensors in participating schools to protect their privacy. "
+        "content": "<b>CITIESair public outdoor air quality sensors</b> can be found in the map below and on IQAir, the world's most popular air quality monitoring platform, to make data publicly available to the surrounding communities. The map below does not display indoor sensors in participating institutions to protect their privacy. "
     },
     "getInTouch": {
         "id": "get-in-touch",
-        "content": "<b>CITIESair</b> is expanding its monitoring network to encompass more schools in Abu Dhabi. If you are interested in joining our network, please contact us:<br/><ul><li><b>Dr. Federico Bernardini</b> (CITIES Investigator): <a href='mailto:bernardini@nyu.edu'>bernardini@nyu.edu</a></li><li><b>Vince Nguyen</b> (CITIES Research Assistant): <a href='mailto:bernardini@nyu.edu'>vince.nguyen@nyu.edu</a></li></ul>"
+        "content": "<b>CITIESair</b> is expanding its monitoring network to encompass more institutions in the UAE. Contact us if you are interested in joining:<br/><ul><li><b>Dr. Federico Bernardini</b> (<a href='https://cbid.org/'>C-BID</a> Associate Director and CITIES Investigator): <a href='mailto:bernardini@nyu.edu'>bernardini@nyu.edu</a></li><li><b>Vince Nguyen</b> (CITIES Research Assistant): <a href='mailto:bernardini@nyu.edu'>vince.nguyen@nyu.edu</a></li></ul>"
     },
     "promos": [
         {
@@ -87,8 +89,8 @@
         "content": [
             {
                 "id": "schools",
-                "text": "schools",
-                "icon": "SchoolIcon"
+                "text": "institutions",
+                "icon": "AssuredWorkloadIcon"
             },
             {
                 "id": "students",
@@ -120,7 +122,7 @@
             },
             "dataProvider": {
                 "en": "Data provider",
-                "lg": "Ensibuko yo’bubaka"
+                "lg": "Ensibuko yo'bubaka"
             },
             "indoorsVsOutdoors": {
                 "en": "Indoor air is {{value}} better than outdoor air",

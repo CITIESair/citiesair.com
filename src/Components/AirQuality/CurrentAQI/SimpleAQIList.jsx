@@ -1,6 +1,7 @@
 import { Box, Grid, Skeleton, Stack, Typography, useTheme } from "@mui/material";
 import { CurrentAQIGridSize, ElementSizes } from "./CurrentAQIGridSize";
 import { returnLocationName } from "./AQIGridUtils";
+import { SensorStatus } from "../SensorStatus";
 
 const displayAQI = ({ aqi, category, showCategory }) => {
     if (!aqi) return "--";
@@ -63,7 +64,7 @@ const SimpleAQIList = (props) => {
                                 <Box
                                     component="span"
                                     color={
-                                        (sensorData?.current?.aqi?.categoryIndex !== null && sensorData.sensor?.sensor_status) ?
+                                        (sensorData?.current?.aqi?.categoryIndex !== null && sensorData.sensor?.sensor_status === SensorStatus.active) ?
                                             theme.palette.text.aqi[sensorData?.current?.aqi?.categoryIndex] :
                                             'text.secondary'
                                     }

@@ -5,6 +5,7 @@ import { GeneralAPIendpoints } from "../API/Utils";
 import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
 import { EMPTY_USER_DATA } from '../Utils/GlobalVariables';
 import { useSnackbar } from 'notistack';
+import { UserRoles } from '../Components/Account/Utils';
 
 export const UserContext = createContext();
 
@@ -15,9 +16,7 @@ export function UserProvider({ children }) {
   })
 
   const [user, setUser] = useState(EMPTY_USER_DATA);
-
-  // School (private) or NYUAD (can register new account publicly)
-  const [isSchoolForLogin, setIsSchoolForLogin] = useState(true);
+  const [userRole, setUserRole] = useState(UserRoles.school.id);
 
   const { enqueueSnackbar } = useSnackbar()
 
@@ -46,8 +45,8 @@ export function UserProvider({ children }) {
   const providerValue = useMemo(() => ({
     authenticationState, setAuthenticationState,
     user, setUser,
-    isSchoolForLogin, setIsSchoolForLogin
-  }), [user, authenticationState, isSchoolForLogin]);
+    userRole, setUserRole
+  }), [user, authenticationState, userRole]);
 
   useEffect(() => {
     // If the user is authenticated but unverified, show it via SnackbarNotification

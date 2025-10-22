@@ -1,10 +1,6 @@
-// disable eslint for this file
-/* eslint-disable */
 import { useState, useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
-
-import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper, Divider, Grid, Stack } from "@mui/material";
-
+import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper, Divider, Stack } from "@mui/material";
 import { UserContext } from '../../ContextProviders/UserContext';
 import { getApiUrl } from '../../API/ApiUrls';
 import { GeneralAPIendpoints } from "../../API/Utils";
@@ -14,10 +10,10 @@ import { fetchDataFromURL } from '../../API/ApiFetch';
 import { RESTmethods } from "../../API/Utils";
 import { MetadataContext } from '../../ContextProviders/MetadataContext';
 import GoogleOAuthButtonAndPopupHandler from './OAuth/GoogleOAuthButtonAndPopupHandler';
-import { LoginTypes } from './Utils';
-
+import { LoginTypes, UserRoles } from './Utils';
 import { useSnackbar } from "notistack";
 import UserTypeSelector from './UserTypeSelector';
+import sectionData from "../../section_data.json";
 
 export default function Login() {
   const { enqueueSnackbar } = useSnackbar()
@@ -30,15 +26,15 @@ export default function Login() {
       setIsPopupItself(true);
       enqueueSnackbar("You must be logged in to access this functionality.", SnackbarMetadata.info);
     }
-  }, []);
+  }, [enqueueSnackbar]);
 
   const navigate = useNavigate();
 
-  const { setUser, authenticationState, setAuthenticationState, isSchoolForLogin } = useContext(UserContext);
+  const { setUser, authenticationState, setAuthenticationState, userRole } = useContext(UserContext);
 
   useEffect(() => {
     if (authenticationState.authenticated && authenticationState.checkedAuthentication) navigate("/");
-  }, [authenticationState]);
+  }, [authenticationState, navigate]);
 
   const { setCurrentPage } = useContext(MetadataContext);
 
@@ -118,97 +114,93 @@ export default function Login() {
       <Paper sx={{ p: 3 }} elevation={3}>
         <Stack direction="column" gap={3}>
           <Typography variant="h5" fontWeight={500}>
-            Login
+            {sectionData.login.title}
           </Typography>
 
           <UserTypeSelector route={AppRoutes.login} />
-          {
-            isSchoolForLogin === null ? null :
+
+          <Box component="form" onSubmit={handleSubmit} noValidate>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="username"
+              label={UserRoles[userRole]?.loginLabels.username}
+              name="username"
+              autoComplete="username"
+              onChange={e => setUserName(e.target.value)}
+              sx={{ mt: 0, mb: 1 }}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label={UserRoles[userRole]?.loginLabels.password}
+              type="password"
+              id="password"
+              autoComplete="current-password"
+              onChange={e => setPassword(e.target.value)}
+              sx={{ my: 1 }}
+            />
+            <FormControlLabel
+              control={<Checkbox value={rememberMe} color="primary" />}
+              onChange={e => setRememberMe(e.target.checked)}
+              label="Remember Me"
+            />
+
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ my: 1 }}
+            >
+              {
+                loading
+                  ? <CircularProgress disableShrink color="inherit" size="1.5rem" />
+                  : sectionData.login.title
+              }
+            </Button>
+
+            {
+              userRole === UserRoles.individual.id &&
               (
-                <Box component="form" onSubmit={handleSubmit} noValidate>
-                  <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="schoolID"
-                    label={isSchoolForLogin ? "School ID" : "Email"}
-                    name="schoolID"
-                    autoComplete="username"
-                    onChange={e => setUserName(e.target.value)}
-                    sx={{ mt: 0, mb: 1 }}
-                  />
-                  <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="password"
-                    label={isSchoolForLogin ? "Access Code" : "Password"}
-                    type="password"
-                    id="password"
-                    autoComplete="current-password"
-                    onChange={e => setPassword(e.target.value)}
-                    sx={{ my: 1 }}
-                  />
-                  <FormControlLabel
-                    control={<Checkbox value={rememberMe} color="primary" />}
-                    onChange={e => setRememberMe(e.target.checked)}
-                    label="Remember Me"
-                  />
+                <>
+                  <Divider sx={{ mx: "40%", mb: 1 }}>
+                    <Typography color="text.secondary">or</Typography>
+                  </Divider>
 
-                  <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    sx={{ my: 1 }}
-                  >
-                    {
-                      loading
-                        ? <CircularProgress disableShrink color="inherit" size="1.5rem" />
-                        : "Log In"
-                    }
-                  </Button>
-
-                  {
-                    isSchoolForLogin === true ? null :
-                      (
-                        <>
-                          <Divider sx={{ mx: "40%", mb: 1 }}>
-                            <Typography color="text.secondary">or</Typography>
-                          </Divider>
-
-                          <Box width="100%">
-                            <GoogleOAuthButtonAndPopupHandler />
-                          </Box>
-                        </>
-                      )
-                  }
-
-                </Box>
+                  <Box width="100%">
+                    <GoogleOAuthButtonAndPopupHandler />
+                  </Box>
+                </>
               )
-          }
+            }
+
+          </Box>
         </Stack>
       </Paper>
 
       {
-        isSchoolForLogin === false ?
-          (
-            <>
-              <Divider textAlign="center" sx={{ my: 3 }}>
-                <Typography variant="body1" align="center" color="text.secondary">
-                  Don't have an account?
-                </Typography>
-              </Divider>
+        userRole === UserRoles.individual.id &&
+        (
+          <>
+            <Divider textAlign="center" sx={{ my: 3 }}>
+              <Typography variant="body1" align="center" color="text.secondary">
+                {sectionData.login.content.exception}
+              </Typography>
+            </Divider>
 
-              <Paper sx={{ p: 0 }} elevation={3}>
-                <Button
-                  fullWidth
-                  onClick={() => navigate(AppRoutes.signUp)}
-                >
-                  Sign Up
-                </Button>
-              </Paper>
-            </>
-          ) : null
+            <Paper sx={{ p: 0 }} elevation={3}>
+              <Button
+                fullWidth
+                onClick={() => navigate(AppRoutes.signUp)}
+              >
+                {sectionData.signup.title}
+              </Button>
+            </Paper>
+          </>
+        )
       }
 
     </Container >

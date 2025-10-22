@@ -6,7 +6,7 @@ import { getApiUrl } from '../../API/ApiUrls';
 import GroupsIcon from '@mui/icons-material/Groups';
 import FaceIcon from '@mui/icons-material/Face';
 import SensorsIcon from '@mui/icons-material/Sensors';
-import SchoolIcon from '@mui/icons-material/School';
+import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 
 import sectionData from "../../section_data.json";
 import { useQuery } from '@tanstack/react-query';
@@ -20,8 +20,8 @@ const IconLoader = ({ iconString }) => {
       return <FaceIcon color="primary" fontSize='large' />;
     case 'SensorsIcon':
       return <SensorsIcon color="primary" fontSize='large' />;
-    case 'SchoolIcon':
-      return <SchoolIcon color="primary" fontSize='large' />;
+    case 'AssuredWorkloadIcon':
+      return <AssuredWorkloadIcon color="primary" fontSize='large' />;
     default:
       return null;
   }
