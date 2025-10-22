@@ -70,7 +70,7 @@ export function DashboardProvider({ children }) {
 
   /** --- AUTH / SCHOOL SELECTION LOGIC --- **/
   useEffect(() => {
-    if (!authenticationState.checkedAuthentication) return;
+    if (!authenticationState.checkedAuthentication || !isValidArray(user.allowedSchools)) return;
 
     // CASE: NYUAD BANNER
     if (locationPath === AppRoutes.nyuadBanner) {
@@ -79,18 +79,20 @@ export function DashboardProvider({ children }) {
     }
 
     // If the user isn't logged in (after checking authentication status)
-    // Navigate to the login if in dashboard page (rather than NYUAD)
-    // or just set to NYUAD if in homepage
     if (authenticationState.authenticated === false) {
-      if (school_id_param === NYUAD || locationPath === AppRoutes.home) {
-        setCurrentSchoolID(NYUAD);
-        return;
+      // If in home, set to the first publicly available institution in allowedSchools 
+      if (locationPath === AppRoutes.home) {
+        setCurrentSchoolID(user.allowedSchools[0].school_id);
       }
 
-      if (isDashboardPage) {
-        navigate(`${AppRoutes.login}?${AppRoutes.redirectQuery}=${locationPath}`);
+      // Elsewhere, set to school_id_param or navigate to login page
+      else if (user.allowedSchools.map(school => school.school_id).includes(school_id_param)) {
+        setCurrentSchoolID(school_id_param);
         return;
+      } else {
+        navigate(`${AppRoutes.login}?${AppRoutes.redirectQuery}=${locationPath}`);
       }
+      return;
     }
 
     // Only authenticated users below this line

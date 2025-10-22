@@ -4,13 +4,19 @@ import TvIcon from "@mui/icons-material/Tv";
 import { useNavigate } from "react-router-dom";
 import { DashboardContext } from "../../../ContextProviders/DashboardContext";
 import { isValidArray } from "../../../Utils/UtilFunctions";
-import useLoginHandler from "../../Account/useLoginHandler";
 import useSchoolMetadata from "../../../hooks/useSchoolMetadata";
 
-const ScreenDropDownMenu = ({ onButtonClick }) => {
+// Use this code block if TV screen should be only for logged in users even for publicly available institutions
+// import useLoginHandler from "../../Account/useLoginHandler";
+
+const ScreenDropDownMenu = () => {
+  // Use this code block if TV screen should be only for logged in users even for publicly available institutions
+  // const ScreenDropDownMenu = ({ onButtonClick }) => {
   const { currentSchoolID } = useContext(DashboardContext);
   const { data: schoolMetadata } = useSchoolMetadata();
-  const { handleRestrictedAccess } = useLoginHandler(onButtonClick);
+
+  // Use this code block if TV screen should be only for logged in users even for publicly available institutions
+  // const { handleRestrictedAccess } = useLoginHandler(onButtonClick);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
@@ -22,11 +28,16 @@ const ScreenDropDownMenu = ({ onButtonClick }) => {
   if (!isValidArray(screens)) return null;
 
   const handleSingleScreenClick = () => {
-    handleRestrictedAccess(() => {
-      const screen_name = screens && screens[0]?.screen_name;
-      if (screen_name === "screen") navigate(`/screen/${currentSchoolID}`);
-      else navigate(`/screen/${currentSchoolID}/${screen_name}`);
-    });
+    const screen_name = screens && screens[0]?.screen_name;
+    if (screen_name === "screen") navigate(`/screen/${currentSchoolID}`);
+    else navigate(`/screen/${currentSchoolID}/${screen_name}`);
+
+    // Use this code block if TV screen should be only for logged in users even for publicly available institutions
+    // handleRestrictedAccess(() => {
+    //   const screen_name = screens && screens[0]?.screen_name;
+    //   if (screen_name === "screen") navigate(`/screen/${currentSchoolID}`);
+    //   else navigate(`/screen/${currentSchoolID}/${screen_name}`);
+    // });
   };
 
   // If there is only 1 screen, show a single button
@@ -46,14 +57,20 @@ const ScreenDropDownMenu = ({ onButtonClick }) => {
   const open = Boolean(anchorEl);
 
   const handleMenuItemClick = (screenName) => {
-    handleRestrictedAccess(() => {
-      setAnchorEl(null);
-      navigate(`/screen/${currentSchoolID}/${screenName}`);
-    });
+    navigate(`/screen/${currentSchoolID}/${screenName}`);
+
+    // Use this code block if TV screen should be only for logged in users even for publicly available institutions
+    // handleRestrictedAccess(() => {
+    //   setAnchorEl(null);
+    //   navigate(`/screen/${currentSchoolID}/${screenName}`);
+    // });
   };
 
   const handleMenuOpen = (event) => {
-    handleRestrictedAccess(() => setAnchorEl(event.currentTarget));
+    setAnchorEl(event.currentTarget);
+
+    // Use this code block if TV screen should be only for logged in users even for publicly available institutions
+    // handleRestrictedAccess(() => setAnchorEl(event.currentTarget));
   };
 
   const handleMenuClose = () => {

@@ -13,22 +13,20 @@ export function UserProvider({ children }) {
   const [authenticationState, setAuthenticationState] = useState({
     checkedAuthentication: false,
     authenticated: false,
-  })
-
+  });
   const [user, setUser] = useState(EMPTY_USER_DATA);
   const [userRole, setUserRole] = useState(UserRoles.school.id);
-
-  const { enqueueSnackbar } = useSnackbar()
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    if (authenticationState.checkedAuthentication) return;
+    if (authenticationState.checkedAuthentication === true) return;
 
     const url = getApiUrl({ endpoint: GeneralAPIendpoints.me });
     fetchDataFromURL({ url })
       .then((data) => {
         setAuthenticationState({
           checkedAuthentication: true,
-          authenticated: true
+          authenticated: data.authenticated
         });
         setUser(data);
       })

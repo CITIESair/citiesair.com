@@ -33,22 +33,17 @@ export default function LogOut() {
     })
       .then((data) => {
         setLoading(false);
-
         setAuthenticationState({
-          checkedAuthentication: true,
+          checkedAuthentication: false,
           authenticated: false,
         })
         setUser(EMPTY_USER_DATA);
-
-        if (data.message) enqueueSnackbar(data.message, SnackbarMetadata.success);
-
-
+        enqueueSnackbar(data.message || "Logout successfully", SnackbarMetadata.success);
         navigate('/');
       })
       .catch((error) => {
         console.log(error);
         setLoading(false);
-
         enqueueSnackbar(data.message, SnackbarMetadata.error);
       })
   };

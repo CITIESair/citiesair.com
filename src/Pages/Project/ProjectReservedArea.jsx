@@ -26,7 +26,11 @@ const ProjectReservedArea = () => {
             {({ openLoginPopup }) => (
                 <Grid container spacing={1} justifyContent="center" alignItems="center">
                     <Grid item>
-                        <ScreenDropDownMenu onButtonClick={loggedIn ? null : openLoginPopup} />
+                        {/* Use this code block if TV screen should be only for logged in users even for publicly available institutions */}
+                        {/* <ScreenDropDownMenu onButtonClick={loggedIn ? null : openLoginPopup} /> */}
+
+                        {/* For now, it doesn't require login */}
+                        <ScreenDropDownMenu onButtonClick={null} />
                     </Grid>
                     <Grid item>
                         <DatasetDownloadDialog onButtonClick={loggedIn ? null : openLoginPopup} />

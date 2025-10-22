@@ -89,8 +89,6 @@ const AlertModificationDialog = (props) => {
       return;
     }
 
-    console.log(passedCrudType)
-
     switch (passedCrudType) {
       case CrudTypes.add: {
         // 1. POST to create the main alert (always run)

@@ -103,7 +103,5 @@ export const addChildToAlerts = (alertList = []) => {
     }
   });
 
-  console.log(processed)
-
   return processed;
 };

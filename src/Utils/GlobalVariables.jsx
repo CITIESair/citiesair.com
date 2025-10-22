@@ -23,6 +23,7 @@ export const BLOG_CITIESair_URL = "https://blog.citiesair.com";
 // export const HYVOR_API_URL = `https://talk.hyvor.com/api/data/v1/pages?website_id=${HYVOR_WEBSITE_ID}&id=${HYVOR_AIR_QUALITY_PAGE_ID}`;
 
 export const EMPTY_USER_DATA = {
+    authenticated: false,
     allowedSchools: [],
     username: null,
     email: null,
