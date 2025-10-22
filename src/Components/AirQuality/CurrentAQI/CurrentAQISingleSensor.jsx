@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { PreferenceContext } from "../../../ContextProviders/PreferenceContext";
 import { AQI_Database } from "../../../Utils/AirQuality/AirQualityIndexHelper";
 import { getTranslation } from "../../../Utils/UtilFunctions";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Grid, Stack, Typography } from "@mui/material";
 import { returnSensorStatusString, SensorStatus } from "../SensorStatus";
 import { INACTIVE_SENSOR_COLORS } from "../../../Themes/CustomColors";
 import { returnLocationName } from "./AQIGridUtils";
@@ -76,8 +76,7 @@ const CurrentAQISingleSensor = (props) => {
                     </Box>
                 ) : null
             }
-
-            <Box sx={{
+            <Stack sx={{
                 '& *': {
                     color:
                         isScreen ? (
@@ -111,7 +110,7 @@ const CurrentAQISingleSensor = (props) => {
                         size={size}
                     />
                 }
-            </Box>
+            </Stack>
 
             {
                 sensor?.sensor_status !== SensorStatus.active &&

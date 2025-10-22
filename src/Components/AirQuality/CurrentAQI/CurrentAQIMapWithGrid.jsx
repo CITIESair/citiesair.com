@@ -139,6 +139,7 @@ const CurrentAQIMapWithGrid = (props) => {
                                 currentSensorsData={currentSensorsData?.slice(0, NUM_SENSORS_FIRST_ROW)}
                                 showWeather={true}
                                 showWeatherText={true}
+                                showHeatIndex={false}
                                 showAQI={false}
                                 showRawMeasurements={false}
                                 roundTemperature={true}
@@ -180,8 +181,8 @@ const CurrentAQIMapWithGrid = (props) => {
                             <Grid item xs={12}>
                                 <CurrentAQIGrid
                                     currentSensorsData={currentSensorsData?.slice(0, NUM_SENSORS_FIRST_ROW)}
-                                    showWeather={!isOnBannerPage && (schoolID === KAMPALA && false)}
-                                    showHeatIndex={!isOnBannerPage && (schoolID === KAMPALA && false)}
+                                    showWeather={!isOnBannerPage && schoolID !== KAMPALA}
+                                    showHeatIndex={!isOnBannerPage && schoolID !== KAMPALA}
                                     showRawMeasurements={!isOnBannerPage}
                                     useLocationShort={true}
                                     roundTemperature={isOnBannerPage && true}
@@ -190,10 +191,10 @@ const CurrentAQIMapWithGrid = (props) => {
                                 />
                             </Grid>
 
-                            <Grid item xs={12} >
+                            <Grid item xs={12}>
                                 <CurrentAQIGrid
                                     currentSensorsData={currentSensorsData?.slice(NUM_SENSORS_FIRST_ROW, NUM_SENSORS_FIRST_ROW + NUM_SENSORS_SECOND_ROW)}
-                                    showWeather={!isOnBannerPage && (schoolID === KAMPALA && false)}
+                                    showWeather={!isOnBannerPage && schoolID !== KAMPALA}
                                     showRawMeasurements={!isOnBannerPage}
                                     showHeatIndex={false}
                                     showLastUpdate={!isOnBannerPage}
