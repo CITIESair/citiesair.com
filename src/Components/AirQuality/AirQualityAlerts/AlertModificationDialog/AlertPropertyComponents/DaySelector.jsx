@@ -1,9 +1,9 @@
 import { Box, Grid, Stack, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { DAYS_OF_WEEK } from './DAYS_OF_WEEK';
-import { AirQualityAlertKeys, getAlertDefaultPlaceholder } from '../../../../../ContextProviders/AirQualityAlertContext';
 import { useTheme } from '@mui/material';
 import MultiDaysCalendarPicker from './MultiDaysCalendarPicker';
+import { AirQualityAlertKeys, getAlertDefaultPlaceholder } from '../../AlertUtils';
 
 export default function DateSelector(props) {
   const { daysOfWeek, excludedDates, handleDaysOfWeekChange, handleExcludedDatesChange, disabled } = props;

@@ -1,25 +1,18 @@
 import { Button, Dialog, DialogTitle, DialogActions, DialogContent, Stack, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material';
 import AlertTypes, { ThresholdAlertTypes } from '../AlertTypes';
-import { CrudTypes } from '../Utils';
-
-import { AirQualityAlertKeys, getAlertDefaultPlaceholder, useAirQualityAlert } from '../../../../ContextProviders/AirQualityAlertContext';
-
+import { AirQualityAlertKeys, CrudTypes, getAlertDefaultPlaceholder } from '../AlertUtils';
 import { useContext, useEffect, useState } from 'react';
-import { DashboardContext } from '../../../../ContextProviders/DashboardContext';
-import { fetchDataFromURL } from '../../../../API/ApiFetch';
-import { RESTmethods } from "../../../../API/Utils";
-import { getAlertsApiUrl } from '../../../../API/ApiUrls';
-import { GeneralAPIendpoints } from "../../../../API/Utils";
-
 import { SnackbarMetadata } from '../../../../Utils/SnackbarMetadata';
-
 import isEqual from 'lodash.isequal';
 import AlertDeletionDialog from './AlertDeletionDialog';
 import { useSnackbar } from 'notistack';
-
 import { DialogData } from './DialogData';
 import { AlertPropertyComponents } from './AlertPropertyComponents/AlertPropertyComponents';
+import { useCreateAlertMutation } from '../../../../hooks/alerts/useCreateAlertMutation';
+import { useEditAlertMutation } from '../../../../hooks/alerts/useEditAlertMutation';
+import { useDeleteAlertMutation } from '../../../../hooks/alerts/useDeleteAlertMutation';
+import { AirQualityAlertContext } from '../../../../ContextProviders/AirQualityAlertContext';
 
 const AlertModificationDialog = (props) => {
   const {
@@ -29,9 +22,7 @@ const AlertModificationDialog = (props) => {
     handleClose
   } = props;
 
-  const { currentSchoolID } = useContext(DashboardContext);
-
-  const { selectedAlert, setSelectedAlert, editingAlert, setEditingAlert, setAlerts, addChildToAlerts } = useAirQualityAlert();
+  const { selectedAlert, setSelectedAlert, editingAlert, setEditingAlert } = useContext(AirQualityAlertContext);
 
   const [shouldDisableButton, setShouldDisableButton] = useState(false);
 
@@ -83,174 +74,109 @@ const AlertModificationDialog = (props) => {
     return newBody;
   };
 
-  const handleAlertModification = ({ passedCrudType }) => {
-    const handleFetchError = (error) => {
-      enqueueSnackbar(DialogData[passedCrudType].errorMessage, SnackbarMetadata.error);
-    };
+  const handleSuccess = (passedCrudType) => {
+    enqueueSnackbar(DialogData[passedCrudType].successMessage, SnackbarMetadata.success);
+    handleClose();
+  }
+  const handleError = (passedCrudType) => {
+    enqueueSnackbar(DialogData[passedCrudType].errorMessage, SnackbarMetadata.error);
+  };
 
-    const handleFetchSuccess = () => {
-      enqueueSnackbar(DialogData[passedCrudType].successMessage, SnackbarMetadata.success);
-      handleClose();
+  const handleAlertModification = ({ passedCrudType }) => {
+    const result = sanityCheckAlertBeforeSaving();
+    if (!result.valid) {
+      enqueueSnackbar(result.message, SnackbarMetadata.error);
+      return;
     }
+
+    console.log(passedCrudType)
 
     switch (passedCrudType) {
       case CrudTypes.add: {
-        const result = sanityCheckAlertBeforeSaving();
-        if (!result.valid) {
-          enqueueSnackbar(result.message, SnackbarMetadata.error);
-          return;
-        }
-
         // 1. POST to create the main alert (always run)
-        fetchDataFromURL({
-          url: getAlertsApiUrl({
-            endpoint: GeneralAPIendpoints.alerts,
-            school_id: currentSchoolID
-          }),
-          restMethod: RESTmethods.POST,
-          body: removeChildAlertFromParentAlertBody(editingAlert)
-        }).then((createdAlert) => {
-          setAlerts(prevAlerts => {
-            const updatedAlerts = [...prevAlerts, createdAlert];
-            return addChildToAlerts(updatedAlerts);
-          });
-          handleFetchSuccess();
+        createAlertMutation.mutate(
+          {
+            alertToCreate: removeChildAlertFromParentAlertBody(editingAlert)
+          },
+          {
+            onSuccess: (createdAlert) => {
+              handleSuccess(passedCrudType);
 
-          const placeholder = getAlertDefaultPlaceholder(alertTypeKey);
-          setSelectedAlert(placeholder);
-          setEditingAlert(placeholder);
+              // 2. POST for child alert associated with this main alert (only if it exists)
+              const placeholder = getAlertDefaultPlaceholder(alertTypeKey);
+              setSelectedAlert(placeholder);
+              setEditingAlert(placeholder);
 
-          // 2. POST for child alert associated with this main alert (only if it exists)
-          if (!editingAlert[AirQualityAlertKeys.has_child_alert]) return;
+              if (!editingAlert[AirQualityAlertKeys.has_child_alert]) return;
+              const parent_alert_id = createdAlert[AirQualityAlertKeys.id];
+              if (parent_alert_id === null || parent_alert_id === undefined) return;
 
-          const parent_alert_id = createdAlert[AirQualityAlertKeys.id];
-          if (parent_alert_id === null || parent_alert_id === undefined) return;
-
-          fetchDataFromURL({
-            url: getAlertsApiUrl({
-              endpoint: GeneralAPIendpoints.alerts,
-              school_id: currentSchoolID
-            }),
-            restMethod: RESTmethods.POST,
-            body: formatChildAlertBody(editingAlert, parent_alert_id)
-          }).then((createdChildAlert) => {
-            setAlerts(prevAlerts => {
-              const updatedAlerts = [...prevAlerts, createdChildAlert];
-              return addChildToAlerts(updatedAlerts);
-            });
-          }).catch((childError) => handleFetchError(childError));
-
-        }).catch((error) => handleFetchError(error));
-
+              createAlertMutation.mutate(
+                {
+                  alertToCreate: formatChildAlertBody(editingAlert, parent_alert_id)
+                },
+                {
+                  onError: () => handleError(passedCrudType)
+                }
+              );
+            }
+          }
+        );
         break;
       }
       case CrudTypes.edit: {
-        const result = sanityCheckAlertBeforeSaving();
-        if (!result.valid) {
-          enqueueSnackbar(result.message, SnackbarMetadata.error);
-          return;
-        }
-
         // 1. PUT to modify the main alert (always run)
         const alert_id = selectedAlert[AirQualityAlertKeys.id];
-        fetchDataFromURL({
-          url: getAlertsApiUrl({
-            endpoint: GeneralAPIendpoints.alerts,
-            school_id: currentSchoolID,
-            alert_id: alert_id
-          }),
-          restMethod: RESTmethods.PUT,
-          body: removeChildAlertFromParentAlertBody(editingAlert)
-        }).then((updatedAlert) => {
-          setAlerts(prevAlerts => {
-            const updatedAlerts = prevAlerts.map(alert =>
-              alert.id === alert_id ? updatedAlert : alert
-            );
-            return addChildToAlerts(updatedAlerts);
-          });
-          handleFetchSuccess();
 
-          // 2. Editing for child alert associated with this main alert
-          const child_alert_id = editingAlert[AirQualityAlertKeys.child_alert]?.[AirQualityAlertKeys.id];
-          // 2.1. There should NOT be child alert
-          if (!editingAlert[AirQualityAlertKeys.has_child_alert]) {
-            // If child alert existed before but now is removed, then trigger deletion
-            if (child_alert_id !== null && child_alert_id !== undefined) {
-              fetchDataFromURL({
-                url: getAlertsApiUrl({
-                  endpoint: GeneralAPIendpoints.alerts,
-                  school_id: currentSchoolID,
-                  alert_id: child_alert_id
-                }),
-                restMethod: RESTmethods.DELETE
-              }).then(() => {
-                setAlerts(prevAlerts => {
-                  const updatedAlerts = prevAlerts.filter(alert => alert.id !== child_alert_id)
-                  return addChildToAlerts(updatedAlerts);
-                });
-                handleFetchSuccess();
-              }).catch((error) => handleFetchError(error));
+        editAlertMutation.mutate(
+          {
+            alertId: alert_id,
+            alertToEdit: removeChildAlertFromParentAlertBody(editingAlert)
+          },
+          {
+            onSuccess: () => {
+              handleSuccess(passedCrudType);
+
+              // 2. Editing for child alert associated with this main alert
+              const child_alert_id = editingAlert[AirQualityAlertKeys.child_alert]?.[AirQualityAlertKeys.id];
+              // 2.1. There should NOT be child alert
+              // (If child alert existed before but now is removed, then trigger deletion)
+              if (!editingAlert[AirQualityAlertKeys.has_child_alert] &&
+                child_alert_id !== null && child_alert_id !== undefined
+              ) {
+                deleteAlertMutation.mutate(
+                  { alertId: child_alert_id },
+                  {
+                    onSuccess: () => handleSuccess(CrudTypes.delete),
+                    onError: () => handleError(CrudTypes.delete)
+                  }
+                );
+              }
+              // 2.2. There should be child alert
+
+              else {
+                const formattedChildAlert = formatChildAlertBody(editingAlert, alert_id);
+
+                // 2.2.1. If there is no child alert id before, create one
+                if (child_alert_id === null || child_alert_id === undefined) {
+                  createAlertMutation.mutate({
+                    alertId: alert_id,
+                    alertToCreate: formattedChildAlert
+                  });
+                }
+                // 2.2.2. Else, update that child alert
+                else {
+                  editAlertMutation.mutate({
+                    alertId: child_alert_id,
+                    alertToEdit: formattedChildAlert
+                  })
+                }
+              }
             }
           }
-          // 2.2. There should be child alert
-          else {
-            // 2.2.1. If there is no child alert id before, create one
-            if (child_alert_id === null || child_alert_id === undefined) {
-              fetchDataFromURL({
-                url: getAlertsApiUrl({
-                  endpoint: GeneralAPIendpoints.alerts,
-                  school_id: currentSchoolID
-                }),
-                restMethod: RESTmethods.POST,
-                body: formatChildAlertBody(editingAlert, alert_id)
-              }).then((createdChildAlert) => {
-                setAlerts(prevAlerts => {
-                  const updatedAlerts = [...prevAlerts, createdChildAlert];
-                  return addChildToAlerts(updatedAlerts);
-                });
-              }).catch((childError) => handleFetchError(childError));
-            }
-
-            // 2.2.2. Else, update that child alert
-            else {
-              fetchDataFromURL({
-                url: getAlertsApiUrl({
-                  endpoint: GeneralAPIendpoints.alerts,
-                  school_id: currentSchoolID,
-                  alert_id: child_alert_id
-                }),
-                restMethod: RESTmethods.PUT,
-                body: formatChildAlertBody(editingAlert, alert_id)
-              }).then((updatedChildAlert) => {
-                setAlerts(prevAlerts => {
-                  const updatedAlerts = prevAlerts.map(alert =>
-                    alert.id === child_alert_id ? updatedChildAlert : alert
-                  );
-
-                  return addChildToAlerts(updatedAlerts);
-                });
-              }).catch((childError) => handleFetchError(childError));
-            }
-          }
-
-        }).catch((error) => handleFetchError(error));
-
+        )
         break;
       }
-      case CrudTypes.delete:
-        fetchDataFromURL({
-          url: getAlertsApiUrl({
-            endpoint: GeneralAPIendpoints.alerts,
-            school_id: currentSchoolID,
-            alert_id: selectedAlert.id
-          }),
-          restMethod: RESTmethods.DELETE
-        }).then(() => {
-          setAlerts(prevAlerts => prevAlerts.filter(alert => alert.id !== selectedAlert.id));
-          handleFetchSuccess();
-        }).catch((error) => handleFetchError(error));
-
-        break;
       default:
         break;
     }
@@ -309,6 +235,10 @@ const AlertModificationDialog = (props) => {
 
   const smallScreen = useMediaQuery((theme) => theme.breakpoints.down('md'));
 
+  const createAlertMutation = useCreateAlertMutation();
+  const editAlertMutation = useEditAlertMutation();
+  const deleteAlertMutation = useDeleteAlertMutation();
+
   return (
     <Dialog
       open={openAlertModificationDialog}
@@ -335,7 +265,13 @@ const AlertModificationDialog = (props) => {
           crudType === CrudTypes.edit ? (
             <AlertDeletionDialog
               onConfirmedDelete={() => {
-                handleAlertModification({ passedCrudType: CrudTypes.delete })
+                deleteAlertMutation.mutate(
+                  { alertId: selectedAlert.id },
+                  {
+                    onSuccess: () => handleSuccess(CrudTypes.delete),
+                    onError: () => handleError(CrudTypes.delete)
+                  }
+                );
               }}
             />
           ) : null
