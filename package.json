@@ -45,11 +45,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "cross-env REACT_APP_ENV=production react-scripts start",
-    "start-local-backend": "cross-env REACT_APP_ENV=local-backend react-scripts start",
-    "build": "cross-env REACT_APP_ENV=production react-scripts build",
-    "build-local-backend": "cross-env REACT_APP_ENV=local-backend react-scripts build",
-    "predeploy": "npm run build",
+    "start": "dotenv -e .env.${npm_config_env:-front-dev-back-prod} react-scripts start",
+    "build": "dotenv -e .env.${npm_config_env:-front-dev-back-prod} react-scripts build",
+    "predeploy": "npm run build --env=front-prod-back-prod",
     "deploy": "gh-pages -d build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -73,7 +71,7 @@
     ]
   },
   "devDependencies": {
-    "cross-env": "^10.1.0",
+    "dotenv-cli": "^10.0.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsx-a11y": "^6.6.1",

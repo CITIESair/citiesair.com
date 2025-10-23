@@ -10,6 +10,7 @@ import { returnLocationName } from "./AQIGridUtils";
 import { ElementSizes } from "./CurrentAQIGridSize";
 import { CurrentHeatIndex, CurrentWeather } from "./CurrentMetero";
 import LastUpdateAndSensorStatus from "./LastUpdateAndSensorStatus";
+import { DataTypeKeys } from "../../../Utils/AirQuality/DataTypes";
 
 const CurrentAQISingleSensor = (props) => {
     const {
@@ -87,22 +88,26 @@ const CurrentAQISingleSensor = (props) => {
                 }, mt: ElementSizes[size].meteroDataMarginTop
             }} className='condensedFont'>
                 {
-                    showWeather &&
-                    <CurrentWeather
-                        size={size}
-                        current={current}
-                        showWeatherText={showWeatherText}
-                        roundTemperature={roundTemperature}
-                    />
+                    sensor?.allowedDataTypes?.includes(DataTypeKeys.temperature_C) && <>
+                        {
+                            showWeather &&
+                            <CurrentWeather
+                                size={size}
+                                current={current}
+                                showWeatherText={showWeatherText}
+                                roundTemperature={roundTemperature}
+                            />
+                        }
+                        {
+                            showHeatIndex && <CurrentHeatIndex
+                                sensor={sensor}
+                                size={size}
+                                current={current}
+                            />
+                        }
+                    </>
                 }
 
-                {
-                    showHeatIndex && <CurrentHeatIndex
-                        sensor={sensor}
-                        size={size}
-                        current={current}
-                    />
-                }
 
                 {
                     (showLastUpdate || (!showLastUpdate && sensor?.sensor_status !== SensorStatus.active)) && <LastUpdateAndSensorStatus

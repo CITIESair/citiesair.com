@@ -39,16 +39,14 @@ export function PreferenceProvider({ children }) {
 
   // ------ Language ------
   const [language, setLanguage] = useState("en");
-  const [languages, setLanguages] = useState(["en"]);
 
   // eslint-disable-next-line max-len
   const providerValue = useMemo(() => ({
     themePreference, setThemePreference,
     temperatureUnitPreference, setTemperatureUnitPreference,
     hiddenPromos, setHiddenPromos,
-    language, setLanguage,
-    languages, setLanguages
-  }), [themePreference, temperatureUnitPreference, hiddenPromos, language, languages]);
+    language, setLanguage
+  }), [themePreference, temperatureUnitPreference, hiddenPromos, language]);
 
   // return context provider
   return (

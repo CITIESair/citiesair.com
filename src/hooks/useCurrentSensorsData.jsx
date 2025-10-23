@@ -19,6 +19,7 @@ const useCurrentSensorsData = (schoolID = null) => {
                 school_id: schoolID || currentSchoolID
             });
 
+            // aggregationType is necessary here to determine the appropriate SensorStatus based on last_seen (active/offline)
             return fetchAndProcessCurrentSensorsData({
                 url,
                 aggregationType: currentSchoolID === KAMPALA ? AggregationType.hour : null
