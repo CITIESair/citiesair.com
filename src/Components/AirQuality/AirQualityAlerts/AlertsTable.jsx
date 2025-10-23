@@ -89,6 +89,7 @@ const AlertsTable = (props) => {
 
     editAlertMutation.mutate(
       {
+        alertId: alert[AirQualityAlertKeys.id],
         alertToEdit: {
           ...alert,
           [AirQualityAlertKeys.is_enabled]: newIsEnabled

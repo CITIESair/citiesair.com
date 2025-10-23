@@ -56,7 +56,7 @@ const CurrentAQIMapWithGrid = (props) => {
         if (currentSensorsData) {
             const timer = setTimeout(() => {
                 setMapData({ ...currentSensorsData });
-            }, 10);
+            }, 100);
             return () => clearTimeout(timer);
         }
     }, [currentSensorsData]);
@@ -181,8 +181,8 @@ const CurrentAQIMapWithGrid = (props) => {
                             <Grid item xs={12}>
                                 <CurrentAQIGrid
                                     currentSensorsData={currentSensorsData?.slice(0, NUM_SENSORS_FIRST_ROW)}
-                                    showWeather={!isOnBannerPage && schoolID !== KAMPALA}
-                                    showHeatIndex={!isOnBannerPage && schoolID !== KAMPALA}
+                                    showWeather={!isOnBannerPage}
+                                    showHeatIndex={!isOnBannerPage}
                                     showRawMeasurements={!isOnBannerPage}
                                     useLocationShort={true}
                                     roundTemperature={isOnBannerPage && true}
@@ -194,7 +194,7 @@ const CurrentAQIMapWithGrid = (props) => {
                             <Grid item xs={12}>
                                 <CurrentAQIGrid
                                     currentSensorsData={currentSensorsData?.slice(NUM_SENSORS_FIRST_ROW, NUM_SENSORS_FIRST_ROW + NUM_SENSORS_SECOND_ROW)}
-                                    showWeather={!isOnBannerPage && schoolID !== KAMPALA}
+                                    showWeather={!isOnBannerPage}
                                     showRawMeasurements={!isOnBannerPage}
                                     showHeatIndex={false}
                                     showLastUpdate={!isOnBannerPage}

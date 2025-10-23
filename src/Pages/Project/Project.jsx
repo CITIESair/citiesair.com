@@ -19,7 +19,7 @@ import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 
 import AQIexplanation from '../../Components/AirQuality/AQIexplanation';
 import { AxesPickerProvider } from '../../ContextProviders/AxesPickerContext';
-import { KAMPALA, NUMBER_OF_CHARTS_TO_LOAD_INITIALLY } from '../../Utils/GlobalVariables';
+import { NUMBER_OF_CHARTS_TO_LOAD_INITIALLY } from '../../Utils/GlobalVariables';
 
 import ProjectReservedArea from './ProjectReservedArea';
 import GridOfMetadataChips from './GridOfMetadataChips';
@@ -92,8 +92,6 @@ const Project = () => {
                   currentSensorsData={currentSensorsData}
                   isScreen={false}
                   temperatureUnitPreference={temperatureUnitPreference}
-                  showHeatIndex={currentSchoolID === KAMPALA && false}
-                  showWeather={currentSchoolID === KAMPALA && false}
                 />
               </Box>
             )

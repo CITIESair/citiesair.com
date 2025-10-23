@@ -79,7 +79,7 @@ const Screen = ({ title }) => {
 
   // Timer loop:
   // - Check if the screen should be displayed (or black screen to save energy)
-  // - Rotate between different languages (if exists)
+  // - Rotate between different languages (if exists), else not set language (default to "en")
   useEffect(() => {
     if (!schoolMetadata || !isValidArray(schoolMetadata.languages)) return;
 
@@ -181,9 +181,6 @@ const Screen = ({ title }) => {
               temperatureUnitPreference={temperatureUnitPreference}
               isScreen={true}
               size={CurrentAQIGridSize.large}
-              showWeather={school_id === KAMPALA ? false : true}
-              showHeatIndex={school_id === KAMPALA ? false : true}
-              showLastUpdate={school_id === KAMPALA ? true : false}
             />
           </Grid>
 
@@ -227,10 +224,7 @@ const Screen = ({ title }) => {
 
           <Grid item xs={2}>
             <Box height="auto" width="90%">
-              {
-                school_id !== KAMPALA &&
-                <ScreenQRcode />
-              }
+              <ScreenQRcode />
             </Box>
           </Grid>
           <Grid

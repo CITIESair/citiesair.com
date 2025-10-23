@@ -21,6 +21,7 @@ const localStoragePersister = createAsyncStoragePersister({
   storage: window.localStorage,
 });
 
+// use frontend api caching for production
 const IS_PRODUCTION = process.env.REACT_APP_ENV === 'production';
 
 const Providers = ({ children }) => (

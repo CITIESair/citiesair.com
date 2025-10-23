@@ -108,36 +108,45 @@ The `Routes` defined in [`App.jsx`](src/App.jsx) correspond to these pages. *For
 
 1. Clone the repository from GitHub.
 
-2. Run the following command to install the dependencies:
+2. Add the following two .env files to the root:
+  - .env.front-dev-back-prod:
+    ```
+    REACT_APP_ENV=development
+    REACT_APP_BACKEND_URL=[Backend Server IP/Domain]
+    ```
+
+  - .env.front-prod-back-prod
+    ```
+    REACT_APP_ENV=production
+    REACT_APP_BACKEND_URL=[Backend Server IP/Domain]
+    ```
+
+3. Run the following command to install the dependencies:
 
     ```
     npm install
     ```
 
-3. Development frontend 
-  - If you want this frontend application to make API request to the production backend API (api.citiesair.com)
+## 4.3. Run the Development App
+Run the application either of these several configurations:
 
-    ```
-    npm run start
-    ```
+| Frontend | Backend | Command | Comment |
+|----------|---------|---------|---------|
+| Dev (no query caching) | [Backend Server IP/Domain] | npm run start --env=front-dev-back-prod | **[DEFAULT]** Best used to avoid caching in frontend while using most up-to-date data from prod backend |
+| Dev (no query caching) | localhost:3001 | npm run start --env=front-dev-back-dev | Best used when developing both frontend and backend at the same time |
+| Prod (uses query caching) | localhost:3001 | npm run start --env=front-prod-back-dev | Not sure when it'll ever be useful |
+| Prod | [Backend Server IP/Domain] | npm run start --env=front-prod-back-prod | **[ACTUAL PROD]** Best used to verify everything works as intended before deploying to PROD (exact setup used for PROD) |
 
-  - Or, if you want this frontend application to make API request to the locally hosted backend API (localhost://3001). This command set `REACT_APP_ENV=local-backend` so that the app can bypass authorization.
+**[IMPORTANT]** If you want to run a stable build, run the below instead:
 
-    ```
-    npm run start-local-backend
-    ```
+  ```
+  npm run build --env=[env_file] && serve -s build
+  ```
 
-4. If you want to run a stable build (more optimized and faster compared to the dev application in Step 3, but 404 page doesn't work in this case), run the below instead:
-
-    ```
-    npm run build && serve -s build
-    ```
-    
-    - Or, if you want this frontend application to make API request to the locally hosted backend API (localhost://3001). This command set `REACT_APP_ENV=local-backend` so that the app can bypass authorization.
-
-    ```
-    npm run build-local-backend && serve -s build
-    ```
+The stable build has the following characteristics:
+- More optimized and faster compared to the dev application
+- Google login works correctly (doesn't throw error when there is no error after a successful login)
+- But 404 page doesn't work
 
 ## 4.3. Production Deployment
 CITIESair front-end application is deployed on GitHub in this repo. The domain (citiesair.com) is managed in [name.com](https://www.name.com/). To deploy changes to the production website, simply run `npm run deploy` in development environment.

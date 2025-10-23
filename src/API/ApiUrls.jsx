@@ -1,11 +1,12 @@
-import { API_CITIESair_URL } from "../Utils/GlobalVariables";
 import { GeneralAPIendpoints } from "./Utils";
+
+const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const getAlertsApiUrl = ({ endpoint, school_id, alert_id }) => {
   if (endpoint !== GeneralAPIendpoints.alerts) return;
 
   // Build the base URL and optionally append the alert_id if provided
-  const baseUrl = `${API_CITIESair_URL}/${endpoint}/${school_id}`;
+  const baseUrl = `${REACT_APP_BACKEND_URL}/${endpoint}/${school_id}`;
   return alert_id ? `${baseUrl}/${alert_id}` : baseUrl;
 };
 
@@ -22,10 +23,10 @@ export const getApiUrl = ({
     case GeneralAPIendpoints.schoolmetadata:
     case GeneralAPIendpoints.chartdata:
     case GeneralAPIendpoints.alertsEmails:
-      return `${API_CITIESair_URL}/${endpoint}/${school_id}`;
+      return `${REACT_APP_BACKEND_URL}/${endpoint}/${school_id}`;
 
     case GeneralAPIendpoints.screen: {
-      const path = [API_CITIESair_URL, endpoint, school_id, screen_id]
+      const path = [REACT_APP_BACKEND_URL, endpoint, school_id, screen_id]
         .filter(Boolean) // removes undefined or null values
         .join('/');
 
@@ -38,7 +39,7 @@ export const getApiUrl = ({
     }
 
     default:
-      return `${API_CITIESair_URL}/${endpoint}`;
+      return `${REACT_APP_BACKEND_URL}/${endpoint}`;
   }
 }
 
@@ -49,9 +50,9 @@ export const getChartApiUrl = (props) => {
     Object.entries(queryParams ?? {}).filter(([_, v]) => v != null && v !== '')
   );
 
-  return `${API_CITIESair_URL}/${endpoint}/${school_id}${params.toString() ? `?${params}` : ''}`;
+  return `${REACT_APP_BACKEND_URL}/${endpoint}/${school_id}${params.toString() ? `?${params}` : ''}`;
 };
 
 export const getRawDatasetUrl = ({ school_id, sensor_location_short, aggregationType, isSample = true }) => {
-  return `${API_CITIESair_URL}/${GeneralAPIendpoints.raw}/${school_id}/${sensor_location_short}/${aggregationType}?isSample=${isSample}`;
+  return `${REACT_APP_BACKEND_URL}/${GeneralAPIendpoints.raw}/${school_id}/${sensor_location_short}/${aggregationType}?isSample=${isSample}`;
 }
