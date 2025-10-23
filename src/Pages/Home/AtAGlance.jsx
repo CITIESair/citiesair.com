@@ -51,7 +51,7 @@ const ByTheNumber = (props) => {
 
       <Typography
         color="text.secondary"
-        sx={{ typography: { xs: "body2", sm: "h6", lg: "h5" } }}
+        sx={{ typography: { xs: "body1", sm: "h6" } }}
         textTransform="uppercase"
       >
         <Box fontWeight="400">
@@ -80,7 +80,7 @@ const AtAGlance = () => {
       container
       justifyContent="center"
       textAlign="center"
-      gap={1}
+      rowGap={1}
       m={0}
     >
       {sectionData.atAGlance.content.map((item, index) => (
@@ -89,8 +89,8 @@ const AtAGlance = () => {
           item
           justifyContent="center"
           alignItems="center"
-          sm={2.75}
-          xs={5.5}
+          sm={3}
+          xs={6}
         >
           <ByTheNumber
             iconString={item.icon}
