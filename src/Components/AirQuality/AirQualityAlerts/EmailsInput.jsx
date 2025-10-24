@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Box, TextField, Chip, Menu, MenuItem, Grid, Typography, Button, Stack, useMediaQuery, Alert, Tooltip, Link, CircularProgress } from '@mui/material';
 import { fetchDataFromURL } from "../../../API/ApiFetch";
 import { RESTmethods } from "../../../API/Utils";
@@ -16,7 +16,7 @@ const compareArrays = (arr1, arr2) => {
 }
 
 const EmailsInput = () => {
-  const { enqueueSnackbar } = useSnackbar()
+  const { enqueueSnackbar } = useSnackbar();
 
   const { currentSchoolID } = useContext(DashboardContext);
   const { data: alertEmails = [] } = useQuery({
@@ -77,36 +77,43 @@ const EmailsInput = () => {
 
   useEffect(() => {
     setEmailsListChanged(!compareArrays(localEmails, alertEmails));
-  }, [localEmails]);
+  }, [localEmails, alertEmails]);
 
   useEffect(() => {
     setSaveButtonTooltipTitle(emailsListChanged ? "Click to save new changes on server" : "No changes detected to save");
   }, [emailsListChanged]);
 
-  const handleAddEmail = (passedEmail) => {
-    const email = passedEmail.trim().toLowerCase();
+  const handleAddEmail = (passedEmail, isBulkAdding = false) => {
+    let email = passedEmail.trim().toLowerCase();
 
-    // If email address follows email format
-    if (validateEmail(email)) {
-      const newEmails = [...localEmails, email];
-
-      // Make sure currentEmail hasn't been added before
-      if (localEmails.includes(email)) {
-        enqueueSnackbar(`Already added: ${email}`, SnackbarMetadata.error);
-        setCurrentEmail('');
-        return;
-      }
-
-      // Display alert if reached maximum number of email recipients
-      if (newEmails.length === maxEmails) {
-        enqueueSnackbar('Maximum number of recipients reached', SnackbarMetadata.warning);
-      }
-
-      setLocalEmails(newEmails);
-      setCurrentEmail('');
-    } else {
-      enqueueSnackbar('Invalid email address. Valid format: abc@def.xyz', SnackbarMetadata.error);
+    // Strip <> if present
+    if (email.startsWith('<') && email.endsWith('>')) {
+      email = email.slice(1, -1).trim();
     }
+
+    // Skip if email is empty
+    if (!email) return;
+
+    // If email is invalid
+    if (!validateEmail(email)) {
+      if (!isBulkAdding) enqueueSnackbar(`Invalid email address: ${email}`, SnackbarMetadata.error);
+      return;
+    }
+
+    // Skip if email already exists
+    if (localEmails.includes(email)) {
+      enqueueSnackbar(isBulkAdding ? `Some pasted email addresses already existed` : `Already existed: ${email}`, SnackbarMetadata.error);
+      return;
+    }
+
+    // Add email if max not reached
+    if (localEmails.length >= maxEmails) {
+      enqueueSnackbar('Maximum number of recipients reached', SnackbarMetadata.warning);
+      return;
+    }
+
+    setLocalEmails(prev => [...prev, email]);
+    setCurrentEmail('');
   };
 
   const handleDeleteEmail = (index) => {
@@ -119,6 +126,108 @@ const EmailsInput = () => {
     handleDeleteEmail(index);
   };
 
+  const handleCopyEmail = (index) => {
+    const emailToCopy = localEmails[index];
+    if (!emailToCopy) return;
+
+    navigator.clipboard.writeText(emailToCopy)
+      .then(() => {
+        enqueueSnackbar(`Copied to clipboard: ${emailToCopy}`, SnackbarMetadata.success);
+      })
+      .catch(() => {
+        enqueueSnackbar('Failed to copy email to clipboard.', SnackbarMetadata.error);
+      });
+  };
+
+  const wrapperRef = useRef(null);
+  const inputRef = useRef(null);
+  const prevInputRef = useRef('');
+  const [allSelected, setAllSelected] = useState(false);
+
+  // Document-level keyboard handler
+  useEffect(() => {
+    const handleGlobalKeyDown = (e) => {
+      if (!e?.key) return;
+
+      const key = e.key.toLowerCase();
+      const isMeta = e.metaKey || e.ctrlKey;
+      const active = document.activeElement;
+      const isInputFocused = active === inputRef.current;
+
+      // 1️⃣ Select All (Cmd/Ctrl + A)
+      if (isMeta && key === 'a') {
+        // only when input is empty
+        if (isInputFocused && currentEmail.trim() === '') {
+          e.preventDefault();
+          setAllSelected(true);
+
+          // move focus to wrapper for subsequent keys
+          if (wrapperRef.current) wrapperRef.current.focus({ preventScroll: true });
+        }
+        return;
+      }
+
+      // 2️⃣ Copy (Cmd/Ctrl + C)
+      if (isMeta && key === 'c' && allSelected) {
+        e.preventDefault();
+        if (localEmails.length === 0) {
+          enqueueSnackbar('No emails to copy.', SnackbarMetadata.warning);
+          return;
+        }
+
+        navigator.clipboard.writeText(localEmails.join(', '))
+          .then(() => enqueueSnackbar('All emails copied to clipboard.', SnackbarMetadata.success))
+          .catch(() => enqueueSnackbar('Failed to copy emails.', SnackbarMetadata.error));
+        return;
+      }
+
+      // 3️⃣ Delete all (Backspace or Delete)
+      if (allSelected && (key === 'backspace' || key === 'delete')) {
+        e.preventDefault();
+        if (localEmails.length === 0) return;
+
+        setLocalEmails([]);
+        setAllSelected(false);
+        enqueueSnackbar('All emails deleted.', SnackbarMetadata.info);
+        return;
+      }
+
+      // 4️⃣ Escape clears selection
+      if (key === 'escape' && allSelected) {
+        e.preventDefault();
+        setAllSelected(false);
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [currentEmail, allSelected, localEmails, enqueueSnackbar]);
+
+
+  // Clear selection on click outside of wrapper (or any click that isn't selecting)
+  useEffect(() => {
+    const handleDocumentClick = (e) => {
+      if (!wrapperRef.current) return;
+
+      // if click is inside wrapper, do nothing (we keep selection)
+      if (wrapperRef.current.contains(e.target)) return;
+
+      // clicking outside clears selection
+      if (allSelected) setAllSelected(false);
+    };
+
+    document.addEventListener('mousedown', handleDocumentClick);
+    return () => document.removeEventListener('mousedown', handleDocumentClick);
+  }, [allSelected]);
+
+  // Optional: clear selection when editing or adding a new email
+  useEffect(() => {
+    if (currentEmail !== '' && allSelected) {
+      setAllSelected(false);
+    }
+  }, [currentEmail, allSelected]);
+
   const handleMenuOpen = (event, index) => {
     setMenuAnchor({ index, element: event.currentTarget });
   };
@@ -129,9 +238,15 @@ const EmailsInput = () => {
 
   const handlePaste = (event) => {
     const pastedText = event.clipboardData.getData('text');
-    setCurrentEmail(pastedText);
-    handleAddEmail(pastedText);
     event.preventDefault();
+
+    const emails = pastedText
+      .split(/[\s,;\t]+/) // splits on comma, semicolon, any whitespace, or tab
+      .map(email => email.trim())
+      .filter(email => email !== '');
+
+    emails.forEach(email => handleAddEmail(email, emails.length > 1));
+    setCurrentEmail(''); // clear input after pasting
   };
 
   const handleSaveEmails = (_emails) => {
@@ -176,6 +291,9 @@ const EmailsInput = () => {
           }}
         >
           <Grid
+            ref={wrapperRef}
+            id="emails-container"
+            tabIndex={-1} // focusable programmatically
             container
             alignItems="center"
             sx={{
@@ -183,7 +301,8 @@ const EmailsInput = () => {
               borderRadius: 2,
               p: 0.5,
               flexWrap: 'wrap',
-              width: '100%'
+              width: '100%',
+              outline: 'none'
             }}
           >
             {localEmails.map((email, index) => (
@@ -192,24 +311,53 @@ const EmailsInput = () => {
                   label={email}
                   onDelete={() => handleDeleteEmail(index)}
                   onClick={(event) => handleMenuOpen(event, index)}
+                  onContextMenu={(event) => {
+                    event.preventDefault();
+                    handleMenuOpen(event, index)
+                  }}
+                  color={allSelected || (Boolean(menuAnchor) && menuAnchor.index === index) ? "primary" : "default"}
                 />
               </Grid>
-            )
-            )}
+            ))}
+
             {
               localEmails.length < maxEmails ? (
                 <Grid item xs={12} sm minWidth="200px" >
                   <TextField
+                    inputRef={inputRef}
                     fullWidth
                     variant="standard"
                     value={currentEmail}
                     onChange={(e) => {
                       const tmp = e.target.value;
+                      const native = e.nativeEvent || {};
+                      const inputType = (native.inputType || '').toString();
+                      const isComposing = !!native.isComposing || !!e.isComposing;
+
                       setCurrentEmail(tmp);
                       if (tmp !== '') {
-                        setSaveButtonTooltipTitle("Finalize currently edited email by pressing Enter/Return")
+                        setSaveButtonTooltipTitle("Finalize currently edited email by pressing Enter/Return");
                       }
+
+                      if (isComposing) {
+                        prevInputRef.current = tmp;
+                        return;
+                      }
+
+                      const maybeEmail = tmp.trim();
+
+                      // Only trigger on autofill-like updates, paste, or other non-manual input
+                      const autofillLike = /insertReplacementText|insertFromPaste|insertFromDrop|insertFromAutocomplete/i.test(inputType);
+                      const jumpedIn = prevInputRef.current === '' && tmp.length > 1 && inputType !== 'insertText';
+
+                      if (validateEmail(maybeEmail) && (autofillLike || jumpedIn)) {
+                        // Let autofill finish internal update before adding
+                        setTimeout(() => handleAddEmail(tmp), 0);
+                      }
+
+                      prevInputRef.current = tmp;
                     }}
+
                     onKeyUp={(e) => {
                       if (['Enter', 'Spacebar', ' '].includes(e.key)) {
                         handleAddEmail(currentEmail);
@@ -230,6 +378,7 @@ const EmailsInput = () => {
             }
           </Grid>
         </Grid>
+
       </Grid>
 
       <Stack sx={{ mt: 1 }} spacing={1} alignItems={smallScreen ? "stretch" : "end"}>
@@ -257,7 +406,6 @@ const EmailsInput = () => {
             Clear All
           </Link>
         </Stack>
-
 
         {
           alertEmails.length === 0 ?
@@ -300,6 +448,15 @@ const EmailsInput = () => {
           }}
         >
           Edit
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            handleCopyEmail(menuAnchor.index);
+            handleMenuClose();
+          }}
+        >
+          Copy
         </MenuItem>
       </Menu>
     </Box>
