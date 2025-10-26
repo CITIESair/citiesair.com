@@ -108,7 +108,20 @@ The `Routes` defined in [`App.jsx`](src/App.jsx) correspond to these pages. *For
 
 1. Clone the repository from GitHub.
 
-2. Run the following command to install the dependencies:
+2. Add the following two .env files to the root:
+  - .env.front-dev-back-prod:
+    ```
+    REACT_APP_ENV=development
+    REACT_APP_BACKEND_URL=[Backend Server IP/Domain]
+    ```
+
+  - .env.front-prod-back-prod
+    ```
+    REACT_APP_ENV=production
+    REACT_APP_BACKEND_URL=[Backend Server IP/Domain]
+    ```
+
+3. Run the following command to install the dependencies:
 
     ```
     npm install
@@ -119,10 +132,10 @@ Run the application either of these several configurations:
 
 | Frontend | Backend | Command | Comment |
 |----------|---------|---------|---------|
-| Dev (no query caching) | [Backend IP Address] | npm run start --env=front-dev-back-prod | **[DEFAULT]** Best used to avoid caching in frontend while using most up-to-date data from prod backend |
+| Dev (no query caching) | [Backend Server IP/Domain] | npm run start --env=front-dev-back-prod | **[DEFAULT]** Best used to avoid caching in frontend while using most up-to-date data from prod backend |
 | Dev (no query caching) | localhost:3001 | npm run start --env=front-dev-back-dev | Best used when developing both frontend and backend at the same time |
 | Prod (uses query caching) | localhost:3001 | npm run start --env=front-prod-back-dev | Not sure when it'll ever be useful |
-| Prod | [Backend IP Address] | npm run start --env=front-prod-back-prod | **[ACTUAL PROD]** Best used to verify everything works as intended before deploying to PROD (exact setup used for PROD) |
+| Prod | [Backend Server IP/Domain] | npm run start --env=front-prod-back-prod | **[ACTUAL PROD]** Best used to verify everything works as intended before deploying to PROD (exact setup used for PROD) |
 
 **[IMPORTANT]** If you want to run a stable build, run the below instead:
 
