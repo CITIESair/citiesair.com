@@ -72,8 +72,8 @@ export function DashboardProvider({ children }) {
   useEffect(() => {
     if (!authenticationState.checkedAuthentication || !isValidArray(user.allowedSchools)) return;
 
-    // CASE: NYUAD BANNER
-    if (locationPath === AppRoutes.nyuadBanner) {
+    // CASE: NYUAD
+    if ([AppRoutes.nyuadBanner, AppRoutes.nyuadScreen, AppRoutes.nyuadMap].includes(locationPath)) {
       setCurrentSchoolID(NYUAD);
       return;
     }
