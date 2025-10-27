@@ -1,5 +1,5 @@
 
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Container, Box, Grid, Typography, Stack, Tooltip } from '@mui/material/';
 import { useMediaQuery, useTheme } from '@mui/material';
 
@@ -47,19 +47,29 @@ const CurrentAQIMapWithGrid = (props) => {
     // --- This is needed because Leaflet map won't correctly resize otherwise if data from currentSensorsData is passed directly
     // (Leaflet + React Querry's quirk)
     const [mapData, setMapData] = useState(null);
-    // Reset map data on schoolID change
+    const timeoutRef = useRef(null);
+
     useEffect(() => {
+        // Whenever schoolID changes, clear pending updates and reset map data
         setMapData(null);
-    }, [schoolID]);
-    // Set mapData when new data arrives, with a short delay
-    useEffect(() => {
-        if (currentSensorsData) {
-            const timer = setTimeout(() => {
-                setMapData({ ...currentSensorsData });
-            }, 100);
-            return () => clearTimeout(timer);
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
         }
-    }, [currentSensorsData]);
+
+        // Only schedule new map data update if we have currentSensorsData
+        if (currentSensorsData) {
+            timeoutRef.current = setTimeout(() => {
+                setMapData({ ...currentSensorsData });
+            }, 200);
+        }
+
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, [schoolID, currentSensorsData]);
+
 
     const { themePreference } = useContext(PreferenceContext);
     const isNYUAD = schoolID === NYUAD;

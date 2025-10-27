@@ -68,7 +68,7 @@ export const returnCustomStaticRanges = ({ minDateOfDataset, aggregationType }) 
 export const AggregationTypeMetadata = {
   [AggregationType.minute]: {
     maxDays: 2,
-    label: "Real-time"
+    label: "Live"
   },
   [AggregationType.hour]: {
     maxDays: 30,

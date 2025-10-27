@@ -137,7 +137,7 @@ function Home({ temperatureUnitPreference, title }) {
   }, [setCurrentPage, setChartsTitlesList]);
 
   const { currentSchoolID } = useContext(DashboardContext);
-  const { data: currentSensorsData } = useCurrentSensorsData();
+  const { data: currentSensorsData } = useCurrentSensorsData(currentSchoolID || NYUAD);
   const { data: schoolMetadata } = useSchoolMetadata();
   const { authenticationState, user } = useContext(UserContext);
 

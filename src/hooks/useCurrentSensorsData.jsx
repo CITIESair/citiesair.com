@@ -4,8 +4,7 @@ import { useContext } from 'react';
 import { fetchAndProcessCurrentSensorsData } from '../API/ApiFetch';
 import { DashboardContext } from '../ContextProviders/DashboardContext';
 import { getApiUrl } from '../API/ApiUrls';
-import { CURRENT_DATA_EXPIRATION_TIME_MS, KAMPALA } from '../Utils/GlobalVariables';
-import AggregationType from '../Components/DateRangePicker/AggregationType';
+import { CURRENT_DATA_EXPIRATION_TIME_MS } from '../Utils/GlobalVariables';
 import { GeneralAPIendpoints } from '../API/Utils';
 
 const useCurrentSensorsData = (schoolID = null) => {
@@ -19,11 +18,7 @@ const useCurrentSensorsData = (schoolID = null) => {
                 school_id: schoolID || currentSchoolID
             });
 
-            // aggregationType is necessary here to determine the appropriate SensorStatus based on last_seen (active/offline)
-            return fetchAndProcessCurrentSensorsData({
-                url,
-                aggregationType: currentSchoolID === KAMPALA ? AggregationType.hour : null
-            });
+            return fetchAndProcessCurrentSensorsData({ url });
         },
         enabled: !!currentSchoolID, // only run when ready
         staleTime: CURRENT_DATA_EXPIRATION_TIME_MS,

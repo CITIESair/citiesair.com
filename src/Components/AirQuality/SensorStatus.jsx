@@ -9,7 +9,7 @@ export const SensorStatus = {
   unknown: "unknown"
 };
 
-const SensorStatusCriteria = (aggregationType = null) => {
+const SensorStatusCriteria = (aggregationType = AggregationType.minute) => {
   const isHourly = aggregationType === AggregationType.hour;
 
   const activeHigh = isHourly ? 6 * 60 : 2 * 60; // in minutes
@@ -40,7 +40,7 @@ const SensorStatusCriteria = (aggregationType = null) => {
   ];
 };
 
-export const calculateSensorStatus = (lastSeenInMinutes, aggregationType) => {
+export const calculateSensorStatus = (lastSeenInMinutes, aggregationType = AggregationType.minute) => {
   const match = SensorStatusCriteria(aggregationType).find(({ cutoffInMinutes: { low, high } }) =>
     lastSeenInMinutes >= low && lastSeenInMinutes <= high
   );
