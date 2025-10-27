@@ -18,6 +18,7 @@ import { PreferenceContext } from '../../../ContextProviders/PreferenceContext';
 import { calculateCenterAndBounds, disableInteractionParameters, disableZoomParameters, FitMapToDatapoints, getMiniMapColors, getTileUrl, LocationTitles, MapPlaceholder, POSITION_CLASSES, tileAccessToken, tileAttribution, TileOptions } from './AirQualityMapUtils';
 import { isValidArray } from '../../../Utils/UtilFunctions';
 import LoadingAnimation from '../../LoadingAnimation';
+import { DataTypeKeys } from '../../../Utils/AirQuality/DataTypes';
 
 const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
     '& .leaflet-popup-tip-container': {
@@ -402,19 +403,24 @@ const AQImap = (props) => {
                                             {displayPM2_5(location)}
                                         </Typography>
 
-                                        <Typography
-                                            variant="caption"
-                                            sx={{ display: 'block' }}
-                                        >
-                                            <Typography variant='caption' fontWeight="500">Weather: </Typography>
-                                            {getFormattedTemperature({
-                                                rawTemp: location.current?.temperature,
-                                                currentUnit: TemperatureUnits.celsius,
-                                                returnUnit: temperatureUnitPreference
-                                            })}
-                                            &nbsp;-&nbsp;
-                                            {location.current?.rel_humidity ? Math.round(location.current?.rel_humidity) : "--"}%
-                                        </Typography>
+                                        {
+                                            location.sensor?.allowedDataTypes?.includes(DataTypeKeys.temperature_C) && (
+                                                <Typography
+                                                    variant="caption"
+                                                    sx={{ display: 'block' }}
+                                                >
+                                                    <Typography variant='caption' fontWeight="500">Weather: </Typography>
+                                                    {getFormattedTemperature({
+                                                        rawTemp: location.current?.temperature,
+                                                        currentUnit: TemperatureUnits.celsius,
+                                                        returnUnit: temperatureUnitPreference
+                                                    })}
+                                                    &nbsp;-&nbsp;
+                                                    {location.current?.rel_humidity ? Math.round(location.current?.rel_humidity) : "--"}%
+                                                </Typography>
+                                            )
+                                        }
+
 
                                         <Typography variant="caption">
                                             <Typography variant='caption' fontWeight="500">Status:</Typography>

@@ -12,7 +12,6 @@ import { capitalizePhrase, getTranslation } from '../../../Utils/UtilFunctions';
 import { INACTIVE_SENSOR_COLORS } from '../../../Themes/CustomColors';
 import { useTheme } from '@mui/material';
 import { PreferenceContext } from '../../../ContextProviders/PreferenceContext';
-import AggregationType from '../../DateRangePicker/AggregationType';
 
 const numberOfHoursForHistoricalData = 6;
 
@@ -52,8 +51,7 @@ const RecentHistoricalGraph = (props) => {
     if (!layerLines.current) return;
 
     const viewHours = data?.[0]?.metadata?.viewHours || numberOfHoursForHistoricalData;
-    const aggregationType = data?.[0]?.metadata?.aggregationType;
-    const xTickInterval = aggregationType === AggregationType.hour ? 4 : 1; // every 4 hours for .hour and 1 hour otherwise
+    const xTickInterval = Math.floor(viewHours / 6);
 
     width = graphContainer.current.clientWidth;
     height = graphContainer.current.clientHeight - margin.top;

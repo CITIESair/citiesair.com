@@ -88,7 +88,7 @@ export const fetchDataFromURL = async ({
   }
 };
 
-export const fetchAndProcessCurrentSensorsData = async ({ url, aggregationType = null }) => {
+export const fetchAndProcessCurrentSensorsData = async ({ url }) => {
   try {
     const data = await fetchDataFromURL({ url });
 
@@ -100,14 +100,15 @@ export const fetchAndProcessCurrentSensorsData = async ({ url, aggregationType =
       Object.entries(data).forEach(([_, sensorData]) => {
         // Calculate if the sensor is currently active or not
         const now = new Date();
-        const lastSeenTimestamp = new Date(sensorData.sensor?.last_seen || sensorData.current?.timestamp);
+        const lastSeen = sensorData.sensor?.last_seen || sensorData.current?.timestamp;
+        const lastSeenTimestamp = new Date(lastSeen);
         const lastSeenInMinutes = Math.round((now - lastSeenTimestamp) / 1000 / 60);
 
         // Update sensor metadata
         sensorData.sensor = {
           ...sensorData.sensor,
-          lastSeenInMinutes,
-          sensor_status: calculateSensorStatus(lastSeenInMinutes, aggregationType)
+          lastSeenInMinutes: lastSeenInMinutes > 10 * 365 * 24 * 60 ? null : lastSeenInMinutes, // if more than 10 years (likely UNIX time = 0), then return null
+          sensor_status: calculateSensorStatus(lastSeenInMinutes)
         }
       });
 

@@ -4,9 +4,6 @@ import { keyframes } from '@mui/system';
 
 import AggregationType from './AggregationType';
 import { AggregationTypeMetadata } from './DateRangePickerUtils';
-import { useContext } from 'react';
-import { DashboardContext } from '../../ContextProviders/DashboardContext';
-import { KAMPALA } from '../../Utils/GlobalVariables';
 import { useTheme } from '@emotion/react';
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import { AQI_Database } from '../../Utils/AirQuality/AirQualityIndexHelper';
@@ -18,19 +15,10 @@ const pulse = keyframes`
 `;
 
 export default function AggregationTypeToggle({ aggregationType, setAggregationType }) {
-  const { currentSchoolID } = useContext(DashboardContext);
   const theme = useTheme();
 
   const isLargeScreen = useMediaQuery(theme => theme.breakpoints.up('lg'));
   const extraSmallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
-
-  // Filter out AggregationType.minute if the school is Kampala
-  const aggregationTypesToShow = Object.values(AggregationType).filter(type => {
-    if (currentSchoolID === KAMPALA && type === AggregationType.minute) {
-      return false;
-    }
-    return true;
-  });
 
   const handleChange = (_, newType) => {
     if (newType !== null) {
@@ -51,7 +39,7 @@ export default function AggregationTypeToggle({ aggregationType, setAggregationT
       sx={{ height: "100%", [theme.breakpoints.down('sm')]: { width: '100%' } }}
       orientation={isLargeScreen ? "vertical" : "horizontal"}
     >
-      {Object.values(aggregationTypesToShow).map(type => (
+      {Object.values(AggregationType).map(type => (
         <ToggleButton
           key={type}
           size="small"

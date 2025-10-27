@@ -27,7 +27,6 @@ import sectionData from '../section_data.json';
 import ScreenQRcode from '../Components/AirQuality/AirQualityScreen/ScreenQRcode';
 import ScreenHealthSuggestions from '../Components/AirQuality/AirQualityScreen/ScreenHealthSuggestions';
 import { TypesOfScreen } from '../Components/AirQuality/AirQualityScreen/ScreenUtils';
-import AggregationType from '../Components/DateRangePicker/AggregationType';
 import { ScreenContext } from '../ContextProviders/ScreenContext';
 import useSchoolMetadata from '../hooks/useSchoolMetadata';
 import { useQuery } from '@tanstack/react-query';
@@ -42,19 +41,22 @@ const Screen = ({ title }) => {
   const { data: schoolMetadata } = useSchoolMetadata();
   const school_id = school_id_param || currentSchoolID;
   const screen_id = screen_id_param || "screen";
-  const aggregationType = school_id === KAMPALA ? AggregationType.hour : null;
+  const queryParams = {
+    hoursToShow: school_id === KAMPALA ? 12 : null
+  };
 
   const url = getApiUrl({
     endpoint: GeneralAPIendpoints.screen,
     school_id,
-    screen_id: screen_id_param,
-    aggregationType,
+    screen_id,
+    queryParams
   });
 
+
   const { data } = useQuery({
-    queryKey: [GeneralAPIendpoints.screen, school_id, screen_id],
+    queryKey: [GeneralAPIendpoints.screen, school_id, screen_id, queryParams],
     queryFn: async () => {
-      const screenData = await fetchAndProcessCurrentSensorsData({ url, aggregationType });
+      const screenData = await fetchAndProcessCurrentSensorsData({ url });
 
       // Determine the type of screen
       const hasOutdoor = screenData.some(({ sensor }) => sensor.location_type === "outdoors");
