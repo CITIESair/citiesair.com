@@ -12,7 +12,6 @@ import { capitalizePhrase, getTranslation } from '../../../Utils/UtilFunctions';
 import { INACTIVE_SENSOR_COLORS } from '../../../Themes/CustomColors';
 import { useTheme } from '@mui/material';
 import { PreferenceContext } from '../../../ContextProviders/PreferenceContext';
-import AggregationType from '../../DateRangePicker/AggregationType';
 
 const numberOfHoursForHistoricalData = 6;
 
