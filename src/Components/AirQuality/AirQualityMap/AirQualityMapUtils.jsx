@@ -158,3 +158,31 @@ const getAdaptivePaddingFactor = (range) => {
     if (range < 5) return 0.5;  // regional
     return 0.1; // continental/global
 };
+
+const emptyValue = "--";
+
+export const displayAqiValue = (location) => {
+    if (
+        !location.current ||
+        location.current?.aqi == null ||
+        location.current?.aqi.val == null
+    ) return emptyValue;
+
+    return location.current?.aqi.val;
+};
+
+export const displayAqiCategory = (location) => {
+    if (!location.current || !location.current?.aqi) return emptyValue;
+
+    return location.current.aqi.category;
+}
+
+export const displayPM2_5 = (location) => {
+    if (!location.current || !location.current?.["pm2.5"]) return emptyValue;
+
+    return (
+        <>
+            {location.current["pm2.5"]} µg/m<sup>3</sup>
+        </>
+    )
+}

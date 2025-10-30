@@ -112,6 +112,7 @@ const NYUADScreen = () => {
                     <Box width="100%" flex={1} my={1}>
                         <AQImap
                             tileOption={TileOptions.nyuad}
+                            shouldCluster={false}
                             themePreference={ThemePreferences.light}
                             defaultZoom={17.5}
                             minZoom={17.5}

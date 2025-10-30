@@ -59,7 +59,7 @@ const CurrentAQIMapWithGrid = (props) => {
         // Only schedule new map data update if we have currentSensorsData
         if (currentSensorsData) {
             timeoutRef.current = setTimeout(() => {
-                setMapData({ ...currentSensorsData });
+                setMapData([...currentSensorsData]);
             }, 200);
         }
 
@@ -122,6 +122,7 @@ const CurrentAQIMapWithGrid = (props) => {
                 >
                     <AQImap
                         tileOption={isNYUAD ? TileOptions.nyuad : TileOptions.default}
+                        shouldCluster={!isNYUAD}
                         themePreference={isOnBannerPage ? ThemePreferences.light : themePreference}
                         centerCoordinates={
                             isNYUAD ?

@@ -11,6 +11,7 @@ const NYUADmap = () => {
     <FullWidthBox width="100%" height="100vh" backgroundColor='customAlternateBackground'>
       <AQImap
         tileOption={TileOptions.nyuad}
+        shouldCluster={false}
         defaultZoom={16.25}
         minZoom={16.25}
         maxZoom={16.25}
