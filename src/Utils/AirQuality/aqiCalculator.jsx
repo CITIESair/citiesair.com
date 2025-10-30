@@ -26,11 +26,12 @@ export function calculateAQI(val, dataType) {
         if (val >= rawMeasurementLowBreakpoint && val <= rawMeasurementHighBreakpoint) {
             if (rawMeasurementHighBreakpoint === Infinity) {
                 const previousCategory = AQI_Database[i - 1];
+
                 rawMeasurementHighBreakpoint = previousCategory[dataType].high;
                 rawMeasurementLowBreakpoint = previousCategory[dataType].low;
 
-                aqiHighBreakpoint = previousCategory[DataTypeKeys.aqi].high;
-                aqiLowBreakpoint = previousCategory[DataTypeKeys.aqi].low;
+                aqiHighBreakpoint = previousCategory[DataTypes[DataTypeKeys.aqi].threshold_mapping_name].high;
+                aqiLowBreakpoint = previousCategory[DataTypes[DataTypeKeys.aqi].threshold_mapping_name].low;
             }
 
             const aqi = linearPieceWise(

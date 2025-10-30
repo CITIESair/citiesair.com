@@ -217,26 +217,36 @@ const AQImap = (props) => {
     }
 
     const createClusterCustomIcon = (cluster) => {
+        // Average PM2.5 for this cluster for AQI calculation 
         const values = cluster
             .getAllChildMarkers()
             .map(m => m?.options?.options?.[DataTypeKeys.pm2_5])   // get raw value (string or number)
             .map(v => (v != null ? Number(v) : NaN))              // convert to Number, null/undefined → NaN
             .filter(Number.isFinite);                             // keep only valid numbers
-
-        const avg = values.length ? values.reduce((a, b) => a + b) / values.length : null;
-        const rounded = Number.isFinite(avg) ? Math.round(avg * 10) / 10 : null;
-
+        const avgPM25 = values.length ? values.reduce((a, b) => a + b) / values.length : null;
+        const roundedPM25 = Number.isFinite(avgPM25) ? Math.round(avgPM25 * 10) / 10 : null;
         const { aqi, category, categoryIndex } =
-            calculateAQI(rounded, DataTypes[DataTypeKeys.pm2_5].threshold_mapping_name);
+            calculateAQI(roundedPM25, DataTypes[DataTypeKeys.pm2_5].threshold_mapping_name);
 
-        const aqiObject = {
-            current: { aqi: { ...category, ...categoryIndex, val: aqi } },
-        };
+        // Aggregate sensor status: at least one sensor active -> this cluster active
+        const allStatuses = cluster
+            .getAllChildMarkers()
+            .map(m => m?.options?.options?.sensor_status)
+            .filter(status => status != null);
+        const aggregatedStatus = allStatuses.includes(SensorStatus.active)
+            ? SensorStatus.active
+            : SensorStatus.offline;
 
-        const markerColor = categoryIndex != null ? theme.palette.text.aqi[categoryIndex]
+        const markerColor = (categoryIndex != null && aggregatedStatus === SensorStatus.active) ? theme.palette.text.aqi[categoryIndex]
             : theme.palette.text.aqi[SensorStatus.offline];
 
-        return getAQIDivIcon({ theme, numChildCluster: cluster.getChildCount(), markerSizeInRem, markerColor, location: aqiObject });
+        return getAQIDivIcon({
+            theme, markerSizeInRem, markerColor,
+            numChildCluster: cluster.getChildCount(),
+            location: {
+                current: { aqi: { ...category, ...categoryIndex, val: aqi } }
+            }
+        });
     };
 
     return (
@@ -365,7 +375,10 @@ const AQImap = (props) => {
                                 <Marker
                                     key={index}
                                     position={[location.sensor?.coordinates?.latitude, location.sensor?.coordinates?.longitude]}
-                                    options={{ [DataTypeKeys.pm2_5]: location.current?.[DataTypeKeys.pm2_5] }}
+                                    options={{
+                                        [DataTypeKeys.pm2_5]: location.current?.[DataTypeKeys.pm2_5],
+                                        sensor_status: location?.sensor?.sensor_status
+                                    }}
                                     icon={markerIcon}
                                     zIndexOffset={index}
                                     riseOnHover={true}
