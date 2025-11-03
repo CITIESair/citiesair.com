@@ -289,7 +289,7 @@ export const addTouchEventListenerForChartControl = ({ controlWrapper, chartID }
   let isMounted = true; // Flag to track component's mount status
   if (!controlWrapper) return;
 
-  const controlDOM = document.querySelector(`#control-${chartID}`);
+  const controlDOM = document.querySelector(`#other-chart-control-${chartID}`);
   if (!controlDOM) return;
 
   ['touchstart', 'touchmove', 'touchend', 'touchcancel']
