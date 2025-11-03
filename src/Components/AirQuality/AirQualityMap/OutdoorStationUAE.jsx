@@ -1,4 +1,4 @@
-import { CITIESair } from "../../../Utils/GlobalVariables"
+import { CITIESair, CURRENT_DATA_EXPIRATION_TIME_MS } from "../../../Utils/GlobalVariables"
 import AQImap from "./AQImap"
 import { TileOptions } from './AirQualityMapUtils'
 
@@ -14,9 +14,9 @@ const OutdoorStationUAE = ({ overridenThemePreference }) => {
             const url = getApiUrl({ endpoint: GeneralAPIendpoints.map });
             return fetchAndProcessCurrentSensorsData({ url });
         },
-        staleTime: 1000 * 60 * 5,
-        refetchInterval: 1000 * 60 * 5, // actively refresh every 5 min
-        refetchOnWindowFocus: true, // optional: also refresh when user returns to tab
+        staleTime: CURRENT_DATA_EXPIRATION_TIME_MS,
+        refetchInterval: CURRENT_DATA_EXPIRATION_TIME_MS,
+        refetchOnWindowFocus: true,
         placeholderData: (prev) => prev
     });
 

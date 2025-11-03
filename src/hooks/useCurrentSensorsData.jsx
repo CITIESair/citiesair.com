@@ -23,6 +23,7 @@ const useCurrentSensorsData = (schoolID = null) => {
         enabled: !!currentSchoolID, // only run when ready
         staleTime: CURRENT_DATA_EXPIRATION_TIME_MS,
         refetchInterval: CURRENT_DATA_EXPIRATION_TIME_MS,
+        refetchOnWindowFocus: true,
         placeholderData: (prev) => prev // Keep data from previous queryKey to avoid flashing charts
     });
 }
