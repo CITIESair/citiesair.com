@@ -57,7 +57,7 @@ const Project = () => {
       <AirQualityIndexLegendQuickGlance />
 
       <FullWidthBox backgroundColor='customAlternateBackground'>
-        <Container sx={{ pt: 2, pb: 2 }}>
+        <Container sx={{ pt: 2 }}>
           <Grid container spacing={1.5} sx={{ mb: 4 }}>
             <Grid item xs={12}>
               <UppercaseTitle
@@ -77,30 +77,29 @@ const Project = () => {
               <ProjectReservedArea />
             </Grid>
           </Grid>
+        </Container>
 
-          {schoolMetadata?.has_map === true ?
-            (
-              <CurrentAQIMapWithGrid
+        {schoolMetadata?.has_map === true ?
+          (
+            <CurrentAQIMapWithGrid
+              currentSensorsData={currentSensorsData}
+              schoolID={currentSchoolID}
+              isOnBannerPage={false}
+              minMapHeight={"250px"}
+            />
+          ) : (
+            <Container sx={{ mb: 2 }}>
+              <CurrentAQIGrid
                 currentSensorsData={currentSensorsData}
-                schoolID={currentSchoolID}
-                isOnBannerPage={false}
-                minMapHeight={"250px"}
+                isScreen={false}
+                temperatureUnitPreference={temperatureUnitPreference}
               />
-            ) : (
-              <Box textAlign="center" sx={{ mb: 2 }}>
-                <CurrentAQIGrid
-                  currentSensorsData={currentSensorsData}
-                  isScreen={false}
-                  temperatureUnitPreference={temperatureUnitPreference}
-                />
-              </Box>
-            )
-          }
-
+            </Container>
+          )
+        }
+        <Container sx={{ pb: 2 }}>
           <ProjectDescription />
-
           <AQIexplanation />
-
         </Container>
       </FullWidthBox>
 

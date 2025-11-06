@@ -101,6 +101,9 @@ const AlertModificationDialog = (props) => {
               handleSuccess(passedCrudType);
 
               // 2. POST for child alert associated with this main alert (only if it exists)
+              // Child alerts only apply to threshold alerts, daily alerts don't have child
+              if (selectedAlert[AirQualityAlertKeys.alert_type] === AlertTypes.daily.id) return;
+
               const placeholder = getAlertDefaultPlaceholder(alertTypeKey);
               setSelectedAlert(placeholder);
               setEditingAlert(placeholder);
@@ -136,6 +139,9 @@ const AlertModificationDialog = (props) => {
               handleSuccess(passedCrudType);
 
               // 2. Editing for child alert associated with this main alert
+              // Child alerts only apply to threshold alerts, daily alerts don't have child
+              if (selectedAlert[AirQualityAlertKeys.alert_type] === AlertTypes.daily.id) return;
+
               const child_alert_id = editingAlert[AirQualityAlertKeys.child_alert]?.[AirQualityAlertKeys.id];
               // 2.1. There should NOT be child alert
               // (If child alert existed before but now is removed, then trigger deletion)
@@ -151,7 +157,6 @@ const AlertModificationDialog = (props) => {
                 );
               }
               // 2.2. There should be child alert
-
               else {
                 const formattedChildAlert = formatChildAlertBody(editingAlert, alert_id);
 
@@ -263,6 +268,8 @@ const AlertModificationDialog = (props) => {
           crudType === CrudTypes.edit ? (
             <AlertDeletionDialog
               onConfirmedDelete={() => {
+                // Only need one API call to delete the main alert
+                // any associated child alert will be automatically deleted by database (cascade delete)
                 deleteAlertMutation.mutate(
                   { alertId: selectedAlert.id },
                   {

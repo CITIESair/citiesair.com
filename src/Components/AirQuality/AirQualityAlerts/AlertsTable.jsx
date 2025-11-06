@@ -87,6 +87,8 @@ const AlertsTable = (props) => {
     const currentIsEnabled = alert[AirQualityAlertKeys.is_enabled];
     const newIsEnabled = !currentIsEnabled;
 
+    // Only need 1 API to modify isEnabled of the main alert
+    // any associated child alert doesn't need to update its `isEnabled` as child alert won't fire unless its parent alert fired before
     editAlertMutation.mutate(
       {
         alertId: alert[AirQualityAlertKeys.id],

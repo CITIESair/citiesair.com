@@ -33,6 +33,7 @@ const CurrentAQIGrid = (props) => {
       justifyContent="center"
       spacing={1}
       sx={{
+        textAlign: "center",
         '& .MuiSvgIcon-root': {
           verticalAlign: 'middle',
           fontSize: ElementSizes[size].icon
