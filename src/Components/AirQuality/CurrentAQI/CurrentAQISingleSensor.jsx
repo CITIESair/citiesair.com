@@ -77,16 +77,21 @@ const CurrentAQISingleSensor = (props) => {
                     </Box>
                 ) : null
             }
-            <Stack sx={{
-                '& *': {
-                    color:
-                        isScreen ? (
-                            sensor?.sensor_status === SensorStatus.active ?
-                                '#c8dcff' : INACTIVE_SENSOR_COLORS.screen
-                        )
-                            : 'text.secondary'
-                }, mt: ElementSizes[size].meteroDataMarginTop
-            }} className='condensedFont'>
+            <Stack
+                sx={{
+                    '& *': {
+                        color:
+                            isScreen ? (
+                                sensor?.sensor_status === SensorStatus.active ?
+                                    '#c8dcff' : INACTIVE_SENSOR_COLORS.screen
+                            )
+                                : 'text.secondary'
+                    }, mt: ElementSizes[size].meteroDataMarginTop
+                }}
+                className='condensedFont'
+                zIndex={10000}
+                position="relative"
+            >
                 {
                     sensor?.allowedDataTypes?.includes(DataTypeKeys.temperature_C) && <>
                         {

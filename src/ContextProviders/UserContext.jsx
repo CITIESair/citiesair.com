@@ -21,7 +21,7 @@ export function UserProvider({ children }) {
   useEffect(() => {
     if (authenticationState.checkedAuthentication === true) return;
 
-    const url = getApiUrl({ endpoint: GeneralAPIendpoints.me });
+    const url = getApiUrl({ paths: [GeneralAPIendpoints.me] });
     fetchDataFromURL({ url })
       .then((data) => {
         setAuthenticationState({

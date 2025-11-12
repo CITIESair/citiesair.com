@@ -75,7 +75,7 @@ export default function SignUp() {
     setLoading(true);
 
     fetchDataFromURL({
-      url: getApiUrl({ endpoint: GeneralAPIendpoints.signUp }),
+      url: getApiUrl({ paths: [GeneralAPIendpoints.signUp] }),
       restMethod: RESTmethods.POST,
       body: {
         email,

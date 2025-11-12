@@ -3,10 +3,10 @@ import { DashboardContext } from "../../ContextProviders/DashboardContext";
 import { UserContext } from "../../ContextProviders/UserContext";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDataFromURL } from "../../API/ApiFetch";
-import { getAlertsApiUrl } from "../../API/ApiUrls";
 import { GeneralAPIendpoints } from "../../API/Utils";
 import { isValidArray } from "../../Utils/UtilFunctions";
 import { addChildToAlerts } from "../../Components/AirQuality/AirQualityAlerts/AlertUtils";
+import { getApiUrl } from "../../API/ApiUrls";
 
 export const useAlerts = () => {
     const { currentSchoolID } = useContext(DashboardContext);
@@ -17,9 +17,8 @@ export const useAlerts = () => {
         queryFn: async () => {
 
             const data = await fetchDataFromURL({
-                url: getAlertsApiUrl({
-                    endpoint: GeneralAPIendpoints.alerts,
-                    school_id: currentSchoolID,
+                url: getApiUrl({
+                    paths: [GeneralAPIendpoints.alerts, currentSchoolID]
                 }),
             });
 

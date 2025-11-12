@@ -11,6 +11,7 @@ import { SnackbarProvider } from 'notistack';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
+import { NetworkStatusProvider } from './ContextProviders/NetworkStatusContext';
 
 const container = document.getElementById('root');
 const root = createRoot(container);
@@ -25,19 +26,21 @@ const localStoragePersister = createAsyncStoragePersister({
 const IS_PRODUCTION = process.env.REACT_APP_ENV === 'production';
 
 const Providers = ({ children }) => (
-  <GoogleProvider>
-    <MetadataProvider>
-      <PreferenceProvider>
-        <SnackbarProvider
-          dense
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-          preventDuplicate
-        >
-          <UserProvider>{children}</UserProvider>
-        </SnackbarProvider>
-      </PreferenceProvider>
-    </MetadataProvider>
-  </GoogleProvider>
+  <SnackbarProvider
+    dense
+    anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+    preventDuplicate
+  >
+    <NetworkStatusProvider>
+      <GoogleProvider>
+        <MetadataProvider>
+          <PreferenceProvider>
+            <UserProvider>{children}</UserProvider>
+          </PreferenceProvider>
+        </MetadataProvider>
+      </GoogleProvider>
+    </NetworkStatusProvider>
+  </SnackbarProvider >
 );
 
 root.render(
@@ -61,4 +64,4 @@ root.render(
   </React.StrictMode>
 );
 
-// `SnackbarProvider` should always be a parent of `UserContext` as the latter makes use of the former.
+// `SnackbarProvider` should always be a parent of `NetworkStatusProvider` `UserProvider` as the latter makes use of the former.

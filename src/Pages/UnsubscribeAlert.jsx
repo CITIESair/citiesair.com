@@ -19,7 +19,7 @@ const UnsubscribeAlert = () => {
         const handleUnsubscribe = async () => {
             try {
                 const data = await fetchDataFromURL({
-                    url: getApiUrl({ endpoint: GeneralAPIendpoints.unsubscribe }),
+                    url: getApiUrl({ paths: [GeneralAPIendpoints.unsubscribe] }),
                     restMethod: RESTmethods.POST,
                     body: { token },
                 });

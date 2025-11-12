@@ -2,10 +2,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useContext } from "react";
 import { DashboardContext } from "../../ContextProviders/DashboardContext";
 import { UserContext } from "../../ContextProviders/UserContext";
-import { getAlertsApiUrl } from "../../API/ApiUrls";
 import { GeneralAPIendpoints, RESTmethods } from "../../API/Utils";
 import { addChildToAlerts } from "../../Components/AirQuality/AirQualityAlerts/AlertUtils";
 import { fetchDataFromURL } from "../../API/ApiFetch";
+import { getApiUrl } from "../../API/ApiUrls";
 
 export const useCreateAlertMutation = () => {
     const queryClient = useQueryClient();
@@ -14,9 +14,8 @@ export const useCreateAlertMutation = () => {
 
     return useMutation({
         mutationFn: async ({ alertToCreate }) => {
-            const url = getAlertsApiUrl({
-                endpoint: GeneralAPIendpoints.alerts,
-                school_id: currentSchoolID
+            const url = getApiUrl({
+                paths: [GeneralAPIendpoints.alerts, currentSchoolID]
             });
 
             return fetchDataFromURL({

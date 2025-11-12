@@ -1,63 +1,55 @@
-// disable eslint for this file
-/* eslint-disable */
 import { useState, useEffect, useContext } from 'react';
 import { Box, Link, Typography, Stack, Select, FormControl, MenuItem, Grid, Button, useMediaQuery, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-
 import DownloadIcon from '@mui/icons-material/Download';
 import DataObjectIcon from '@mui/icons-material/DataObject';
-
 import * as Tracking from '../../Utils/Tracking';
-import { fetchDataFromURL } from '../../API/ApiFetch';
-import { SupportedFetchExtensions } from "../../API/Utils";
-import { getRawDatasetUrl } from '../../API/ApiUrls';
 import LoadingAnimation from '../LoadingAnimation';
-
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
-
 import CustomDialog from '../CustomDialog/CustomDialog';
 import { CITIESair } from '../../Utils/GlobalVariables';
 import useLoginHandler from '../Account/useLoginHandler';
 import AggregationType from '../DateRangePicker/AggregationType';
 import useCurrentSensorsData from '../../hooks/useCurrentSensorsData';
+import useDatasetDownload from '../../hooks/useDatasetDownload';
+import { enqueueSnackbar } from 'notistack';
+import { SnackbarMetadata } from '../../Utils/SnackbarMetadata';
 
 export default function DatasetDownloadDialog({ onButtonClick }) {
   const { handleRestrictedAccess } = useLoginHandler(onButtonClick);
 
-  const { currentSchoolID } = useContext(DashboardContext);
   const { data: currentSensorsData } = useCurrentSensorsData();
 
-  const [sensorsDatasets, updateSensorsDatasets] = useState({});
+  const [sensorsList, setSensorsList] = useState({});
+  const [previewingDataset, setPreviewingDataset] = useState();
 
-  const [previewingDataset, setPreviewingDataset] = useState("placeholder");
-
-  // Construct the structure of sensorsDatasets based on current data
+  // Construct the structure of sensorsList based on current data
   useEffect(() => {
     if (!currentSensorsData) return;
 
-    const sensorsDatasets = currentSensorsData
+    const sensorsList = currentSensorsData
       .filter(item => item && item.sensor)  // Filter out null or undefined items and sensors
       .reduce((acc, item) => {
-        // Use location_short as the key for each sensor
-        const key = item.sensor.location_short;
-        acc[key] = {
-          location_type: item.sensor.location_type,
+        acc[item.sensor.location_short] = {
           location_short: item.sensor.location_short,
-          location_long: item.sensor.location_long,
-          last_seen: item.sensor.last_seen?.split('T')[0],
-          rawDatasets: Object.keys(AggregationType).reverse().reduce((datasetAcc, datasetKey) => {
-            datasetAcc[AggregationType[datasetKey]] = {
-              sample: null,
-              full: null
-            };
-            return datasetAcc;
-          }, {})
+          location_long: item.sensor.location_long
         };
         return acc;
       }, {});
 
-    updateSensorsDatasets(sensorsDatasets);
-  }, [currentSensorsData]);
+    setSensorsList(sensorsList);
+
+    // Preview the hourly type of the first sensor initially
+    if (Object.keys(sensorsList).length > 0 && !previewingDataset) {
+      setPreviewingDataset({
+        sensor: Object.keys(sensorsList)[0],
+        aggregationType: AggregationType.hour
+      });
+    }
+  }, [currentSensorsData, previewingDataset]);
+
+  const theme = useTheme();
+  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <CustomDialog
@@ -70,176 +62,89 @@ export default function DatasetDownloadDialog({ onButtonClick }) {
         handleRestrictedAccess(action);
       })}
     >
-      <DatasetSelectorAndPreviewer
-        sensorsDatasets={sensorsDatasets}
-        updateSensorsDatasets={updateSensorsDatasets}
-        previewingDataset={previewingDataset}
-        setPreviewingDataset={setPreviewingDataset}
-        schoolID={currentSchoolID}
-      />
-      {
-        sensorsDatasets &&
-        <Typography variant="caption" sx={{ my: 2, fontStyle: 'italic', display: "block" }} >
-          These datasets are provided by {CITIESair} from sensors operated by {CITIESair}. Should you intend to utilize them for your project, research, or publication, we kindly request that you notify us at <Link href='mailto:nyuad.cities@nyu.edu'>nyuad.cities@nyu.edu</Link> to discuss citation requirements.
-        </Typography>
-      }
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="start"
+        spacing={smallScreen ? 1 : 2}
+        sx={{ mt: 0, overflowY: 'scroll', overflowX: 'hidden' }}
+      >
+        {/* Dataset selection table */}
+        <Grid item sm={12} md={6}>
+          <Table
+            size="small"
+            sx={{
+              tableLayout: 'fixed'
+            }}
+          >
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ pl: 1 }}>
+                  Sensor Location
+                </TableCell>
+                <TableCell sx={{ width: smallScreen ? '9.5rem' : '11rem' }}>
+                  Average Period
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {sensorsList && Object.keys(sensorsList).map((location_short) => (
+                <Dataset
+                  key={location_short}
+                  sensor={location_short}
+                  sensorsList={sensorsList}
+                  previewingDataset={previewingDataset}
+                  setPreviewingDataset={setPreviewingDataset}
+                  isPreviewing={location_short === previewingDataset?.sensor}
+                  setSensorsList={setSensorsList}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        </Grid>
+
+        {/* Dataset previewing panel */}
+        <Grid item sm={12} md={6} maxWidth={smallScreen ? '100%' : 'unset'} sx={{ mt: 1 }}>
+          <PreviewDataset
+            sensorsList={sensorsList}
+            setSensorsList={setSensorsList}
+            previewingDataset={previewingDataset}
+          />
+        </Grid>
+      </Grid>
+
+      {/* Ack */}
+      <Typography variant="caption" sx={{ my: 2, fontStyle: 'italic', display: "block" }} >
+        Raw datasets are provided by {CITIESair} from sensors operated by {CITIESair}. Should you intend to utilize them for your project, research, or publication, we kindly request that you notify us at <Link href='mailto:nyuad.cities@nyu.edu'>nyuad.cities@nyu.edu</Link> to discuss citation requirements.
+      </Typography>
     </CustomDialog>
   );
 }
 
-const DatasetSelectorAndPreviewer = (props) => {
-  const { sensorsDatasets, updateSensorsDatasets, previewingDataset, setPreviewingDataset, schoolID } = props;
-
-  const theme = useTheme();
-  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
-  // Preview the hourly type of the first sensor initially
-  useEffect(() => {
-    if (Object.keys(sensorsDatasets).length > 0 && !previewingDataset) {
-      const firstSensor = Object.keys(sensorsDatasets)[0];
-      const initialDatasetType = AggregationType.hour;
-
-      setPreviewingDataset({
-        sensor: firstSensor,
-        datasetType: initialDatasetType
-      });
-
-      // If this dataset has been fetched before, early return
-      if (sensorsDatasets[firstSensor].rawDatasets[initialDatasetType].sample) return;
-
-      const url = getRawDatasetUrl({
-        school_id: schoolID,
-        sensor_location_short: firstSensor,
-        aggregationType: initialDatasetType,
-        isSample: true
-      });
-
-      fetchDataFromURL({ url, extension: SupportedFetchExtensions.csv, needsAuthorization: true })
-        .then((data) => {
-          const tmp = { ...sensorsDatasets };
-          tmp[firstSensor].rawDatasets[initialDatasetType].sample = data;
-          updateSensorsDatasets(tmp);
-        })
-        .catch((error) => console.log(error));
-    }
-  }, [sensorsDatasets, previewingDataset]);
-
-  return (
-    <Grid
-      container
-      justifyContent="center"
-      alignItems="start"
-      spacing={smallScreen ? 1 : 2}
-      sx={{ mt: 0, overflowY: 'scroll', overflowX: 'hidden' }}
-    >
-      <Grid item sm={12} md={6}>
-        <DatasetsTable
-          schoolID={schoolID}
-          sensorsDatasets={sensorsDatasets}
-          updateSensorsDatasets={updateSensorsDatasets}
-          smallScreen={smallScreen}
-          previewingDataset={previewingDataset}
-          setPreviewingDataset={setPreviewingDataset}
-        />
-      </Grid>
-      <Grid item sm={12} md={6} maxWidth={smallScreen ? '100%' : 'unset'} sx={{ mt: 1 }}>
-        <PreviewDataset
-          sensorsDatasets={sensorsDatasets}
-          updateSensorsDatasets={updateSensorsDatasets}
-          previewingDataset={previewingDataset}
-          schoolID={schoolID}
-          smallScreen={smallScreen}
-        />
-      </Grid>
-    </Grid>
-  )
-};
-
-const DatasetsTable = (props) => {
-  const { schoolID, sensorsDatasets, smallScreen, previewingDataset, setPreviewingDataset, updateSensorsDatasets } = props;
-  return (
-    <Table
-      size="small"
-      sx={{
-        tableLayout: 'fixed'
-      }}
-    >
-      <TableHead>
-        <TableRow>
-          <TableCell sx={{ pl: 1 }}>
-            Sensor Location
-          </TableCell>
-          <TableCell sx={{ width: smallScreen ? '9.5rem' : '11rem' }}>
-            Average Period
-          </TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {sensorsDatasets && Object.keys(sensorsDatasets).map((location_short) => (
-          <Dataset
-            key={location_short}
-            schoolID={schoolID}
-            smallScreen={smallScreen}
-            sensor={location_short}
-            sensorsDatasets={sensorsDatasets}
-            previewingDataset={previewingDataset}
-            setPreviewingDataset={setPreviewingDataset}
-            isPreviewing={location_short === previewingDataset?.sensor}
-            updateSensorsDatasets={updateSensorsDatasets}
-          />
-        ))}
-      </TableBody>
-    </Table>
-  )
-}
-
 const Dataset = (props) => {
-  const { schoolID, sensorsDatasets, sensor, previewingDataset, setPreviewingDataset, isPreviewing, updateSensorsDatasets } = props;
-
-  const [selectedDatasetType, setSelectedDatasetType] = useState(AggregationType.hour);
+  const { sensorsList, sensor, previewingDataset, setPreviewingDataset, isPreviewing } = props;
+  const [aggregationType, setAggregationType] = useState(AggregationType.hour);
+  const { currentSchoolID } = useContext(DashboardContext);
+  const theme = useTheme();
 
   useEffect(() => {
-    if (selectedDatasetType !== AggregationType.hour) setSelectedDatasetType(AggregationType.hour);
-  }, [schoolID])
+    if (aggregationType !== AggregationType.hour) setAggregationType(AggregationType.hour);
+  }, [currentSchoolID]);
 
   const handleDatasetTypeChange = (event) => {
     const selectedVal = event.target.value;
-    setSelectedDatasetType(selectedVal);
-    setPreviewingDataset({ datasetType: selectedVal, sensor });
-    fetchThisDataset(selectedVal);
+    setAggregationType(selectedVal);
+    setPreviewingDataset({ aggregationType: selectedVal, sensor });
   };
-
-  const fetchThisDataset = (datasetType) => {
-    // If this dataset version hasn't been fetched yet,
-    // fetch it and append it into the object fetchedDatasets
-    if (!sensorsDatasets[sensor].rawDatasets[datasetType].sample) {
-      const url = getRawDatasetUrl({
-        school_id: schoolID,
-        sensor_location_short: sensorsDatasets[sensor].location_short,
-        aggregationType: datasetType,
-        isSample: true
-      });
-
-      fetchDataFromURL({ url, extension: SupportedFetchExtensions.csv, needsAuthorization: true })
-        .then((data) => {
-          const tmp = { ...sensorsDatasets };
-          tmp[sensor].rawDatasets[datasetType].sample = data;
-          updateSensorsDatasets(tmp);
-        });
-    }
-  }
 
   const setThisSensorToPreview = () => {
     if (previewingDataset?.sensor !== sensor) {
       setPreviewingDataset({
-        datasetType: selectedDatasetType,
-        sensor: sensor
+        aggregationType: aggregationType,
+        sensor
       });
-      fetchThisDataset(selectedDatasetType);
     }
   }
-
-  const theme = useTheme();
 
   return (
     <>
@@ -251,7 +156,7 @@ const Dataset = (props) => {
             background: isPreviewing && theme.palette.background.NYUpurpleLight
           }}
           onClick={setThisSensorToPreview}>
-          {sensorsDatasets[sensor].location_long}
+          {sensorsList[sensor].location_long}
         </TableCell>
 
         <TableCell
@@ -261,18 +166,18 @@ const Dataset = (props) => {
           }}>
           <FormControl size="small">
             <Select
-              value={selectedDatasetType}
+              value={aggregationType}
               onChange={handleDatasetTypeChange}
               variant="standard"
               MenuProps={{ disablePortal: true }}
             >
-              {Object.keys(sensorsDatasets[sensor].rawDatasets).reverse().map((datasetType, index) => (
+              {Object.keys(AggregationType).map((aggregationType, index) => (
                 <MenuItem
                   key={index}
-                  value={datasetType}
+                  value={aggregationType}
                 >
                   <Stack direction="row" alignItems="center">
-                    {datasetType.charAt(0).toUpperCase() + datasetType.slice(1).toLowerCase()}
+                    {aggregationType.charAt(0).toUpperCase() + aggregationType.slice(1).toLowerCase()}
                   </Stack>
                 </MenuItem>
               ))}
@@ -284,88 +189,51 @@ const Dataset = (props) => {
   )
 }
 
-const PreviewDataset = (props) => {
-  const { sensorsDatasets, updateSensorsDatasets, previewingDataset, schoolID, smallScreen } = props;
+const PreviewDataset = ({ previewingDataset }) => {
+  const { data: previewData, isLoading: isPreviewDataLoading } = useDatasetDownload({
+    sensor: previewingDataset?.sensor,
+    aggregationType: previewingDataset?.aggregationType,
+    isSample: true
+  });
+
+  const { refetch: refetchFullData } = useDatasetDownload({
+    sensor: previewingDataset?.sensor,
+    aggregationType: previewingDataset?.aggregationType,
+    isSample: false,
+    enabled: false,
+  });
+
   const theme = useTheme();
+  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [previewingDatasetName, setPreviewingDatasetName] = useState("Not previewing any dataset");
   const [csvFileName, setCsvFileName] = useState("No dataset");
-  const [isDatasetLoading, setIsDatasetLoading] = useState(false);
-
-  const downloadPreviewingDataset = () => {
-    if (!previewingDataset) return;
-
-    const fetchedDataset = sensorsDatasets[previewingDataset.sensor].rawDatasets[previewingDataset.datasetType].full;
-
-    // Fetch the full dataset if it has not been fetched before
-    if (!fetchedDataset) {
-      const url = getRawDatasetUrl({
-        school_id: schoolID,
-        sensor_location_short: previewingDataset.sensor,
-        aggregationType: previewingDataset.datasetType,
-        isSample: false
-      });
-
-      fetchDataFromURL({ url, extension: SupportedFetchExtensions.csv, needsAuthorization: true }).then((data) => {
-        const tmp = { ...sensorsDatasets };
-        tmp[previewingDataset.sensor].rawDatasets[previewingDataset.datasetType].full = data;
-        updateSensorsDatasets(tmp);
-
-        convertCSVforDownload(data);
-      });
-    }
-    else {
-      convertCSVforDownload(fetchedDataset);
-    }
-
-  };
-
-  const convertCSVforDownload = (dataset) => {
-    const blob = new Blob([dataset], { type: 'application/octet-stream' }); // create a Blob with the raw data
-    const url = URL.createObjectURL(blob); // create a download link for the Blob
-    const downloadLink = document.createElement('a');
-    downloadLink.href = url;
-    downloadLink.download = csvFileName;
-    document.body.appendChild(downloadLink);
-    downloadLink.click(); // simulate a click on the download link
-    URL.revokeObjectURL(url); // clean up by revoking the object URL
-    document.body.removeChild(downloadLink);
-  }
 
   const [formattedData, setFormattedData] = useState('');
   const [rowNumber, setRowNumber] = useState('');
 
   useEffect(() => {
     // If no dataset is chosen to be previewed, early return
-    if (!previewingDataset) return;
+    if (!previewData || !previewingDataset) return;
 
     // Update previewing dataset name regardless if the dataset preview has finished loading
-    setPreviewingDatasetName(`Previewing: ${previewingDataset.sensor} (${previewingDataset.datasetType})`);
+    setPreviewingDatasetName(`Previewing: ${previewingDataset.sensor} (${previewingDataset.aggregationType})`);
 
-    // Get the raw dataset
-    const csvData = sensorsDatasets[previewingDataset.sensor]?.rawDatasets[previewingDataset.datasetType]?.sample;
-
-    // If it is empty, then it hasn't been loaded yet
-    if (!csvData) {
+    // If no previewData, then it hasn't been loaded yet
+    if (!previewData || isPreviewDataLoading) {
       setRowNumber(null);
       setFormattedData(null);
       setCsvFileName("Loading...");
-      setIsDatasetLoading(true);
       return;
     };
 
-    if (isDatasetLoading) setIsDatasetLoading(false);
-
-    const lines = csvData.split('\n');
-
+    const lines = previewData.split('\n');
     const headers = lines[0].split(',');
     const rows = lines.slice(1);
-
     setRowNumber([
       "",
       ...rows.map(row => row.split(',')[0])
     ].join('\n'));
-
     setFormattedData([
       headers.slice(1).join(','), // Keep the headers for the rest of the columns
       ...rows.map(row => row.split(',').slice(1).join(',')) // Remove the first column from each row
@@ -382,9 +250,32 @@ const PreviewDataset = (props) => {
       }
     }
 
-    const csvFileName = `${schoolID}-${previewingDataset.sensor}-${previewingDataset.datasetType}-${dateString}.csv`;
+    const csvFileName = `${previewingDataset.sensor}-${previewingDataset.aggregationType}-${dateString}.csv`;
     setCsvFileName(csvFileName);
-  }, [previewingDataset, sensorsDatasets]);
+  }, [previewData]);
+
+  const handleDownload = async () => {
+    try {
+      const { data } = await refetchFullData(); // runs queryFn manually
+
+      const blob = new Blob([data], { type: 'application/octet-stream' }); // create a Blob with the raw data
+      const url = URL.createObjectURL(blob); // create a download link for the Blob
+      const downloadLink = document.createElement('a');
+      downloadLink.href = url;
+      downloadLink.download = csvFileName;
+      document.body.appendChild(downloadLink);
+      downloadLink.click(); // simulate a click on the download link
+      URL.revokeObjectURL(url); // clean up by revoking the object URL
+      document.body.removeChild(downloadLink);
+
+      Tracking.sendEventAnalytics(Tracking.Events.rawDatasetDownloaded, {
+        dataset_type: previewingDataset?.aggregationType,
+        sensor: previewingDataset?.sensor
+      });
+    } catch (err) {
+      enqueueSnackbar("Error fetching the full dataset", SnackbarMetadata.error);
+    }
+  };
 
   return (
     <Stack spacing={1}>
@@ -439,14 +330,8 @@ const PreviewDataset = (props) => {
             px: 1.5,
             py: 1
           }}
-          onClick={() => {
-            downloadPreviewingDataset();
-            Tracking.sendEventAnalytics(Tracking.Events.rawDatasetDownloaded, {
-              dataset_type: previewingDataset?.datasetType,
-              sensor: previewingDataset?.sensor
-            });
-          }}
-          disabled={isDatasetLoading}
+          onClick={handleDownload}
+          disabled={isPreviewDataLoading}
         >
           <DownloadIcon sx={{ fontSize: '1.25rem', mr: 0.5 }} />
           {csvFileName}

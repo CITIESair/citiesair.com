@@ -53,7 +53,6 @@ export function DashboardProvider({ children }) {
     }));
   };
 
-
   const setIndividualChartData = (chartID, chartData) => {
     setAllChartsData(prevData => ({
       ...prevData,

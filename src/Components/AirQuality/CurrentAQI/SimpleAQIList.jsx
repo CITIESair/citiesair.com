@@ -2,6 +2,7 @@ import { Box, Grid, Skeleton, Stack, Typography, useTheme } from "@mui/material"
 import { CurrentAQIGridSize, ElementSizes } from "./CurrentAQIGridSize";
 import { returnLocationName } from "./AQIGridUtils";
 import { SensorStatus } from "../SensorStatus";
+import { useNetworkStatusContext } from "../../../ContextProviders/NetworkStatusContext";
 
 const displayAQI = ({ aqi, category, showCategory }) => {
     if (!aqi) return "--";
@@ -19,6 +20,9 @@ const SimpleAQIList = (props) => {
     } = props;
 
     const theme = useTheme();
+
+    const { isServerDown } = useNetworkStatusContext();
+    if (isServerDown) return null;
 
     return (
         <Grid

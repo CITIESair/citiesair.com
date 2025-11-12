@@ -15,7 +15,7 @@ export default function GoogleOAuthCallback() {
             setStatus("Processing authentication...");
 
             fetchDataFromURL({
-                url: getApiUrl({ endpoint: GeneralAPIendpoints.googleCallback }),
+                url: getApiUrl({ paths: [GeneralAPIendpoints.googleCallback] }),
                 restMethod: RESTmethods.POST,
                 body: { code },
             }).then((data) => {

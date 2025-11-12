@@ -14,8 +14,7 @@ const useCurrentSensorsData = (schoolID = null) => {
         queryKey: [GeneralAPIendpoints.current, schoolID || currentSchoolID],
         queryFn: async () => {
             const url = getApiUrl({
-                endpoint: GeneralAPIendpoints.current,
-                school_id: schoolID || currentSchoolID
+                paths: [GeneralAPIendpoints.current, schoolID || currentSchoolID]
             });
 
             return fetchAndProcessCurrentSensorsData({ url });

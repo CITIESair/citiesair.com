@@ -1,8 +1,6 @@
 import { calculateSensorStatus } from "../Components/AirQuality/SensorStatus";
 import { SupportedFetchExtensions, RESTmethods } from "./Utils";
 
-const genericErrorMessage = 'Network response was not OK';
-
 export const fetchDataFromURL = async ({
   url,
   extension = SupportedFetchExtensions.json,
@@ -44,8 +42,9 @@ export const fetchDataFromURL = async ({
     const response = await fetch(url, fetchOptions);
     clearTimeout(timeoutId);
 
-    if (response.status === 500) {
-      throw new Error('The server encountered an error. Please try again later.');
+    if (response.status >= 500 && response.status < 600) {
+      window.dispatchEvent(new Event('server:down'));
+      throw new Error("Internal Server Error");
     }
 
     if (response.status === 204) {
@@ -56,12 +55,15 @@ export const fetchDataFromURL = async ({
       const contentType = response.headers.get('Content-Type');
       if (contentType && contentType.includes('application/json')) {
         const errorData = await response.json();
-        throw new Error(errorData.message || genericErrorMessage);
+        throw new Error(errorData.message || 'Network response not OK');
       } else {
         const errorText = await response.text();
-        throw new Error(errorText || genericErrorMessage);
+        throw new Error(errorText || 'Network response not OK');
       }
     }
+
+    // Response OK
+    window.dispatchEvent(new Event('server:up'));
 
     switch (extension) {
       case SupportedFetchExtensions.json:
@@ -71,20 +73,14 @@ export const fetchDataFromURL = async ({
       default:
         return response;
     }
-
   } catch (error) {
     clearTimeout(timeoutId);
 
-    if (error.name === 'AbortError') {
-      throw new Error('The request timed out. Please check your internet connection and try again.');
+    if (error.name === 'AbortError' || error.message === 'Failed to fetch') {
+      window.dispatchEvent(new Event('server:down'));
     }
 
-    if (error.message === 'Failed to fetch') {
-      throw new Error('Unable to connect to the server. Please check your internet connection and try again.');
-    }
-
-    // For other errors, preserve the original message
-    throw new Error(error.message);
+    throw error;
   }
 };
 

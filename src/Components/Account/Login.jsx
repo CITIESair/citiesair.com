@@ -66,7 +66,7 @@ export default function Login() {
     setLoading(true);
 
     fetchDataFromURL({
-      url: getApiUrl({ endpoint: GeneralAPIendpoints.login }),
+      url: getApiUrl({ paths: [GeneralAPIendpoints.login] }),
       restMethod: RESTmethods.POST,
       body: {
         username,

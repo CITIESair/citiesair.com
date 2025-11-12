@@ -28,7 +28,7 @@ export default function LogOut() {
     setLoading(true);
 
     fetchDataFromURL({
-      url: getApiUrl({ endpoint: GeneralAPIendpoints.logout }),
+      url: getApiUrl({ paths: [GeneralAPIendpoints.logout] }),
       restMethod: RESTmethods.GET
     })
       .then((data) => {

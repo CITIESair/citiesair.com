@@ -1,3 +1,5 @@
+import AggregationType from "../Components/DateRangePicker/AggregationType";
+
 export const GeneralAPIendpoints = {
   me: "me",
   current: "current",

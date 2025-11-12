@@ -17,17 +17,17 @@ const compareArrays = (arr1, arr2) => {
 
 const EmailsInput = () => {
   const { enqueueSnackbar } = useSnackbar();
-
   const { currentSchoolID } = useContext(DashboardContext);
+
+  const queryPaths = [GeneralAPIendpoints.alertsEmails, currentSchoolID];
+
   const { data: alertEmails = [] } = useQuery({
-    queryKey: [GeneralAPIendpoints.alertsEmails, currentSchoolID],
+    queryKey: queryPaths,
     queryFn: async () => {
-      const url = getApiUrl({
-        endpoint: GeneralAPIendpoints.alertsEmails,
-        school_id: currentSchoolID
-      });
       return fetchDataFromURL({
-        url,
+        url: getApiUrl({
+          paths: queryPaths
+        }),
         extension: 'json',
         needsAuthorization: true
       });
@@ -39,12 +39,10 @@ const EmailsInput = () => {
   const queryClient = useQueryClient();
   const saveEmailsMutation = useMutation({
     mutationFn: async (emailsToSave) => {
-      const url = getApiUrl({
-        endpoint: GeneralAPIendpoints.alertsEmails,
-        school_id: currentSchoolID
-      });
       return fetchDataFromURL({
-        url,
+        url: getApiUrl({
+          paths: queryPaths
+        }),
         restMethod: RESTmethods.POST,
         body: emailsToSave
       });

@@ -21,6 +21,7 @@ import LoadingAnimation from '../../LoadingAnimation';
 import { DataTypeKeys, DataTypes } from '../../../Utils/AirQuality/DataTypes';
 import getAQIDivIcon from './AQIDivIcon';
 import { calculateAQI } from '../../../Utils/AirQuality/aqiCalculator';
+import { useNetworkStatusContext } from '../../../ContextProviders/NetworkStatusContext';
 
 const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
     '& .leaflet-popup-tip-container': {
@@ -48,7 +49,6 @@ const AQImap = (props) => {
         shouldCluster = true,
         ariaLabel = "A map of air quality sensors",
     } = props;
-
 
     // Filter out invalid mapData entries 
     const sanitizedMapData = useMemo(() => {
@@ -198,8 +198,10 @@ const AQImap = (props) => {
         )
     }
 
+    const { isServerDown } = useNetworkStatusContext();
+
     // Only render map when data and computed geometry are available
-    if (!sanitizedMapData || !isValidArray(center) || !isValidArray(fitBounds)) {
+    if (!isServerDown && (!sanitizedMapData || !isValidArray(center) || !isValidArray(fitBounds))) {
         return (
             <Box
                 aria-label={ariaLabel}
@@ -444,6 +446,7 @@ const AQImap = (props) => {
                 zoom={defaultZoom}
                 minZoom={minZoom}
                 maxZoom={maxZoom}
+                bounds={isServerDown ? [[24.521723, 54.43135], [24.52609, 54.43779]] : null}
                 maxBounds={maxBounds || computedMaxBounds}
                 scrollWheelZoom={false}
                 placeholder={<MapPlaceholder placeholderText={ariaLabel} />}

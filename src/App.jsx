@@ -37,7 +37,6 @@ import UnsubscribeAlert from "./Pages/UnsubscribeAlert";
 import { isWithinDisplayHours } from "./Utils/UtilFunctions";
 import NYUADScreen from "./Pages/NYUADScreen";
 import { ScreenProvider } from "./ContextProviders/ScreenContext";
-import { useNetworkStatus } from "./hooks/useNetworkStatus";
 import { GoogleChartGlobalStyles } from "./Graphs/Subchart/SubchartUtils/GoogleChartStyleWrapper";
 
 // Lazy load pages
@@ -64,8 +63,6 @@ const getDesignTokens = (themePreference) => ({
 });
 
 function App() {
-  useNetworkStatus();
-
   const { themePreference, setThemePreference } = useContext(PreferenceContext);
   const { chartsTitlesList } = useContext(MetadataContext);
 

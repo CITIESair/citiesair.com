@@ -164,7 +164,7 @@ function Home({ temperatureUnitPreference, title }) {
 
       <FullWidthBox sx={{ backgroundColor: 'customAlternateBackground' }}>
         <Container sx={{ pt: 4, pb: 3 }}>
-          <UppercaseTitle text={`real-time air quality at  ${currentSchoolID || ""}`} />
+          <UppercaseTitle text={`real-time air quality  ${currentSchoolID ? `at ${currentSchoolID}` : ""}`} />
           <Typography variant='body1' color='text.secondary' sx={{ mt: -2, mb: 2 }}>
             PM2.5 (Particulate Matter Smaller Than 2.5 Micrometer)
           </Typography>

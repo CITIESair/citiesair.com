@@ -46,12 +46,9 @@ const Screen = ({ title }) => {
   };
 
   const url = getApiUrl({
-    endpoint: GeneralAPIendpoints.screen,
-    school_id,
-    screen_id,
+    paths: [GeneralAPIendpoints.screen, school_id, screen_id],
     queryParams
   });
-
 
   const { data } = useQuery({
     queryKey: [GeneralAPIendpoints.screen, school_id, screen_id, queryParams],

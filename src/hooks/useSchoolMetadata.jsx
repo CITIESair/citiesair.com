@@ -13,9 +13,8 @@ const useSchoolMetadata = () => {
         queryKey: [GeneralAPIendpoints.schoolmetadata, currentSchoolID],
         queryFn: async () => {
             const url = getApiUrl({
-                endpoint: GeneralAPIendpoints.schoolmetadata,
-                school_id: currentSchoolID
-            })
+                paths: [GeneralAPIendpoints.schoolmetadata, currentSchoolID]
+            });
 
             return fetchDataFromURL({ url });
         },

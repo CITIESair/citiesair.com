@@ -4,18 +4,16 @@ import { useContext } from 'react';
 import { fetchDataFromURL } from '../API/ApiFetch';
 import { DashboardContext } from '../ContextProviders/DashboardContext';
 import { getApiUrl } from '../API/ApiUrls';
-import { GeneralAPIendpoints } from '../API/Utils';
 
 const useChartData = (chartID) => {
     const { allChartsConfigs, currentSchoolID } = useContext(DashboardContext);
     const chartConfig = allChartsConfigs[chartID];
 
     return useQuery({
-        queryKey: [GeneralAPIendpoints.chartdata, chartID, chartConfig, currentSchoolID],
+        queryKey: [chartConfig, currentSchoolID],
         queryFn: async () => {
             const url = getApiUrl({
-                endpoint: chartConfig.endpoint,
-                school_id: currentSchoolID,
+                paths: [chartConfig.endpoint, currentSchoolID],
                 queryParams: chartConfig.queryParams
             });
             return fetchDataFromURL({ url });

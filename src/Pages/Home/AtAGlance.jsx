@@ -10,6 +10,7 @@ import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 
 import sectionData from "../../section_data.json";
 import { useQuery } from '@tanstack/react-query';
+import { useNetworkStatusContext } from '../../ContextProviders/NetworkStatusContext';
 
 
 const IconLoader = ({ iconString }) => {
@@ -63,10 +64,12 @@ const ByTheNumber = (props) => {
 }
 
 const AtAGlance = () => {
+  const { isServerDown } = useNetworkStatusContext();
+
   const { data: stats } = useQuery({
     queryKey: [GeneralAPIendpoints.stats],
     queryFn: async () => {
-      const url = getApiUrl({ endpoint: GeneralAPIendpoints.stats });
+      const url = getApiUrl({ paths: [GeneralAPIendpoints.stats] });
       return fetchDataFromURL({ url });
     },
     staleTime: 1000 * 60 * 60 * 24,
@@ -94,7 +97,10 @@ const AtAGlance = () => {
         >
           <ByTheNumber
             iconString={item.icon}
-            value={stats ? stats[item.id] : null}
+            value={
+              isServerDown ? "--" :
+                stats ? stats[item.id] : null
+            }
             text={item.text}
           />
         </Grid>

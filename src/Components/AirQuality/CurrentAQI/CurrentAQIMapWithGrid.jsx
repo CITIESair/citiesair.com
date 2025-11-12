@@ -1,6 +1,6 @@
 
 import { useContext, useEffect, useRef, useState } from 'react';
-import { Container, Box, Grid, Typography, Stack, Tooltip } from '@mui/material/';
+import { Box, Grid, Typography, Stack, Tooltip } from '@mui/material/';
 import { useMediaQuery, useTheme } from '@mui/material';
 
 import AQImap from '../AirQualityMap/AQImap';
@@ -16,6 +16,7 @@ import { PreferenceContext } from '../../../ContextProviders/PreferenceContext';
 import ThemePreferences from '../../../Themes/ThemePreferences';
 import { KAMPALA, NYUAD } from '../../../Utils/GlobalVariables';
 import { getTranslation } from '../../../Utils/UtilFunctions';
+import { useNetworkStatusContext } from '../../../ContextProviders/NetworkStatusContext';
 
 const returnSpecialCenterCoordinatesForNYUAD = (isOnBannerPage) => {
     return isOnBannerPage ? [24.523, 54.4343] : null
@@ -41,6 +42,8 @@ const CurrentAQIMapWithGrid = (props) => {
         schoolID,
         disableInteraction = false,
         isOnBannerPage = true,
+        defaultZoom,
+        maxBounds,
         minMapHeight = "230px"
     } = props;
 
@@ -70,13 +73,13 @@ const CurrentAQIMapWithGrid = (props) => {
         };
     }, [schoolID, currentSensorsData]);
 
-
     const { themePreference } = useContext(PreferenceContext);
     const isNYUAD = schoolID === NYUAD;
 
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
-    const defaultZoom = returnDefaultZoom(schoolID);
+
+    const { isServerDown } = useNetworkStatusContext();
 
     return (
         <Grid
@@ -97,13 +100,18 @@ const CurrentAQIMapWithGrid = (props) => {
                 <Grid
                     item
                     xs={12}
-                    sx={{ p: 1, pb: 0, m: 0, mt: isSmallScreen ? 3 : 1, mb: isSmallScreen ? -6 : 0 }}
+                    sx={{
+                        p: 1,
+                        pt: isServerDown ? (isSmallScreen ? 7 : 9) : 1,
+                        pb: 0,
+                        m: 0,
+                        mt: isSmallScreen ? 3 : 1,
+                        mb: isSmallScreen ? -6 : 0
+                    }}
                 >
-                    <Container >
-                        <Typography color="text.primary" variant="h5" textAlign="center" fontWeight="500">
-                            {schoolID?.toUpperCase()} Air Quality
-                        </Typography>
-                    </Container>
+                    <Typography color="text.primary" variant="h5" textAlign="center" fontWeight="500">
+                        {schoolID?.toUpperCase()} Air Quality
+                    </Typography>
                 </Grid>
             }
 
@@ -129,8 +137,9 @@ const CurrentAQIMapWithGrid = (props) => {
                                 returnSpecialCenterCoordinatesForNYUAD(isOnBannerPage) :
                                 null
                         }
-                        minZoom={defaultZoom - 1}
-                        maxZoom={defaultZoom + 1}
+                        minZoom={defaultZoom ? defaultZoom - 1 : returnDefaultZoom(schoolID) - 1}
+                        maxZoom={defaultZoom ? defaultZoom + 1 : returnDefaultZoom(schoolID) + 1}
+                        maxBounds={maxBounds}
                         disableInteraction={isOnBannerPage || disableInteraction}
                         displayMinimap={false}
                         locationTitle={LocationTitles.short}
@@ -145,7 +154,7 @@ const CurrentAQIMapWithGrid = (props) => {
                 {
                     // Display weather and last update (from the first sensor)
                     (isOnBannerPage === true) ? (
-                        <Box textAlign="center" sx={{ mt: isSmallScreen ? -4 : -10 }}>
+                        <Box sx={{ mt: isSmallScreen ? -4 : -10 }}>
                             <CurrentAQIGrid
                                 currentSensorsData={currentSensorsData?.slice(0, NUM_SENSORS_FIRST_ROW)}
                                 showWeather={true}

@@ -50,7 +50,7 @@ const RightSelect = styled(FormControl)(({ theme }) => ({
 
 
 const AxesPicker = (props) => {
-  const { currentSchoolID, setIndividualChartConfig } = useContext(DashboardContext);
+  const { currentSchoolID, allChartsConfigs, setIndividualChartConfig } = useContext(DashboardContext);
   const { chartID, allowedAxes, selectedAxes, dataType } = props;
   const { hAxis, vAxis, setHAxis, setVAxis } = useAxesPicker();
 
@@ -83,8 +83,7 @@ const AxesPicker = (props) => {
     if (!(vAxis && hAxis)) return;
 
     setIndividualChartConfig(chartID, {
-      endpoint: ChartAPIendpointsOrder[chartID],
-      school_id: currentSchoolID,
+      ...allChartsConfigs[chartID],
       queryParams: {
         dataType: dataType,
         sensorX: hAxis,

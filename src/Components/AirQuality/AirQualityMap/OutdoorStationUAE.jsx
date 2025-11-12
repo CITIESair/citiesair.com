@@ -11,7 +11,7 @@ const OutdoorStationUAE = ({ overridenThemePreference }) => {
     const { data: publicMapData } = useQuery({
         queryKey: [GeneralAPIendpoints.map],
         queryFn: async () => {
-            const url = getApiUrl({ endpoint: GeneralAPIendpoints.map });
+            const url = getApiUrl({ paths: [GeneralAPIendpoints.map] });
             return fetchAndProcessCurrentSensorsData({ url });
         },
         staleTime: CURRENT_DATA_EXPIRATION_TIME_MS,

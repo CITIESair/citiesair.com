@@ -2,29 +2,24 @@ import { GeneralAPIendpoints } from "./Utils";
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-export const getAlertsApiUrl = ({ endpoint, school_id, alert_id }) => {
-  if (endpoint !== GeneralAPIendpoints.alerts) return;
-
-  // Build the base URL and optionally append the alert_id if provided
-  const baseUrl = `${REACT_APP_BACKEND_URL}/${endpoint}/${school_id}`;
-  return alert_id ? `${baseUrl}/${alert_id}` : baseUrl;
-};
-
-
-export const getApiUrl = (props) => {
-  const { endpoint, school_id, screen_id, queryParams } = props;
-
-  const params = new URLSearchParams(
-    Object.entries(queryParams ?? {}).filter(([_, v]) => v != null && v !== '')
+export const getApiUrl = ({
+  paths = [],
+  queryParams = {}
+}) => {
+  // Build the path segments safely, filtering null/undefined/empty
+  const filteredPaths = paths.filter(
+    (segment) => segment !== undefined && segment !== null && segment !== ''
   );
 
-  const path = [REACT_APP_BACKEND_URL, endpoint, school_id, screen_id]
-    .filter(Boolean) // removes undefined or null values
-    .join('/');
+  // Join into a valid URL path
+  const path = [REACT_APP_BACKEND_URL, ...filteredPaths].join('/');
 
+  // Build the query string (filtering out null/empty values)
+  const params = new URLSearchParams(
+    Object.entries(queryParams).filter(([_, v]) => v != null && v !== '')
+  );
+
+  // Return the full URL
   return `${path}${params.toString() ? `?${params}` : ''}`;
-}
+};
 
-export const getRawDatasetUrl = ({ school_id, sensor_location_short, aggregationType, isSample = true }) => {
-  return `${REACT_APP_BACKEND_URL}/${GeneralAPIendpoints.raw}/${school_id}/${sensor_location_short}/${aggregationType}?isSample=${isSample}`;
-}

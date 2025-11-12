@@ -47,7 +47,7 @@ export default function Verify() {
   const verifyAccount = async () => {
     try {
       const response = await fetchDataFromURL({
-        url: getApiUrl({ endpoint: GeneralAPIendpoints.verify }),
+        url: getApiUrl({ paths: [GeneralAPIendpoints.verify] }),
         restMethod: RESTmethods.POST,
         body: { token },
       });
