@@ -89,7 +89,6 @@ const CurrentAQISingleSensor = (props) => {
                     }, mt: ElementSizes[size].meteroDataMarginTop
                 }}
                 className='condensedFont'
-                zIndex={10000}
                 position="relative"
             >
                 {

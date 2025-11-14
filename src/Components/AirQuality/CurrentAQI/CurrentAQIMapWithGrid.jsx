@@ -154,9 +154,9 @@ const CurrentAQIMapWithGrid = (props) => {
                 {
                     // Display weather and last update (from the first sensor)
                     (isOnBannerPage === true) ? (
-                        <Box sx={{ mt: isSmallScreen ? -4 : -10 }}>
+                        <Box sx={{ mt: isSmallScreen ? -4 : -10, zIndex: 500, position: "relative" }}>
                             <CurrentAQIGrid
-                                currentSensorsData={currentSensorsData?.slice(0, NUM_SENSORS_FIRST_ROW)}
+                                currentSensorsData={currentSensorsData?.slice(0, 1)}
                                 showWeather={true}
                                 showWeatherText={true}
                                 showHeatIndex={false}
