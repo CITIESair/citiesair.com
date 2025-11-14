@@ -39,7 +39,7 @@ const SimpleAQIList = (props) => {
         >
             {
                 currentSensorsData ?
-                    (Object.entries(currentSensorsData).map(([_, sensorData], index) => (
+                    (currentSensorsData.map((sensorData, index) => (
                         <Grid
                             item
                             key={index}

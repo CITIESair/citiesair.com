@@ -4,7 +4,7 @@ import { keyframes } from '@mui/system';
 
 import AggregationType from './AggregationType';
 import { AggregationTypeMetadata } from './DateRangePickerUtils';
-import { useTheme } from '@emotion/react';
+import { useTheme } from '@mui/material';
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import { AQI_Database } from '../../Utils/AirQuality/AirQualityIndexHelper';
 

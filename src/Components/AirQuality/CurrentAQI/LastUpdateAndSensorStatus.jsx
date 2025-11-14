@@ -1,4 +1,4 @@
-import { useTheme } from "@emotion/react";
+import { useTheme } from '@mui/material';
 import { useContext } from "react";
 import { getTranslation } from "../../../Utils/UtilFunctions";
 import { Typography } from "@mui/material";

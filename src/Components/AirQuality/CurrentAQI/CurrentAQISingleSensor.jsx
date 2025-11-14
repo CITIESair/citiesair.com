@@ -1,4 +1,4 @@
-import { useTheme } from "@emotion/react";
+import { useTheme } from '@mui/material';
 import { useContext } from "react";
 import { PreferenceContext } from "../../../ContextProviders/PreferenceContext";
 import { AQI_Database } from "../../../Utils/AirQuality/AirQualityIndexHelper";

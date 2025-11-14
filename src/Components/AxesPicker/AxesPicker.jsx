@@ -1,8 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
-import { Select, MenuItem, FormControl, InputLabel, Button, Grid, CircularProgress, Stack, useMediaQuery, Typography } from '@mui/material';
+import { Select, MenuItem, FormControl, InputLabel, Button, Grid, Stack, useMediaQuery, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useAxesPicker } from '../../ContextProviders/AxesPickerContext';
-import { ChartAPIendpointsOrder } from "../../API/Utils";
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
 import useChartData from '../../hooks/useChartData';
 

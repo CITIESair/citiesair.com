@@ -67,7 +67,7 @@ const CurrentAQIGrid = (props) => {
       }}
     >
       {
-        Object.entries(currentSensorsData).map(([_, sensorData], index) => (
+        currentSensorsData.map((sensorData, index) => (
           <CurrentAQISingleSensor
             key={index}
             sensor={sensorData.sensor}

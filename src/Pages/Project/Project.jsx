@@ -43,7 +43,7 @@ const Project = () => {
     ? ChartAPIendpointsOrder.length
     : NUMBER_OF_CHARTS_TO_LOAD_INITIALLY;
 
-  const { themePreference, temperatureUnitPreference } = useContext(PreferenceContext);
+  const { themePreference } = useContext(PreferenceContext);
 
   // Temporarily not using HyvorTalk comment anymore
   // const [displayCommentSection, setDisplayCommentSection] = useState(false);
@@ -92,7 +92,6 @@ const Project = () => {
               <CurrentAQIGrid
                 currentSensorsData={currentSensorsData}
                 isScreen={false}
-                temperatureUnitPreference={temperatureUnitPreference}
               />
             </Container>
           )

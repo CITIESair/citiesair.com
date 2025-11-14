@@ -120,7 +120,7 @@ const displayDashboardButtons = (authenticationState, user, isSmallScreen) => {
   );
 }
 
-function Home({ temperatureUnitPreference, title }) {
+function Home({ title }) {
   const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
 
   // Update the page's title
@@ -185,7 +185,6 @@ function Home({ temperatureUnitPreference, title }) {
                   <CurrentAQIGrid
                     currentSensorsData={currentSensorsData?.slice(0, 3)}
                     isScreen={false}
-                    temperatureUnitPreference={temperatureUnitPreference}
                     firstSensorOwnLine={true}
                   />
                 </Grid>
