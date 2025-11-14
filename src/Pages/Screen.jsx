@@ -33,7 +33,7 @@ import { useQuery } from '@tanstack/react-query';
 
 const Screen = ({ title }) => {
   const { isLayoutReversed } = useContext(ScreenContext);
-  const { temperatureUnitPreference, language, setLanguage } = useContext(PreferenceContext);
+  const { language, setLanguage } = useContext(PreferenceContext);
 
   // ---- DATA FETCHING FOR SCREEN ----
   const { currentSchoolID } = useContext(DashboardContext);
@@ -177,7 +177,6 @@ const Screen = ({ title }) => {
           >
             <CurrentAQIGrid
               currentSensorsData={screenData}
-              temperatureUnitPreference={temperatureUnitPreference}
               isScreen={true}
               size={CurrentAQIGridSize.large}
             />
