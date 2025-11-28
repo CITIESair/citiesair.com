@@ -33,7 +33,7 @@ const CurrentAQISingleSensor = (props) => {
                     <Box>
                         <Box sx={{
                             '& .MuiTypography-root': {
-                                color: (sensor?.aqi?.categoryIndex !== null && sensor?.sensor_status === SensorStatus.active) ?
+                                color: (current?.aqi?.categoryIndex !== null && sensor?.sensor_status === SensorStatus.active) ?
                                     theme.palette.text.aqi[current?.aqi?.categoryIndex]
                                     : (isScreen ? INACTIVE_SENSOR_COLORS.screen : theme.palette.text.aqi[SensorStatus.offline])
                             }
