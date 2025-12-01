@@ -14,34 +14,6 @@ const LoginPopupHandler = ({ onLoginSuccess, children }) => {
     const [showVerificationDialog, setShowVerificationDialog] = useState(false);
     const [email, setEmail] = useState("");
 
-    const openLoginPopup = useCallback(() => {
-        const width = 500;
-        const height = 600;
-        const left = (window.screen.width - width) / 2;
-        const top = (window.screen.height - height) / 2;
-
-        const popup = window.open(
-            AppRoutes.login,
-            "Login",
-            `width=${width},height=${height},top=${top},left=${left}`
-        );
-
-        if (popup) {
-            popup.focus();
-            popupRef.current = popup;
-
-            const intervalId = setInterval(() => {
-                if (popup.closed) {
-                    clearInterval(intervalId);
-                    window.removeEventListener("message", handleMessage);
-                    popupRef.current = null;
-                }
-            }, 500);
-        } else {
-            alert("Popup blocked. Please enable popups for login.");
-        }
-    }, []);
-
     const handleMessage = useCallback(
         (event) => {
             if (event.origin === window.location.origin && event.data.type === LoginTypes.password) {
@@ -69,6 +41,36 @@ const LoginPopupHandler = ({ onLoginSuccess, children }) => {
         },
         [onLoginSuccess]
     );
+
+    const openLoginPopup = useCallback(() => {
+        const width = 500;
+        const height = 600;
+        const left = (window.screen.width - width) / 2;
+        const top = (window.screen.height - height) / 2;
+
+        const popup = window.open(
+            AppRoutes.login,
+            "Login",
+            `width=${width},height=${height},top=${top},left=${left}`
+        );
+
+        if (popup) {
+            popup.focus();
+            popupRef.current = popup;
+
+            const intervalId = setInterval(() => {
+                if (popup.closed) {
+                    clearInterval(intervalId);
+                    window.removeEventListener("message", handleMessage);
+                    popupRef.current = null;
+                }
+            }, 500);
+        } else {
+            alert("Popup blocked. Please enable popups for login.");
+        }
+    }, [handleMessage, enqueueSnackbar, setAuthenticationState, setUser]);
+
+
 
     useEffect(() => {
         window.addEventListener("message", handleMessage);

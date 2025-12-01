@@ -17,7 +17,7 @@ const TooltipCalendarChart = ({ day, color, tooltipText, dateRange, inFirstTwoRo
         parentDiv.style.top = '11vh';
       }
     }
-  }, [tooltipBoxRef, inFirstTwoRowsOfChart]);
+  }, [tooltipBoxRef, inFirstTwoRowsOfChart, day, dateRange]);
 
 
   // Note that our Box is just a container 'inside' the tooltip

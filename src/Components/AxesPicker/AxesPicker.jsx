@@ -49,7 +49,7 @@ const RightSelect = styled(FormControl)(({ theme }) => ({
 
 
 const AxesPicker = (props) => {
-  const { currentSchoolID, allChartsConfigs, setIndividualChartConfig } = useContext(DashboardContext);
+  const { allChartsConfigs, setIndividualChartConfig } = useContext(DashboardContext);
   const { chartID, allowedAxes, selectedAxes, dataType } = props;
   const { hAxis, vAxis, setHAxis, setVAxis } = useAxesPicker();
 

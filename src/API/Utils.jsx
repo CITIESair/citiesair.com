@@ -1,5 +1,3 @@
-import AggregationType from "../Components/DateRangePicker/AggregationType";
-
 export const GeneralAPIendpoints = {
   me: "me",
   current: "current",
@@ -7,6 +5,7 @@ export const GeneralAPIendpoints = {
   schoolmetadata: "schoolmetadata",
   chartdata: "chartdata",
   screen: "screen",
+  allSensorsScreen: "allSensorsScreen",
   login: "login",
   signUp: "signup",
   verify: "verify",
