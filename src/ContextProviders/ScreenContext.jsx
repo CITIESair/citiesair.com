@@ -1,4 +1,8 @@
-import { useState, useEffect, createContext, useMemo } from 'react';
+import { useState, useEffect, createContext, useMemo, useRef, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import useSchoolMetadata from '../hooks/useSchoolMetadata';
+import { PreferenceContext } from './PreferenceContext';
+import { isValidArray, isWithinDisplayHours } from '../Utils/UtilFunctions';
 
 export const ScreenContext = createContext();
 
@@ -15,26 +19,72 @@ function returnIsLayoutReversed() {
 
 export function ScreenProvider({ children }) {
     const [isLayoutReversed, setIsLayoutReversed] = useState();
+    const [shouldDisplayScreen, setShouldDisplayScreen] = useState(isWithinDisplayHours());
 
-    // Tweak the layout of the screen to prevent burn-in
+    const navigate = useNavigate();
+    const { data: schoolMetadata } = useSchoolMetadata();
+    const { setLanguage } = useContext(PreferenceContext);
+
+    // Persistent carousel index
+    const carouselIndex = useRef(0);
+
     useEffect(() => {
-        setIsLayoutReversed(returnIsLayoutReversed());
+        const intervals = [];
 
-        // Set up an interval to call the function every day
-        const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
-        const intervalId = setInterval(() => {
-            setIsLayoutReversed(returnIsLayoutReversed());
-        }, oneDayInMilliseconds);
+        // --- Should Display Screen (to save energy) ---
+        const displayInterval = setInterval(() => {
+            setShouldDisplayScreen(isWithinDisplayHours());
+        }, 60 * 1000);
+        intervals.push(displayInterval);
+
+        // --- Language Rotation ---
+        if (schoolMetadata && isValidArray(schoolMetadata.languages)) {
+            const langs = schoolMetadata.languages;
+            if (langs.length > 1) {
+                const updateLanguage = () => {
+                    const minute = new Date().getMinutes();
+                    setLanguage(langs[minute % langs.length]);
+                };
+
+                updateLanguage(); // initial
+                const langInterval = setInterval(updateLanguage, 60 * 1000);
+                intervals.push(langInterval);
+            }
+        }
+
+        // --- Screen Burn-in Prevention Layout Flip ---
+        const updateLayout = () => setIsLayoutReversed(returnIsLayoutReversed());
+        updateLayout(); // initial
+        const layoutInterval = setInterval(updateLayout, 24 * 60 * 60 * 1000);
+        intervals.push(layoutInterval);
+
+        // --- Carousel Rotation Logic ---
+        const params = new URLSearchParams(window.location.search);
+        const routes = params.get("carousel")?.split(",") ?? [];
+        const intervalSec = Number(params.get("intervalSeconds")) || 30;
+
+        if (routes.length > 0) {
+            const rotateCarousel = () => {
+                carouselIndex.current = (carouselIndex.current + 1) % routes.length;
+                navigate({
+                    pathname: routes[carouselIndex.current],
+                    search: `?${params.toString()}`,
+                    replace: true
+                });
+            };
+
+            const carouselInterval = setInterval(rotateCarousel, intervalSec * 1000);
+            intervals.push(carouselInterval);
+        }
 
         return () => {
-            clearInterval(intervalId);
+            intervals.forEach(clearInterval);
         };
-    }, []);
+    }, [navigate, schoolMetadata, setLanguage]);
 
-    // eslint-disable-next-line max-len
     const providerValue = useMemo(() => ({
-        isLayoutReversed
-    }), [isLayoutReversed]);
+        isLayoutReversed, shouldDisplayScreen
+    }), [isLayoutReversed, shouldDisplayScreen]);
 
     // return context provider
     return (

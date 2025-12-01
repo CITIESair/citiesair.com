@@ -86,28 +86,37 @@
     ],
     "atAGlance": {
         "id": "at-a-glance",
-        "content": [
-            {
-                "id": "schools",
-                "text": "schools & institutions",
+        "content": {
+            "schools": {
+                "order": 1,
+                "text": {
+                    "en": "schools & institutions"
+                },
                 "icon": "AssuredWorkloadIcon"
             },
-            {
-                "id": "students",
-                "text": "protected students",
+            "students": {
+                "order": 2,
+                "text": {
+                    "en": "protected students"
+                },
                 "icon": "FaceIcon"
             },
-            {
-                "id": "sensors",
-                "text": "sensors",
+            "sensors": {
+                "order": 3,
+                "text": {
+                    "en": "sensors",
+                    "lg": "sensors"
+                },
                 "icon": "SensorsIcon"
             },
-            {
-                "id": "communityMembers",
-                "text": "community members",
+            "communityMembers": {
+                "order": 4,
+                "text": {
+                    "en": "community members"
+                },
                 "icon": "GroupsIcon"
             }
-        ]
+        }
     },
     "screen": {
         "id": "screen",
@@ -121,12 +130,28 @@
                 "lg": "Obukutubba obusangibwa mu mpewo"
             },
             "dataProvider": {
-                "en": "Data provider",
-                "lg": "Ensibuko yo'bubaka"
+                "en": "Data provider: AirQo",
+                "lg": "Ensibuko yo'bubaka: AirQo"
             },
             "indoorsVsOutdoors": {
                 "en": "Indoor air is {{value}} better than outdoor air",
                 "lg": "placeholder1 {{value}} placeholder2"
+            }
+        }
+    },
+    "allSensorsScreen": {
+        "id": "allSensorsScreen",
+        "content": {
+            "title": {
+                "en": "Real-time Air Quality Monitoring at",
+                "lg": "Okulondoola Omutindo Gw'Empewo Mu Budde Bwenyini e"
+            },
+            "nyuadTitle": {
+                "en": "UAE Air Quality Monitoring Network"
+            },
+            "learnMore": {
+                "en": "Learn More!",
+                "lg": "Yiga Ebisingawo!"
             }
         }
     },

@@ -6,7 +6,7 @@ import { DashboardContext } from '../ContextProviders/DashboardContext';
 import { getApiUrl } from '../API/ApiUrls';
 import { GeneralAPIendpoints } from '../API/Utils';
 
-const useSchoolMetadata = () => {
+const useSchoolMetadata = ({ enabled = true } = {}) => {
     const { currentSchoolID } = useContext(DashboardContext);
 
     return useQuery({
@@ -18,7 +18,7 @@ const useSchoolMetadata = () => {
 
             return fetchDataFromURL({ url });
         },
-        enabled: !!currentSchoolID, // only run when ready
+        enabled: enabled && !!currentSchoolID, // only run when ready
         staleTime: 1000 * 60 * 60, // 1-hour cache,
         placeholderData: (prev) => prev // Keep data from previous queryKey to avoid flashing charts
     });

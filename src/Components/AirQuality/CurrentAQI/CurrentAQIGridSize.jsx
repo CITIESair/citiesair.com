@@ -14,7 +14,10 @@ export const ElementSizes = {
     meteroDataMarginTop: 3,
     metero: 'h4',
     rawValues: 'h4',
-    importantFontWeight: '00 !important'
+    importantFontWeight: '00 !important',
+    aqiScaleText: "h5",
+    aqiScaleHeight: "1rem",
+    aqiScaleWidth: "1rem"
   },
   [CurrentAQIGridSize.medium]: {
     icon: '1rem',
@@ -26,7 +29,10 @@ export const ElementSizes = {
     meteroDataMarginTop: 1,
     metero: 'body1',
     rawValues: 'body2',
-    importantFontWeight: null
+    importantFontWeight: null,
+    aqiScaleText: "body2",
+    aqiScaleHeight: "0.5rem",
+    aqiScaleWidth: "0.5rem"
   },
   [CurrentAQIGridSize.small]: {
     icon: '1rem',
@@ -38,6 +44,9 @@ export const ElementSizes = {
     meteroDataMarginTop: 1,
     metero: 'caption',
     rawValues: 'caption',
-    importantFontWeight: null
+    importantFontWeight: null,
+    aqiScaleText: "caption",
+    aqiScaleHeight: "0.5rem",
+    aqiScaleWidth: "0.35rem"
   }
 };

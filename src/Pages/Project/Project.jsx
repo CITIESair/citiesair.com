@@ -96,7 +96,7 @@ const Project = () => {
             </Container>
           )
         }
-        <Container sx={{ pb: 2 }}>
+        <Container sx={{ py: 2 }}>
           <ProjectDescription />
           <AQIexplanation />
         </Container>

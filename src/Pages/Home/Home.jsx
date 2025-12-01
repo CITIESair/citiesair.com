@@ -38,7 +38,7 @@ const displaySensorCounts = (currentSensorsData) => {
   if (!currentSensorsData) return null;
 
   return (
-    <Grid item xs={12}>
+    <Grid item xs={12} mt={1}>
       <Typography variant='body2' color="text.secondary">
         <b>Sensors status: </b>{
           currentSensorsData.reduce((count, obj) => obj?.sensor?.sensor_status === SensorStatus.active ? count + 1 : count, 0)
@@ -137,7 +137,7 @@ function Home({ title }) {
   }, [setCurrentPage, setChartsTitlesList]);
 
   const { currentSchoolID } = useContext(DashboardContext);
-  const { data: currentSensorsData } = useCurrentSensorsData(currentSchoolID || NYUAD);
+  const { data: currentSensorsData } = useCurrentSensorsData({ schoolID: currentSchoolID || NYUAD });
   const { data: schoolMetadata } = useSchoolMetadata();
   const { authenticationState, user } = useContext(UserContext);
 

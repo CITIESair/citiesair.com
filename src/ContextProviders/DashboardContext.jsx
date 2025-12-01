@@ -72,7 +72,7 @@ export function DashboardProvider({ children }) {
     if (!authenticationState.checkedAuthentication || !isValidArray(user.allowedSchools)) return;
 
     // CASE: NYUAD
-    if ([AppRoutes.nyuadBanner, AppRoutes.nyuadScreen, AppRoutes.nyuadMap].includes(locationPath)) {
+    if ([AppRoutes.nyuadBanner, AppRoutes.allSensorsScreen, AppRoutes.nyuadMap].includes(locationPath)) {
       setCurrentSchoolID(NYUAD);
       return;
     }

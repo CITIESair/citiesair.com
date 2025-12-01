@@ -1,4 +1,4 @@
-import { Grid, Typography, Stack, Skeleton, Box } from '@mui/material';
+import { Grid, Typography, Stack, Box } from '@mui/material';
 import { fetchDataFromURL } from '../../API/ApiFetch';
 import { GeneralAPIendpoints } from '../../API/Utils';
 import { getApiUrl } from '../../API/ApiUrls';
@@ -11,6 +11,10 @@ import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 import sectionData from "../../section_data.json";
 import { useQuery } from '@tanstack/react-query';
 import { useNetworkStatusContext } from '../../ContextProviders/NetworkStatusContext';
+import { useContext } from 'react';
+import { DashboardContext } from '../../ContextProviders/DashboardContext';
+import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
+import { getTranslation } from '../../Utils/UtilFunctions';
 
 
 const IconLoader = ({ iconString }) => {
@@ -31,25 +35,19 @@ const IconLoader = ({ iconString }) => {
 const ByTheNumber = (props) => {
   const { iconString, value, text } = props;
 
+  if (value === null && value === undefined) return null;
+
   return (
     <Stack direction="column" alignItems="center">
       <IconLoader iconString={iconString} />
-
-      {
-        value !== null && value !== undefined
-          ? (
-            <Typography
-              color="text.primary"
-              sx={{ typography: { xs: "h6", sm: "h4", lg: "h3" }, }}
-            >
-              <Box fontWeight="500">
-                {value}
-              </Box>
-            </Typography>
-          )
-          : <Skeleton variant="text" sx={{ width: "50%", fontSize: '3rem' }} />
-      }
-
+      <Typography
+        color="text.primary"
+        sx={{ typography: { xs: "h6", sm: "h4", lg: "h3" }, }}
+      >
+        <Box fontWeight="500">
+          {value}
+        </Box>
+      </Typography>
       <Typography
         color="text.secondary"
         sx={{ typography: { xs: "body1", sm: "h6" } }}
@@ -63,20 +61,27 @@ const ByTheNumber = (props) => {
   );
 }
 
-const AtAGlance = () => {
-  const { isServerDown } = useNetworkStatusContext();
+const AtAGlance = ({ statsForEntireProject = true }) => {
+  const { language } = useContext(PreferenceContext);
 
-  const { data: stats } = useQuery({
-    queryKey: [GeneralAPIendpoints.stats],
+  const { isServerDown } = useNetworkStatusContext();
+  const { currentSchoolID } = useContext(DashboardContext);
+
+  const { data: stats, isLoading } = useQuery({
+    queryKey: [GeneralAPIendpoints.stats, statsForEntireProject ? "" : currentSchoolID],
     queryFn: async () => {
-      const url = getApiUrl({ paths: [GeneralAPIendpoints.stats] });
+      const url = getApiUrl({ paths: [GeneralAPIendpoints.stats, statsForEntireProject ? "" : currentSchoolID] });
       return fetchDataFromURL({ url });
     },
+    enabled: statsForEntireProject === false ? !!currentSchoolID : true,
     staleTime: 1000 * 60 * 60 * 24,
     refetchInterval: 1000 * 60 * 60 * 24, // actively refresh every day
     refetchOnWindowFocus: true,
     placeholderData: (prev) => prev
   });
+
+  // If server is down, don't render anything
+  if (isServerDown) return null;
 
   return (
     <Grid
@@ -85,27 +90,25 @@ const AtAGlance = () => {
       textAlign="center"
       rowGap={1}
       m={0}
+      minHeight="100px"
     >
-      {sectionData.atAGlance.content.map((item, index) => (
-        <Grid
-          key={`by-the-number-${index}`}
-          item
-          justifyContent="center"
-          alignItems="center"
-          sm={3}
-          xs={6}
-        >
-          <ByTheNumber
-            iconString={item.icon}
-            value={
-              isServerDown ? "--" :
-                stats ? stats[item.id] : null
-            }
-            text={item.text}
-          />
-        </Grid>
-      ))}
-    </Grid>
+      {!isLoading &&
+        Object.entries(stats || {})
+          .filter(([, value]) => value !== null && value !== undefined)
+          .map(([key, value]) => {
+            const config = sectionData.atAGlance.content[key];
+
+            return (
+              <Grid key={key} order={config.order} item sm={3} xs={6}>
+                <ByTheNumber
+                  iconString={config.icon}
+                  value={value}
+                  text={getTranslation(config.text || key, language)}
+                />
+              </Grid>
+            );
+          })}
+    </Grid >
   );
 }
 

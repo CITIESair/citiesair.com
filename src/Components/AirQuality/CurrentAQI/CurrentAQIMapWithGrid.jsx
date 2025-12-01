@@ -1,22 +1,18 @@
 
 import { useContext, useEffect, useRef, useState } from 'react';
-import { Box, Grid, Typography, Stack, Tooltip } from '@mui/material/';
+import { Box, Grid, Typography } from '@mui/material/';
 import { useMediaQuery, useTheme } from '@mui/material';
-
 import AQImap from '../AirQualityMap/AQImap';
 import { LocationTitles } from '../AirQualityMap/AirQualityMapUtils';
 import { TileOptions } from '../AirQualityMap/AirQualityMapUtils';
-
 import CurrentAQIGrid from './CurrentAQIGrid';
 import SimpleAQIList from './SimpleAQIList';
 import { CurrentAQIGridSize } from './CurrentAQIGridSize';
-
-import { AQI_Database } from '../../../Utils/AirQuality/AirQualityIndexHelper';
 import { PreferenceContext } from '../../../ContextProviders/PreferenceContext';
 import ThemePreferences from '../../../Themes/ThemePreferences';
 import { KAMPALA, NYUAD } from '../../../Utils/GlobalVariables';
-import { getTranslation } from '../../../Utils/UtilFunctions';
 import { useNetworkStatusContext } from '../../../ContextProviders/NetworkStatusContext';
+import AQIScale from './AQIScale';
 
 const returnSpecialCenterCoordinatesForNYUAD = (isOnBannerPage) => {
     return isOnBannerPage ? [24.523, 54.4343] : null
@@ -44,7 +40,10 @@ const CurrentAQIMapWithGrid = (props) => {
         isOnBannerPage = true,
         defaultZoom,
         maxBounds,
-        minMapHeight = "230px"
+        maxWidth = "lg",
+        minMapHeight = "230px",
+        sx,
+        size = CurrentAQIGridSize.medium
     } = props;
 
     // --- This is needed because Leaflet map won't correctly resize otherwise if data from currentSensorsData is passed directly
@@ -87,13 +86,13 @@ const CurrentAQIMapWithGrid = (props) => {
             item
             overflow="hidden"
             flex={1}
-            maxWidth="lg"
+            maxWidth={maxWidth}
             margin="auto"
-            mb={isNYUAD ? 2 : 4}
-            alignItems="stretch"
+            alignItems="space-around"
             backgroundColor={isOnBannerPage ? "#f5f5f5" : "customAlternateBackground"}
             gap={2}
             justifyContent="center"
+            sx={{ ...sx }}
         >
             {
                 isOnBannerPage &&
@@ -121,7 +120,7 @@ const CurrentAQIMapWithGrid = (props) => {
                     minHeight={minMapHeight}
                     sx={{
                         '& .leaflet-container': {
-                            borderRadius: (isSmallScreen === false && isOnBannerPage === false) && theme.shape.borderRadius
+                            borderRadius: (isSmallScreen === false && isOnBannerPage === false && maxWidth) && theme.shape.borderRadius
                         },
                         '& .leaflet-marker-icon': {
                             cursor: (isSmallScreen && isOnBannerPage) && "default"
@@ -163,7 +162,9 @@ const CurrentAQIMapWithGrid = (props) => {
                                 showAQI={false}
                                 showRawMeasurements={false}
                                 roundTemperature={true}
-                                size={isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium}
+                                size={size ? size :
+                                    (isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium)
+                                }
                                 showLastUpdate={true}
                             />
                         </Box>
@@ -173,11 +174,11 @@ const CurrentAQIMapWithGrid = (props) => {
 
             {
                 // Don't display the AQI grids when on smallScreen banner page
-                // Only display an AQIscale
+                // Only display an AQIScale
                 (isOnBannerPage === true && isSmallScreen === true) ? (
                     <Grid item xs sx={{ mt: 3, px: 1 }}>
-                        <AQIscale
-                            isSmallScreen={false}
+                        <AQIScale
+                            size={size}
                             isOnBannerPage={isOnBannerPage}
                             showLabel={false}
                         />
@@ -206,7 +207,9 @@ const CurrentAQIMapWithGrid = (props) => {
                                     showRawMeasurements={!isOnBannerPage}
                                     useLocationShort={true}
                                     roundTemperature={isOnBannerPage && true}
-                                    size={isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium}
+                                    size={size ? size :
+                                        (isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium)
+                                    }
                                     showLastUpdate={true}
                                 />
                             </Grid>
@@ -218,7 +221,7 @@ const CurrentAQIMapWithGrid = (props) => {
                                     showRawMeasurements={!isOnBannerPage}
                                     showHeatIndex={false}
                                     showLastUpdate={!isOnBannerPage}
-                                    size={CurrentAQIGridSize.small}
+                                    size={size ? size : CurrentAQIGridSize.small}
                                 />
                             </Grid>
 
@@ -228,13 +231,14 @@ const CurrentAQIMapWithGrid = (props) => {
                                     useLocationShort={isSmallScreen}
                                     isOnBannerPage={isOnBannerPage}
                                     showCategory={false}
+                                    size={size}
                                 />
                             </Grid>
                         </Grid>
 
                         <Grid container item xs={1.5} sm={12} textAlign="left" my={isSmallScreen ? 2 : 1}>
-                            <AQIscale
-                                isSmallScreen={isSmallScreen}
+                            <AQIScale
+                                size={size}
                                 isOnBannerPage={isOnBannerPage}
                                 showLabel={!isSmallScreen}
                             />
@@ -242,77 +246,8 @@ const CurrentAQIMapWithGrid = (props) => {
                     </Grid>
                 )
             }
-
         </Grid >
-
     );
 };
-
-const AQIscale = ({ isSmallScreen, isOnBannerPage, showLabel = true }) => {
-    const { themePreference, language } = useContext(PreferenceContext);
-
-    return (
-        <Stack
-            direction={isSmallScreen ? "column-reverse" : "row"}
-            justifyContent="center"
-            flex={1}
-        >
-            {AQI_Database.map((element, index) => (
-                <Tooltip
-                    key={index}
-                    title={!isOnBannerPage && isSmallScreen && getTranslation(element.category, language)}
-                    slotProps={{
-                        popper: {
-                            modifiers: [
-                                { name: 'offset', options: { offset: [0, -48] } }
-                            ],
-                        },
-                    }}
-                >
-                    <Stack
-                        direction={isSmallScreen ? "row-reverse" : "column"}
-                        width={isSmallScreen ? "auto" : "15%"}
-                        justifyContent={isSmallScreen && "flex-end"}
-                        alignItems={isSmallScreen && "flex-end"}
-                        spacing={0.5}
-                        flex={1}
-                    >
-                        <Typography
-                            variant="caption"
-                            fontWeight={500}
-                            lineHeight={1}
-                            color="text.secondary"
-                        >
-                            <small>{element.aqiUS.low === 301 ? '301+' : element.aqiUS.low}</small>
-                        </Typography>
-                        <Box
-                            backgroundColor={element.color[themePreference]}
-                            width={isSmallScreen ? "0.35rem" : "100%"}
-                            height={isSmallScreen ? "100%" : "0.5rem"}
-                        />
-
-                        {(showLabel === true) &&
-                            <Typography
-                                variant="caption"
-                                lineHeight={0.9}
-                                color="text.secondary"
-                                sx={{
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    display: "-webkit-box",
-                                    WebkitBoxOrient: "vertical",
-                                    WebkitLineClamp: 3,
-                                    px: 0.25
-                                }}
-                            >
-                                <small>{getTranslation(element.category, language)}</small>
-                            </Typography>
-                        }
-                    </Stack>
-                </Tooltip>
-            ))}
-        </Stack>
-    )
-}
 
 export default CurrentAQIMapWithGrid;

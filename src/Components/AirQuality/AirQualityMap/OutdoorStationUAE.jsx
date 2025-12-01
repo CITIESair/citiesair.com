@@ -7,7 +7,7 @@ import { fetchAndProcessCurrentSensorsData } from '../../../API/ApiFetch';
 import { getApiUrl } from '../../../API/ApiUrls';
 import { GeneralAPIendpoints } from '../../../API/Utils';
 
-const OutdoorStationUAE = ({ overridenThemePreference }) => {
+const OutdoorStationUAE = ({ overridenThemePreference, fullSizeMap = false }) => {
     const { data: publicMapData } = useQuery({
         queryKey: [GeneralAPIendpoints.map],
         queryFn: async () => {
@@ -22,6 +22,7 @@ const OutdoorStationUAE = ({ overridenThemePreference }) => {
 
     return (
         <AQImap
+            fullSizeMap={fullSizeMap}
             overridenThemePreference={overridenThemePreference}
             tileOption={TileOptions.default}
             centerCoordinates={[24.44, 54.45]}

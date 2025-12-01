@@ -3,7 +3,7 @@ import useCurrentSensorsData from "../../hooks/useCurrentSensorsData";
 import { NYUAD } from "../../Utils/GlobalVariables";
 
 const NYUADbanner = () => {
-  const { data: currentSensorsData } = useCurrentSensorsData(NYUAD);
+  const { data: currentSensorsData } = useCurrentSensorsData({ schoolID: NYUAD });
 
   return (
     <CurrentAQIMapWithGrid

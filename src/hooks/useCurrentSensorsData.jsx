@@ -7,7 +7,7 @@ import { getApiUrl } from '../API/ApiUrls';
 import { CURRENT_DATA_EXPIRATION_TIME_MS } from '../Utils/GlobalVariables';
 import { GeneralAPIendpoints } from '../API/Utils';
 
-const useCurrentSensorsData = (schoolID = null) => {
+const useCurrentSensorsData = ({ schoolID = null, enabled = true } = {}) => {
     const { currentSchoolID } = useContext(DashboardContext);
 
     return useQuery({
@@ -19,7 +19,7 @@ const useCurrentSensorsData = (schoolID = null) => {
 
             return fetchAndProcessCurrentSensorsData({ url });
         },
-        enabled: !!currentSchoolID, // only run when ready
+        enabled: enabled && !!currentSchoolID, // only run when ready
         staleTime: CURRENT_DATA_EXPIRATION_TIME_MS,
         refetchInterval: CURRENT_DATA_EXPIRATION_TIME_MS,
         refetchOnWindowFocus: true,

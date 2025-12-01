@@ -5,7 +5,7 @@ import useCurrentSensorsData from '../../hooks/useCurrentSensorsData';
 import { NYUAD } from '../../Utils/GlobalVariables';
 
 const NYUADmap = () => {
-  const { data: currentSensorsData } = useCurrentSensorsData(NYUAD);
+  const { data: currentSensorsData } = useCurrentSensorsData({ schoolID: NYUAD });
 
   return (
     <FullWidthBox width="100%" height="100vh" backgroundColor='customAlternateBackground'>
