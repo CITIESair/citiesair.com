@@ -112,7 +112,7 @@ const CurrentAQISingleSensor = (props) => {
                     </>
                 }
 
-
+                {/* If the sensor is offline then show last update and status message regardless of given preference  */}
                 {
                     (showLastUpdate || (!showLastUpdate && sensor?.sensor_status !== SensorStatus.active)) && <LastUpdateAndSensorStatus
                         sensor={sensor}

@@ -42,9 +42,8 @@ export default function LogOut() {
         navigate('/');
       })
       .catch((error) => {
-        console.log(error);
         setLoading(false);
-        enqueueSnackbar(data.message, SnackbarMetadata.error);
+        enqueueSnackbar(error.message, SnackbarMetadata.error);
       })
   };
 

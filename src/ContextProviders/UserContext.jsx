@@ -36,7 +36,7 @@ export function UserProvider({ children }) {
           authenticated: false
         });
         setUser(EMPTY_USER_DATA);
-        console.log(error);
+        enqueueSnackbar(error.message, SnackbarMetadata.error);
       });
   }, [authenticationState.checkedAuthentication]);
 

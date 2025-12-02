@@ -185,7 +185,6 @@ function Home({ title }) {
                   <CurrentAQIGrid
                     currentSensorsData={currentSensorsData?.slice(0, 3)}
                     isScreen={false}
-                    firstSensorOwnLine={true}
                   />
                 </Grid>
               )

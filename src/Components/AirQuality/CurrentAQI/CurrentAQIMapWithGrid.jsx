@@ -1,5 +1,5 @@
 
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Box, Grid, Typography } from '@mui/material/';
 import { useMediaQuery, useTheme } from '@mui/material';
 import AQImap from '../AirQualityMap/AQImap';
@@ -79,6 +79,29 @@ const CurrentAQIMapWithGrid = (props) => {
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
 
     const { isServerDown } = useNetworkStatusContext();
+
+    const groupedSensorsBySortingId = useMemo(() => {
+        if (!currentSensorsData) return { sensorsWithSortingId: [], sensorsWithoutSortingId: [] };
+
+        const sensorsWithSortingId = {};
+        const sensorsWithoutSortingId = [];
+
+        currentSensorsData.forEach(item => {
+            if (item.sensor.sorting_id == null) {
+                sensorsWithoutSortingId.push(item);
+            } else {
+                if (!sensorsWithSortingId[item.sensor.sorting_id]) sensorsWithSortingId[item.sensor.sorting_id] = [];
+                sensorsWithSortingId[item.sensor.sorting_id].push(item);
+            }
+        });
+
+        // Convert map → sorted array: [row1, row2, row3, ...]
+        const rows = Object.keys(sensorsWithSortingId)
+            .sort((a, b) => Number(a) - Number(b))
+            .map(key => sensorsWithSortingId[key]);
+
+        return { sensorsWithSortingId: rows, sensorsWithoutSortingId };
+    }, [currentSensorsData]);
 
     return (
         <Grid
@@ -197,37 +220,34 @@ const CurrentAQIMapWithGrid = (props) => {
                             sm={12}
                             justifyContent="center"
                             textAlign="center"
-                            spacing={isOnBannerPage === false ? 1 : 0}
+                            spacing={isOnBannerPage === false ? 2 : 0}
                         >
-                            <Grid item xs={12}>
-                                <CurrentAQIGrid
-                                    currentSensorsData={currentSensorsData?.slice(0, NUM_SENSORS_FIRST_ROW)}
-                                    showWeather={!isOnBannerPage}
-                                    showHeatIndex={!isOnBannerPage}
-                                    showRawMeasurements={!isOnBannerPage}
-                                    useLocationShort={true}
-                                    roundTemperature={isOnBannerPage && true}
-                                    size={size ? size :
-                                        (isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium)
-                                    }
-                                    showLastUpdate={true}
-                                />
-                            </Grid>
+                            {groupedSensorsBySortingId.sensorsWithSortingId.map((sensorsWithTheSameSortingId, index) => {
+                                const isFirst = index === 0;
 
-                            <Grid item xs={12}>
-                                <CurrentAQIGrid
-                                    currentSensorsData={currentSensorsData?.slice(NUM_SENSORS_FIRST_ROW, NUM_SENSORS_FIRST_ROW + NUM_SENSORS_SECOND_ROW)}
-                                    showWeather={!isOnBannerPage}
-                                    showRawMeasurements={!isOnBannerPage}
-                                    showHeatIndex={false}
-                                    showLastUpdate={!isOnBannerPage}
-                                    size={size ? size : CurrentAQIGridSize.small}
-                                />
-                            </Grid>
+                                return (
+                                    <Grid item xs={12} key={index}>
+                                        <CurrentAQIGrid
+                                            currentSensorsData={sensorsWithTheSameSortingId}
+                                            showWeather={!isOnBannerPage}
+                                            showHeatIndex={isFirst ? !isOnBannerPage : false}
+                                            showRawMeasurements={!isOnBannerPage}
+                                            showLastUpdate={isFirst ? true : !isOnBannerPage}
+                                            roundTemperature={isOnBannerPage}
+                                            size={
+                                                size ||
+                                                (isFirst
+                                                    ? (isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium)
+                                                    : CurrentAQIGridSize.small)
+                                            }
+                                        />
+                                    </Grid>
+                                );
+                            })}
 
                             <Grid item xs={isSmallScreen ? 10 : 12} mb={1}>
                                 <SimpleAQIList
-                                    currentSensorsData={currentSensorsData?.slice(NUM_SENSORS_FIRST_ROW + NUM_SENSORS_SECOND_ROW)}
+                                    currentSensorsData={groupedSensorsBySortingId.sensorsWithoutSortingId}
                                     useLocationShort={isSmallScreen}
                                     isOnBannerPage={isOnBannerPage}
                                     showCategory={false}

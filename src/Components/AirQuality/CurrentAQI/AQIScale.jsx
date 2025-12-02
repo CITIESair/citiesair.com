@@ -11,7 +11,6 @@ const AQIScale = (props) => {
     const { themePreference, language } = useContext(PreferenceContext);
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
 
-    console.log(ElementSizes[size].aqiScaleText)
     return (
         <Stack
             direction={isSmallScreen ? "column-reverse" : "row"}

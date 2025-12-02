@@ -30,6 +30,7 @@ import { TypesOfScreen } from '../../Components/AirQuality/AirQualityScreen/Scre
 import { ScreenContext } from '../../ContextProviders/ScreenContext';
 import { useQuery } from '@tanstack/react-query';
 import BlackScreen from './BlackScreen';
+import AggregationType from '../../Components/DateRangePicker/AggregationType';
 
 const SensorPairScreen = ({ title }) => {
   const { isLayoutReversed, shouldDisplayScreen } = useContext(ScreenContext);
@@ -41,7 +42,7 @@ const SensorPairScreen = ({ title }) => {
   const school_id = school_id_param || currentSchoolID;
   const screen_id = screen_id_param || "screen";
   const queryParams = {
-    hoursToShow: school_id === KAMPALA ? 12 : null
+    aggregationType: school_id === KAMPALA ? AggregationType.hour : null
   };
 
   const url = getApiUrl({
