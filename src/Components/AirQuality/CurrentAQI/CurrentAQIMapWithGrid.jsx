@@ -29,9 +29,6 @@ const returnDefaultZoom = (currentSchoolID) => {
     }
 }
 
-const NUM_SENSORS_FIRST_ROW = 1;
-const NUM_SENSORS_SECOND_ROW = 2;
-
 const CurrentAQIMapWithGrid = (props) => {
     const {
         currentSensorsData,
@@ -202,6 +199,7 @@ const CurrentAQIMapWithGrid = (props) => {
                     <Grid item xs sx={{ mt: 3, px: 1 }}>
                         <AQIScale
                             size={size}
+                            isSmallScreen={false}
                             isOnBannerPage={isOnBannerPage}
                             showLabel={false}
                         />
@@ -259,6 +257,7 @@ const CurrentAQIMapWithGrid = (props) => {
                         <Grid container item xs={1.5} sm={12} textAlign="left" my={isSmallScreen ? 2 : 1}>
                             <AQIScale
                                 size={size}
+                                isSmallScreen={isSmallScreen}
                                 isOnBannerPage={isOnBannerPage}
                                 showLabel={!isSmallScreen}
                             />

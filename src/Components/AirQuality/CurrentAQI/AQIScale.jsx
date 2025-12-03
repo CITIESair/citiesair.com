@@ -1,15 +1,14 @@
 import { useContext } from "react";
 import { PreferenceContext } from "../../../ContextProviders/PreferenceContext";
-import { Box, Stack, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import { AQI_Database } from "../../../Utils/AirQuality/AirQualityIndexHelper";
 import { getTranslation } from "../../../Utils/UtilFunctions";
 import { CurrentAQIGridSize, ElementSizes } from "./CurrentAQIGridSize";
 
 const AQIScale = (props) => {
-    const { isOnBannerPage, showLabel = true, size = CurrentAQIGridSize.medium } = props;
+    const { isOnBannerPage, isSmallScreen, showLabel = true, size = CurrentAQIGridSize.medium } = props;
 
     const { themePreference, language } = useContext(PreferenceContext);
-    const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
 
     return (
         <Stack

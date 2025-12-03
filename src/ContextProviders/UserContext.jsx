@@ -38,7 +38,7 @@ export function UserProvider({ children }) {
         setUser(EMPTY_USER_DATA);
         enqueueSnackbar(error.message, SnackbarMetadata.error);
       });
-  }, [authenticationState.checkedAuthentication]);
+  }, [authenticationState.checkedAuthentication, enqueueSnackbar]);
 
   const providerValue = useMemo(() => ({
     authenticationState, setAuthenticationState,
