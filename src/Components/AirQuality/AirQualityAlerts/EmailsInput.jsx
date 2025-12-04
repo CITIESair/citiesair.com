@@ -10,6 +10,7 @@ import { SnackbarMetadata } from '../../../Utils/SnackbarMetadata';
 import { validateEmail } from '../../../Utils/UtilFunctions';
 import { useSnackbar } from 'notistack';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import useSchoolMetadata from '../../../hooks/useSchoolMetadata';
 
 const compareArrays = (arr1, arr2) => {
   return JSON.stringify(arr1) === JSON.stringify(arr2);
@@ -18,6 +19,7 @@ const compareArrays = (arr1, arr2) => {
 const EmailsInput = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { currentSchoolID } = useContext(DashboardContext);
+  const { data: schoolMetadata } = useSchoolMetadata();
 
   const queryPaths = [GeneralAPIendpoints.alertsEmails, currentSchoolID];
 
@@ -52,8 +54,8 @@ const EmailsInput = () => {
       queryClient.setQueryData([GeneralAPIendpoints.alertsEmails, currentSchoolID], data);
       enqueueSnackbar('Email recipients saved successfully.', SnackbarMetadata.success);
     },
-    onError: () => {
-      enqueueSnackbar('There was an error saving email recipients. Please try again.', SnackbarMetadata.error);
+    onError: (error) => {
+      enqueueSnackbar(error.message || 'There was an error saving email recipients. Please try again.', SnackbarMetadata.error);
     }
   });
 
@@ -66,8 +68,6 @@ const EmailsInput = () => {
   const [menuAnchor, setMenuAnchor] = useState(null);
 
   const [saveButtonTooltipTitle, setSaveButtonTooltipTitle] = useState('');
-
-  const maxEmails = 150;
 
   useEffect(() => {
     setLocalEmails(alertEmails);
@@ -105,7 +105,7 @@ const EmailsInput = () => {
     }
 
     // Add email if max not reached
-    if (localEmails.length >= maxEmails) {
+    if (schoolMetadata.max_email_alert_recipients !== null && localEmails.length >= schoolMetadata.max_email_alert_recipients) {
       enqueueSnackbar('Maximum number of recipients reached', SnackbarMetadata.warning);
       return;
     }
@@ -319,7 +319,7 @@ const EmailsInput = () => {
             ))}
 
             {
-              localEmails.length < maxEmails ? (
+              localEmails.length < schoolMetadata?.max_email_alert_recipients ? (
                 <Grid item xs={12} sm minWidth="200px" >
                   <TextField
                     inputRef={inputRef}
@@ -387,7 +387,7 @@ const EmailsInput = () => {
             color="text.secondary"
             textAlign="right"
           >
-            {localEmails.length} / {maxEmails} recipient{localEmails.length > 1 ? 's' : null} added
+            {localEmails.length} / {schoolMetadata?.max_email_alert_recipients} recipient{localEmails.length > 1 ? 's' : null} added
           </Typography>
 
           <Link
