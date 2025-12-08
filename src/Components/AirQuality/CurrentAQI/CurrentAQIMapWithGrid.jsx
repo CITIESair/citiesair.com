@@ -84,11 +84,21 @@ const CurrentAQIMapWithGrid = (props) => {
         const sensorsWithoutSortingId = [];
 
         currentSensorsData.forEach(item => {
-            if (item.sensor.sorting_id == null) {
+            let rawId = item.sensor.sorting_id;
+
+            // Prevent null → 0 conversion
+            let sortingId = rawId == null ? null : Math.floor(Number(rawId));
+
+            // Handle NaN cases
+            if (!Number.isFinite(sortingId)) sortingId = null;
+
+            if (sortingId == null) {
                 sensorsWithoutSortingId.push(item);
             } else {
-                if (!sensorsWithSortingId[item.sensor.sorting_id]) sensorsWithSortingId[item.sensor.sorting_id] = [];
-                sensorsWithSortingId[item.sensor.sorting_id].push(item);
+                if (!sensorsWithSortingId[sortingId]) {
+                    sensorsWithSortingId[sortingId] = [];
+                }
+                sensorsWithSortingId[sortingId].push(item);
             }
         });
 
