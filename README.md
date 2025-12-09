@@ -62,7 +62,7 @@ There are quite a lot of overlapping components between CITIESair and CITIES Das
 
   - **React Router Setup**: Utilizes `BrowserRouter` from `react-router-dom` to map URLs to specific pages such as `Home` and `Dashboard`. A `404` page is also set up to handle unmatched routes. These routes are defined within the `Routes` component, which renders the appropriate page based on the current URL path.
 
-  - **Lazy Loading of Pages**: Uses React's `lazy` and `Suspense` utilities to lazy-load `Home` and `Dashboard` pages, improving load times by splitting the code at designated points and only loading the components when needed.
+  - **hooks**: [hooks](src/hooks) contains all custom React Query hooks used for fetching real-time air quality data, alerts, and metadata from the backend. These hooks use React Query’s caching system (persistent caching in production, no caching in development) and support automatic refetching based on `staleTime`.
 
   - **Theme Management**:
     - Uses [PreferenceContext](src/ContextProviders/PreferenceContext.jsx) to get user theme preference, determining whether the app uses a dark or light theme based on user preference or system settings.
