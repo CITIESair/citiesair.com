@@ -29,7 +29,7 @@ const getAQIDivIcon = ({
                 : ""}
 
                 ${locationTitle
-                ? `<div style="font-weight: 500; text-transform: capitalize; margin: auto; color: ${theme.palette.text.primary}; font-size: ${markerSizeInRem}rem;">
+                ? `<div style="font-weight: 500; text-transform: capitalize; margin: auto; color: ${theme.palette.text.primary}; font-size: ${markerSizeInRem}rem; line-height: 1.1; padding-top: 4px">
                         ${title}
                     </div>`
                 : ""
