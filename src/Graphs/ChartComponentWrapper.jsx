@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { styled } from '@mui/material/styles';
-import { Box, Tab, useMediaQuery, Typography, Menu, MenuItem, Stack } from '@mui/material/';
+import { Box, Tab, useMediaQuery, Typography, Menu, MenuItem, Stack, Container } from '@mui/material/';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { DataTypes } from '../Utils/AirQuality/DataTypes';
@@ -390,10 +390,8 @@ function ChartComponentWrapper({ chartID }) {
   if (error) return <NoChartToRender customMessage={`Error loading chart ${chartID + 1}, please try later`} />
 
   return (
-    <Box
-      position="relative"
-    >
-      <Box>
+    <Box position="relative">
+      <Container>
         <Typography display="inline" variant="h6" color="text.primary">
           {chartID + 1}. {chartData.title}
           &nbsp;
@@ -405,7 +403,7 @@ function ChartComponentWrapper({ chartID }) {
             chartID={chartID}
           />
         </Box>
-      </Box>
+      </Container>
 
       <ChartStyleWrapper height="100%" sx={{
         filter: isFetching ? 'blur(1px)' : 'none',
@@ -415,7 +413,7 @@ function ChartComponentWrapper({ chartID }) {
         {isValidArray(chartData.subcharts) ? renderMultipleSubcharts() : renderOnlyOneChart()}
 
         {/* Render subtitle and reference below */}
-        <Box sx={{ my: 3 }}>
+        <Container sx={{ my: 3 }}>
           <Typography
             component="div"
             variant="body1"
@@ -427,7 +425,7 @@ function ChartComponentWrapper({ chartID }) {
               reference={getReferences()}
             />
           </Typography>
-        </Box>
+        </Container>
       </ChartStyleWrapper>
 
       {isFetching && (

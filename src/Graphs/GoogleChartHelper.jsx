@@ -19,7 +19,7 @@ const hideAnnotations = {
 
 const returnResponsiveFontSizeInPixels = ({ isPortrait, isSmaller }) => {
   return (
-    isSmaller ? (isPortrait ? 6 : 8) : (isPortrait ? 8 : 10)
+    isSmaller ? (isPortrait ? 7 : 10) : (isPortrait ? 9 : 12)
   );
 }
 
@@ -54,9 +54,10 @@ export const returnGenericOptions = (props) => {
     backgroundColor: { fill: chartData.options?.backgroundColor?.fill || 'transparent' },
     chartArea: {
       ...chartData.options?.chartArea,
-      width: isPortrait ? (chartData.options?.chartArea?.width?.portrait || '80%') : (chartData.options?.chartArea?.width?.landscape || '80%'),
+      // width: isPortrait ? (chartData.options?.chartArea?.width?.portrait || '80%') : (chartData.options?.chartArea?.width?.landscape || '80%'),
       height: isPortrait ? (chartData.options?.chartArea?.height?.portrait || '60%') : (chartData.options?.chartArea?.height?.landscape || '80%'),
-      top: !isPortrait && 20
+      right: 0,
+      left: 10
     },
     width: isPortrait ? (chartData.options?.width?.portrait || '100%') : (chartData.options?.width?.landscape || '100%'),
     // if there is a filter, we make space for the chartFilter from the chart's height.
@@ -68,18 +69,17 @@ export const returnGenericOptions = (props) => {
       showColorCode: false
     },
     legend: {
-      alignment: isPortrait ? 'center' : 'start',
+      alignment: 'center',
       position:
         chartData.options?.legend?.position
-        ?? (isPortrait ? 'top' : 'right'),
+        ?? 'top',
       scrollArrows: {
         activeColor: theme.palette.chart.axisTitle,
         inactiveColor: theme.palette.text.secondary,
       },
       pagingTextStyle: {
-        fontSize: 10,
-        color: theme.palette.chart.axisTitle,
-        bold: true,
+        fontSize: returnResponsiveFontSizeInPixels({ isPortrait, isSmaller: true }),
+        color: theme.palette.chart.axisTitle
       }
     }
   };
@@ -94,6 +94,7 @@ export const returnGenericOptions = (props) => {
       max: options.vAxis?.viewWindow?.max ?? null,
       max: options.vAxis?.viewWindow?.max ?? null,
     },
+    // textPosition: 'in'
   };
   options.hAxis = {
     ...options.hAxis,
