@@ -109,7 +109,7 @@ const Project = () => {
             backgroundColor={index % 2 !== 0 ? 'customAlternateBackground' : ''}
           >
             <Container
-              sx={{ pt: 4, pb: 4 }}
+              sx={{ py: 3, px: 0 }}
               height="auto"
               className={themePreference === ThemePreferences.dark ? 'dark' : ''}
               id={`chart-${index + 1}`}

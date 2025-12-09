@@ -536,6 +536,7 @@ export default function SubChart(props) {
               mt: 1,
               ml: 2,
               gap: 2,
+              [theme.breakpoints.down('sm')]: { px: 2 },
               [theme.breakpoints.down('lg')]: { gap: 1, ml: 0 }
             }}
           >

@@ -19,9 +19,9 @@ const CurrentAQIGrid = (props) => {
     size = CurrentAQIGridSize.medium
   } = props;
 
-  const getGridItemSizes = ({ itemIndex, numOfItems }) => {
+  const getGridItemSizes = (numOfItems) => {
     return {
-      xs: itemIndex === 0 ? 12 : Math.max(12 / numOfItems, 6),
+      xs: Math.max(12 / numOfItems, 6),
       sm: Math.max(12 / numOfItems, 4),
       lg: size === CurrentAQIGridSize.large ? (12 / numOfItems) : Math.min(5, Math.max(12 / numOfItems, 2))
     }
@@ -81,11 +81,7 @@ const CurrentAQIGrid = (props) => {
             showRawMeasurements={showRawMeasurements}
             useLocationShort={useLocationShort}
             roundTemperature={roundTemperature}
-            gridSizes={getGridItemSizes({
-              itemIndex: index,
-              numOfItems: Object.keys(currentSensorsData).length
-            }
-            )}
+            gridSizes={getGridItemSizes(Object.keys(currentSensorsData).length)}
           />
         ))
       }
