@@ -13,6 +13,7 @@ import ThemePreferences from '../../../Themes/ThemePreferences';
 import { KAMPALA, NYUAD } from '../../../Utils/GlobalVariables';
 import { useNetworkStatusContext } from '../../../ContextProviders/NetworkStatusContext';
 import AQIScale from './AQIScale';
+import { isValidArray } from '../../../Utils/UtilFunctions';
 
 const returnSpecialCenterCoordinatesForNYUAD = (isOnBannerPage) => {
     return isOnBannerPage ? [24.523, 54.4343] : null
@@ -109,6 +110,8 @@ const CurrentAQIMapWithGrid = (props) => {
 
         return { sensorsWithSortingId: rows, sensorsWithoutSortingId };
     }, [currentSensorsData]);
+
+    console.log(groupedSensorsBySortingId)
 
     return (
         <Grid
@@ -230,28 +233,33 @@ const CurrentAQIMapWithGrid = (props) => {
                             textAlign="center"
                             spacing={isOnBannerPage === false ? 2 : 0}
                         >
-                            {groupedSensorsBySortingId.sensorsWithSortingId.map((sensorsWithTheSameSortingId, index) => {
-                                const isFirst = index === 0;
+                            {
+                                !isValidArray(groupedSensorsBySortingId.sensorsWithSortingId) ?
+                                    // Placeholder to show skeleton while waiting for groupedSensorsBySortingId.sensorsWithSortingId to load
+                                    <CurrentAQIGrid /> :
+                                    groupedSensorsBySortingId.sensorsWithSortingId.map((sensorsWithTheSameSortingId, index) => {
+                                        const isFirst = index === 0;
 
-                                return (
-                                    <Grid item xs={12} key={index}>
-                                        <CurrentAQIGrid
-                                            currentSensorsData={sensorsWithTheSameSortingId}
-                                            showWeather={!isOnBannerPage}
-                                            showHeatIndex={isFirst ? !isOnBannerPage : false}
-                                            showRawMeasurements={!isOnBannerPage}
-                                            showLastUpdate={isFirst ? true : !isOnBannerPage}
-                                            roundTemperature={isOnBannerPage}
-                                            size={
-                                                size ||
-                                                (isFirst
-                                                    ? (isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium)
-                                                    : CurrentAQIGridSize.small)
-                                            }
-                                        />
-                                    </Grid>
-                                );
-                            })}
+                                        return (
+                                            <Grid item xs={12} key={index}>
+                                                <CurrentAQIGrid
+                                                    currentSensorsData={sensorsWithTheSameSortingId}
+                                                    showWeather={!isOnBannerPage}
+                                                    showHeatIndex={isFirst ? !isOnBannerPage : false}
+                                                    showRawMeasurements={!isOnBannerPage}
+                                                    showLastUpdate={isFirst ? true : !isOnBannerPage}
+                                                    roundTemperature={isOnBannerPage}
+                                                    size={
+                                                        size ||
+                                                        (isFirst
+                                                            ? (isSmallScreen ? CurrentAQIGridSize.small : CurrentAQIGridSize.medium)
+                                                            : CurrentAQIGridSize.small)
+                                                    }
+                                                />
+                                            </Grid>
+                                        );
+                                    })
+                            }
 
                             <Grid item xs={isSmallScreen ? 10 : 12} mb={1}>
                                 <SimpleAQIList

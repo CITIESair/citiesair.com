@@ -1,4 +1,4 @@
-import { Grid, Skeleton, Stack } from '@mui/material';
+import { Grid, Skeleton, Stack, Typography } from '@mui/material';
 
 import { CurrentAQIGridSize, ElementSizes } from './CurrentAQIGridSize';
 import CurrentAQISingleSensor from './CurrentAQISingleSensor';

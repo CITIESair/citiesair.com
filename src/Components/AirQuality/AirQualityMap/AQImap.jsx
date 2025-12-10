@@ -213,7 +213,7 @@ const AQImap = (props) => {
                     color: 'text.secondary'
                 }}
             >
-                <LoadingAnimation />
+                <LoadingAnimation optionalText="Loading Map" />
             </Box>
         );
     }
