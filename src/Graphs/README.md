@@ -9,7 +9,7 @@ This file contains helper functions for Google Charts. It also contains a functi
 Some notable sub-components / functions in this file include:
 
 1. `returnGenericOptions`
-   This function parses `chartData` received from backend API, together with some other props such as `subchartIndex`, and `isPortrait` to return the appropriate `options` property for the Google Charts. `options` mainly concerns the appearance of the charts, and not the underlying data. Therefore, this function can be understood to "format" the charts to the desired appearance.
+   This function parses `chartData` received from backend API, together with some other props such as `subchartIndex`, and `isSmall` to return the appropriate `options` property for the Google Charts. `options` mainly concerns the appearance of the charts, and not the underlying data. Therefore, this function can be understood to "format" the charts to the desired appearance.
    
    As `chartData` is structured in such a way that for charts with subcharts, any properties in the subcharts `options` object will override duplicate properties in the main charts `options`, the function makes multiple modifications to `options` to arrive at the final, most complete one. It also supplies `options` with default properties which are shared among all charts, such as `theme: 'material'`. It also parses properties stored in `chartData` which are not native to Google Charts, such as `serie.color = 'default'`, to match the React's application theme, avoiding hard-coding such values in the database, making the entire project more modular.
 

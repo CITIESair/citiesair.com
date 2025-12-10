@@ -59,9 +59,8 @@ function ChartComponentWrapper({ chartID }) {
 
   const { currentSchoolID } = useContext(DashboardContext);
 
-  const isSmallWidth = useMediaQuery((theme) => theme.breakpoints.down('sm'));
+  const isSmall = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
-  const [isPortrait, setIsPortrait] = useState(window.matchMedia('(orientation: portrait)').matches);
   const [windowSize, setWindowSize] = useState([
     window.innerWidth,
     window.innerHeight,
@@ -95,14 +94,13 @@ function ChartComponentWrapper({ chartID }) {
     setSelectedDataType(chartData.selectedDataType);
   };
 
-  const setupResizeListener = (setWindowSize, setIsPortrait, DEBOUNCE_IN_MILLISECONDS) => {
+  const setupResizeListener = (setWindowSize, DEBOUNCE_IN_MILLISECONDS) => {
     let timeoutID = null;
 
     const handleWindowResize = () => {
       clearTimeout(timeoutID);
 
       timeoutID = setTimeout(() => {
-        setIsPortrait(window.matchMedia('(orientation: portrait)').matches);
         setWindowSize([window.innerWidth, window.innerHeight]);
       }, DEBOUNCE_IN_MILLISECONDS);
     };
@@ -121,7 +119,7 @@ function ChartComponentWrapper({ chartID }) {
     initializeAllowedDataTypes(chartData, setAllowedDataTypes, setSelectedDataType);
 
     // Setup resize listener
-    const cleanupResize = setupResizeListener(setWindowSize, setIsPortrait, DEBOUNCE_IN_MILLISECONDS);
+    const cleanupResize = setupResizeListener(setWindowSize, DEBOUNCE_IN_MILLISECONDS);
 
     // Cleanup listener on unmount
     return cleanupResize;
@@ -141,10 +139,6 @@ function ChartComponentWrapper({ chartID }) {
       // change multiple times causing many expensive rerenders. we try to rerender at the
       // end of the resize.
       timeoutID = setTimeout(() => {
-        // Redraw all charts on device orientation change, as the chartWrapperHeights
-        // have changed.
-        setIsPortrait(window.matchMedia('(orientation: portrait)').matches);
-
         // Redraw all charts on window resized
         setWindowSize([window.innerWidth, window.innerHeight]);
       }, DEBOUNCE_IN_MILLISECONDS);
@@ -165,11 +159,17 @@ function ChartComponentWrapper({ chartID }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSchoolID]);
 
-  let chartHeight, chartMaxHeight;
-  if (chartData?.chartType !== 'Calendar') {
-    chartHeight = isPortrait ? '80vw' : '35vw';
-    chartMaxHeight = isPortrait ? '800px' : '450px';
+  let chartHeight, chartMaxHeight, chartWidth;
+  if (chartData?.chartType === "ScatterChart") {
+    chartHeight = isSmall ? 'calc(100vw + 50px)' : '700px';
+    chartMaxHeight = isSmall ? 'calc(100vw + 50px)' : '700px';
+    chartWidth = isSmall ? null : '660px';
   }
+  else if (chartData?.chartType !== 'Calendar') {
+    chartHeight = isSmall ? '120vw' : '70vw';
+    chartMaxHeight = isSmall ? '800px' : '600px';
+  }
+
 
   // Function to render only one chart (no subchart --> no tab control)
   const renderOnlyOneChart = () => {
@@ -181,9 +181,14 @@ function ChartComponentWrapper({ chartID }) {
         selectedDataType={selectedDataType}
         allowedDataTypes={allowedDataTypes}
         chartData={chartData}
-        isPortrait={isPortrait}
         windowSize={windowSize}
-        height={chartData.height ? chartData.height : chartHeight}
+        height={chartData.height ?? chartHeight}
+        width={chartData.width ?? chartWidth}
+        maxHeight={
+          ['Calendar'].includes(chartData.chartType)
+            ? ''
+            : chartMaxHeight
+        }
       />
     );
   }
@@ -252,7 +257,7 @@ function ChartComponentWrapper({ chartID }) {
         <StyledTabs
           value={currentTab}
           onChange={handleTabChange}
-          variant={isSmallWidth ? 'fullWidth' : 'standard'}
+          variant={isSmall ? 'fullWidth' : 'standard'}
         >
           {subchartsDataForTabs.map((_, index) => (
             <Tab
@@ -322,8 +327,8 @@ function ChartComponentWrapper({ chartID }) {
         <Box
           position="relative"
           sx={{
-            overflowX: isPortrait && 'auto',
-            WebkitOverflowScrolling: isPortrait && 'touch',
+            overflowX: isSmall && 'auto',
+            WebkitOverflowScrolling: isSmall && 'touch',
             overflowY: 'hidden',
           }}
         >
@@ -349,7 +354,6 @@ function ChartComponentWrapper({ chartID }) {
                 allowedDataTypes={allowedDataTypes}
                 chartData={chartData}
                 subchartIndex={index}
-                isPortrait={isPortrait}
                 windowSize={windowSize}
                 height={chartData.height ? chartData.height : chartHeight}
                 maxHeight={
@@ -408,7 +412,7 @@ function ChartComponentWrapper({ chartID }) {
       <ChartStyleWrapper height="100%" sx={{
         filter: isFetching ? 'blur(1px)' : 'none',
         transition: 'filter 0.2s',
-        pointerEvents: isFetching ? "none" : "auto",
+        pointerEvents: isFetching ? "none" : "auto"
       }}>
         {isValidArray(chartData.subcharts) ? renderMultipleSubcharts() : renderOnlyOneChart()}
 

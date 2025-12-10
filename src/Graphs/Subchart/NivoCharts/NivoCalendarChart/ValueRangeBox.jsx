@@ -1,9 +1,10 @@
 import { useTheme } from '@mui/material/styles';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useMediaQuery } from '@mui/material';
 import { generateCssBackgroundGradient } from '../../../../Utils/Gradient/GradientUtils';
 
-const ValueRangeBox = ({ title, valueRange, colorAxis, isPortrait }) => {
+const ValueRangeBox = ({ title, valueRange, colorAxis }) => {
   const theme = useTheme();
+  const isSmall = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   if (valueRange?.min === null || valueRange?.max === null) return null;
 
@@ -37,7 +38,7 @@ const ValueRangeBox = ({ title, valueRange, colorAxis, isPortrait }) => {
   };
   const bottomLabelStyle = {
     bottom: '-1.25rem',
-    transform: isPortrait ? 'translateX(-100%)' : 'translateX(-50%)'
+    transform: isSmall ? 'translateX(-100%)' : 'translateX(-50%)'
   };
 
   const triangleStyle = {
@@ -61,9 +62,10 @@ const ValueRangeBox = ({ title, valueRange, colorAxis, isPortrait }) => {
     <Box sx={{
       position: 'sticky',
       width: 'fit-content',
-      my: 4,
+      mt: 4,
+      mb: isSmall ? 3 : 4,
       float: 'right',
-      right: (isPortrait ? '0' : '50px')
+      right: (isSmall ? 10 : 50)
     }}>
       <Typography sx={{
         display: 'inline',
@@ -81,7 +83,7 @@ const ValueRangeBox = ({ title, valueRange, colorAxis, isPortrait }) => {
         background: generateCssBackgroundGradient({ gradientDirection: 'to right', colors: colors, optionalMaxValue: rangeBoxMaxValue }),
         color: theme.palette.text.secondary,
         border: `1px solid ${theme.palette.text.secondary}`,
-        width: isPortrait ? '250px' : '300px',
+        width: isSmall ? '250px' : '300px',
         height: '1rem',
         position: 'relative',
         justifyContent: 'space-between',

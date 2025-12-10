@@ -111,8 +111,6 @@ const CurrentAQIMapWithGrid = (props) => {
         return { sensorsWithSortingId: rows, sensorsWithoutSortingId };
     }, [currentSensorsData]);
 
-    console.log(groupedSensorsBySortingId)
-
     return (
         <Grid
             container

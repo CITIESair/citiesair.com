@@ -9,12 +9,14 @@ import { getCalendarChartMargin, getDateRangeForCalendarChart, getValueRangeForC
 import { useEffect, useState } from 'react';
 import { isValidArray } from '../../../../Utils/UtilFunctions';
 import GoogleChartStyleWrapper from '../../SubchartUtils/GoogleChartStyleWrapper';
-import { Box } from '@mui/material';
+import { Box, useMediaQuery } from '@mui/material';
 
 const YEAR_SPACING = 40;
 
 const NivoCalendarChart = (props) => {
-    const { dataArray, valueRangeBoxTitle, isPortrait, options, windowSize } = props;
+    const { dataArray, valueRangeBoxTitle, options, windowSize } = props;
+
+    const isSmall = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
     const [dateRange, setDateRange] = useState({ min: null, max: null });
     const [valueRange, setValueRange] = useState({ min: null, max: null });
@@ -34,7 +36,7 @@ const NivoCalendarChart = (props) => {
         const lastYear = new Date(thisDateRange.max).getFullYear();
         const firstYear = new Date(thisDateRange.min).getFullYear();
         const numberOfYears = lastYear - firstYear + 1;
-        const calendarChartMargin = getCalendarChartMargin(isPortrait);
+        const calendarChartMargin = getCalendarChartMargin(isSmall);
 
         const cellSize = Math.min(windowSize[0] / 60, 20); // windowSize[0]: innerWidth
         // max cell size of 20
@@ -45,7 +47,7 @@ const NivoCalendarChart = (props) => {
 
     const displayLegend = options?.legend?.position && options.legend.position !== "none";
 
-    const calendarChartMargin = getCalendarChartMargin(isPortrait, displayLegend);
+    const calendarChartMargin = getCalendarChartMargin(isSmall, displayLegend);
 
     const theme = useTheme();
 
@@ -82,7 +84,6 @@ const NivoCalendarChart = (props) => {
 
     return (
         <GoogleChartStyleWrapper
-            isPortrait={isPortrait}
             className="Calendar"
             position="relative"
             minWidth="550px"
@@ -93,14 +94,13 @@ const NivoCalendarChart = (props) => {
                     title={valueRangeBoxTitle}
                     valueRange={valueRange}
                     colorAxis={options?.colorAxis}
-                    isPortrait={isPortrait}
                 />
             ) : null}
 
 
             <Box sx={{
                 height: `${calendarHeight}px`,
-                maxHeight: "450px",
+                maxHeight: "600px",
                 overflowY: 'auto',
                 width: '100%',
                 position: 'relative'
@@ -131,7 +131,7 @@ const NivoCalendarChart = (props) => {
                         monthBorderWidth={1}
                         daySpacing={0.25}
                         dayBorderWidth={0}
-                        tooltip={({ day, value, color }) => {
+                        tooltip={({ day, color }) => {
                             const tooltipData = dataArray.find(item => item.day === day);
                             const tooltipText = tooltipData ? extractTooltipText(tooltipData.tooltip) : '';
 

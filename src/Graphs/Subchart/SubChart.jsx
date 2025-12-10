@@ -4,7 +4,7 @@ import { useContext, useEffect, useMemo, useState, useCallback } from 'react';
 
 import { GoogleContext } from '../../ContextProviders/GoogleContext';
 
-import { Box, Grid, Stack } from '@mui/material/';
+import { Box, Grid, Stack, useMediaQuery } from '@mui/material/';
 
 import { useTheme } from '@mui/material/styles';
 import SeriesSelector from './SubchartUtils/SeriesSelector';
@@ -29,7 +29,12 @@ import TimeRangeSelectorWrapperForDataHook from '../../Components/TimeRange/Time
 
 export default function SubChart(props) {
   // Props
-  const { chartData, subchartIndex, windowSize, isPortrait, height, maxHeight, selectedDataType, allowedDataTypes } = props;
+  const { chartData, subchartIndex, windowSize, height, maxHeight, width, selectedDataType, allowedDataTypes } = props;
+
+  if (chartData?.chartType === "ScatterChart") {
+    console.log(maxHeight)
+  }
+  const isSmall = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   // Use GoogleContext for loading and manipulating the Google Charts
   const google = useContext(GoogleContext);
@@ -61,8 +66,8 @@ export default function SubChart(props) {
 
   // Get the options object for chart
   const options = useMemo(() => {
-    return returnGenericOptions({ ...props, theme });
-  }, [props, theme, chartData.chartType]);
+    return returnGenericOptions({ ...props, isSmall, theme });
+  }, [props, isSmall, theme, chartData.chartType]);
 
   // State to store transformed data for CalendarChart
   const [calendarDataArray, setCalendarDataArray] = useState(null);
@@ -94,26 +99,18 @@ export default function SubChart(props) {
     }
 
     return (
-      shouldRenderChart ? (
+      <>
+        {
+          !shouldRenderChart ? <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} /> : null
+        }
+
         <NivoCalendarChart
-          dataArray={calendarDataArray}
+          dataArray={shouldRenderChart ? calendarDataArray : []}
           valueRangeBoxTitle={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes, showUnit: true })}
-          isPortrait={isPortrait}
           options={options}
           windowSize={windowSize}
         />
-      ) : (
-        <>
-          <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} />
-          <NivoCalendarChart
-            dataArray={[]}
-            valueRangeBoxTitle={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes, showUnit: true })}
-            isPortrait={isPortrait}
-            options={options}
-            windowSize={windowSize}
-          />
-        </>
-      )
+      </>
     );
   }
 
@@ -136,7 +133,7 @@ export default function SubChart(props) {
         mainChartOptions: options,
         subchartIndex,
         theme,
-        isPortrait
+        isSmall
       })
     };
 
@@ -170,7 +167,7 @@ export default function SubChart(props) {
 
   const hasAtLeastOneAuxillaryControl = seriesSelector || dateRangePicker || selectableAxes || timeRangeSelector;
 
-  // Set new options prop and re-render the chart if theme or isPortrait changes
+  // Set new options prop and re-render the chart if theme or isSmall changes
   useEffect(() => {
     if (seriesSelector) handleSeriesSelection({ newDataColumns: dataColumns }); // this function set new options, too
     else {
@@ -184,7 +181,7 @@ export default function SubChart(props) {
         controlWrapper?.draw();
       }
     }
-  }, [theme, isPortrait, windowSize]);
+  }, [theme, isSmall, windowSize]);
 
   // Set new initialColumnsColors if the theme changes
   // This only applies to when seriesSelector.method == "setViewColumn"
@@ -614,10 +611,10 @@ export default function SubChart(props) {
         )}
 
         <Grid item xs>
-          <Stack>
+          <Stack alignItems="center" width="100%">
             <Box
               id={chartID}
-              sx={{ height: height, maxHeight: maxHeight }}
+              sx={{ height: height, maxHeight: maxHeight, width: width || "100%" }}
             />
 
             {/* Div for all other types of chart control */}
@@ -626,8 +623,10 @@ export default function SubChart(props) {
               sx={{
                 display: (hasChartControl && chartControl.controlType !== 'CategoryFilter') ? "block" : "none",
                 height: `calc(${height} / 8)`,
+                maxHeight: isSmall ? "50px" : "75px",
                 filter: 'saturate(0.3)',
-                opacity: 0.7
+                opacity: 0.7,
+                width: width || "100%"
               }}
             />
           </Stack>
@@ -654,23 +653,11 @@ export default function SubChart(props) {
     setIsFirstRender(false);
   };
 
-  const showAuxiliaryControls = () => {
-    if (!isFirstRender) {
-      return (
-        <>
-
-        </>
-      );
-    } else {
-      return null;
-    }
-  };
-
   return (
     shouldRenderChart ?
       (
         <GoogleChartStyleWrapper
-          isPortrait={isPortrait}
+          isSmall={isSmall}
           gradientBackgroundId={gradientBackgroundId}
           className={chartData.chartType}
           position="relative"

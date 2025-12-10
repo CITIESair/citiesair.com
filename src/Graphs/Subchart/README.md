@@ -7,7 +7,7 @@ The `SubChart` component is an integral part of the CITIES dashboard, designed t
 - **Chart Components and Helpers**: ([Detailed documentation for these functions](../README.md))
   1. **Google Charts Components and Helpers**:
    - `generateRandomID`: Generates unique IDs for Google Charts containers.
-   - `returnGenericOptions`: Parses `chartData` (constructed from `temp_database.json` file), together with some other props such as `subchartIndex` and `isPortrait` to return the appropriate `options` property for the Google charts.
+   - `returnGenericOptions`: Parses `chartData` (constructed from `temp_database.json` file), together with some other props such as `subchartIndex` and `isSmall` to return the appropriate `options` property for the Google charts.
    - `returnChartControlUI`: Returns formatting options for the appearance of the chart controls
    - `ChartControlType`: Enumerates different types of chart controls available.
    - `addTouchEventListenerForChartControl`: Enhances chart controls with touch event listeners for improved mobile interaction.
@@ -22,7 +22,7 @@ The `SubChart` component is an integral part of the CITIES dashboard, designed t
 - `chartData`: The data for the chart to be rendered retrieved from chart API calls. This is the core information that dictates what type of chart and how it is configured.
 - `subchartIndex`: Used to locate the specific subchart within the chartData array, ensuring the correct subchart is rendered.
 - `windowSize`: Information about the current window size for responsive charts (Google Charts is partially responsive, but not 100%)
-- `isPortrait`: A boolean indicating if the device orientation is portrait, influencing chart layout decisions. For example, in portrait mode, the legend is displayed on top of the chart while in landscape mode, it is on the right side.
+- `isSmall`: A boolean indicating if the device width is below breakpoint `md`, influencing chart layout decisions.
 - `height`, `maxHeight`: Specify the desired height constraints for the chart.
 
 ### Early Return Condition for Nivo Calendar Chart

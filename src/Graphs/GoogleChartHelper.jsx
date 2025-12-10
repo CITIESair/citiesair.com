@@ -17,25 +17,30 @@ const hideAnnotations = {
   boxStyle: null,
 };
 
-const returnResponsiveFontSizeInPixels = ({ isPortrait, isSmaller }) => {
+const returnResponsiveFontSizeInPixels = ({ isSmall, tinyFont }) => {
   return (
-    isSmaller ? (isPortrait ? 7 : 10) : (isPortrait ? 9 : 12)
+    tinyFont ? (isSmall ? 7 : 10) : (isSmall ? 9 : 12)
   );
 }
 
 export const returnGenericOptions = (props) => {
-  const { chartData, subchartIndex, isPortrait, theme } = props;
+  const { chartData, subchartIndex, isSmall, theme } = props;
 
   // Define some shared styling rules for the chart
   const axisTitleTextStyle = {
     italic: false,
     bold: true,
     color: theme.palette.chart.axisTitle,
-    fontSize: returnResponsiveFontSizeInPixels({ isPortrait })
+    fontSize: returnResponsiveFontSizeInPixels({ isSmall })
   };
   const axisTextStyle = {
     color: theme.palette.chart.axisText,
-    fontSize: returnResponsiveFontSizeInPixels({ isPortrait })
+    bold: isSmall,
+    fontSize: returnResponsiveFontSizeInPixels({ isSmall })
+  };
+  const legendTextStyle = {
+    color: theme.palette.chart.axisText,
+    fontSize: returnResponsiveFontSizeInPixels({ isSmall })
   };
 
   // ---- Formulate the options for this specific chart:
@@ -54,15 +59,12 @@ export const returnGenericOptions = (props) => {
     backgroundColor: { fill: chartData.options?.backgroundColor?.fill || 'transparent' },
     chartArea: {
       ...chartData.options?.chartArea,
-      // width: isPortrait ? (chartData.options?.chartArea?.width?.portrait || '80%') : (chartData.options?.chartArea?.width?.landscape || '80%'),
-      height: isPortrait ? (chartData.options?.chartArea?.height?.portrait || '60%') : (chartData.options?.chartArea?.height?.landscape || '80%'),
-      right: 0,
-      left: 10
+      right: isSmall ? 10 : 0,
+      left: isSmall ? (chartData?.chartType !== "ScatterChart" ? 30 : 45) : 80,
+      top: isSmall ? 40 : 60,
+      bottom: chartData?.chartType === "ScatterChart" ? 60 : (isSmall ? 80 : 100)
     },
-    width: isPortrait ? (chartData.options?.width?.portrait || '100%') : (chartData.options?.width?.landscape || '100%'),
-    // if there is a filter, we make space for the chartFilter from the chart's height.
-    // value is divided in 2 because the calculation is applied twice due to
-    // how react-google-charts nest components
+    width: isSmall ? (chartData.options?.width?.portrait || '100%') : (chartData.options?.width?.landscape || '100%'),
     height: chartData.height || '100%',
     tooltip: {
       isHtml: true,
@@ -78,7 +80,7 @@ export const returnGenericOptions = (props) => {
         inactiveColor: theme.palette.text.secondary,
       },
       pagingTextStyle: {
-        fontSize: returnResponsiveFontSizeInPixels({ isPortrait, isSmaller: true }),
+        fontSize: returnResponsiveFontSizeInPixels({ isSmall, tinyFont: true }),
         color: theme.palette.chart.axisTitle
       }
     }
@@ -88,20 +90,23 @@ export const returnGenericOptions = (props) => {
   options.vAxis = {
     ...options.vAxis,
     format: options.vAxis?.format ?? 'decimal',
-    title: options.vAxis?.title ?? '',
+    title:
+      options.vAxis?.title &&
+        (chartData?.chartType === "ScatterChart" || !isSmall)
+        ? options.vAxis.title
+        : null,
     viewWindow: {
       min: options.vAxis?.viewWindow?.min ?? 0,
       max: options.vAxis?.viewWindow?.max ?? null,
       max: options.vAxis?.viewWindow?.max ?? null,
-    },
-    // textPosition: 'in'
+    }
   };
   options.hAxis = {
     ...options.hAxis,
     title: options.hAxis?.title ?? '',
   };
   // 3.1. If in portrait mode, slant the text of the hAxis
-  if (isPortrait) {
+  if (isSmall) {
     options.hAxis = {
       ...options.hAxis,
       slantedText: true,
@@ -179,14 +184,14 @@ export const returnGenericOptions = (props) => {
   };
   options.legend = {
     ...options.legend,
-    textStyle: axisTextStyle,
+    textStyle: legendTextStyle,
   };
   options.annotations = {
     ...options.annotations,
     highContrast: true,
     textStyle: {
       color: theme.palette.primary.contrastText,
-      fontSize: returnResponsiveFontSizeInPixels({ isPortrait, isSmaller: true }),
+      fontSize: returnResponsiveFontSizeInPixels({ isSmall, tinyFont: true }),
       opacity: 0.8
     },
     stem: {
@@ -202,7 +207,7 @@ export const returnGenericOptions = (props) => {
     },
   };
 
-  if (isPortrait && chartData?.chartType === "LineChart") {
+  if (isSmall && chartData?.chartType === "LineChart") {
     options.pointSize = 0;
   }
 
@@ -210,7 +215,7 @@ export const returnGenericOptions = (props) => {
 }
 
 export const returnChartControlUI = (props) => {
-  const { chartControl, mainChartData, mainChartOptions, subchartIndex, theme, isPortrait } = props;
+  const { chartControl, mainChartData, mainChartOptions, subchartIndex, theme, isSmall } = props;
   let chartControlUI = {
     ...chartControl.options?.ui,
     snapToData: true
@@ -231,10 +236,14 @@ export const returnChartControlUI = (props) => {
       },
       chartOptions: {
         ...mainChartOptions,
+        chartArea: {
+          ...mainChartOptions.chartArea,
+          top: 0,
+          bottom: 0
+        },
         hAxis: {
           ...mainChartOptions.hAxis,
-          textPosition: 'out',
-          textStyle: { color: theme.palette.chart.axisText, fontSize: returnResponsiveFontSizeInPixels({ isPortrait, isSmaller: true }) },
+          textPosition: 'none',
           title: null
         },
         vAxis: {

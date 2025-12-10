@@ -2,8 +2,8 @@ import { Box, GlobalStyles, useTheme } from '@mui/material/';
 import { styled } from '@mui/material/styles';
 
 const GoogleChartStyleWrapper = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'gradientBackgroundId' && prop !== 'isPortrait',
-})(({ theme, isPortrait, gradientBackgroundId }) => ({
+  shouldForwardProp: (prop) => prop !== 'gradientBackgroundId' && prop !== 'isSmall',
+})(({ theme, isSmall, gradientBackgroundId }) => ({
   '& [id*="google-visualization-errors-all"]': {
     display: 'none !important'
   },
@@ -24,7 +24,7 @@ const GoogleChartStyleWrapper = styled(Box, {
     webkitBoxShadow: '0px 2px 2px 0px rgba(204, 204, 204, 0.6)',
     border: 'solid 1px',
     borderColor: theme.palette.text.secondaryRGB,
-    fontSize: `${isPortrait ? 9 : 12}px`,
+    fontSize: `${isSmall ? 9 : 12}px`,
     color: theme.palette.chart.tooltip.text,
     background: theme.palette.chart.tooltip.background,
     borderRadius: theme.shape.borderRadius,
@@ -34,7 +34,7 @@ const GoogleChartStyleWrapper = styled(Box, {
         margin: '0 !important',
         padding: '0 !important',
         '& span': {
-          fontSize: `${isPortrait ? 9 : 12}px !important`,
+          fontSize: `${isSmall ? 9 : 12}px !important`,
           color: `${theme.palette.chart.tooltip.text} !important`,
         }
       }

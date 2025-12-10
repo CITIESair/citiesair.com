@@ -10,9 +10,9 @@ export const getValueRangeForCalendarChart = (values) => {
   return { min: Math.min(...values), max: Math.max(...values) };
 };
 
-export const getCalendarChartMargin = (isPortrait) => {
-  return isPortrait
-    ? { top: 30, right: 0, bottom: 20, left: 20 }
+export const getCalendarChartMargin = (isSmall) => {
+  return isSmall
+    ? { top: 30, right: 0, bottom: 10, left: 0 }
     : { top: 30, right: 40, bottom: 20, left: 40 };
 };
 
