@@ -1,5 +1,5 @@
-import { useState, useEffect, useContext } from 'react';
-import { Box, Link, Typography, Stack, Select, FormControl, MenuItem, Grid, Button, useMediaQuery, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { useState, useEffect, useContext, useMemo } from 'react';
+import { CircularProgress, Box, Link, Typography, Stack, Select, FormControl, MenuItem, Grid, Button, useMediaQuery, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import DownloadIcon from '@mui/icons-material/Download';
 import DataObjectIcon from '@mui/icons-material/DataObject';
@@ -16,19 +16,19 @@ import { enqueueSnackbar } from 'notistack';
 import { SnackbarMetadata } from '../../Utils/SnackbarMetadata';
 
 export default function DatasetDownloadDialog({ onButtonClick }) {
+  const theme = useTheme();
+  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
   const { handleRestrictedAccess } = useLoginHandler(onButtonClick);
-
   const { data: currentSensorsData } = useCurrentSensorsData();
-
-  const [sensorsList, setSensorsList] = useState({});
-  const [previewingDataset, setPreviewingDataset] = useState();
+  const [previewingDataset, setPreviewingDataset] = useState(null);
 
   // Construct the structure of sensorsList based on current data
-  useEffect(() => {
-    if (!currentSensorsData) return;
+  const sensorsList = useMemo(() => {
+    if (!currentSensorsData) return {};
 
-    const sensorsList = currentSensorsData
-      .filter(item => item && item.sensor)  // Filter out null or undefined items and sensors
+    return currentSensorsData
+      .filter(item => item && item.sensor)
       .reduce((acc, item) => {
         acc[item.sensor.location_short] = {
           location_short: item.sensor.location_short,
@@ -36,20 +36,14 @@ export default function DatasetDownloadDialog({ onButtonClick }) {
         };
         return acc;
       }, {});
+  }, [currentSensorsData]);
 
-    setSensorsList(sensorsList);
+  // When sensorsList changes, reset previewingDataset
+  useEffect(() => {
+    setPreviewingDataset(null);
+  }, [sensorsList])
 
-    // Preview the hourly type of the first sensor initially
-    if (Object.keys(sensorsList).length > 0 && !previewingDataset) {
-      setPreviewingDataset({
-        sensor: Object.keys(sensorsList)[0],
-        aggregationType: AggregationType.hour
-      });
-    }
-  }, [currentSensorsData, previewingDataset]);
-
-  const theme = useTheme();
-  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  console.log(previewingDataset)
 
   return (
     <CustomDialog
@@ -96,7 +90,6 @@ export default function DatasetDownloadDialog({ onButtonClick }) {
                   previewingDataset={previewingDataset}
                   setPreviewingDataset={setPreviewingDataset}
                   isPreviewing={location_short === previewingDataset?.sensor}
-                  setSensorsList={setSensorsList}
                 />
               ))}
             </TableBody>
@@ -107,7 +100,6 @@ export default function DatasetDownloadDialog({ onButtonClick }) {
         <Grid item sm={12} md={6} maxWidth={smallScreen ? '100%' : 'unset'} sx={{ mt: 1 }}>
           <PreviewDataset
             sensorsList={sensorsList}
-            setSensorsList={setSensorsList}
             previewingDataset={previewingDataset}
           />
         </Grid>
@@ -127,8 +119,9 @@ const Dataset = (props) => {
   const { currentSchoolID } = useContext(DashboardContext);
   const theme = useTheme();
 
+  // Reset to .hour if currentSchoolID changes
   useEffect(() => {
-    if (aggregationType !== AggregationType.hour) setAggregationType(AggregationType.hour);
+    setAggregationType(AggregationType.hour);
   }, [currentSchoolID]);
 
   const handleDatasetTypeChange = (event) => {
@@ -148,7 +141,7 @@ const Dataset = (props) => {
 
   return (
     <>
-      <TableRow key={sensor}>
+      <TableRow>
         <TableCell
           sx={{
             pl: 1,
@@ -189,11 +182,15 @@ const Dataset = (props) => {
   )
 }
 
-const PreviewDataset = ({ previewingDataset }) => {
+const INIT_PREVIEWING_DATASET_NAME = "Dataset Preview";
+const INIT_CSV_FILE_NAME = "Download Dataset";
+
+const PreviewDataset = ({ previewingDataset, sensorsList }) => {
   const { data: previewData, isLoading: isPreviewDataLoading } = useDatasetDownload({
     sensor: previewingDataset?.sensor,
     aggregationType: previewingDataset?.aggregationType,
-    isSample: true
+    isSample: true,
+    enabled: !!previewingDataset && !!sensorsList?.[previewingDataset.sensor]
   });
 
   const { refetch: refetchFullData } = useDatasetDownload({
@@ -206,13 +203,21 @@ const PreviewDataset = ({ previewingDataset }) => {
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [previewingDatasetName, setPreviewingDatasetName] = useState("Not previewing any dataset");
-  const [csvFileName, setCsvFileName] = useState("No dataset");
-
+  const [previewingDatasetName, setPreviewingDatasetName] = useState(INIT_PREVIEWING_DATASET_NAME);
+  const [csvFileName, setCsvFileName] = useState(INIT_CSV_FILE_NAME);
   const [formattedData, setFormattedData] = useState('');
   const [rowNumber, setRowNumber] = useState('');
 
   useEffect(() => {
+    // No dataset selected: reset to initial UI state
+    if (!previewingDataset) {
+      setPreviewingDatasetName(INIT_PREVIEWING_DATASET_NAME);
+      setCsvFileName(INIT_CSV_FILE_NAME);
+      setRowNumber('');
+      setFormattedData('');
+      return;
+    }
+
     // If no dataset is chosen to be previewed, early return
     if (!previewData || !previewingDataset) return;
 
@@ -252,7 +257,7 @@ const PreviewDataset = ({ previewingDataset }) => {
 
     const csvFileName = `${previewingDataset.sensor}-${previewingDataset.aggregationType}-${dateString}.csv`;
     setCsvFileName(csvFileName);
-  }, [previewData]);
+  }, [previewData, isPreviewDataLoading, previewingDataset]);
 
   const handleDownload = async () => {
     try {
@@ -315,7 +320,9 @@ const PreviewDataset = ({ previewingDataset }) => {
                   </Box>
                 </>
                 :
-                <LoadingAnimation optionalText="Loading" />
+                (isPreviewDataLoading ?
+                  <LoadingAnimation optionalText="Loading" /> :
+                  null)
             }
           </Stack>
         </Box>
@@ -331,10 +338,19 @@ const PreviewDataset = ({ previewingDataset }) => {
             py: 1
           }}
           onClick={handleDownload}
-          disabled={isPreviewDataLoading}
+          disabled={isPreviewDataLoading || !previewingDataset || !previewData}
         >
-          <DownloadIcon sx={{ fontSize: '1.25rem', mr: 0.5 }} />
-          {csvFileName}
+          {isPreviewDataLoading ? (
+            <>
+              <CircularProgress disableShrink size="1.25rem" sx={{ mr: 1 }} />
+              Fetching...
+            </>
+          ) : (
+            <>
+              <DownloadIcon sx={{ fontSize: '1.25rem', mr: 0.5 }} />
+              {csvFileName}
+            </>
+          )}
         </Button>
       </Box>
     </Stack >
