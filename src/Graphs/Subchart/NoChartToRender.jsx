@@ -1,13 +1,9 @@
 import { Alert, Box } from "@mui/material";
 
-const NoChartToRender = ({ customMessage, dataType, height, selectableAxes }) => {
-    let messagePrefix = "This sensor ";
-    let messageSuffix = " data. Choose a different sensor or data type.";
-
-    if (selectableAxes) {
-        messagePrefix = "This pair of sensors ";
-        messageSuffix = " correlation data. Choose another pair or a different data type."
-    }
+const NoChartToRender = ({ customMessage, dataType, height, isPairOfSensor = false }) => {
+    const item = isPairOfSensor ? "sensor" : "pair of sensors";
+    let messagePrefix = `This ${item} `;
+    let messageSuffix = ` data. Choose a different ${item} or data type.`;
 
     return (
         <Box height={height}>

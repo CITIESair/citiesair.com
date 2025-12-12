@@ -43,8 +43,6 @@ export default function DatasetDownloadDialog({ onButtonClick }) {
     setPreviewingDataset(null);
   }, [sensorsList])
 
-  console.log(previewingDataset)
-
   return (
     <CustomDialog
       buttonIcon={<DataObjectIcon sx={{ fontSize: '1rem' }} />}
@@ -193,7 +191,7 @@ const PreviewDataset = ({ previewingDataset, sensorsList }) => {
     enabled: !!previewingDataset && !!sensorsList?.[previewingDataset.sensor]
   });
 
-  const { refetch: refetchFullData } = useDatasetDownload({
+  const { refetch: refetchFullData, isLoading: isFullDataLoading } = useDatasetDownload({
     sensor: previewingDataset?.sensor,
     aggregationType: previewingDataset?.aggregationType,
     isSample: false,
@@ -338,19 +336,21 @@ const PreviewDataset = ({ previewingDataset, sensorsList }) => {
             py: 1
           }}
           onClick={handleDownload}
-          disabled={isPreviewDataLoading || !previewingDataset || !previewData}
+          disabled={isPreviewDataLoading || isFullDataLoading || !previewingDataset || !previewData}
         >
-          {isPreviewDataLoading ? (
-            <>
-              <CircularProgress disableShrink size="1.25rem" sx={{ mr: 1 }} />
-              Fetching...
-            </>
-          ) : (
-            <>
-              <DownloadIcon sx={{ fontSize: '1.25rem', mr: 0.5 }} />
-              {csvFileName}
-            </>
-          )}
+          <Typography variant='body1' fontWeight={500}>
+            {isPreviewDataLoading || isFullDataLoading ? (
+              <>
+                <CircularProgress disableShrink size="1.25rem" sx={{ mr: 1, verticalAlign: "middle" }} />
+                Fetching {isFullDataLoading ? "Full Dataset" : "Sample"}
+              </>
+            ) : (
+              <>
+                <DownloadIcon sx={{ fontSize: '1.25rem', mr: 0.5, verticalAlign: "middle" }} />
+                {csvFileName}
+              </>
+            )}
+          </Typography>
         </Button>
       </Box>
     </Stack >

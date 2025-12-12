@@ -30,10 +30,6 @@ import TimeRangeSelectorWrapperForDataHook from '../../Components/TimeRange/Time
 export default function SubChart(props) {
   // Props
   const { chartData, subchartIndex, windowSize, height, maxHeight, width, selectedDataType, allowedDataTypes } = props;
-
-  if (chartData?.chartType === "ScatterChart") {
-    console.log(maxHeight)
-  }
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   // Use GoogleContext for loading and manipulating the Google Charts
@@ -157,15 +153,10 @@ export default function SubChart(props) {
   // Properties for data formatters
   const formatters = options.formatters || null;
 
-  // Properties for selectableAxes
-  let selectableAxes = chartData.selectableAxes || null;
-  if (selectableAxes) {
-    if (isValidArray(selectableAxes.allowedAxes)) {
-      if (selectableAxes.allowedAxes.length <= 2) selectableAxes = null; // don't display selectableAxes if number of allowedSensors is less than 3
-    }
-  }
+  // Properties for selectedAxes
+  const selectedAxes = chartData.selectedAxes;
 
-  const hasAtLeastOneAuxillaryControl = seriesSelector || dateRangePicker || selectableAxes || timeRangeSelector;
+  const hasAtLeastOneAuxillaryControl = seriesSelector || dateRangePicker || selectedAxes || timeRangeSelector;
 
   // Set new options prop and re-render the chart if theme or isSmall changes
   useEffect(() => {
@@ -565,11 +556,10 @@ export default function SubChart(props) {
                     />
                   }
 
-                  {selectableAxes &&
+                  {selectedAxes &&
                     <AxesPicker
                       chartID={chartData.id}
-                      allowedAxes={selectableAxes.allowedAxes}
-                      selectedAxes={selectableAxes.selectedAxes}
+                      selectedAxes={selectedAxes}
                       dataType={selectedDataType}
                     />
                   }
@@ -677,11 +667,10 @@ export default function SubChart(props) {
       (
         <NoChartToRender
           dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })}
-          selectableAxes={selectableAxes}
           // If the visualization has a series selector or control, we need to account for its height
           // And since the height is a string, we need to parse it to a number before adding to it
           height={seriesSelector || hasChartControl ? (parseFloat(height) * 1.2 + 'vw') : height}
-
+          isPairOfSensor={true}
         />
       )
   );

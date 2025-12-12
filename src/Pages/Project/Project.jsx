@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import ChartComponentWrapper from '../../Graphs/ChartComponentWrapper';
 import UppercaseTitle from '../../Components/UppercaseTitle';
 
-import { Box, Container, Divider, Grid } from '@mui/material';
+import { Box, Container, Divider, Grid, useTheme } from '@mui/material';
 
 import ThemePreferences from '../../Themes/ThemePreferences';
 
@@ -35,6 +35,7 @@ import useSchoolMetadata from '../../hooks/useSchoolMetadata';
 // import { HYVOR_PAGE_NAME } from '../../Utils/GlobalVariables';
 
 const Project = () => {
+  const theme = useTheme();
   const { currentSchoolID, loadMoreCharts } = useContext(DashboardContext);
   const { data: currentSensorsData } = useCurrentSensorsData();
   const { data: schoolMetadata } = useSchoolMetadata();
@@ -79,23 +80,29 @@ const Project = () => {
           </Grid>
         </Container>
 
-        {schoolMetadata?.has_map === true ?
-          (
-            <CurrentAQIMapWithGrid
-              currentSensorsData={currentSensorsData}
-              schoolID={currentSchoolID}
-              isOnBannerPage={false}
-              minMapHeight={"250px"}
-            />
-          ) : (
-            <Container sx={{ mb: 2 }}>
+        <Container sx={{
+          mb: 1,
+          [theme.breakpoints.down('sm')]: {
+            px: 0
+          }
+        }}>
+          {schoolMetadata?.has_map === true ?
+            (
+              <CurrentAQIMapWithGrid
+                currentSensorsData={currentSensorsData}
+                schoolID={currentSchoolID}
+                isOnBannerPage={false}
+                minMapHeight={"250px"}
+              />
+            ) : (
               <CurrentAQIGrid
                 currentSensorsData={currentSensorsData}
                 isScreen={false}
               />
-            </Container>
-          )
-        }
+            )
+          }
+        </Container>
+
         <Container sx={{ py: 2 }}>
           <ProjectDescription />
           <AQIexplanation />

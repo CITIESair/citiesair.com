@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import { useAxesPicker } from '../../ContextProviders/AxesPickerContext';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
 import useChartData from '../../hooks/useChartData';
+import useSchoolMetadata from '../../hooks/useSchoolMetadata';
 
 const SELECT_MIN_WIDTH = "150px";
 
@@ -50,7 +51,10 @@ const RightSelect = styled(FormControl)(({ theme }) => ({
 
 const AxesPicker = (props) => {
   const { allChartsConfigs, setIndividualChartConfig } = useContext(DashboardContext);
-  const { chartID, allowedAxes, selectedAxes, dataType } = props;
+  const { data: schoolMetadata } = useSchoolMetadata();
+  const allowedItemsForAxes = schoolMetadata?.sensors || [];
+
+  const { chartID, selectedAxes, dataType } = props;
   const { hAxis, vAxis, setHAxis, setVAxis } = useAxesPicker();
 
   const { isFetching } = useChartData(chartID);
@@ -59,14 +63,9 @@ const AxesPicker = (props) => {
   useEffect(() => {
     const { hAxis: receivedHAxis, vAxis: receivedVAxis } = selectedAxes || {};
 
-    if (!(receivedHAxis && receivedVAxis)) {
-      setShouldDisableApplyButton(true);
-      return;
-    }
-
-    setHAxis(receivedHAxis);
-    setVAxis(receivedVAxis);
-  }, [selectedAxes, setHAxis, setVAxis]);
+    if (receivedHAxis) setHAxis(receivedHAxis);
+    if (receivedVAxis) setVAxis(receivedVAxis);
+  }, [selectedAxes]);
 
   useEffect(() => {
     const { hAxis: receivedHAxis, vAxis: receivedVAxis } = selectedAxes;
@@ -117,14 +116,14 @@ const AxesPicker = (props) => {
                 }}
                 autoWidth
               >
-                {allowedAxes?.map(option => (
+                {allowedItemsForAxes.map(item => (
                   <MenuItem
-                    key={option.sensor}
-                    value={option.sensor}
-                    disabled={option.sensor === vAxis || shouldDisableOption(option)}
+                    key={item.location_short}
+                    value={item.location_short}
+                    disabled={item.location_short === vAxis || shouldDisableOption(item)}
                     sx={{ textTransform: 'capitalize' }}
                   >
-                    {option.sensor}{shouldDisableOption(option) && " (No Data)"}
+                    {item.location_short}{shouldDisableOption(item) && " (No Data)"}
                   </MenuItem>
                 ))}
               </Select>
@@ -142,14 +141,14 @@ const AxesPicker = (props) => {
                 }}
                 autoWidth
               >
-                {allowedAxes?.map(option => (
+                {allowedItemsForAxes.map(item => (
                   <MenuItem
-                    key={option.sensor}
-                    value={option.sensor}
-                    disabled={option.sensor === hAxis || shouldDisableOption(option)}
+                    key={item.location_short}
+                    value={item.location_short}
+                    disabled={item.location_short === hAxis || shouldDisableOption(item)}
                     sx={{ textTransform: 'capitalize' }}
                   >
-                    {option.sensor}{shouldDisableOption(option) && " (No Data)"}
+                    {item.location_short}{shouldDisableOption(item) && " (No Data)"}
                   </MenuItem>
                 ))}
               </Select>

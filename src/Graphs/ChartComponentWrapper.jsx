@@ -19,7 +19,7 @@ import LoadingAnimation from '../Components/LoadingAnimation';
 
 const DEBOUNCE_IN_MILLISECONDS = 100;
 
-const MAX_NUM_TABS_TO_DISPLAY = 3;
+const MAX_NUM_TABS_TO_DISPLAY = 4;
 const INITIAL_DROPDOWN_MENU_TAB_INDEX = -1;
 
 const ChartStyleWrapper = styled(Box)(({ theme }) => ({
@@ -207,8 +207,7 @@ function ChartComponentWrapper({ chartID }) {
     };
 
     // Determine if dropdown menu is needed
-    const needsDropdownMenu = chartData.subcharts.length > MAX_NUM_TABS_TO_DISPLAY + 1; // maxTabsToDisplay = 3 by default, but here +1 for some leeway, some schools have 4 sensors which is still okay. But if > 4, then only display max 3
-
+    const needsDropdownMenu = chartData.subcharts.length > MAX_NUM_TABS_TO_DISPLAY;
     const subchartsDataForTabs = needsDropdownMenu ? chartData.subcharts.slice(0, MAX_NUM_TABS_TO_DISPLAY) : chartData.subcharts;
     const subchartsDataForDropDownMenu = needsDropdownMenu ? chartData.subcharts.slice(MAX_NUM_TABS_TO_DISPLAY) : null;
 
