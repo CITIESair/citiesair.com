@@ -18,14 +18,14 @@ import { SnackbarMetadata } from '../../Utils/SnackbarMetadata';
 import useChartData from '../../hooks/useChartData';
 
 const CustomDateRangePicker = (props) => {
-  const { minDateOfDataset, chartIndex } = props;
-  const [isFirstRequest, setIsFirstRequest] = useState(true)
+  const { minDateOfDataset, chartID } = props;
+  const [isFirstRender, setIsFirstRender] = useState(true)
 
   const { enqueueSnackbar } = useSnackbar();
-  const { isFetching } = useChartData(chartIndex);
+  const { isFetching } = useChartData({ chartID });
 
   const { allChartsConfigs, updateIndividualChartConfigQueryParams } = useContext(DashboardContext);
-  const chartConfig = allChartsConfigs[chartIndex] || {};
+  const chartConfig = allChartsConfigs[chartID] || {};
   const queryParams = chartConfig.queryParams || {};
 
   const [aggregationType, setAggregationType] = useState(queryParams.aggregationType || AggregationType.hour);
@@ -53,24 +53,24 @@ const CustomDateRangePicker = (props) => {
 
   // Set aggregationType
   useEffect(() => {
-    // Initialize with the range of the first static range (default)
-    const defaultRange = {
+    // No need to setDateRange on first render (could cause duplicate request otherwise)
+    if (isFirstRender) {
+      setIsFirstRender(false);
+      return;
+    }
+
+    // Default: the range of the first static range
+    setDateRange({
       ...returnCustomStaticRanges({
         aggregationType: aggregationType || AggregationType.hour,
         minDateOfDataset
-      })[0].range(), key: 'selection'
-    };
-    setDateRange(defaultRange);
+      })[0].range(),
+      key: 'selection'
+    });
   }, [aggregationType]);
 
   // Handle date range change → update DashboardContext queryParams
   useEffect(() => {
-    // Early return if this is the first request (already fetched by useChartData hook)
-    if (isFirstRequest) {
-      setIsFirstRequest(false);
-      return;
-    }
-
     const { startDate, endDate } = dateRange || {};
     if (!startDate || !endDate) return;
 
@@ -92,7 +92,7 @@ const CustomDateRangePicker = (props) => {
       startDateObject: startDate,
       endDateObject: endDate
     });
-    updateIndividualChartConfigQueryParams(chartIndex, {
+    updateIndividualChartConfigQueryParams(chartID, {
       aggregationType,
       startDate: formattedDates.startDate,
       endDate: formattedDates.endDate

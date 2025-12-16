@@ -19,9 +19,9 @@ The hooks define:
 
 Examples of hooks include:
 
-- `useChartData(chartID)`
-- `useAlerts()`
-- `useSchoolMetadata()`
+- `useChartData`
+- `useAlerts`
+- `useSchoolMetadata`
 
 ## Environment Behavior
 

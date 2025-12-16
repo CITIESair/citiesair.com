@@ -552,7 +552,7 @@ export default function SubChart(props) {
                     dateRangePicker &&
                     <CustomDateRangePicker
                       minDateOfDataset={new Date(dateRangePicker.minDate)}
-                      chartIndex={chartData.id}
+                      chartID={chartData.id}
                     />
                   }
 

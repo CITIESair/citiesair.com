@@ -6,9 +6,11 @@ import { DashboardContext } from '../ContextProviders/DashboardContext';
 import { getApiUrl } from '../API/ApiUrls';
 import { CURRENT_DATA_EXPIRATION_TIME_MS } from '../Utils/GlobalVariables';
 import { GeneralAPIendpoints } from '../API/Utils';
+import useSchoolMetadata from './useSchoolMetadata';
 
 const useCurrentSensorsData = ({ schoolID = null, enabled = true } = {}) => {
     const { currentSchoolID } = useContext(DashboardContext);
+    const { isSuccess: isMetadataReady } = useSchoolMetadata();
 
     return useQuery({
         queryKey: [GeneralAPIendpoints.current, schoolID || currentSchoolID],
@@ -19,7 +21,7 @@ const useCurrentSensorsData = ({ schoolID = null, enabled = true } = {}) => {
 
             return fetchAndProcessCurrentSensorsData({ url });
         },
-        enabled: enabled && !!currentSchoolID, // only run when ready
+        enabled: enabled && !!currentSchoolID && isMetadataReady, // only run when ready
         staleTime: CURRENT_DATA_EXPIRATION_TIME_MS,
         refetchInterval: CURRENT_DATA_EXPIRATION_TIME_MS,
         refetchOnWindowFocus: true

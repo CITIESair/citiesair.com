@@ -22,6 +22,7 @@ import { DataTypeKeys, DataTypes } from '../../../Utils/AirQuality/DataTypes';
 import getAQIDivIcon from './AQIDivIcon';
 import { calculateAQI } from '../../../Utils/AirQuality/aqiCalculator';
 import { useNetworkStatusContext } from '../../../ContextProviders/NetworkStatusContext';
+import useSchoolMetadata from '../../../hooks/useSchoolMetadata';
 
 const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
     '& .leaflet-popup-tip-container': {
@@ -49,6 +50,8 @@ const AQImap = (props) => {
         shouldCluster = true,
         ariaLabel = "A map of air quality sensors",
     } = props;
+
+    const { data: schoolMetadata } = useSchoolMetadata();
 
     // Filter out invalid mapData entries 
     const sanitizedMapData = useMemo(() => {
@@ -342,7 +345,9 @@ const AQImap = (props) => {
                             </Typography>
 
                             {
-                                location.sensor?.allowedDataTypes?.includes(DataTypeKeys.temperature_C) && (
+                                schoolMetadata?.sensors.find(
+                                    sensor => sensor.sensor_id === location.sensor.sensor_id
+                                )?.allowedDataTypes?.includes(DataTypeKeys.temperature_C) && (
                                     <Typography
                                         variant="caption"
                                         sx={{ display: 'block' }}
@@ -358,7 +363,6 @@ const AQImap = (props) => {
                                     </Typography>
                                 )
                             }
-
 
                             <Typography variant="caption">
                                 <Typography variant='caption' fontWeight="500">Status:</Typography>

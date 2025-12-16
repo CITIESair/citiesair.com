@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { styled } from '@mui/material/styles';
-import { Box, Tab, useMediaQuery, Typography, Menu, MenuItem, Stack, Container } from '@mui/material/';
+import { Box, Tab, useMediaQuery, Typography, Menu, MenuItem, Stack } from '@mui/material/';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { DataTypes } from '../Utils/AirQuality/DataTypes';
@@ -55,7 +55,7 @@ const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
 
 // eslint-disable-next-line max-len
 function ChartComponentWrapper({ chartID }) {
-  const { data: chartData, isLoading, isFetching, error } = useChartData(chartID);
+  const { data: chartData, isLoading, isFetching, error } = useChartData({ chartID });
 
   const { currentSchoolID } = useContext(DashboardContext);
 
@@ -387,26 +387,25 @@ function ChartComponentWrapper({ chartID }) {
     return text;
   }
 
-  if (!chartData) return;
+  if (isLoading) return <LoadingAnimation optionalText={`Loading chart...`} />;
+  if (error) return <NoChartToRender customMessage={`Error loading chart, please try later`} />
 
-  if (isLoading) return <LoadingAnimation optionalText={`Loading chart ${chartID + 1}...`} />;
-  if (error) return <NoChartToRender customMessage={`Error loading chart ${chartID + 1}, please try later`} />
+  if (!chartData) return;
 
   return (
     <Box position="relative">
-      <Container>
-        <Typography display="inline" variant="h6" color="text.primary">
-          {chartID + 1}. {chartData.title}
-          &nbsp;
-        </Typography>
-        <Box display="inline">
-          <DataTypeDropDownMenu
-            selectedDataType={selectedDataType}
-            dataTypes={allowedDataTypes}
-            chartID={chartID}
-          />
-        </Box>
-      </Container>
+      <Typography display="inline" variant="h6" color="text.primary">
+        {chartID + 1}. {chartData.title}
+        &nbsp;
+      </Typography>
+
+      <Box display="inline">
+        <DataTypeDropDownMenu
+          selectedDataType={selectedDataType}
+          dataTypes={allowedDataTypes}
+          chartID={chartID}
+        />
+      </Box>
 
       <ChartStyleWrapper height="100%" sx={{
         filter: isFetching ? 'blur(1px)' : 'none',
@@ -416,7 +415,7 @@ function ChartComponentWrapper({ chartID }) {
         {isValidArray(chartData.subcharts) ? renderMultipleSubcharts() : renderOnlyOneChart()}
 
         {/* Render subtitle and reference below */}
-        <Container sx={{ my: 3 }}>
+        <Box sx={{ my: 3 }}>
           <Typography
             component="div"
             variant="body1"
@@ -428,7 +427,7 @@ function ChartComponentWrapper({ chartID }) {
               reference={getReferences()}
             />
           </Typography>
-        </Container>
+        </Box>
       </ChartStyleWrapper>
 
       {isFetching && (

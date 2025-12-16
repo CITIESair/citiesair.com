@@ -9,45 +9,31 @@ import useSchoolMetadata from '../../hooks/useSchoolMetadata';
 const SELECT_MIN_WIDTH = "150px";
 
 // Define custom styled components for shared border radius
-const LeftSelect = styled(FormControl)(({ theme }) => ({
+const StyledSelect = styled(FormControl)(({ theme, isForHorizontalAxis = true }) => ({
   textTransform: 'capitalize',
   minWidth: SELECT_MIN_WIDTH,
 
-  // Only between sm–lg: stitched (merge right side)
+  // Only between sm–lg: display the StyledSelects stitched horizontally (merge right side)
   [theme.breakpoints.between('sm', 'lg')]: {
     '& .MuiOutlinedInput-root': {
-      borderTopRightRadius: 0,
-      borderBottomRightRadius: 0,
-    },
-    '& .MuiOutlinedInput-notchedOutline': {
-      borderRight: 'none',
-    },
+      ...(isForHorizontalAxis
+        ? {
+          borderTopRightRadius: 0,
+          borderBottomRightRadius: 0,
+        }
+        : {
+          borderTopLeftRadius: 0,
+          borderBottomLeftRadius: 0,
+        }),
+    }
   },
 
-  // Focused border fix (optional highlight)
-  '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-    borderRight: `2px solid ${theme.palette.primary.main}`,
-  },
+  ...(isForHorizontalAxis === true && {
+    '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderRight: `2px solid ${theme.palette.primary.main}`,
+    }
+  })
 }));
-
-
-const RightSelect = styled(FormControl)(({ theme }) => ({
-  textTransform: 'capitalize',
-  minWidth: SELECT_MIN_WIDTH,
-
-  // Only between sm–lg: stitched (merge left side)
-  [theme.breakpoints.between('sm', 'lg')]: {
-    '& .MuiOutlinedInput-root': {
-      borderTopLeftRadius: 0,
-      borderBottomLeftRadius: 0,
-    },
-    '& .MuiOutlinedInput-notchedOutline': {
-      borderLeft: 'none',
-    },
-  },
-}));
-
-
 
 const AxesPicker = (props) => {
   const { allChartsConfigs, setIndividualChartConfig } = useContext(DashboardContext);
@@ -57,7 +43,7 @@ const AxesPicker = (props) => {
   const { chartID, selectedAxes, dataType } = props;
   const { hAxis, vAxis, setHAxis, setVAxis } = useAxesPicker();
 
-  const { isFetching } = useChartData(chartID);
+  const { isFetching } = useChartData({ chartID });
   const [shouldDisableApplyButton, setShouldDisableApplyButton] = useState(true);
 
   useEffect(() => {
@@ -105,7 +91,7 @@ const AxesPicker = (props) => {
       <Grid container item rowGap={1.5} columnGap={1} alignItems="center">
         <Grid container item rowGap={1.5}>
           <Grid item xs={12} sm="auto" lg>
-            <LeftSelect fullWidth size="small">
+            <StyledSelect fullWidth size="small" isForHorizontalAxis={true}>
               <InputLabel id="x-axis-select-label">Horizontal Axis</InputLabel>
               <Select
                 labelId="x-axis-select-label"
@@ -127,10 +113,10 @@ const AxesPicker = (props) => {
                   </MenuItem>
                 ))}
               </Select>
-            </LeftSelect>
+            </StyledSelect>
           </Grid>
           <Grid item xs={12} sm="auto" lg>
-            <RightSelect fullWidth size="small">
+            <StyledSelect fullWidth size="small" isForHorizontalAxis={false}>
               <InputLabel id="y-axis-select-label">Vertical Axis</InputLabel>
               <Select
                 labelId="y-axis-select-label"
@@ -152,7 +138,7 @@ const AxesPicker = (props) => {
                   </MenuItem>
                 ))}
               </Select>
-            </RightSelect>
+            </StyledSelect>
           </Grid>
         </Grid>
 

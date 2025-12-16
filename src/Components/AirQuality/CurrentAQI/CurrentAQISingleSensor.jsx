@@ -11,11 +11,13 @@ import { ElementSizes } from "./CurrentAQIGridSize";
 import { CurrentHeatIndex, CurrentWeather } from "./CurrentMetero";
 import LastUpdateAndSensorStatus from "./LastUpdateAndSensorStatus";
 import { DataTypeKeys } from "../../../Utils/AirQuality/DataTypes";
+import useSchoolMetadata from '../../../hooks/useSchoolMetadata';
 
 const CurrentAQISingleSensor = (props) => {
     const {
         sensor, current, size, showLastUpdate, showWeatherText, gridSizes, isScreen, showAQI, useLocationShort, showRawMeasurements, showWeather, roundTemperature, showHeatIndex
     } = props;
+    const { data: schoolMetadata } = useSchoolMetadata();
 
     const theme = useTheme();
     const { language } = useContext(PreferenceContext);
@@ -92,7 +94,9 @@ const CurrentAQISingleSensor = (props) => {
                 position="relative"
             >
                 {
-                    sensor?.allowedDataTypes?.includes(DataTypeKeys.temperature_C) && <>
+                    schoolMetadata?.sensors.find(
+                        sensor => sensor.sensor_id === sensor.sensor_id
+                    )?.allowedDataTypes?.includes(DataTypeKeys.temperature_C) && <>
                         {
                             showWeather &&
                             <CurrentWeather
