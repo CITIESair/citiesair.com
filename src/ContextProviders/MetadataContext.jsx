@@ -31,16 +31,14 @@ export function MetadataProvider({ children }) {
 
   // ------ Current page and chart title list metadata -----
   const [currentPage, setCurrentPage] = useState(null);
-  const [chartsTitlesList, setChartsTitlesList] = useState([]);
 
   const providerValue = useMemo(() => ({
     // commentCounts, fetchCommentCounts, setCommentCounts,
-    currentPage, setCurrentPage,
-    chartsTitlesList, setChartsTitlesList
+    currentPage, setCurrentPage
   }), [
     // Temporarily not using HyvorTalk comment anymore
     // commentCounts, 
-    currentPage, chartsTitlesList]);
+    currentPage]);
 
   // return context provider
   return (

@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { Box, Typography, Button, Container, Paper, CircularProgress } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchDataFromURL } from '../API/ApiFetch';
-import { getApiUrl } from '../API/ApiUrls';
-import { GeneralAPIendpoints, RESTmethods } from '../API/Utils';
+import { getApiUrl } from '../API/APIUtils';
 
 const UnsubscribeAlert = () => {
     const navigate = useNavigate();
@@ -19,8 +18,8 @@ const UnsubscribeAlert = () => {
         const handleUnsubscribe = async () => {
             try {
                 const data = await fetchDataFromURL({
-                    url: getApiUrl({ paths: [GeneralAPIendpoints.unsubscribe] }),
-                    restMethod: RESTmethods.POST,
+                    url: getApiUrl({ endpoint: "unsubscribe_alert" }),
+                    RESTmethod: "POST",
                     body: { token },
                 });
 

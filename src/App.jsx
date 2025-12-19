@@ -63,7 +63,6 @@ export const getDesignTokens = (themePreference) => ({
 
 export function App() {
   const { themePreference, setThemePreference } = useContext(PreferenceContext);
-  const { chartsTitlesList } = useContext(MetadataContext);
 
   // Create theme using getDesignTokens
   const theme = useMemo(
@@ -107,7 +106,6 @@ export function App() {
           <GoogleChartGlobalStyles />
 
           <SpeedDialButton
-            chartsTitlesList={chartsTitlesList}
             topAnchorID={sectionData.topAnchor.id}
           />
 

@@ -97,8 +97,7 @@ export const returnGenericOptions = (props) => {
         : null,
     viewWindow: {
       min: options.vAxis?.viewWindow?.min ?? 0,
-      max: options.vAxis?.viewWindow?.max ?? null,
-      max: options.vAxis?.viewWindow?.max ?? null,
+      max: options.vAxis?.viewWindow?.max ?? null
     }
   };
   options.hAxis = {

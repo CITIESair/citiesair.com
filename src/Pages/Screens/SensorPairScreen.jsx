@@ -13,8 +13,7 @@ import { AQI_Database } from '../../Utils/AirQuality/AirQualityIndexHelper';
 
 import CurrentAQIGrid from '../../Components/AirQuality/CurrentAQI/CurrentAQIGrid';
 import { CurrentAQIGridSize } from '../../Components/AirQuality/CurrentAQI/CurrentAQIGridSize';
-import { getApiUrl } from '../../API/ApiUrls';
-import { GeneralAPIendpoints } from "../../API/Utils";
+import { getApiUrl } from '../../API/APIUtils';
 import { fetchAndProcessCurrentSensorsData } from '../../API/ApiFetch';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import { CITIESair, CURRENT_DATA_EXPIRATION_TIME_MS, KAMPALA } from '../../Utils/GlobalVariables';
@@ -46,12 +45,13 @@ const SensorPairScreen = ({ title }) => {
   };
 
   const url = getApiUrl({
-    paths: [GeneralAPIendpoints.screen, school_id, screen_id],
+    endpoint: "screen",
+    paths: [school_id, screen_id],
     queryParams
   });
 
   const { data } = useQuery({
-    queryKey: [GeneralAPIendpoints.screen, school_id, screen_id, queryParams],
+    queryKey: [url],
     queryFn: async () => {
       const screenData = await fetchAndProcessCurrentSensorsData({ url });
 

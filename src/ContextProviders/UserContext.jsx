@@ -1,7 +1,6 @@
 import { useState, useEffect, createContext, useMemo } from 'react';
 import { fetchDataFromURL } from '../API/ApiFetch';
-import { getApiUrl } from '../API/ApiUrls';
-import { GeneralAPIendpoints } from "../API/Utils";
+import { getApiUrl } from '../API/APIUtils';
 import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
 import { EMPTY_USER_DATA } from '../Utils/GlobalVariables';
 import { useSnackbar } from 'notistack';
@@ -21,7 +20,7 @@ export function UserProvider({ children }) {
   useEffect(() => {
     if (authenticationState.checkedAuthentication === true) return;
 
-    const url = getApiUrl({ paths: [GeneralAPIendpoints.me] });
+    const url = getApiUrl({ endpoint: "me" });
     fetchDataFromURL({ url })
       .then((data) => {
         setAuthenticationState({

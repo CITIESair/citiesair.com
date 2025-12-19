@@ -1,7 +1,6 @@
 import { Grid, Typography, Stack, Box } from '@mui/material';
 import { fetchDataFromURL } from '../../API/ApiFetch';
-import { GeneralAPIendpoints } from '../../API/Utils';
-import { getApiUrl } from '../../API/ApiUrls';
+import { getApiUrl } from '../../API/APIUtils';
 
 import GroupsIcon from '@mui/icons-material/Groups';
 import FaceIcon from '@mui/icons-material/Face';
@@ -67,10 +66,10 @@ const AtAGlance = ({ statsForEntireProject = true }) => {
   const { isServerDown } = useNetworkStatusContext();
   const { currentSchoolID } = useContext(DashboardContext);
 
+  const url = getApiUrl({ endpoint: "stats", paths: [statsForEntireProject ? "" : currentSchoolID] });
   const { data: stats, isLoading } = useQuery({
-    queryKey: [GeneralAPIendpoints.stats, statsForEntireProject ? "" : currentSchoolID],
+    queryKey: [url],
     queryFn: async () => {
-      const url = getApiUrl({ paths: [GeneralAPIendpoints.stats, statsForEntireProject ? "" : currentSchoolID] });
       return fetchDataFromURL({ url });
     },
     enabled: statsForEntireProject === false ? !!currentSchoolID : true,

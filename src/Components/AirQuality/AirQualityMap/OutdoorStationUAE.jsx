@@ -4,14 +4,13 @@ import { TileOptions } from './AirQualityMapUtils'
 
 import { useQuery } from '@tanstack/react-query';
 import { fetchAndProcessCurrentSensorsData } from '../../../API/ApiFetch';
-import { getApiUrl } from '../../../API/ApiUrls';
-import { GeneralAPIendpoints } from '../../../API/Utils';
+import { getApiUrl } from '../../../API/APIUtils';
 
 const OutdoorStationUAE = ({ overridenThemePreference, fullSizeMap = false }) => {
+    const url = getApiUrl({ endpoint: "map_public_outdoors_stations" });
     const { data: publicMapData } = useQuery({
-        queryKey: [GeneralAPIendpoints.map],
+        queryKey: [url],
         queryFn: async () => {
-            const url = getApiUrl({ paths: [GeneralAPIendpoints.map] });
             return fetchAndProcessCurrentSensorsData({ url });
         },
         staleTime: CURRENT_DATA_EXPIRATION_TIME_MS,

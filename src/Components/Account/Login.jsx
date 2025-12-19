@@ -2,12 +2,10 @@ import { useState, useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper, Divider, Stack } from "@mui/material";
 import { UserContext } from '../../ContextProviders/UserContext';
-import { getApiUrl } from '../../API/ApiUrls';
-import { GeneralAPIendpoints } from "../../API/Utils";
+import { getApiUrl } from '../../API/APIUtils';
 import { AppRoutes } from '../../Utils/AppRoutes';
 import { SnackbarMetadata } from '../../Utils/SnackbarMetadata';
 import { fetchDataFromURL } from '../../API/ApiFetch';
-import { RESTmethods } from "../../API/Utils";
 import { MetadataContext } from '../../ContextProviders/MetadataContext';
 import GoogleOAuthButtonAndPopupHandler from './OAuth/GoogleOAuthButtonAndPopupHandler';
 import { LoginTypes, UserRoles } from './Utils';
@@ -66,8 +64,8 @@ export default function Login() {
     setLoading(true);
 
     fetchDataFromURL({
-      url: getApiUrl({ paths: [GeneralAPIendpoints.login] }),
-      restMethod: RESTmethods.POST,
+      url: getApiUrl({ endpoint: 'login' }),
+      RESTmethod: "POST",
       body: {
         username,
         password,

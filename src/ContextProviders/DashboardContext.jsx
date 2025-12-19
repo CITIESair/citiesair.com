@@ -1,5 +1,5 @@
 import { useState, createContext, useMemo, useEffect, useContext } from 'react';
-import { ChartAPIendpointsOrder } from '../API/Utils';
+import { ChartAPIEndpointsOrder } from '../API/APIUtils';
 import { AppRoutes } from '../Utils/AppRoutes';
 import { NYUAD } from '../Utils/GlobalVariables';
 import { LocalStorage } from '../Utils/LocalStorage';
@@ -24,7 +24,7 @@ export function DashboardProvider({ children }) {
   const [currentSchoolID, setCurrentSchoolID] = useState();
 
   const [allChartsConfigs, setAllChartsConfigs] = useState(() =>
-    ChartAPIendpointsOrder.reduce((acc, endpoint, index) => {
+    ChartAPIEndpointsOrder.reduce((acc, endpoint, index) => {
       acc[index] = { endpoint, queryParams: {} };
       return acc;
     }, {})

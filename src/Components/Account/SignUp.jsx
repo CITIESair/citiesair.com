@@ -2,8 +2,7 @@ import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CircularProgress, Button, TextField, Box, Typography, Container, Paper, Divider, Stack } from "@mui/material";
 import { UserContext } from "../../ContextProviders/UserContext";
-import { getApiUrl } from "../../API/ApiUrls";
-import { GeneralAPIendpoints, RESTmethods } from "../../API/Utils";
+import { getApiUrl } from "../../API/APIUtils";
 import { AppRoutes } from "../../Utils/AppRoutes";
 import { fetchDataFromURL } from "../../API/ApiFetch";
 import { validateEmail } from "../../Utils/UtilFunctions";
@@ -75,8 +74,8 @@ export default function SignUp() {
     setLoading(true);
 
     fetchDataFromURL({
-      url: getApiUrl({ paths: [GeneralAPIendpoints.signUp] }),
-      restMethod: RESTmethods.POST,
+      url: getApiUrl({ endpoint: "signup" }),
+      RESTmethod: "POST",
       body: {
         email,
         password,

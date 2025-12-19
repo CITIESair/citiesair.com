@@ -1,11 +1,10 @@
 import { calculateSensorStatus } from "../Components/AirQuality/SensorStatus";
-import { SupportedFetchExtensions, RESTmethods } from "./Utils";
 
 export const fetchDataFromURL = async ({
   url,
-  extension = SupportedFetchExtensions.json,
+  extension = "json",
   needsAuthorization = true,
-  restMethod = RESTmethods.GET,
+  RESTmethod = "GET",
   body = null,
   includesContentTypeHeader = true,
   timeoutMs = 30000 // default: 30 seconds
@@ -19,7 +18,7 @@ export const fetchDataFromURL = async ({
     }
 
     const fetchOptions = {
-      method: restMethod,
+      method: RESTmethod,
       credentials: needsAuthorization ? 'include' : 'omit',
       ...(body && { body: JSON.stringify(body) }),
       headers: {},
@@ -28,10 +27,10 @@ export const fetchDataFromURL = async ({
 
     if (includesContentTypeHeader) {
       switch (extension) {
-        case SupportedFetchExtensions.json:
+        case "json":
           fetchOptions.headers["Content-Type"] = "application/json; charset=UTF-8";
           break;
-        case SupportedFetchExtensions.csv:
+        case "csv":
           fetchOptions.headers["Content-Type"] = "text/csv; charset=UTF-8";
           break;
         default:
@@ -66,9 +65,9 @@ export const fetchDataFromURL = async ({
     window.dispatchEvent(new Event('server:up'));
 
     switch (extension) {
-      case SupportedFetchExtensions.json:
+      case "json":
         return await response.json();
-      case SupportedFetchExtensions.csv:
+      case "csv":
         return await response.text();
       default:
         return response;

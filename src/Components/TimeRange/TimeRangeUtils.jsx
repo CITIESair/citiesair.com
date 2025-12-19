@@ -16,6 +16,3 @@ export const PREDEFINED_TIMERANGES = {
   schoolHour: { id: "schoolHour", label: "School Hour", start: HOURS[7].value, end: HOURS[17].value, timeRangeLabel: "7-17h" },
   custom: { id: "custom", label: "Custom" }
 };
-
-
-

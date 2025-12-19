@@ -1,12 +1,8 @@
 # Promo UI Components
 
-### Overview
+> This folder contains UI components for promotional banners to promote new features of CITIESair to users.
 
-This folder contains UI components for promotional banners to promote new features of CITIESair to users.
-
-### Files
-
-- [**Promo.jsx**](./Promo.jsx): 
+### [Promo.jsx](./Promo.jsx): 
 
   This component encapsulates the two components below into one single component to be called in the [Header.jsx](/src/Components/Header/Header.jsx).
 
@@ -14,13 +10,13 @@ This folder contains UI components for promotional banners to promote new featur
     - `PromoAlert`: for all `promos` in the json file
     - `PromoDialogBanner`: for only `promos` that have not been shown before, aka those that are not in the `hiddenPromos` array in `localStorage`
 
-- [**PromoAlert.jsx**](./PromoAlert.jsx): 
+### [PromoAlert.jsx](./PromoAlert.jsx): 
 
   Just a simple `MUI Alert` on the top of the page to remind users of the new features. Can be closed with the `x` button.
 
   ![promo-alert](/documentation/promo-alert.png)
 
-- [**PromoDialogBanner.jsx**](./PromoDialogBanner.jsx): 
+### [PromoDialogBanner.jsx](./PromoDialogBanner.jsx): 
 
   A prominent dialog banner that shows up the first time a user visits CITIESair. It contains a blue `MUI Chip`, a title, a subtitle, and an illustrative image for each feature. The user must click `CLOSE AND DON'T SHOW THIS BANNER AGAIN` at the bottom of the banner to close it; clicking outside the banner does not close it. This will also add the visible promos' `id` to `hiddenPromos` in `localStorage` to not show it/them again in the future.
   

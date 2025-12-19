@@ -1,9 +1,7 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Box, TextField, Chip, Menu, MenuItem, Grid, Typography, Button, Stack, useMediaQuery, Alert, Tooltip, Link, CircularProgress } from '@mui/material';
 import { fetchDataFromURL } from "../../../API/ApiFetch";
-import { RESTmethods } from "../../../API/Utils";
-import { getApiUrl } from '../../../API/ApiUrls';
-import { GeneralAPIendpoints } from "../../../API/Utils";
+import { getApiUrl } from "../../../API/APIUtils";
 import { DashboardContext } from '../../../ContextProviders/DashboardContext';
 import { isValidArray } from '../../../Utils/UtilFunctions';
 import { SnackbarMetadata } from '../../../Utils/SnackbarMetadata';
@@ -21,15 +19,12 @@ const EmailsInput = () => {
   const { currentSchoolID } = useContext(DashboardContext);
   const { data: schoolMetadata } = useSchoolMetadata();
 
-  const queryPaths = [GeneralAPIendpoints.alertsEmails, currentSchoolID];
-
+  const url = getApiUrl({ endpoint: "alerts/emails", paths: [currentSchoolID] });
   const { data: alertEmails = [] } = useQuery({
-    queryKey: queryPaths,
+    queryKey: [url],
     queryFn: async () => {
       return fetchDataFromURL({
-        url: getApiUrl({
-          paths: queryPaths
-        }),
+        url,
         extension: 'json',
         needsAuthorization: true
       });
@@ -45,13 +40,13 @@ const EmailsInput = () => {
         url: getApiUrl({
           paths: queryPaths
         }),
-        restMethod: RESTmethods.POST,
+        RESTmethod: "POST",
         body: emailsToSave
       });
     },
     onSuccess: (data) => {
-      // Update cache immediately so UI updates without refetch
-      queryClient.setQueryData([GeneralAPIendpoints.alertsEmails, currentSchoolID], data);
+      // Update cache (key url above) immediately with data so UI updates without refetch
+      queryClient.setQueryData(url, data);
       enqueueSnackbar('Email recipients saved successfully.', SnackbarMetadata.success);
     },
     onError: (error) => {

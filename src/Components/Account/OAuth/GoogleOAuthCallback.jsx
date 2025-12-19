@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { getApiUrl } from "../../../API/ApiUrls";
-import { GeneralAPIendpoints, RESTmethods } from "../../../API/Utils";
+import { getApiUrl } from "../../../API/APIUtils";
 import { fetchDataFromURL } from "../../../API/ApiFetch";
 import { Container, Paper, Typography, CircularProgress } from "@mui/material";
 import { LoginTypes } from "../Utils";
@@ -15,8 +14,8 @@ export default function GoogleOAuthCallback() {
             setStatus("Processing authentication...");
 
             fetchDataFromURL({
-                url: getApiUrl({ paths: [GeneralAPIendpoints.googleCallback] }),
-                restMethod: RESTmethods.POST,
+                url: getApiUrl({ endpoint: "google/callback" }),
+                RESTmethod: "POST",
                 body: { code },
             }).then((data) => {
                 // Send the result to the main window

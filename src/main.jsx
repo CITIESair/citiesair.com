@@ -23,7 +23,7 @@ const localStoragePersister = createAsyncStoragePersister({
 });
 
 // use frontend api caching for production
-const IS_PRODUCTION = process.env.REACT_APP_ENV === 'production';
+const IS_PRODUCTION = import.meta.env.VITE_APP_ENV === 'production';
 
 const Providers = ({ children }) => (
   <SnackbarProvider

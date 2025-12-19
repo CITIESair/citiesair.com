@@ -106,9 +106,6 @@ export const StyledDateRangePicker = styled(Paper, {
     boxShadow: 'none',
     padding: 0
   },
-  '& .rdrDayToday .rdrDayNumber span:after': {
-    background: theme.palette.secondary
-  },
   '& .rdrDateDisplayWrapper, .rdrCalendarWrapper, .rdrDefinedRangesWrapper, .rdrStaticRange, .rdrDateDisplayItem': {
     background: 'transparent'
   },

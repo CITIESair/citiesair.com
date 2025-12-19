@@ -2,10 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useContext } from "react";
 import { DashboardContext } from "../../ContextProviders/DashboardContext";
 import { UserContext } from "../../ContextProviders/UserContext";
-import { GeneralAPIendpoints, RESTmethods } from "../../API/Utils";
+import { getApiUrl } from "../../API/APIUtils";
 import { addChildToAlerts } from "../../Components/AirQuality/AirQualityAlerts/AlertUtils";
 import { fetchDataFromURL } from "../../API/ApiFetch";
-import { getApiUrl } from "../../API/ApiUrls";
 
 export const useCreateAlertMutation = () => {
     const queryClient = useQueryClient();
@@ -14,19 +13,18 @@ export const useCreateAlertMutation = () => {
 
     return useMutation({
         mutationFn: async ({ alertToCreate }) => {
-            const url = getApiUrl({
-                paths: [GeneralAPIendpoints.alerts, currentSchoolID]
-            });
-
             return fetchDataFromURL({
-                url,
-                restMethod: RESTmethods.POST,
+                url: getApiUrl({
+                    endpoint: "alerts",
+                    paths: [currentSchoolID]
+                }),
+                RESTmethod: "POST",
                 body: alertToCreate
             });
         },
         onSuccess: (createdAlert) => {
             queryClient.setQueryData(
-                [GeneralAPIendpoints.alerts, currentSchoolID, user.username || user.email],
+                ["alerts", currentSchoolID, user.username || user.email],
                 (old = []) => addChildToAlerts([...old, createdAlert])
             );
         }

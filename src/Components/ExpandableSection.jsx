@@ -8,7 +8,7 @@ import MuiAccordionSummary from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import { Box, Typography, Tooltip } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import * as Tracking from '../../Utils/Tracking';
+import * as Tracking from '../Utils/Tracking';
 
 const StyledAccordion = styled(MuiAccordion)(({ theme, expanded }) => ({
   color: theme.palette.text.secondary,

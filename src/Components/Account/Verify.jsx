@@ -1,18 +1,10 @@
 /* eslint-disable */
 import { useEffect, useState, useContext } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import {
-  CircularProgress,
-  Typography,
-  Container,
-  Paper,
-  Button,
-  Box,
-} from "@mui/material";
+import { CircularProgress, Typography, Container, Paper, Button, Box } from "@mui/material";
 
 import { UserContext } from "../../ContextProviders/UserContext";
-import { getApiUrl } from "../../API/ApiUrls";
-import { GeneralAPIendpoints, RESTmethods } from "../../API/Utils";
+import { getApiUrl } from "../../API/APIUtils";
 import { fetchDataFromURL } from "../../API/ApiFetch";
 import { AppRoutes } from "../../Utils/AppRoutes";
 import { MetadataContext } from "../../ContextProviders/MetadataContext";
@@ -47,8 +39,8 @@ export default function Verify() {
   const verifyAccount = async () => {
     try {
       const response = await fetchDataFromURL({
-        url: getApiUrl({ paths: [GeneralAPIendpoints.verify] }),
-        restMethod: RESTmethods.POST,
+        url: getApiUrl({ endpoint: "verify" }),
+        RESTmethod: "POST",
         body: { token },
       });
 

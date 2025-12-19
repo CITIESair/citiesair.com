@@ -1,28 +1,18 @@
 # AirQualityAlerts
 
-This folder contains components for rendering and allowing CRUD operations for air quality alerts. As of July 2024, air quality alerts are made available to all logged-in schools but not `nyuad`. Supports for `nyuad` must take into account these problems:
-- Authentication for adding new email / alert (magic link email)
-- Rate limiting for sending email with Amazon SES. It is estimated that there will be around 500 people signing up for `nyuad` alerts
-- Any other optimization
+> Components for rendering and allowing CRUD operations for air quality alerts, intended for both institutions with private access and public instutions like NYUAD. Below are major components, in the order of nested DOMs:
 
-### Main Files
-
-In the order of nested DOMs:
-
-- [**AirQualityAlert.jsx**](./AirQualityAlert.jsx): 
-
+### [AirQualityAlert.jsx](./AirQualityAlert.jsx): 
   Just a wrapper that uses [CustomDialog](src/Components/CustomDialog/CustomDialog.jsx) to display a new dialog for the air quality alert section's contents:
   - `AlertsTabs`
   - `EmailsInput`
 
-- [**AlertsTabs.jsx**](./AlertsTabs.jsx): 
-
+### [AlertsTabs.jsx](./AlertsTabs.jsx): 
   This component splits all the alerts belonging to each school to 2 categories:
   - `threshold`: an email alert is sent when the selected `dataType` for the selected `sensor` `exceeds/drops below` a selected `threshold` (hourly data)
   - `daily`: an email alert is sent daily at the selected `hour` for the selected `dataType` for the selected `sensor` (hourly data)
 
-- [**AlertsTable.jsx**](./AlertsTable.jsx): 
-
+### [AlertsTable.jsx](./AlertsTable.jsx): 
   This component displays the list of alerts belonging to an `alertType`:
 
   ```
@@ -44,15 +34,15 @@ In the order of nested DOMs:
     - `DELETE` (trash icon to the far right of each alert row)
     - `ADD` (add alert button at the bottom of the table)
 
-- [**AlertModificationDialog**](./AlertModificationDialog/): 
+### [AlertModificationDialog](./AlertModificationDialog/): 
 
   This folder contains components for rendering the CRUD modification dialog for each air quality alert.
   
   Read its documentation [here](.//AlertModificationDialog/README.md)
 
-### Mics Files
+## Mics Files
 
-- [**EmailsInput.jsx**](./EmailsInput.jsx): 
+### [EmailsInput.jsx](./EmailsInput.jsx): 
 
   ![emails-input-for-alert](/documentation/emails-input-for-alert.png)
   
@@ -61,7 +51,8 @@ In the order of nested DOMs:
   - An input field with email `Chips`
   - The user can type email addresses in and finalize each address by typing `Enter` or `spacebar` 
   - Each email `Chip` has a `x` button to remove that email
-  - Clicking anywhere on an email `Chip` opens a dropdown menu that currently only has the option to `Edit` that email address. When an email addressed is being edited this way, it will be moved to the end of the input field
+  - Clicking anywhere on an email `Chip` opens a dropdown menu that has the option to `Edit` or `Copy` that email address. When an email addressed is being edited this way, it will be moved to the end of the input field.
+  - Supports email copying and pasting via mouse or keyboard shortcut
   - There are several checks in place for invalid user inputs:
     - Wrong email format (must be abc@def.xyz):
       
@@ -73,7 +64,6 @@ In the order of nested DOMs:
 
   - Upon entering all the desired emails, the user must click `SAVE EMAIL LIST` to propagate all local changes to the server/DB. This button is `disabled` if there is no local changes to the received email list from the server.
 
-- [**AlertTypes.jsx**](./AlertTypes.jsx): 
-
-  Contains enumerations for different types of alerts. In general, there are only 2 types `threshold` and `daily`. However, for threshold, there are 2 sub-types: `below_threshold` and `above_threshold` since backend categorizes them as different.
+### [AlertTypes.jsx](./AlertTypes.jsx): 
+Contains enumerations for different types of alerts. In general, there are only 2 types `threshold` and `daily`. However, for threshold, there are 2 sub-types: `below_threshold` and `above_threshold` since backend categorizes them as different.
 

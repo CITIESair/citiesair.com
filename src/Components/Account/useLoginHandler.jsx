@@ -16,13 +16,21 @@ const useLoginHandler = (openLoginPopup) => {
                 openLoginPopup?.();
                 return false;
             } else {
-                if (user?.allowedSchools.some(school => school.school_id === currentSchoolID)) {
-                    action?.();
-                    return true;
-                } else {
+                // Return false if the user hasn't been verified
+                if (user?.is_verified === false) {
+                    enqueueSnackbar(`Please verify your account first`, SnackbarMetadata.error);
+                    return false;
+                }
+
+                // Return false if the user doesn't have access to this school
+                if (!user?.allowedSchools.some(school => school.school_id === currentSchoolID)) {
                     enqueueSnackbar(`Your account does not have access to ${currentSchoolID.toUpperCase()} Alerts`, SnackbarMetadata.error);
                     return false;
                 }
+
+                // Else, return true to allow user access
+                action?.();
+                return true;
             }
         },
         [loggedIn, openLoginPopup, currentSchoolID, user, enqueueSnackbar]

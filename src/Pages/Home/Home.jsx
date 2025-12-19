@@ -128,13 +128,12 @@ function Home({ title }) {
     document.title = title;
   }, [title]);
 
-  const { setCurrentPage, setChartsTitlesList } = useContext(MetadataContext);
+  const { setCurrentPage } = useContext(MetadataContext);
 
   // set current page to home
   useEffect(() => {
     setCurrentPage(AppRoutes.home);
-    setChartsTitlesList([]);
-  }, [setCurrentPage, setChartsTitlesList]);
+  }, [setCurrentPage]);
 
   const { currentSchoolID } = useContext(DashboardContext);
   const { data: currentSensorsData } = useCurrentSensorsData({ schoolID: currentSchoolID || NYUAD });
@@ -182,10 +181,10 @@ function Home({ title }) {
                 />
               ) : (
                 <Grid item xs={12} lg={10}>
-                  <CurrentAQIGrid
+                  {/* <CurrentAQIGrid
                     currentSensorsData={currentSensorsData?.slice(0, 3)}
                     isScreen={false}
-                  />
+                  /> */}
                 </Grid>
               )
             }

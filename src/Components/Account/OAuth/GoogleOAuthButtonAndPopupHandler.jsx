@@ -2,7 +2,7 @@ import { Button } from "@mui/material";
 import { useTheme } from '@mui/material';
 import { AppRoutes } from '../../../Utils/AppRoutes';
 import { useLocation, useNavigate } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { UserContext } from "../../../ContextProviders/UserContext";
 import { SnackbarMetadata } from '../../../Utils/SnackbarMetadata';
 import { LoginTypes } from "../Utils";
@@ -36,6 +36,52 @@ export default function GoogleOAuthButtonAndPopupHandler() {
 
     const googleOAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=205604064780-1jsjqcvf6isv0up6v29c42uvdigb0pbp.apps.googleusercontent.com&redirect_uri=${window.location.origin}${AppRoutes.googleCallback}&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&access_type=offline&prompt=consent&hl=en`;
 
+    const handleMessage = useMemo(
+        () => (event) => {
+            if (event.origin !== window.location.origin) return;
+            if (event.data?.type !== LoginTypes.google) return;
+
+            if (event.data.success) {
+                const userData = event.data.user;
+                if (isPopupItself) {
+                    // Send the result to the main window
+                    window.opener.postMessage(
+                        {
+                            type: LoginTypes.password,
+                            success: true,
+                            user: userData,
+                        },
+                        window.location.origin
+                    );
+
+                    window.close(); // Close the popup
+                } else {
+                    setAuthenticationState({
+                        checkedAuthentication: true,
+                        authenticated: true
+                    });
+                    setUser(userData);
+
+                    if (userData.message) {
+                        enqueueSnackbar(userData.message, SnackbarMetadata.success);
+                    }
+
+                    navigate(redirect_url, { replace: true });
+                }
+            } else {
+                enqueueSnackbar(event.data.errorMessage, SnackbarMetadata.error);
+            }
+        },
+        [enqueueSnackbar, isPopupItself, navigate, redirect_url, setAuthenticationState, setUser]
+    );
+
+    useEffect(() => {
+        window.addEventListener("message", handleMessage);
+        return () => {
+            window.removeEventListener("message", handleMessage);
+        };
+    }, [handleMessage]);
+
     const handleOAuthClick = () => {
         const width = 500;
         const height = 600;
@@ -48,47 +94,12 @@ export default function GoogleOAuthButtonAndPopupHandler() {
             `width=${width},height=${height},top=${top},left=${left}`
         );
 
-        if (popup) {
-            popup.focus();
-
-            // Listen for the message from the popup
-            window.addEventListener("message", (event) => {
-                if (event.origin === window.location.origin && event.data.type === LoginTypes.google) {
-                    if (event.data.success) {
-                        const userData = event.data.user;
-                        if (isPopupItself) {
-                            // Send the result to the main window
-                            window.opener.postMessage(
-                                {
-                                    type: LoginTypes.password,
-                                    success: true,
-                                    user: userData,
-                                },
-                                window.location.origin
-                            );
-
-                            window.close(); // Close the popup
-                        } else {
-                            setAuthenticationState({
-                                checkedAuthentication: true,
-                                authenticated: true
-                            });
-                            setUser(userData);
-
-                            if (userData.message) {
-                                enqueueSnackbar(userData.message, SnackbarMetadata.success);
-                            }
-
-                            navigate(redirect_url, { replace: true });
-                        }
-                    } else {
-                        enqueueSnackbar(event.data.errorMessage, SnackbarMetadata.error);
-                    }
-                }
-            });
-        } else {
+        if (!popup) {
             alert("Popup blocked. Please enable popups for Google Login.");
+            return;
         }
+
+        popup.focus();
     };
 
     return (

@@ -3,7 +3,7 @@ import { Typography, Box } from '@mui/material';
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 import AirQualityIndexTable from './AirQualityIndexTable';
-import ExpandableSection from '../ExpandableSection/ExpandableSection';
+import ExpandableSection from '../ExpandableSection';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 
 import InfoIcon from '@mui/icons-material/Info';

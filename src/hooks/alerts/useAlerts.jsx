@@ -3,25 +3,22 @@ import { DashboardContext } from "../../ContextProviders/DashboardContext";
 import { UserContext } from "../../ContextProviders/UserContext";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDataFromURL } from "../../API/ApiFetch";
-import { GeneralAPIendpoints } from "../../API/Utils";
+import { getApiUrl } from "../../API/APIUtils";
 import { isValidArray } from "../../Utils/UtilFunctions";
 import { addChildToAlerts } from "../../Components/AirQuality/AirQualityAlerts/AlertUtils";
-import { getApiUrl } from "../../API/ApiUrls";
 
 export const useAlerts = () => {
     const { currentSchoolID } = useContext(DashboardContext);
     const { authenticationState, user } = useContext(UserContext);
 
+    const url = getApiUrl({
+        endpoint: "alerts",
+        paths: [currentSchoolID]
+    });
     const queryResult = useQuery({
-        queryKey: [GeneralAPIendpoints.alerts, currentSchoolID, user.username || user.email],
+        queryKey: ["alerts", currentSchoolID, user.username || user.email],
         queryFn: async () => {
-
-            const data = await fetchDataFromURL({
-                url: getApiUrl({
-                    paths: [GeneralAPIendpoints.alerts, currentSchoolID]
-                }),
-            });
-
+            const data = await fetchDataFromURL({ url });
             if (!isValidArray(data)) return [];
             return addChildToAlerts(data);
         },

@@ -1,8 +1,15 @@
-# Hooks Directory
+# Hooks
 
-This folder contains all **custom React Query hooks** used throughout the CITIESair frontend for fetching and mutating server-side data. These hooks provide a consistent interface for retrieving real-time air quality measurements, alerts, school metadata, and user-related information.
+**Except for:**
+- [UserContext](/src/ContextProviders/UserContext.jsx)
+- [Login](/src/Components/Account/Login.jsx), [Logout](/src/Components/Account/Logout.jsx), [Account Verify](/src/Components/Account/Verify.jsx), [Signup](/src/Components/Account/Signup.jsx)
+- [GoogleOAuthCallback](/src/Components/Account/OAuth/GoogleOAuthCallback.jsx)
+- [Alerts Unsubcribe](/src/Pages/UnsubscribeAlert.jsx)
 
-## How It Works
+...all data fetches in CITIESair uses **custom React Query hooks** for fetching and mutating server-side data. These hooks provide a consistent interface for retrieving real-time air quality measurements, alerts, school metadata, and user-related information.
+
+
+### How It Works
 
 Each hook is built on top of **@tanstack/react-query**, which handles:
 
@@ -23,14 +30,14 @@ Examples of hooks include:
 - `useAlerts`
 - `useSchoolMetadata`
 
-## Environment Behavior
+### Environment Behavior
 
 React Query behaves differently depending on the environment, see [index.jsx](/src/index.jsx):
 
-- **Development (`REACT_APP_ENV=development`)**  
+- **Development (`VITE_APP_ENV=development`)**  
   - Uses `QueryClientProvider`  
   - **No persistent caching** (always fetches fresh data)
 
-- **Production (`REACT_APP_ENV=production`)**  
+- **Production (`VITE_APP_ENV=production`)**  
   - Uses `PersistQueryClientProvider`  
   - **Caching is persisted to localStorage** for faster loading and reduced server load

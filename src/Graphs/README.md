@@ -25,7 +25,7 @@ Some notable sub-components / functions in this file include:
    As mentioned, as Google Charts do not natively support touch events for `ChartRangeFilter` control, this function is implemented as a work-around to allow touch interaction with this control. It listens to the various touch interactions (`touchstart`, `touchmove`, `touchend`), map them to equivalences in mouse events (`mousedown`, `mousemove`, `mouseup`), and simulate these mouse events so it works with Google Charts' native control logic.
 
 
-### [`ChartComponentWrapper.jsx`](ChartComponentWrapper.jsx)
+### [ChartComponentWrapper.jsx](ChartComponentWrapper.jsx)
 This is the wrapper component to display a visualization in the dashboard. 
 
 #### Tabs for subcharts

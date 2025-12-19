@@ -70,8 +70,6 @@ const LoginPopupHandler = ({ onLoginSuccess, children }) => {
         }
     }, [handleMessage, enqueueSnackbar, setAuthenticationState, setUser]);
 
-
-
     useEffect(() => {
         window.addEventListener("message", handleMessage);
         return () => {

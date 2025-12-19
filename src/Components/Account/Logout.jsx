@@ -9,10 +9,8 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { StyledMenuItem } from '../Header/MenuItemAsNavLink';
 
 import { UserContext } from '../../ContextProviders/UserContext';
-import { getApiUrl } from '../../API/ApiUrls';
-import { GeneralAPIendpoints } from "../../API/Utils";
+import { getApiUrl } from '../../API/APIUtils';
 import { fetchDataFromURL } from '../../API/ApiFetch';
-import { RESTmethods } from "../../API/Utils";
 import { EMPTY_USER_DATA } from '../../Utils/GlobalVariables';
 import { useSnackbar } from 'notistack';
 import { SnackbarMetadata } from '../../Utils/SnackbarMetadata';
@@ -28,8 +26,8 @@ export default function LogOut() {
     setLoading(true);
 
     fetchDataFromURL({
-      url: getApiUrl({ paths: [GeneralAPIendpoints.logout] }),
-      restMethod: RESTmethods.GET
+      url: getApiUrl({ endpoint: "logout" }),
+      RESTmethod: "GET"
     })
       .then((data) => {
         setLoading(false);

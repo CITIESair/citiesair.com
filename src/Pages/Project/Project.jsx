@@ -26,7 +26,7 @@ import GridOfMetadataChips from './GridOfMetadataChips';
 import ProjectDescription from './ProjectDescription';
 import LoadMoreButton from './LoadMoreButton';
 import CurrentAQIMapWithGrid from '../../Components/AirQuality/CurrentAQI/CurrentAQIMapWithGrid';
-import { ChartAPIendpointsOrder } from '../../API/Utils';
+import { ChartAPIEndpointsOrder } from '../../API/APIUtils';
 import useCurrentSensorsData from '../../hooks/useCurrentSensorsData';
 import useSchoolMetadata from '../../hooks/useSchoolMetadata';
 
@@ -41,7 +41,7 @@ const Project = () => {
   const { data: schoolMetadata } = useSchoolMetadata();
 
   const chartsToRender = loadMoreCharts
-    ? ChartAPIendpointsOrder.length
+    ? ChartAPIEndpointsOrder.length
     : NUMBER_OF_CHARTS_TO_LOAD_INITIALLY;
 
   const { themePreference } = useContext(PreferenceContext);
@@ -110,7 +110,7 @@ const Project = () => {
       </FullWidthBox>
 
       <Box id={sectionData.charts.id}>
-        {ChartAPIendpointsOrder.slice(0, chartsToRender).map((_, index) => (
+        {ChartAPIEndpointsOrder.slice(0, chartsToRender).map((_, index) => (
           <FullWidthBox
             key={index}
             backgroundColor={index % 2 !== 0 ? 'customAlternateBackground' : ''}
