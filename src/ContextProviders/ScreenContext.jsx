@@ -1,8 +1,8 @@
-import { useState, useEffect, createContext, useMemo, useRef, useContext } from 'react';
+import { useState, useEffect, createContext, useMemo, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useSchoolMetadata from '../hooks/useSchoolMetadata';
 import { PreferenceContext } from './PreferenceContext';
-import { isValidArray, isWithinDisplayHours } from '../Utils/UtilFunctions';
+import { isValidArray } from '../Utils/UtilFunctions';
 
 export const ScreenContext = createContext();
 
@@ -17,6 +17,31 @@ function returnIsLayoutReversed() {
     return (months[thisMonthIndex] !== 0);
 }
 
+// Helper function to identify if now is within the display hours
+// to blank the screen (for example, overnight)
+const isWithinDisplayHours = () => {
+    const params = new URLSearchParams(window.location.search);
+    const displayHours = params.get("displayHours");
+    if (!displayHours) return true; // Show screen if no parameter
+
+    const [start, end] = displayHours.split("-").map(time => parseInt(time.replace(":", ""), 10));
+    const now = parseInt(new Date().toTimeString().slice(0, 5).replace(":", ""), 10);
+
+    if (start <= end) {
+        // Regular range (same day, e.g., 06:00-20:00)
+        return start <= now && now < end;
+    } else {
+        // Overnight range (e.g., 16:00-01:00)
+        return now >= start || now < end;
+    }
+}
+
+// Helper function to rotate through different routes in the carousel
+function getCarouselIndex(routes, intervalSec) {
+    const now = Math.floor(Date.now() / 1000);
+    return Math.floor(now / intervalSec) % routes.length;
+}
+
 export function ScreenProvider({ children }) {
     const [isLayoutReversed, setIsLayoutReversed] = useState();
     const [shouldDisplayScreen, setShouldDisplayScreen] = useState(isWithinDisplayHours());
@@ -24,9 +49,6 @@ export function ScreenProvider({ children }) {
     const navigate = useNavigate();
     const { data: schoolMetadata } = useSchoolMetadata();
     const { setLanguage } = useContext(PreferenceContext);
-
-    // Persistent carousel index
-    const carouselIndex = useRef(0);
 
     useEffect(() => {
         const intervals = [];
@@ -65,28 +87,39 @@ export function ScreenProvider({ children }) {
 
         if (routes.length > 0) {
             const rotateCarousel = () => {
-                carouselIndex.current = (carouselIndex.current + 1) % routes.length;
-                navigate({
-                    pathname: routes[carouselIndex.current],
-                    search: `?${params.toString()}`,
-                    replace: true
-                });
+                const index = getCarouselIndex(routes, intervalSec);
+                const nextRoute = routes[index];
+
+                const isExternal =
+                    /^(https?:\/\/|[\w-]+(\.[\w-]+)+)/i.test(nextRoute);
+
+                if (isExternal) {
+                    // Auto-prepend https:// for domain-only routes
+                    const url = nextRoute.startsWith("http")
+                        ? `${nextRoute}?${params.toString()}`
+                        : `https://${nextRoute}?${params.toString()}`;
+
+                    window.location.replace(url);
+                } else {
+                    navigate({
+                        pathname: nextRoute,
+                        search: `?${params.toString()}`,
+                        replace: true
+                    });
+                }
             };
 
             const carouselInterval = setInterval(rotateCarousel, intervalSec * 1000);
             intervals.push(carouselInterval);
         }
 
-        return () => {
-            intervals.forEach(clearInterval);
-        };
+        return () => intervals.forEach(clearInterval);
     }, [navigate, schoolMetadata, setLanguage]);
 
     const providerValue = useMemo(() => ({
         isLayoutReversed, shouldDisplayScreen
     }), [isLayoutReversed, shouldDisplayScreen]);
 
-    // return context provider
     return (
         <ScreenContext.Provider value={providerValue}>
             {children}
