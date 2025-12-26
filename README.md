@@ -12,13 +12,13 @@
 
 **[IMPORTANT] Read Section 4 before running this repo for the first time.**
 
-*More information on the backend can be found in this repo: [CITIESair-server](https://github.com/CITIESair/citiesair-server). This documentation mostly concerns the frontend application.*
+*More information on the backend can be found in this repo: [CITIESair-node-server](https://github.com/CITIESair/citiesair-node-server). This documentation mostly concerns the frontend application.*
 
 # 1. Introduction
 
 CITIESair is a network of heterogeneous air quality sensors for institutions in the UAE. It consists of 3 layers:
 - Infrastructure: physical sensors
-- Digital: this CITIESair frontend dashboard and [backend system](https://github.com/CITIESair/citiesair-server)
+- Digital: this CITIESair frontend dashboard and [backend system](https://github.com/CITIESair/citiesair-node-server)
 - Social: partnerships with institutions and surrounding community
 
 This documentation will only concern the CITIESair frontend dashboard.
