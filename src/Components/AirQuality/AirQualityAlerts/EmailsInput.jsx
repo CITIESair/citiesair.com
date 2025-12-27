@@ -25,7 +25,6 @@ const EmailsInput = () => {
     queryFn: async () => {
       return fetchDataFromURL({
         url,
-        extension: 'json',
         needsAuthorization: true
       });
     },
@@ -37,14 +36,15 @@ const EmailsInput = () => {
   const saveEmailsMutation = useMutation({
     mutationFn: async (emailsToSave) => {
       return fetchDataFromURL({
-        url: getApiUrl({
-          paths: queryPaths
-        }),
+        url,
         RESTmethod: "POST",
         body: emailsToSave
       });
     },
     onSuccess: (data) => {
+      setLastSavedEmails(data);
+      setLocalEmails(data);
+
       // Update cache (key url above) immediately with data so UI updates without refetch
       queryClient.setQueryData(url, data);
       enqueueSnackbar('Email recipients saved successfully.', SnackbarMetadata.success);
@@ -57,6 +57,8 @@ const EmailsInput = () => {
   const smallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   const [localEmails, setLocalEmails] = useState([]);
+  const [lastSavedEmails, setLastSavedEmails] = useState([]);
+
   const [emailsListChanged, setEmailsListChanged] = useState(false);
 
   const [currentEmail, setCurrentEmail] = useState('');
@@ -66,11 +68,14 @@ const EmailsInput = () => {
 
   useEffect(() => {
     setLocalEmails(alertEmails);
+    setLastSavedEmails(alertEmails);
   }, [alertEmails]);
 
   useEffect(() => {
-    setEmailsListChanged(!compareArrays(localEmails, alertEmails));
-  }, [localEmails, alertEmails]);
+    setEmailsListChanged(
+      !compareArrays(localEmails, lastSavedEmails)
+    );
+  }, [localEmails, lastSavedEmails]);
 
   useEffect(() => {
     setSaveButtonTooltipTitle(emailsListChanged ? "Click to save new changes on server" : "No changes detected to save");
@@ -147,7 +152,7 @@ const EmailsInput = () => {
       const active = document.activeElement;
       const isInputFocused = active === inputRef.current;
 
-      // 1️⃣ Select All (Cmd/Ctrl + A)
+      // 1. Select All (Cmd/Ctrl + A)
       if (isMeta && key === 'a') {
         // only when input is empty
         if (isInputFocused && currentEmail.trim() === '') {
@@ -160,7 +165,7 @@ const EmailsInput = () => {
         return;
       }
 
-      // 2️⃣ Copy (Cmd/Ctrl + C)
+      // 2. Copy (Cmd/Ctrl + C)
       if (isMeta && key === 'c' && allSelected) {
         e.preventDefault();
         if (localEmails.length === 0) {
@@ -174,7 +179,7 @@ const EmailsInput = () => {
         return;
       }
 
-      // 3️⃣ Delete all (Backspace or Delete)
+      // 3. Delete all (Backspace or Delete)
       if (allSelected && (key === 'backspace' || key === 'delete')) {
         e.preventDefault();
         if (localEmails.length === 0) return;
@@ -185,7 +190,7 @@ const EmailsInput = () => {
         return;
       }
 
-      // 4️⃣ Escape clears selection
+      // 4. Escape clears selection
       if (key === 'escape' && allSelected) {
         e.preventDefault();
         setAllSelected(false);
@@ -249,7 +254,7 @@ const EmailsInput = () => {
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
-      if (!compareArrays(localEmails, alertEmails)) {
+      if (!compareArrays(localEmails, lastSavedEmails)) {
         event.preventDefault();
         event.returnValue = '';
       }

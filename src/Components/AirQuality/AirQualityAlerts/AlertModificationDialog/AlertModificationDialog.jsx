@@ -61,12 +61,12 @@ const AlertModificationDialog = (props) => {
     return newBody;
   }
 
-  const formatChildAlertBody = (body, parent_alert_id) => {
+  const formatChildAlertBody = ({ body, parent_alert_id, this_alert_id }) => {
     const newBody = {
       ...body, // copy all properties from parent
       ...body[AirQualityAlertKeys.child_alert], // but then, override with child's unique properties
       [AirQualityAlertKeys.parent_alert_id]: parent_alert_id, // finally, link child to parent
-      [AirQualityAlertKeys.id]: null // destroy parent's id just in case
+      [AirQualityAlertKeys.id]: this_alert_id || null
     };
     delete newBody[AirQualityAlertKeys.child_alert];
     delete newBody[AirQualityAlertKeys.has_child_alert];
@@ -114,7 +114,10 @@ const AlertModificationDialog = (props) => {
 
               createAlertMutation.mutate(
                 {
-                  alertToCreate: formatChildAlertBody(editingAlert, parent_alert_id)
+                  alertToCreate: formatChildAlertBody({
+                    body: editingAlert,
+                    parent_alert_id
+                  })
                 },
                 {
                   onError: () => handleError(passedCrudType)
@@ -158,10 +161,13 @@ const AlertModificationDialog = (props) => {
               }
               // 2.2. There should be child alert
               else {
-                const formattedChildAlert = formatChildAlertBody(editingAlert, alert_id);
-
                 // 2.2.1. If there is no child alert id before, create one
                 if (child_alert_id === null || child_alert_id === undefined) {
+                  const formattedChildAlert = formatChildAlertBody({
+                    body: editingAlert,
+                    parent_alert_id: alert_id
+                  });
+
                   createAlertMutation.mutate({
                     alertId: alert_id,
                     alertToCreate: formattedChildAlert
@@ -169,6 +175,12 @@ const AlertModificationDialog = (props) => {
                 }
                 // 2.2.2. Else, update that child alert
                 else {
+                  const formattedChildAlert = formatChildAlertBody({
+                    body: editingAlert,
+                    parent_alert_id: alert_id,
+                    this_alert_id: child_alert_id
+                  });
+
                   editAlertMutation.mutate({
                     alertId: child_alert_id,
                     alertToEdit: formattedChildAlert
