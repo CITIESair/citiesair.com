@@ -4,7 +4,7 @@ export type GeneralAPIEndpoint =
   | 'me'
   | 'current'
   | 'raw'
-  | 'schoolmetadata'
+  | 'school_metadata'
   | 'chartdata'
   | 'screen'
   | 'allSensorsScreen'

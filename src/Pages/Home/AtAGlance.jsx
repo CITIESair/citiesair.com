@@ -14,6 +14,7 @@ import { useContext } from 'react';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
 import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import { getTranslation } from '../../Utils/UtilFunctions';
+import useSchoolMetadata from '../../hooks/useSchoolMetadata';
 
 
 const IconLoader = ({ iconString }) => {
@@ -60,24 +61,29 @@ const ByTheNumber = (props) => {
   );
 }
 
-const AtAGlance = ({ statsForEntireProject = true }) => {
+const AtAGlance = ({ statsForIndividualSchool = false }) => {
   const { language } = useContext(PreferenceContext);
-
   const { isServerDown } = useNetworkStatusContext();
   const { currentSchoolID } = useContext(DashboardContext);
 
-  const url = getApiUrl({ endpoint: "stats", paths: [statsForEntireProject ? "" : currentSchoolID] });
-  const { data: stats, isLoading } = useQuery({
-    queryKey: [url],
+  const { data: schoolStats, isLoading: isLoadingSchoolStats } = useSchoolMetadata();
+
+  const globalStatsUrl = getApiUrl({ endpoint: "stats" });
+  const { data: globalStats, isLoading: isLoadingGlobalStats } = useQuery({
+    queryKey: [globalStatsUrl],
     queryFn: async () => {
-      return fetchDataFromURL({ url });
+      return fetchDataFromURL({ url: globalStatsUrl });
     },
-    enabled: statsForEntireProject === false ? !!currentSchoolID : true,
+    enabled: statsForIndividualSchool === false ? !!currentSchoolID : true,
     staleTime: 1000 * 60 * 60 * 24,
     refetchInterval: 1000 * 60 * 60 * 24, // actively refresh every day
     refetchOnWindowFocus: true,
     placeholderData: (prev) => prev
   });
+
+
+  const stats = statsForIndividualSchool ? schoolStats : globalStats;
+  const isLoadingStats = statsForIndividualSchool ? isLoadingSchoolStats : isLoadingGlobalStats;
 
   // If server is down, don't render anything
   if (isServerDown) return null;
@@ -91,11 +97,12 @@ const AtAGlance = ({ statsForEntireProject = true }) => {
       m={0}
       minHeight="100px"
     >
-      {!isLoading &&
+      {!isLoadingStats &&
         Object.entries(stats || {})
           .filter(([, value]) => value !== null && value !== undefined)
           .map(([key, value]) => {
             const config = sectionData.atAGlance.content[key];
+            if (!config) return;
 
             return (
               <Grid key={key} order={config.order} item sm={3} xs={6}>

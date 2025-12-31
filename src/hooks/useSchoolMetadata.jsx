@@ -8,9 +8,10 @@ import { getApiUrl } from '../API/APIUtils';
 const useSchoolMetadata = ({ enabled = true } = {}) => {
     const { currentSchoolID } = useContext(DashboardContext);
     const url = getApiUrl({
-        endpoint: "schoolmetadata",
+        endpoint: "school_metadata",
         paths: [currentSchoolID]
     });
+
     return useQuery({
         queryKey: [url],
         queryFn: async () => {

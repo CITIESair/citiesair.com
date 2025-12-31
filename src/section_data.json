@@ -101,7 +101,7 @@
                 },
                 "icon": "FaceIcon"
             },
-            "sensors": {
+            "sensorsCount": {
                 "order": 3,
                 "text": {
                     "en": "sensors",

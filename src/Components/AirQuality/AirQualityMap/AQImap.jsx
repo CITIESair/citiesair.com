@@ -286,12 +286,12 @@ const AQImap = (props) => {
                     {disableInteraction === false && (
                         <StyledLeafletPopup>
                             {
-                                location.sensor?.public_iqAir_station_link ?
+                                location.sensor?.public_iqair_station_link ?
                                     <Stack direction="row" spacing={smallScreen ? 1 : 3}>
                                         <Link
                                             variant={smallScreen ? 'body2' : 'body1'}
                                             fontWeight={500}
-                                            href={location.sensor.public_iqAir_station_link}
+                                            href={location.sensor.public_iqair_station_link}
                                             target='_blank'
                                             rel="noopener noreferrer"
                                             color={`${theme.palette.primary.main}!important`}
