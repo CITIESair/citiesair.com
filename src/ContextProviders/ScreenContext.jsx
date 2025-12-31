@@ -113,7 +113,13 @@ export function ScreenProvider({ children }) {
             intervals.push(carouselInterval);
         }
 
-        return () => intervals.forEach(clearInterval);
+        return () => {
+            intervals.forEach(clearInterval);
+
+            // Set language to English for the rest of the website on component unmounts
+            // (only components under <ScreenComponen> can rotate languages for now)
+            setLanguage("en");
+        }
     }, [navigate, schoolMetadata, setLanguage]);
 
     const providerValue = useMemo(() => ({

@@ -141,16 +141,19 @@ const AlertModificationDialog = (props) => {
             onSuccess: () => {
               handleSuccess(passedCrudType);
 
-              // 2. Editing for child alert associated with this main alert
+              // 2. Edit child alert associated with this main alert
               // Child alerts only apply to threshold alerts, daily alerts don't have child
               if (selectedAlert[AirQualityAlertKeys.alert_type] === AlertTypes.daily.id) return;
 
               const child_alert_id = editingAlert[AirQualityAlertKeys.child_alert]?.[AirQualityAlertKeys.id];
-              // 2.1. There should NOT be child alert
-              // (If child alert existed before but now is removed, then trigger deletion)
-              if (!editingAlert[AirQualityAlertKeys.has_child_alert] &&
-                child_alert_id !== null && child_alert_id !== undefined
-              ) {
+
+              // 2. Branch on desired state: should there be a child alert after edit?
+              if (!editingAlert[AirQualityAlertKeys.has_child_alert]) {
+                // 2.1. Desired: NO child alert -> if a child currently exists, delete it; otherwise do nothing.
+                // 2.1.1. Do nothing if a child alert wasn't added
+                if (child_alert_id === null || child_alert_id === undefined) return; // 
+
+                // 2.1.2. If a child currently exists, delete it
                 deleteAlertMutation.mutate(
                   { alertId: child_alert_id },
                   {
@@ -158,10 +161,11 @@ const AlertModificationDialog = (props) => {
                     onError: () => handleError(CrudTypes.delete)
                   }
                 );
+
               }
-              // 2.2. There should be child alert
+              // 2.2. Desired: there SHOULD be a child alert -> create if missing, else update existing.
               else {
-                // 2.2.1. If there is no child alert id before, create one
+                // 2.2.1. If there is no child alert id before, create a new child alert
                 if (child_alert_id === null || child_alert_id === undefined) {
                   const formattedChildAlert = formatChildAlertBody({
                     body: editingAlert,
@@ -173,7 +177,7 @@ const AlertModificationDialog = (props) => {
                     alertToCreate: formattedChildAlert
                   });
                 }
-                // 2.2.2. Else, update that child alert
+                // 2.2.2. Else, update that existingchild alert
                 else {
                   const formattedChildAlert = formatChildAlertBody({
                     body: editingAlert,
