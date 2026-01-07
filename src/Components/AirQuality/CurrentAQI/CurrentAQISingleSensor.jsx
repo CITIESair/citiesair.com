@@ -95,7 +95,7 @@ const CurrentAQISingleSensor = (props) => {
             >
                 {
                     schoolMetadata?.sensors.find(
-                        sensor => sensor.sensor_id === sensor.sensor_id
+                        s => s.sensor_id === sensor.sensor_id
                     )?.allowedDataTypes?.includes(DataTypeKeys.temperature_C) && <>
                         {
                             showWeather &&
