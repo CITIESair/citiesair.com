@@ -1,4 +1,4 @@
-import { Grid, Typography, Stack, Box } from '@mui/material';
+import { Grid, Typography, Stack, Box, Skeleton } from '@mui/material';
 import { fetchDataFromURL } from '../../API/ApiFetch';
 import { getApiUrl } from '../../API/APIUtils';
 
@@ -35,8 +35,6 @@ const IconLoader = ({ iconString }) => {
 const ByTheNumber = (props) => {
   const { iconString, value, text } = props;
 
-  if (value === null && value === undefined) return null;
-
   return (
     <Stack direction="column" alignItems="center">
       <IconLoader iconString={iconString} />
@@ -45,7 +43,7 @@ const ByTheNumber = (props) => {
         sx={{ typography: { xs: "h6", sm: "h4", lg: "h3" }, }}
       >
         <Box fontWeight="500">
-          {value}
+          {value ? value : <Skeleton sx={{ width: "3rem" }} />}
         </Box>
       </Typography>
       <Typography
@@ -61,15 +59,22 @@ const ByTheNumber = (props) => {
   );
 }
 
+const placeholderStats = {
+  "schools": null,
+  "sensorsCount": null,
+  "students": null,
+  "communityMembers": null
+};
+
 const AtAGlance = ({ statsForIndividualSchool = false }) => {
   const { language } = useContext(PreferenceContext);
   const { isServerDown } = useNetworkStatusContext();
   const { currentSchoolID } = useContext(DashboardContext);
 
-  const { data: schoolStats, isLoading: isLoadingSchoolStats } = useSchoolMetadata();
+  const { data: schoolStats } = useSchoolMetadata();
 
   const globalStatsUrl = getApiUrl({ endpoint: "stats" });
-  const { data: globalStats, isLoading: isLoadingGlobalStats } = useQuery({
+  const { data: globalStats } = useQuery({
     queryKey: [globalStatsUrl],
     queryFn: async () => {
       return fetchDataFromURL({ url: globalStatsUrl });
@@ -81,9 +86,7 @@ const AtAGlance = ({ statsForIndividualSchool = false }) => {
     placeholderData: (prev) => prev
   });
 
-
   const stats = statsForIndividualSchool ? schoolStats : globalStats;
-  const isLoadingStats = statsForIndividualSchool ? isLoadingSchoolStats : isLoadingGlobalStats;
 
   // If server is down, don't render anything
   if (isServerDown) return null;
@@ -97,9 +100,8 @@ const AtAGlance = ({ statsForIndividualSchool = false }) => {
       m={0}
       minHeight="100px"
     >
-      {!isLoadingStats &&
-        Object.entries(stats || {})
-          .filter(([, value]) => value !== null && value !== undefined)
+      {
+        Object.entries(stats || placeholderStats)
           .map(([key, value]) => {
             const config = sectionData.atAGlance.content[key];
             if (!config) return;
