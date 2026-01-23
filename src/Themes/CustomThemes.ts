@@ -31,21 +31,21 @@ interface ContinuousColorAxis {
   colors: ColorStop[];
 }
 
-interface ContinuousColorAxes {
+interface ColorAxesForContinuousData {
   [key: string]: ContinuousColorAxis;
 }
 
 // Loose typing for color axis options from getCategoryColorAxis (outside migration scope)
 // Once AirQualityIndexHelper.jsx is migrated, proper types can be defined
-interface ColorAxisOptions {
+interface ColorAxesForCategorizedData {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 
 interface ThemePaletteChart {
-  optionsColors: ColorAxisOptions;
+  optionsColors: ColorAxesForCategorizedData;
   colorAxisFirstColor: string;
-  colorAxes: ContinuousColorAxes & ColorAxisOptions;
+  colorAxes: ColorAxesForContinuousData & ColorAxesForCategorizedData;
   axisTitle: string;
   axisText: string;
   gridlines: string;
@@ -56,35 +56,29 @@ interface ThemePaletteChart {
   };
 }
 
-interface ThemePaletteText {
-  secondaryRGB: string;
-  // Loose typing for AQI text colors from getTextColorsForAQI (outside migration scope)
-  // Once AirQualityIndexHelper.jsx is migrated, proper types can be defined
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  aqi: any;
-}
-
-interface ThemePaletteBackground {
-  paper?: string;
-  paperBackgroundGradient?: string;
-  default?: string;
-  NYUpurpleLight?: string;
-}
-
-interface ThemePalette {
-  mode?: 'dark' | 'light';
-  primary?: {
-    main: string;
-  };
-  background?: ThemePaletteBackground;
-  customBackground?: string;
-  customAlternateBackground?: string;
-  text: ThemePaletteText;
-  chart: ThemePaletteChart;
-}
-
 interface CustomTheme {
-  palette: ThemePalette;
+  palette: {
+    mode?: 'dark' | 'light';
+    primary?: {
+      main: string;
+    };
+    background?: {
+      paper?: string;
+      paperBackgroundGradient?: string;
+      default?: string;
+      NYUpurpleLight?: string;
+    },
+    customBackground?: string;
+    customAlternateBackground?: string;
+    text: {
+      secondaryRGB: string;
+      // Loose typing for AQI text colors from getTextColorsForAQI (outside migration scope)
+      // Once AirQualityIndexHelper.jsx is migrated, proper types can be defined
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      aqi: any;
+    },
+    chart: ThemePaletteChart;
+  },
   typography?: {
     fontFamily: string;
   };
@@ -100,7 +94,7 @@ interface UniversalTheme {
   };
 }
 
-const getColorAxisForContinuousDataTypes = ({ isDark }: { isDark: boolean }): ContinuousColorAxes => {
+const getColorAxisForContinuousDataTypes = ({ isDark }: { isDark: boolean }): ColorAxesForContinuousData => {
   return {
     [DataTypes.rel_humidity.color_axis]: {
       minValue: 0,
@@ -155,7 +149,7 @@ const getColorAxisForDataTypesWithCategorization = ({
   // Once ThemePreferences is properly typed end-to-end, this can use ThemePreferences type
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   themePreference: any;
-}): ColorAxisOptions => {
+}): ColorAxesForCategorizedData => {
   return [
     DataTypeKeys.aqi,
     DataTypeKeys.pm2_5,
@@ -163,7 +157,7 @@ const getColorAxisForDataTypesWithCategorization = ({
     DataTypeKeys.co2,
     DataTypeKeys.voc,
     DataTypeKeys.heat_index_C,
-  ].reduce((acc: ColorAxisOptions, dataTypeKey) => {
+  ].reduce((acc: ColorAxesForCategorizedData, dataTypeKey) => {
     const colorAxis = getCategoryColorAxis({
       themePreference,
       dataTypeKey,
