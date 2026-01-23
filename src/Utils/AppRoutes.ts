@@ -1,5 +1,6 @@
 import { BLOG_CITIESair_URL } from "./GlobalVariables";
 
+// Runtime object used across the app; keep it as an object so property access works.
 export const AppRoutes = {
   nyuad: "/dashboard/nyuad",
   nyuadMap: "/nyuadMap",
@@ -18,4 +19,6 @@ export const AppRoutes = {
   404: "/404",
   blogSubdomain: BLOG_CITIESair_URL,
   redirectQuery: "redirect_url",
-};
+} as const;
+
+export type AppRoute = (typeof AppRoutes)[keyof typeof AppRoutes];
