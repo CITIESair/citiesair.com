@@ -1,4 +1,64 @@
-import { calculateSensorStatus } from "../Components/AirQuality/SensorStatus";
+// Type declarations for SensorStatus module (outside migration scope)
+// These provide loose typing to prevent TypeScript errors during compilation
+// Once SensorStatus.jsx is migrated, this cast can be removed
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+import { calculateSensorStatus as calculateSensorStatusUntyped } from "../Components/AirQuality/SensorStatus";
+
+// Loose typing for calculateSensorStatus until SensorStatus.jsx is migrated to TypeScript
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const calculateSensorStatus = calculateSensorStatusUntyped as any;
+
+// Types for fetchDataFromURL parameters
+type FileExtension = 'json' | 'csv';
+type RESTMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+
+interface FetchDataFromURLParams {
+  url: string;
+  extension?: FileExtension;
+  needsAuthorization?: boolean;
+  RESTmethod?: RESTMethod;
+  body?: Record<string, unknown> | null;
+  includesContentTypeHeader?: boolean;
+  timeoutMs?: number;
+}
+
+interface FetchOptions {
+  method: RESTMethod;
+  credentials: RequestCredentials;
+  body?: string;
+  headers: Record<string, string>;
+  signal: AbortSignal;
+}
+
+// Types for sensor data structures
+// Loose typing for sensor data (complex nested structure from API)
+// Once API response types are formally defined, these can be refined
+interface SensorMetadata {
+  last_seen?: string;
+  lastSeenInMinutes?: number | null;
+  sensor_status?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}
+
+interface CurrentData {
+  timestamp?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}
+
+interface SensorData {
+  sensor?: SensorMetadata;
+  current?: CurrentData;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}
+
+type SensorsDataResponse = Record<string, SensorData>;
+
+interface FetchAndProcessParams {
+  url: string;
+}
 
 export const fetchDataFromURL = async ({
   url,
@@ -8,7 +68,7 @@ export const fetchDataFromURL = async ({
   body = null,
   includesContentTypeHeader = true,
   timeoutMs = 30000 // default: 30 seconds
-}) => {
+}: FetchDataFromURLParams): Promise<unknown> => {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -17,7 +77,7 @@ export const fetchDataFromURL = async ({
       throw new Error('You appear to be offline. Please check your internet connection.');
     }
 
-    const fetchOptions = {
+    const fetchOptions: FetchOptions = {
       method: RESTmethod,
       credentials: needsAuthorization ? 'include' : 'omit',
       ...(body && { body: JSON.stringify(body) }),
@@ -75,7 +135,7 @@ export const fetchDataFromURL = async ({
   } catch (error) {
     clearTimeout(timeoutId);
 
-    if (error.name === 'AbortError' || error.message === 'Failed to fetch') {
+    if (error instanceof Error && (error.name === 'AbortError' || error.message === 'Failed to fetch')) {
       window.dispatchEvent(new Event('server:down'));
     }
 
@@ -83,9 +143,9 @@ export const fetchDataFromURL = async ({
   }
 };
 
-export const fetchAndProcessCurrentSensorsData = async ({ url }) => {
+export const fetchAndProcessCurrentSensorsData = async ({ url }: FetchAndProcessParams): Promise<SensorsDataResponse | undefined> => {
   try {
-    const data = await fetchDataFromURL({ url });
+    const data = await fetchDataFromURL({ url }) as SensorsDataResponse;
 
     if (!data) {
       throw new Error('Returned data is empty');
@@ -96,15 +156,15 @@ export const fetchAndProcessCurrentSensorsData = async ({ url }) => {
         // Calculate if the sensor is currently active or not
         const now = new Date();
         const lastSeen = sensorData.sensor?.last_seen || sensorData.current?.timestamp;
-        const lastSeenTimestamp = new Date(lastSeen);
-        const lastSeenInMinutes = Math.round((now - lastSeenTimestamp) / 1000 / 60);
+        const lastSeenTimestamp = new Date(lastSeen as string);
+        const lastSeenInMinutes = Math.round((now.getTime() - lastSeenTimestamp.getTime()) / 1000 / 60);
 
         // Update sensor metadata
         sensorData.sensor = {
           ...sensorData.sensor,
           lastSeenInMinutes: lastSeenInMinutes > 10 * 365 * 24 * 60 ? null : lastSeenInMinutes, // if more than 10 years (likely UNIX time = 0), then return null
           sensor_status: calculateSensorStatus(lastSeenInMinutes)
-        }
+        };
       });
 
       return data;
@@ -115,6 +175,7 @@ export const fetchAndProcessCurrentSensorsData = async ({ url }) => {
     }
   }
   catch (error) {
-    throw new Error(`Error fetching data: ${error.message}`);
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`Error fetching data: ${message}`);
   }
 };
