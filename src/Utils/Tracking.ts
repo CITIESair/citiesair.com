@@ -11,8 +11,12 @@ export const Events = {
   openContactFormInExternalTab: 'open_contact_form_in_external_tab',
   airQualityIndexLegendQuickGlance: 'air_quality_index_legend_quick_glance',
   airQualityAlertButtonClicked: 'air_quality_alert_button_clicked',
-};
+} as const;
 
-export const sendEventAnalytics = (eventName, options) => {
-  if (window.location.hostname === CITIESair_HOST_NAME) window.gtag('event', eventName, options);
+export type EventName = typeof Events[keyof typeof Events];
+
+export const sendEventAnalytics = (eventName: EventName, options?: Record<string, any>) => {
+  if (window.location.hostname === CITIESair_HOST_NAME) {
+    window.gtag('event', eventName, options);
+  }
 };
