@@ -1,5 +1,20 @@
+export type SnackbarVariant = 'info' | 'warning' | 'error' | 'success';
 
-export const SnackbarMetadata = {
+interface SnackbarConfig {
+    variant: SnackbarVariant;
+    duration?: number;
+    persist?: boolean;
+}
+
+interface SnackbarMetadataType {
+    info: SnackbarConfig;
+    warning: SnackbarConfig;
+    error: SnackbarConfig;
+    success: SnackbarConfig;
+    offline: SnackbarConfig;
+}
+
+export const SnackbarMetadata: SnackbarMetadataType = {
     info: {
         variant: 'info',
         duration: 10000
