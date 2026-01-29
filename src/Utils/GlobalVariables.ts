@@ -20,11 +20,18 @@ export const BLOG_CITIESair_URL = "https://blog.citiesair.com";
 // export const HYVOR_PAGE_NAME = 'air-quality';
 // export const HYVOR_API_URL = `https://talk.hyvor.com/api/data/v1/pages?website_id=${HYVOR_WEBSITE_ID}&id=${HYVOR_AIR_QUALITY_PAGE_ID}`;
 
-export const EMPTY_USER_DATA = {
+export interface UserData {
+    authenticated: boolean;
+    allowedSchools: string[];
+    username: string | null;
+    email: string | null;
+    is_verified: boolean;
+}
+
+export const EMPTY_USER_DATA: UserData = {
     authenticated: false,
     allowedSchools: [],
     username: null,
     email: null,
     is_verified: false
 };
-
