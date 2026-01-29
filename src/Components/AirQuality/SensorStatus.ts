@@ -7,9 +7,21 @@ export const SensorStatus = {
   temporaryOffline: "temporaryOffline",
   offline: "offline",
   unknown: "unknown"
-};
+} as const;
 
-const SensorStatusCriteria = (aggregationType = AggregationType.minute) => {
+export type SensorStatusType = typeof SensorStatus[keyof typeof SensorStatus];
+
+interface CutoffRange {
+  low: number;
+  high: number;
+}
+
+interface SensorStatusCriteriaItem {
+  name: SensorStatusType;
+  cutoffInMinutes: CutoffRange;
+}
+
+const SensorStatusCriteria = (aggregationType: string = AggregationType.minute): SensorStatusCriteriaItem[] => {
   const isHourly = aggregationType === AggregationType.hour;
 
   const activeHigh = isHourly ? 6 * 60 : 2 * 60; // in minutes
@@ -40,7 +52,10 @@ const SensorStatusCriteria = (aggregationType = AggregationType.minute) => {
   ];
 };
 
-export const calculateSensorStatus = (lastSeenInMinutes, aggregationType = AggregationType.minute) => {
+export const calculateSensorStatus = (
+  lastSeenInMinutes: number,
+  aggregationType: string = AggregationType.minute
+): SensorStatusType => {
   const match = SensorStatusCriteria(aggregationType).find(({ cutoffInMinutes: { low, high } }) =>
     lastSeenInMinutes >= low && lastSeenInMinutes <= high
   );
@@ -48,8 +63,7 @@ export const calculateSensorStatus = (lastSeenInMinutes, aggregationType = Aggre
   return match?.name ?? SensorStatus.unknown;
 };
 
-
-export const getFormattedLastSeen = (lastSeenInMinutes, language = 'en') => {
+export const getFormattedLastSeen = (lastSeenInMinutes: number | null, language: string = 'en'): string => {
   const agoText = getTranslation(sectionData.status.content.ago, language);
   if (lastSeenInMinutes === null || isNaN(lastSeenInMinutes) || typeof lastSeenInMinutes !== "number") {
     return "--";
@@ -65,7 +79,12 @@ export const getFormattedLastSeen = (lastSeenInMinutes, language = 'en') => {
   }
 };
 
-export const returnSensorStatusString = (sensorData, language = "en") => {
+interface SensorData {
+  sensor_status?: SensorStatusType;
+  lastSeen?: number;
+}
+
+export const returnSensorStatusString = (sensorData: SensorData | null | undefined, language: string = "en"): string | null => {
   switch (sensorData?.sensor_status) {
     case SensorStatus.active:
       return null;
@@ -77,4 +96,3 @@ export const returnSensorStatusString = (sensorData, language = "en") => {
       return null;
   }
 };
-

@@ -1,12 +1,4 @@
-// Type declarations for SensorStatus module (outside migration scope)
-// These provide loose typing to prevent TypeScript errors during compilation
-// Once SensorStatus.jsx is migrated, this cast can be removed
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-import { calculateSensorStatus as calculateSensorStatusUntyped } from "../Components/AirQuality/SensorStatus";
-
-// Loose typing for calculateSensorStatus until SensorStatus.jsx is migrated to TypeScript
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const calculateSensorStatus = calculateSensorStatusUntyped as any;
+import { calculateSensorStatus } from "../Components/AirQuality/SensorStatus";
 
 // Types for fetchDataFromURL parameters
 type FileExtension = 'json' | 'csv';
