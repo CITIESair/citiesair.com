@@ -1,16 +1,16 @@
 import { Link, List, ListItem, ListItemText, Table, TableBody, TableCell, TableHead, TableRow, styled, TableFooter } from '@mui/material';
-import { domToReact } from 'html-react-parser';
-import { Fragment } from 'react';
+import { domToReact, DOMNode, Element } from 'html-react-parser';
+import { Fragment, ReactNode } from 'react';
 
-export const roundNumberTo = (value, decimals = 6) =>
+export const roundNumberTo = (value: number, decimals: number = 6): number =>
   Number(value.toFixed(decimals));
 
 // Function to check if an array has valid data
-// eslint-disable-next-line max-len
-export const isValidArray = (array) => Array.isArray(array) && array.length > 0 && !array.every((item) => item == null);
+export const isValidArray = (array: unknown): boolean =>
+  Array.isArray(array) && array.length > 0 && !array.every((item) => item == null);
 
 // Function to replace characters like "-" with " " from a string and capitalize it
-export const capitalizePhrase = (str) => {
+export const capitalizePhrase = (str: string | null | undefined): string => {
   if (!str) return "";
 
   const words = str.split(/[\s-]+/);
@@ -19,7 +19,7 @@ export const capitalizePhrase = (str) => {
   return capitalizedString;
 };
 
-const htmlOrderedListTypeToMUIListStyle = {
+const htmlOrderedListTypeToMUIListStyle: Record<string | number, string> = {
   1: 'decimal',
   '01': 'decimal-leading-zero',
   a: 'lower-alpha',
@@ -41,14 +41,16 @@ const StyleListItem = styled(ListItem)(() => ({
   paddingLeft: '0.25rem'
 }));
 
-export const replacePlainHTMLWithMuiComponents = (node) => {
+export const replacePlainHTMLWithMuiComponents = (node: DOMNode): JSX.Element | undefined => {
   if (node.type !== 'tag') return undefined;
+
+  const element = node as Element;
 
   const options = {
     replace: replacePlainHTMLWithMuiComponents
   };
 
-  const parseChildren = (children) => {
+  const parseChildren = (children: DOMNode[]): ReactNode[] => {
     return children.map((child, index) => (
       <Fragment key={`child-${index}`}>
         {domToReact([child], options)}
@@ -56,17 +58,17 @@ export const replacePlainHTMLWithMuiComponents = (node) => {
     ));
   };
 
-  switch (node.name) {
+  switch (element.name) {
     case 'a': {
       return (
         <Link
-          href={node.attribs.href}
+          href={element.attribs.href}
           target="_blank"
           rel="noopener noreferrer"
           underline="hover"
           sx={{ wordBreak: 'break-all' }}
         >
-          {parseChildren(node.children)}
+          {parseChildren(element.children as DOMNode[])}
         </Link>
       );
     }
@@ -74,9 +76,9 @@ export const replacePlainHTMLWithMuiComponents = (node) => {
     case 'ul': {
       return (
         <List dense sx={{ listStyleType: htmlOrderedListTypeToMUIListStyle.disc, paddingLeft: 4, paddingTop: '6px' }}>
-          {node.children.map((child, index) => (
+          {(element.children as Element[]).map((child, index) => (
             <StyleListItem key={`ul-item-${index}`}>
-              <ListItemText primary={parseChildren(child.children)} />
+              <ListItemText primary={parseChildren(child.children as DOMNode[])} />
             </StyleListItem>
           ))}
         </List>
@@ -85,10 +87,10 @@ export const replacePlainHTMLWithMuiComponents = (node) => {
 
     case 'ol': {
       return (
-        <List dense sx={{ listStyleType: htmlOrderedListTypeToMUIListStyle[node.attribs.type], paddingLeft: 4, paddingTop: '6px' }}>
-          {node.children.map((child, index) => (
+        <List dense sx={{ listStyleType: htmlOrderedListTypeToMUIListStyle[element.attribs.type], paddingLeft: 4, paddingTop: '6px' }}>
+          {(element.children as Element[]).map((child, index) => (
             <StyleListItem key={`ol-item-${index}`}>
-              <ListItemText primary={parseChildren(child.children)} />
+              <ListItemText primary={parseChildren(child.children as DOMNode[])} />
             </StyleListItem>
           ))}
         </List>
@@ -96,35 +98,40 @@ export const replacePlainHTMLWithMuiComponents = (node) => {
     }
 
     case 'table': {
-      const thead = node.children.find((child) => child.name === 'thead');
-      const tbody = node.children.find((child) => child.name === 'tbody');
-      const tfoot = node.children.find((child) => child.name === 'tfoot');
+      const children = element.children as Element[];
+      const thead = children.find((child) => child.name === 'thead');
+      const tbody = children.find((child) => child.name === 'tbody');
+      const tfoot = children.find((child) => child.name === 'tfoot');
 
-      const headerCells = thead ? thead.children.find((child) => child.name === 'tr').children.filter((child) => child.name === 'th') : [];
-      const rows = tbody ? tbody.children.filter((child) => child.name === 'tr') : [];
-      const footerCells = tfoot ? tfoot.children.find((child) => child.name === 'tr').children.filter((child) => child.name === 'td') : [];
+      const headerCells = thead
+        ? ((thead.children as Element[]).find((child) => child.name === 'tr')?.children as Element[] || []).filter((child) => child.name === 'th')
+        : [];
+      const rows = tbody ? (tbody.children as Element[]).filter((child) => child.name === 'tr') : [];
+      const footerCells = tfoot
+        ? ((tfoot.children as Element[]).find((child) => child.name === 'tr')?.children as Element[] || []).filter((child) => child.name === 'td')
+        : [];
 
       return (
         <Table size="small" sx={{ mt: 1, width: 'fit-content' }}>
           <TableHead>
             <TableRow>
               {headerCells.map((child, index) => (
-                <TableCell key={`headerCell-${index}`}>{domToReact(child.children)}</TableCell>
+                <TableCell key={`headerCell-${index}`}>{domToReact(child.children as DOMNode[])}</TableCell>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.map((row, rowIndex) => (
               <TableRow key={`row-${rowIndex}`}>
-                {row.children.filter((child) => child.name === 'td').map((cell, cellIndex) => (
-                  <TableCell key={`cell-${rowIndex}-${cellIndex}`}>{domToReact(cell.children)}</TableCell>
+                {(row.children as Element[]).filter((child) => child.name === 'td').map((cell, cellIndex) => (
+                  <TableCell key={`cell-${rowIndex}-${cellIndex}`}>{domToReact(cell.children as DOMNode[])}</TableCell>
                 ))}
               </TableRow>
             ))}
           </TableBody>
           <TableFooter>
             {footerCells.map((child, index) => (
-              <TableCell key={`footerCell-${index}`}>{domToReact(child.children)}</TableCell>
+              <TableCell key={`footerCell-${index}`}>{domToReact(child.children as DOMNode[])}</TableCell>
             ))}
           </TableFooter>
         </Table>
@@ -138,7 +145,7 @@ export const replacePlainHTMLWithMuiComponents = (node) => {
 };
 
 
-export const validateEmail = (email) => {
+export const validateEmail = (email: string): RegExpMatchArray | null => {
   return String(email)
     .toLowerCase()
     .match(
@@ -146,7 +153,16 @@ export const validateEmail = (email) => {
     );
 };
 
-export const getTranslation = (field, lang = "en", replacements = {}) => {
+interface TranslatableField {
+  en: string;
+  [lang: string]: string;
+}
+
+export const getTranslation = (
+  field: string | TranslatableField | null | undefined,
+  lang: string = "en",
+  replacements: Record<string, ReactNode> = {}
+): ReactNode | null => {
   if (field === null || field === undefined) return null;
 
   const template =
