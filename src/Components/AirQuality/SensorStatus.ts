@@ -91,7 +91,7 @@ export const returnSensorStatusString = (sensorData: SensorData | null | undefin
     case SensorStatus.temporaryOffline:
       return `${getTranslation(sectionData.status.content.lastUpdate, language)}: ${sensorData?.lastSeen}h ${getTranslation(sectionData.status.content.ago, language)}`;
     case SensorStatus.offline:
-      return getTranslation(sectionData.status.content.offline, language);
+      return String(getTranslation(sectionData.status.content.offline, language));
     default:
       return null;
   }

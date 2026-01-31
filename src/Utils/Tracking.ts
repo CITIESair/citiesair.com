@@ -1,5 +1,11 @@
 import { CITIESair_HOST_NAME } from "./GlobalVariables";
 
+declare global {
+  interface Window {
+    gtag: (command: string, eventName: string, options?: Record<string, any>) => void;
+  }
+}
+
 export const Events = {
   internalNavigation: 'internal_navigation',
   themeChange: 'theme_change',
