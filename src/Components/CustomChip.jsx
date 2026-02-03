@@ -10,8 +10,12 @@ const CustomChip = (props) => {
             label={label || <Skeleton variant="text" sx={{ minWidth: '5rem' }} />}
             sx={{
                 userSelect: 'text',
+                height: 'auto',
                 '& .MuiChip-label': {
-                    userSelect: 'text'
+                    userSelect: 'text',
+                    whiteSpace: 'normal',
+                    wordBreak: 'break-word',
+                    py: 0.5
                 }
             }}
             {...otherProps}
