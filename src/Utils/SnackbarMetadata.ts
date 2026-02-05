@@ -1,35 +1,29 @@
-export type SnackbarVariant = 'info' | 'warning' | 'error' | 'success';
-
-interface SnackbarConfig {
-    variant: SnackbarVariant;
-    duration?: number;
-    persist?: boolean;
-}
+import { OptionsObject } from 'notistack';
 
 interface SnackbarMetadataType {
-    info: SnackbarConfig;
-    warning: SnackbarConfig;
-    error: SnackbarConfig;
-    success: SnackbarConfig;
-    offline: SnackbarConfig;
+    info: OptionsObject;
+    warning: OptionsObject;
+    error: OptionsObject;
+    success: OptionsObject;
+    offline: OptionsObject;
 }
 
 export const SnackbarMetadata: SnackbarMetadataType = {
     info: {
         variant: 'info',
-        duration: 10000
+        autoHideDuration: 10000
     },
     warning: {
         variant: 'warning',
-        duration: 10000
+        autoHideDuration: 10000
     },
     error: {
         variant: 'error',
-        duration: 10000
+        autoHideDuration: 10000
     },
     success: {
         variant: 'success',
-        duration: 3000
+        autoHideDuration: 3000
     },
     offline: {
         variant: 'warning',
