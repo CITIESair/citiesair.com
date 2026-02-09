@@ -1,6 +1,12 @@
-import { Skeleton, Typography } from '@mui/material';
+import { Skeleton, Typography, TypographyProps } from '@mui/material';
+import { SxProps, Theme } from '@mui/material/styles';
 
-export default function UppercaseTitle({ text, sx, ...otherProps }) {
+interface UppercaseTitleProps extends TypographyProps {
+  text?: string;
+  sx?: SxProps<Theme>;
+}
+
+export default function UppercaseTitle({ text, sx, ...otherProps }: UppercaseTitleProps) {
   return (
     <Typography
       variant="h4"

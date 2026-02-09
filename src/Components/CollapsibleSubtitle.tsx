@@ -6,11 +6,17 @@ import parse from 'html-react-parser';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { replacePlainHTMLWithMuiComponents } from '../Utils/UtilFunctions';
 
-function CollapsibleSubtitle({ text, wordLimit = 40, reference }) {
-  const [isExpanded, setIsExpanded] = useState(false);
+interface CollapsibleSubtitleProps {
+  text: string;
+  wordLimit?: number;
+  reference?: string;
+}
+
+function CollapsibleSubtitle({ text, wordLimit = 40, reference }: CollapsibleSubtitleProps) {
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const subtitleRef = useRef(null);
+  const subtitleRef = useRef<HTMLDivElement>(null);
 
   const words = text.split(' ');
 
@@ -36,10 +42,10 @@ function CollapsibleSubtitle({ text, wordLimit = 40, reference }) {
   }
 
   // Do not collapse if the user clicks on the chart associated with the subtitle
-  const isClickWithinSharedParent = (event) => {
-    let { target } = event;
+  const isClickWithinSharedParent = (event: MouseEvent | TouchEvent): boolean => {
+    let target = event.target as HTMLElement | null;
     // .MuiContainer-root - Container for both the subtitle and the chart
-    const subtitleParent = subtitleRef.current.closest('.MuiContainer-root');
+    const subtitleParent = subtitleRef.current?.closest('.MuiContainer-root');
     // Elements used to detect if the click is on a chart
     const chartElements = new Set(['rect', 'path', 'svg', 'circle']);
 
@@ -52,13 +58,13 @@ function CollapsibleSubtitle({ text, wordLimit = 40, reference }) {
         const targetParent = target.closest('.MuiContainer-root');
         return targetParent === subtitleParent;
       }
-      target = target.parentNode; // Move up the DOM tree
+      target = target.parentNode as HTMLElement | null; // Move up the DOM tree
     }
     return false;
   };
 
   // Custom onClickAway handler
-  const handleOnClickAway = (event) => {
+  const handleOnClickAway = (event: MouseEvent | TouchEvent): void => {
     if (!isClickWithinSharedParent(event)) {
       setIsExpanded(false);
     }

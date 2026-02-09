@@ -1,9 +1,15 @@
 import { styled } from '@mui/material/styles';
 import { Tabs } from '@mui/material/';
+import { Theme } from '@mui/material/styles';
+
+interface StyledTabsProps {
+  smallFontSize?: string;
+  theme: Theme;
+}
 
 export const StyledTabs = styled(Tabs, {
   shouldForwardProp: (prop) => prop !== 'smallFontSize',
-})(({ theme, smallFontSize = '0.625rem' }) => ({
+})<StyledTabsProps>(({ theme, smallFontSize = '0.625rem' }) => ({
   marginLeft: theme.spacing(2),
   marginRight: theme.spacing(2),
   '& .MuiTabScrollButton-root': {

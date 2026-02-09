@@ -1,16 +1,16 @@
-// disable eslint for this file
 /* eslint-disable */
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import { styled } from '@mui/material/styles';
-
-import MuiAccordion from '@mui/material/Accordion';
-import MuiAccordionSummary from '@mui/material/AccordionSummary';
+import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
+import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import { Box, Typography, Tooltip } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import * as Tracking from '../Utils/Tracking';
 
-const StyledAccordion = styled(MuiAccordion)(({ theme, expanded }) => ({
+const StyledAccordion = styled(MuiAccordion, {
+  shouldForwardProp: (prop) => prop !== 'expanded',
+})<AccordionProps & { expanded?: boolean }>(({ theme, expanded }) => ({
   color: theme.palette.text.secondary,
   backgroundImage: 'none',
   backgroundColor: expanded ? theme.palette.background.default : 'transparent',
@@ -18,7 +18,9 @@ const StyledAccordion = styled(MuiAccordion)(({ theme, expanded }) => ({
   transition: 'none',
 }));
 
-const StyledAccordionSummary = styled(MuiAccordionSummary)(({ theme, expanded }) => ({
+const StyledAccordionSummary = styled(MuiAccordionSummary, {
+  shouldForwardProp: (prop) => prop !== 'expanded',
+})<AccordionSummaryProps & { expanded?: boolean }>(({ theme, expanded }) => ({
   marginTop: expanded ? theme.spacing(1) : 0,
   flexDirection: 'row-reverse',
   paddingLeft: expanded ? theme.spacing(1) : 0,
@@ -39,13 +41,20 @@ const StyledAccordionSummary = styled(MuiAccordionSummary)(({ theme, expanded })
 const TooltipText = {
   expand: "Click to expand section",
   collapse: "Click to collapse section"
+};
+
+interface ExpandableSectionProps {
+  title: ReactNode;
+  content: ReactNode;
+  icon?: ReactNode;
+  disabled?: boolean;
 }
 
-const ExpandableSection = (props) => {
+const ExpandableSection = (props: ExpandableSectionProps) => {
   const { title, content, icon, disabled } = props;
-  const [expanded, setExpanded] = useState(undefined);
+  const [expanded, setExpanded] = useState<string | undefined>(undefined);
 
-  const handleAccordionChange = (panel) => (event, isExpanded) => {
+  const handleAccordionChange = (panel: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
     setExpanded(isExpanded ? panel : undefined);
     Tracking.sendEventAnalytics(
       isExpanded ? Tracking.Events.expandSection : Tracking.Events.collapseSection,
@@ -66,7 +75,7 @@ const ExpandableSection = (props) => {
         onChange={handleAccordionChange("panel1")}
         disabled={disabled}
       >
-        <StyledAccordionSummary expanded={expanded} expandIcon={<ArrowDropDownIcon />} aria-controls="panel1a-content" id="panel1a-header">
+        <StyledAccordionSummary expanded={!!expanded} expandIcon={<ArrowDropDownIcon />} aria-controls="panel1a-content" id="panel1a-header">
           <Tooltip title={expanded ? TooltipText.collapse : TooltipText.expand} enterDelay={0} leaveDelay={200}>
             <Typography component="a" variant="body1">
               {title}
@@ -82,6 +91,6 @@ const ExpandableSection = (props) => {
       </StyledAccordion>
     </Box>
   );
-}
+};
 
 export default ExpandableSection;

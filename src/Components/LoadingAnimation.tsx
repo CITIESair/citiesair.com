@@ -1,6 +1,10 @@
 import { Typography, Container, CircularProgress, Stack } from '@mui/material/';
 
-export default function LoadingAnimation({ optionalText }) {
+interface LoadingAnimationProps {
+  optionalText?: string;
+}
+
+export default function LoadingAnimation({ optionalText }: LoadingAnimationProps) {
   return (
     <Container sx={{ height: '100%' }}>
       <Stack

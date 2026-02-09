@@ -1,7 +1,13 @@
-import { Chip, Tooltip, Skeleton } from '@mui/material';
+import { Chip, Tooltip, Skeleton, ChipProps } from '@mui/material';
+import { ReactNode } from 'react';
+
+interface CustomChipProps extends ChipProps {
+    tooltipTitle?: string;
+    label?: ReactNode;
+}
 
 // Custom Chip component to display metadata
-const CustomChip = (props) => {
+const CustomChip = (props: CustomChipProps) => {
     const { tooltipTitle, label, ...otherProps } = props;
 
     const chip = (
