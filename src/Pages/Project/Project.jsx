@@ -31,7 +31,7 @@ import useCurrentSensorsData from '../../hooks/useCurrentSensorsData';
 import useSchoolMetadata from '../../hooks/useSchoolMetadata';
 
 // Temporarily not using HyvorTalk comment anymore
-// import CommentSection from '../../Components/CommentSection';
+// import CommentSection from '../../Components/[Deprecated]_CommentSection';
 // import { HYVOR_PAGE_NAME } from '../../Utils/GlobalVariables';
 
 const Project = () => {

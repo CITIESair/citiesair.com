@@ -11,7 +11,7 @@ import { StyledMenuItem } from '../Header/MenuItemAsNavLink';
 import { UserContext } from '../../ContextProviders/UserContext';
 import { getApiUrl } from '../../API/APIUtils';
 import { fetchDataFromURL } from '../../API/ApiFetch';
-import { EMPTY_USER_DATA } from '../../Utils/GlobalVariables';
+import { EMPTY_USER_DATA } from "../../types/UserData";
 import { useSnackbar } from 'notistack';
 import { SnackbarMetadata } from '../../Utils/SnackbarMetadata';
 

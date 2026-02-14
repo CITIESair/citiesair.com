@@ -2,7 +2,7 @@ import { useState, useEffect, createContext, useMemo } from 'react';
 import { fetchDataFromURL } from '../API/ApiFetch';
 import { getApiUrl } from '../API/APIUtils';
 import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
-import { EMPTY_USER_DATA } from '../Utils/GlobalVariables';
+import { EMPTY_USER_DATA } from "../types/UserData";
 import { useSnackbar } from 'notistack';
 import { UserRoles } from '../Components/Account/Utils';
 
