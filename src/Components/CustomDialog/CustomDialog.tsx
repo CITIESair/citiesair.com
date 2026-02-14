@@ -1,11 +1,27 @@
-import { useState, useContext } from 'react';
-import { Chip, Tooltip, IconButton, Dialog, Button, DialogActions, DialogTitle, DialogContent, useMediaQuery } from '@mui/material';
+import { useState, useContext, ReactNode } from 'react';
+import { Chip, Tooltip, IconButton, Dialog, Button, DialogActions, DialogTitle, DialogContent, useMediaQuery, Theme } from '@mui/material';
 import * as Tracking from '../../Utils/Tracking';
+import { EventName } from '../../Utils/Tracking';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
 import { useTheme } from '@mui/material';
 
-const CustomDialog = (props) => {
+interface CustomDialogProps {
+  buttonIcon?: ReactNode;
+  buttonIconAria?: string;
+  buttonLabel?: string;
+  buttonVariant?: 'text' | 'outlined' | 'contained';
+  trackingEvent?: EventName;
+  dialogTitle: ReactNode;
+  dialogOpenHandler?: ((callback: () => void) => void) | null;
+  dialogCloseHandler?: (() => void) | null;
+  displaySchoolID?: boolean;
+  maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false;
+  children: ReactNode;
+  disabled?: boolean;
+}
+
+const CustomDialog = (props: CustomDialogProps) => {
   const {
     buttonIcon,
     buttonIconAria,
@@ -21,15 +37,15 @@ const CustomDialog = (props) => {
     disabled
   } = props;
 
-  let iconOnly;
+  let iconOnly: boolean;
   if (buttonIcon && !buttonLabel) iconOnly = true;
   else iconOnly = false;
 
-  const { currentSchoolID } = useContext(DashboardContext);
+  const { currentSchoolID } = useContext(DashboardContext) as any;
 
-  const smallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
+  const smallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
 
   const onOpen = () => {
     if (dialogOpenHandler) {
@@ -101,7 +117,7 @@ const CustomDialog = (props) => {
               <Chip
                 label={currentSchoolID ? `School: ${currentSchoolID.toUpperCase()}` : "No School"}
                 size="small"
-                display="block"
+                {...{ display: "block" } as any}
                 sx={{ mb: 1 }}
               />
               <br />

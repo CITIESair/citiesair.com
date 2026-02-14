@@ -1,10 +1,19 @@
+import React from 'react';
 import { Fab, Tooltip } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { scrollToSection } from '../Header/MenuItemAsNavLink';
 import * as Tracking from '../../Utils/Tracking';
 import FadeInButtonForSpeedDial from './FadeInButtonForSpeedDial';
 
-export default function SpeedDialButton({ topAnchorID, ...props }) {
+interface SpeedDialButtonProps {
+  topAnchorID?: string;
+  inProp?: boolean;
+  window?: Window;
+  distanceFromBottomOfWindow?: number | string;
+  triggerThreshold?: number;
+}
+
+const SpeedDialButton: React.FC<SpeedDialButtonProps> = ({ topAnchorID, ...props }) => {
   return (
     <FadeInButtonForSpeedDial {...props} distanceFromBottomOfWindow="1rem">
       <Tooltip title="Scroll to Top" enterDelay={0} leaveDelay={200}>
@@ -30,4 +39,6 @@ export default function SpeedDialButton({ topAnchorID, ...props }) {
       </Tooltip>
     </FadeInButtonForSpeedDial>
   );
-}
+};
+
+export default SpeedDialButton;

@@ -1,16 +1,24 @@
 import { Box, useScrollTrigger, Fade } from '@mui/material';
+import { ReactNode } from 'react';
 
 export const { innerHeight } = window;
 
-export function FadeInButtonForSpeedDial(props) {
-  const { children, window, distanceFromBottomOfWindow, triggerThreshold } = props;
+interface FadeInButtonForSpeedDialProps {
+  children: ReactNode;
+  window?: Window;
+  distanceFromBottomOfWindow: number | string;
+  triggerThreshold?: number;
+}
 
+export function FadeInButtonForSpeedDial(props: FadeInButtonForSpeedDialProps) {
+  const { children, window, distanceFromBottomOfWindow, triggerThreshold } = props;
+  
   const trigger = useScrollTrigger({
     target: window,
     disableHysteresis: true,
     threshold: innerHeight * (triggerThreshold || 0.5),
   });
-
+  
   return (
     <Fade in={trigger}>
       <Box
