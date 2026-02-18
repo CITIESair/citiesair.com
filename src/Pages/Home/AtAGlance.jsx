@@ -7,7 +7,7 @@ import FaceIcon from '@mui/icons-material/Face';
 import SensorsIcon from '@mui/icons-material/Sensors';
 import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 
-import sectionData from "../../section_data.json";
+import sectionData from "../../sectionData";
 import { useQuery } from '@tanstack/react-query';
 import { useNetworkStatusContext } from '../../ContextProviders/NetworkStatusContext';
 import { useContext } from 'react';

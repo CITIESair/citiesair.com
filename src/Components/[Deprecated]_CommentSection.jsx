@@ -4,7 +4,7 @@ import { Comments } from '@hyvor/hyvor-talk-react';
 import { styled } from '@mui/material/styles';
 
 import parse from 'html-react-parser';
-import sectionData from '../section_data.json';
+import sectionData from '../sectionData';
 import UppercaseTitle from './UppercaseTitle';
 import { replacePlainHTMLWithMuiComponents, capitalizePhrase } from '../Utils/UtilFunctions';
 import { HYVOR_WEBSITE_ID } from '../Utils/GlobalVariables';

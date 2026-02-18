@@ -7,7 +7,7 @@ import { getTranslation } from "../../../Utils/UtilFunctions";
 import { useContext } from "react";
 import { PreferenceContext } from "../../../ContextProviders/PreferenceContext";
 
-import sectionData from '../../../section_data.json';
+import sectionData from '../../../sectionData';
 import parse from 'html-react-parser';
 
 const Comparison = ({ data }) => {

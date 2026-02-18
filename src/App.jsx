@@ -35,7 +35,7 @@ import { DashboardProvider } from "./ContextProviders/DashboardContext";
 import { PreferenceContext } from "./ContextProviders/PreferenceContext";
 import { MetadataContext } from "./ContextProviders/MetadataContext";
 
-import sectionData from "./section_data.json";
+import sectionData from "./sectionData";
 
 import { CITIESair } from "./Utils/GlobalVariables";
 

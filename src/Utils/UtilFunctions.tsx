@@ -1,6 +1,7 @@
 import { Link, List, ListItem, ListItemText, Table, TableBody, TableCell, TableHead, TableRow, styled, TableFooter } from '@mui/material';
 import { domToReact, DOMNode, Element } from 'html-react-parser';
 import { Fragment, ReactNode } from 'react';
+import type { LocalizedText } from '../types/SectionData';
 
 export const roundNumberTo = (value: number, decimals: number = 6): number =>
   Number(value.toFixed(decimals));
@@ -153,13 +154,8 @@ export const validateEmail = (email: string): RegExpMatchArray | null => {
     );
 };
 
-interface TranslatableField {
-  en: string;
-  [lang: string]: string;
-}
-
 export const getTranslation = (
-  field: string | TranslatableField | null | undefined,
+  field: string | LocalizedText | null | undefined,
   lang: string = "en",
   replacements: Record<string, ReactNode> = {}
 ): ReactNode | null => {

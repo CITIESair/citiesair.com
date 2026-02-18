@@ -13,7 +13,7 @@ import { LoginTypes, UserRoles } from "./Utils";
 import { useSnackbar } from "notistack";
 import { SnackbarMetadata } from "../../Utils/SnackbarMetadata";
 import UserTypeSelector from "./UserTypeSelector";
-import sectionData from "../../section_data.json";
+import sectionData from "../../sectionData";
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 

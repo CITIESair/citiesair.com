@@ -5,7 +5,7 @@ import { Typography } from "@mui/material";
 import { ElementSizes } from "./CurrentAQIGridSize";
 import ErrorIcon from '@mui/icons-material/Error';
 import { PreferenceContext } from "../../../ContextProviders/PreferenceContext";
-import sectionData from '../../../section_data.json';
+import sectionData from '../../../sectionData';
 import { getFormattedLastSeen, SensorStatus } from "../SensorStatus";
 
 const LastUpdateAndSensorStatus = ({ sensor, size }) => {

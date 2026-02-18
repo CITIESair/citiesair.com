@@ -1,4 +1,4 @@
-import sectionData from '../../section_data.json';
+import sectionData from '../../sectionData';
 import { getTranslation } from '../../Utils/UtilFunctions';
 import AggregationType from '../DateRangePicker/AggregationType';
 

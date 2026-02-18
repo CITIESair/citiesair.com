@@ -11,7 +11,7 @@ import GoogleOAuthButtonAndPopupHandler from './OAuth/GoogleOAuthButtonAndPopupH
 import { LoginTypes, UserRoles } from './Utils';
 import { useSnackbar } from "notistack";
 import UserTypeSelector from './UserTypeSelector';
-import sectionData from "../../section_data.json";
+import sectionData from "../../sectionData";
 
 export default function Login() {
   const { enqueueSnackbar } = useSnackbar()

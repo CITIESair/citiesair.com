@@ -3,7 +3,7 @@ import { Typography, Paper } from '@mui/material';
 import parse from 'html-react-parser';
 import UppercaseTitle from '../../Components/UppercaseTitle';
 
-import sectionData from '../../section_data.json';
+import sectionData from '../../sectionData';
 import { replacePlainHTMLWithMuiComponents, capitalizePhrase } from '../../Utils/UtilFunctions';
 
 function GetInTouch() {

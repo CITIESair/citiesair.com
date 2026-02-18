@@ -3,7 +3,7 @@ import { cloneElement, useContext } from 'react';
 import { UserContext } from '../../ContextProviders/UserContext';
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
-import sectionData from '../../section_data.json';
+import sectionData from '../../sectionData';
 import { AppRoutes } from '../../Utils/AppRoutes';
 import { UserRolesForLogin } from './Utils';
 
