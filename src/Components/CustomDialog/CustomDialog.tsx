@@ -1,5 +1,5 @@
 import { useState, useContext, ReactNode } from 'react';
-import { Chip, Tooltip, IconButton, Dialog, Button, DialogActions, DialogTitle, DialogContent, useMediaQuery, Theme } from '@mui/material';
+import { Chip, Tooltip, IconButton, DialogProps, Dialog, ButtonProps, Button, DialogActions, DialogTitle, DialogContent, useMediaQuery, Theme } from '@mui/material';
 import * as Tracking from '../../Utils/Tracking';
 import { EventName } from '../../Utils/Tracking';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -10,13 +10,13 @@ interface CustomDialogProps {
   buttonIcon?: ReactNode;
   buttonIconAria?: string;
   buttonLabel?: string;
-  buttonVariant?: 'text' | 'outlined' | 'contained';
+  buttonVariant?: ButtonProps['variant'];
   trackingEvent?: EventName;
   dialogTitle: ReactNode;
   dialogOpenHandler?: ((callback: () => void) => void) | null;
   dialogCloseHandler?: (() => void) | null;
   displaySchoolID?: boolean;
-  maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false;
+  maxWidth?: DialogProps['maxWidth'];
   children: ReactNode;
   disabled?: boolean;
 }
