@@ -16,7 +16,7 @@ import FullWidthBox from '../FullWidthBox';
 import ThemeSelector from './ThemeSelector';
 import NavBar from './NavBar';
 
-import sectionData from '../../sectionData';
+import sectionData from '../../SectionData/sectionData';
 import CITIESlogoLinkToHome from './CITIESlogoLinkToHome';
 import TemperatureUnitToggle from './TemperatureUnitToggle';
 import { AppRoutes } from '../../Utils/AppRoutes';

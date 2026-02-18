@@ -21,7 +21,7 @@ import { INACTIVE_SENSOR_COLORS } from '../../Themes/CustomColors';
 import { DashboardContext } from '../../ContextProviders/DashboardContext';
 import { getTranslation } from '../../Utils/UtilFunctions';
 
-import sectionData from '../../sectionData';
+import sectionData from '../../SectionData/sectionData';
 
 import ScreenQRcode from '../../Components/AirQuality/AirQualityScreen/ScreenQRcode';
 import ScreenHealthSuggestions from '../../Components/AirQuality/AirQualityScreen/ScreenHealthSuggestions';

@@ -4,7 +4,7 @@ import PromoDialogBanner from "./PromoDialogBanner";
 import { UserContext } from "../../ContextProviders/UserContext";
 
 import { Stack } from "@mui/material";
-import sectionData from '../../sectionData';
+import sectionData from '../../SectionData/sectionData';
 import { PreferenceContext } from "../../ContextProviders/PreferenceContext";
 import { isValidArray } from "../../Utils/UtilFunctions";
 

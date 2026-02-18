@@ -9,7 +9,7 @@ import FullWidthBox from '../../Components/FullWidthBox';
 
 import About from './About';
 
-import sectionData from '../../sectionData';
+import sectionData from '../../SectionData/sectionData';
 
 import * as Tracking from '../../Utils/Tracking';
 import parse from 'html-react-parser';

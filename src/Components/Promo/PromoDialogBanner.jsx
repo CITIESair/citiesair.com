@@ -22,7 +22,7 @@ const PromoDialogBanner = ({ promosForBanner }) => {
   }
 
   const Content = ({ title, subtitle, img }) => {
-    const { width, src, atl } = img || {};
+    const { width, src, alt } = img || {};
 
     return (
       <Box>
@@ -53,7 +53,7 @@ const PromoDialogBanner = ({ promosForBanner }) => {
               >
                 <img
                   src={src}
-                  alt={atl}
+                  alt={alt}
                   width="100%"
                 />
               </Paper>

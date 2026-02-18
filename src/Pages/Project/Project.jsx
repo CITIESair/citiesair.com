@@ -8,7 +8,7 @@ import ThemePreferences from '../../Themes/ThemePreferences';
 
 import AirQualityIndexLegendQuickGlance from '../../Components/AirQuality/AirQualityIndexLegendQuickGlance';
 
-import sectionData from '../../sectionData';
+import sectionData from '../../SectionData/sectionData';
 
 import FullWidthBox from '../../Components/FullWidthBox';
 

@@ -64,7 +64,7 @@
                 "img": {
                     "width": "60%",
                     "src": "/images/promos/email-alert.png",
-                    "atl": "An example email alert sent to the user"
+                    "alt": "An example email alert sent to the user"
                 }
             }
         },
@@ -79,7 +79,7 @@
                 "img": {
                     "width": "100%",
                     "src": "/images/promos/selecting-data-types.gif",
-                    "atl": "GIF of new feature showing the ability to switch between different data types"
+                    "alt": "GIF of new feature showing the ability to switch between different data types"
                 }
             }
         }

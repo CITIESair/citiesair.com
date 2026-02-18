@@ -74,8 +74,8 @@ export interface AboutSection extends Section {
 export interface PromoImage {
   width: string;
   src: string;
-  /** Alt text for the image (key is "atl" in the data). */
-  atl: string;
+  /** Alt text for the image */
+  alt: string;
 }
 
 export interface PromoBanner {

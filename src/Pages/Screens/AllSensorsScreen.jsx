@@ -16,7 +16,7 @@ import useSchoolMetadata from "../../hooks/useSchoolMetadata";
 import CurrentAQIMapWithGrid from "../../Components/AirQuality/CurrentAQI/CurrentAQIMapWithGrid";
 import CurrentAQIGrid from "../../Components/AirQuality/CurrentAQI/CurrentAQIGrid";
 
-import sectionData from "../../sectionData";
+import sectionData from "../../SectionData/sectionData";
 import { getTranslation } from "../../Utils/UtilFunctions";
 import { PreferenceContext } from "../../ContextProviders/PreferenceContext";
 import BlackScreen from "./BlackScreen";

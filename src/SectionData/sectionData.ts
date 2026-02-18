@@ -5,8 +5,8 @@
  * importing the raw JSON directly, so the data is properly typed
  * throughout the codebase.
  */
-import data from './section_data.json';
-import type { SectionData } from './types/SectionData';
+import data from './sectionData.json';
+import type { SectionData } from '../types/SectionData';
 
 const sectionData: SectionData = data as SectionData;
 
