@@ -26,7 +26,7 @@ const returnDefaultZoom = (currentSchoolID) => {
         case KAMPALA:
             return 13;
         default:
-            return null;
+            return 12;
     }
 }
 
