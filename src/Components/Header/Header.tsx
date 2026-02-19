@@ -1,6 +1,21 @@
-import { useState, useContext } from 'react';
-import { styled } from '@mui/material/styles';
-import { Link, Tooltip, Box, Typography, Container, Paper, AppBar, Toolbar, useScrollTrigger, Slide, Stack, Drawer, Divider } from '@mui/material';
+import React, { useState, useContext } from 'react';
+import { styled, SxProps, Theme } from '@mui/material/styles';
+import type { AppBarProps } from '@mui/material';
+import {
+  Link,
+  Tooltip,
+  Box,
+  Typography,
+  Container,
+  Paper,
+  AppBar,
+  Toolbar,
+  useScrollTrigger,
+  Slide,
+  Stack,
+  Drawer,
+  Divider,
+} from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -20,45 +35,46 @@ import sectionData from '../../SectionData/sectionData';
 import CITIESlogoLinkToHome from './CITIESlogoLinkToHome';
 import TemperatureUnitToggle from './TemperatureUnitToggle';
 import { AppRoutes } from '../../Utils/AppRoutes';
+import type { AppRoute } from '../../Utils/AppRoutes';
 
 import { useTheme } from '@mui/material';
 import { CITIESair } from '../../Utils/GlobalVariables';
 import Promo from '../Promo/Promo';
 
-export const showInMobile = (defaultDisplay) => ({ display: { xs: (defaultDisplay || 'block'), lg: 'none' } });
-export const showInDesktop = (defaultDisplay) => ({ display: { xs: 'none', lg: (defaultDisplay || 'block') } });
+export const showInMobile = (defaultDisplay?: string): SxProps<Theme> => ({ display: { xs: (defaultDisplay || 'block'), lg: 'none' } });
+export const showInDesktop = (defaultDisplay?: string): SxProps<Theme> => ({ display: { xs: 'none', lg: (defaultDisplay || 'block') } });
 
 const toolBarHeightInRem = 3;
 
-const StyledAppBar = styled(AppBar)(() => ({
+const StyledAppBar = styled(AppBar)<AppBarProps>(() => ({
   boxShadow: 'none',
   '& .MuiToolbar-root': {
-    padding: 0
-  }
+    padding: 0,
+  },
 }));
 
-const StyledDrawer = styled(Drawer)(({ theme }) => ({
+const StyledDrawer = styled(Drawer)(({ theme }: { theme: Theme }) => ({
   boxSizing: 'border-box',
   '& .MuiPaper-root': {
     height: 'auto',
     borderRadius: theme.shape.borderRadius,
-    margin: theme.spacing(2)
-  }
+    margin: theme.spacing(2),
+  },
 }));
 
-export default function Header() {
-  const { currentPage } = useContext(PreferenceContext);
+export default function Header(): JSX.Element {
+  const { currentPage } = useContext(PreferenceContext)!;
 
   // trigger for hiding/showing the AppBar
   const triggerHideAppBar = useScrollTrigger({
     target: window,
-    threshold: 70
+    threshold: 70,
   });
 
   // hamburger menu on mobile
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState<boolean>(false);
 
-  const handleDrawerToggle = () => {
+  const handleDrawerToggle = (): void => {
     setMobileOpen((prevState) => !prevState);
   };
 
@@ -82,19 +98,13 @@ export default function Header() {
                     borderRadius: theme.shape.borderRadius,
                     transition: '0.2s ease-in-out',
                     '&:hover': { transform: 'scale(1.1)' },
-                    mr: 2
+                    mr: 2,
                   }}
                 >
                   <CITIESlogoLinkToHome />
                 </Paper>
 
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="flex-end"
-                  width="100%"
-                  height="100%"
-                >
+                <Stack direction="row" alignItems="center" justifyContent="flex-end" width="100%" height="100%">
                   {/* Navbar in landscape placed here, will be hidden in mobile  */}
                   <Box sx={{ ...showInDesktop('block'), height: '100%' }}>
                     <NavBar currentPage={currentPage} isMobile={false} />
@@ -129,7 +139,7 @@ export default function Header() {
             </Container>
           </Toolbar>
         </StyledAppBar>
-      </Slide >
+      </Slide>
 
       <Box>
         <StyledDrawer
@@ -138,7 +148,7 @@ export default function Header() {
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true // Better open performance on mobile.
+            keepMounted: true, // Better open performance on mobile.
           }}
         >
           <Stack onClick={handleDrawerToggle}>
@@ -154,7 +164,7 @@ export default function Header() {
 
             <Container sx={{ pt: 2, pb: 3 }}>
               <Stack direction="column" spacing={1}>
-                <Typography variant="h6" color="text.secondary" fontWeight="medium" >
+                <Typography variant="h6" color="text.secondary" fontWeight="medium">
                   Page Settings
                 </Typography>
                 <ThemeSelector isFullWidth />
@@ -180,21 +190,21 @@ export default function Header() {
       />
 
       <FullWidthBox sx={{
-        backgroundColor: "customAlternateBackground",
-        pt: 2
+        backgroundColor: 'customAlternateBackground',
+        pt: 2,
       }}>
         <Promo />
       </FullWidthBox>
 
       {
         (
-          [AppRoutes.home, AppRoutes.login, AppRoutes.signUp, AppRoutes.verify].includes(currentPage)
+          ([AppRoutes.home, AppRoutes.login, AppRoutes.signUp, AppRoutes.verify] as AppRoute[]).includes(currentPage as AppRoute)
             ? (
               <FullWidthBox sx={{
                 width: '100%',
                 pt: 1,
                 pb: 3,
-                backgroundColor: 'customAlternateBackground'
+                backgroundColor: 'customAlternateBackground',
               }}
               >
                 <Container>
@@ -214,7 +224,7 @@ export default function Header() {
                   <Link
                     href={`#${sectionData.getInTouch.id}`}
                     underline="always"
-                    onClick={(e) => {
+                    onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
                       // Smooth scrolling
                       e.preventDefault();
                       const section = document.getElementById(sectionData.getInTouch.id);
@@ -226,7 +236,7 @@ export default function Header() {
                         Tracking.Events.internalNavigation,
                         {
                           destination_id: sectionData.getInTouch.id,
-                          origin_id: 'header'
+                          origin_id: 'header',
                         }
                       );
                     }}

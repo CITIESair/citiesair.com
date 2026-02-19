@@ -1,10 +1,10 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { Tooltip } from '@mui/material';
+import { Tooltip, useTheme } from '@mui/material';
 import * as Tracking from '../../Utils/Tracking';
-import { useTheme } from '@mui/material';
 import { CITIESair } from '../../Utils/GlobalVariables';
 
-function CITIESlogoLinkToHome() {
+const CITIESlogoLinkToHome: React.FC = () => {
   const theme = useTheme();
 
   return (
@@ -12,19 +12,18 @@ function CITIESlogoLinkToHome() {
       <Link
         to="/"
         onClick={() => {
-          Tracking.sendEventAnalytics(
-            Tracking.Events.internalNavigation,
-            {
-              destination_id: '/',
-              destination_label: 'home',
-              origin_id: 'cities-logo'
-            }
-          );
+          Tracking.sendEventAnalytics(Tracking.Events.internalNavigation, {
+            destination_id: '/',
+            destination_label: 'home',
+            origin_id: 'cities-logo',
+          });
         }}
       >
         <img
           style={{
-            height: '100%', width: 'auto', borderRadius: theme.shape.borderRadius
+            height: '100%',
+            width: 'auto',
+            borderRadius: theme.shape.borderRadius,
           }}
           src="/images/cities-logo.png"
           title={`${CITIESair} Logo`}
@@ -33,6 +32,6 @@ function CITIESlogoLinkToHome() {
       </Link>
     </Tooltip>
   );
-}
+};
 
 export default CITIESlogoLinkToHome;

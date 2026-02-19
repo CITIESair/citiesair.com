@@ -3,7 +3,9 @@ const NavLinkBehavior = {
   toExternalPage: 'toExternalPage',
   scrollTo: 'scrollTo',
   hoverMenu: 'hoverMenu',
-  doNothing: 'doNothing'
-};
+  doNothing: 'doNothing',
+} as const;
+
+export type NavLinkBehaviorValue = (typeof NavLinkBehavior)[keyof typeof NavLinkBehavior];
 
 export default NavLinkBehavior;

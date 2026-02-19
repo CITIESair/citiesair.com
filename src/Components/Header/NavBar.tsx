@@ -1,5 +1,5 @@
-import { useContext, useState, useEffect } from 'react';
-import { styled } from '@mui/material/styles';
+import React, { useContext, useState, useEffect, ReactNode } from 'react';
+import { styled, Theme } from '@mui/material/styles';
 import { MenuList } from '@mui/material';
 
 import HomeIcon from '@mui/icons-material/Home';
@@ -18,24 +18,29 @@ import PopupState, { bindHover, bindFocus, bindMenu } from 'material-ui-popup-st
 
 import LogOut from '../Account/Logout';
 import { AppRoutes } from '../../Utils/AppRoutes';
+import type { AppRoute } from '../../Utils/AppRoutes';
 import { getDashboardLabel } from '../Account/Utils';
 import { NYUAD } from '../../Utils/GlobalVariables';
 // import { NYUAD } from '../../Utils/GlobalVariables';
 
-const StyledMenuList = styled(MenuList)(({ theme }) => ({
+const StyledMenuList = styled(MenuList)(({ theme }: { theme: Theme }) => ({
   // Make these items display on the same line on large display
   '& .MuiMenuItem-root': {
     [theme.breakpoints.up('lg')]: {
       display: 'inline-flex !important',
       height: '100%',
     },
-  }
+  },
 }));
 
-const NavBar = (props) => {
-  const { currentPage, isMobile } = props;
-  const { user, authenticationState } = useContext(UserContext);
-  const [navbar, setNavbar] = useState([]);
+interface NavBarProps {
+  currentPage: AppRoute | null;
+  isMobile: boolean;
+}
+
+const NavBar = ({ currentPage, isMobile }: NavBarProps) => {
+  const { user, authenticationState } = useContext(UserContext)!;
+  const [navbar, setNavbar] = useState<ReactNode[]>([]);
 
   const homeNavLink = (
     <MenuItemAsNavLink
@@ -80,7 +85,7 @@ const NavBar = (props) => {
               onClick={popupState.close}
               PaperProps={{
                 style: {
-                  width: '1000'
+                  width: '1000',
                 },
               }}
             >
@@ -133,4 +138,3 @@ const NavBar = (props) => {
 };
 
 export default NavBar;
-

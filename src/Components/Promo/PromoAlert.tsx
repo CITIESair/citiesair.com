@@ -1,16 +1,17 @@
-import { useState } from 'react';
+import React, { useState, FC } from 'react';
 import { Alert, Container } from '@mui/material';
 
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 
-const PromoAlert = (props) => {
-  const { message } = props;
+interface Props {
+  message?: string | null;
+}
+
+const PromoAlert: FC<Props> = ({ message }) => {
   const [open, setOpen] = useState(true);
 
-  if (!open) {
-    return null;
-  }
+  if (!open) return null;
 
   return (
     <Container maxWidth="lg">
@@ -25,6 +26,6 @@ const PromoAlert = (props) => {
       </Alert>
     </Container>
   );
-}
+};
 
 export default PromoAlert;

@@ -1,17 +1,31 @@
+import React, { useContext, useState, FC } from 'react';
 import { Dialog, DialogActions, DialogContent, Typography, Button, Chip, Box, Stack, Divider, Paper, Grid } from "@mui/material";
-import { useContext, useState } from "react";
-import { PreferenceContext } from "../../ContextProviders/PreferenceContext";
+import { PreferenceContext, PreferenceContextType } from "../../ContextProviders/PreferenceContext";
 import { LocalStorage } from "../../Utils/LocalStorage";
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 
-const PromoDialogBanner = ({ promosForBanner }) => {
-  const { hiddenPromos, setHiddenPromos } = useContext(PreferenceContext);
-  const [open, setOpen] = useState(hiddenPromos);
+interface Img {
+  width?: string;
+  src?: string;
+  alt?: string;
+}
 
-  const handleClose = (event, reason) => {
-    if (reason && reason === "backdropClick")
-      return;
+interface PromoBannerItem {
+  id?: string;
+  title?: string;
+  subtitle?: string;
+  img?: Img;
+}
+
+const PromoDialogBanner: FC<{ promosForBanner: PromoBannerItem[] }> = ({ promosForBanner }) => {
+  const pref = useContext(PreferenceContext as unknown as React.Context<PreferenceContextType | undefined>);
+  if (!pref) throw new Error('PreferenceContext not provided');
+  const { hiddenPromos, setHiddenPromos } = pref;
+  const [open, setOpen] = useState<any>(hiddenPromos);
+
+  const handleClose = (event?: any, reason?: string) => {
+    if (reason && reason === "backdropClick") return;
 
     setOpen(false);
 
@@ -21,7 +35,7 @@ const PromoDialogBanner = ({ promosForBanner }) => {
     localStorage.setItem(LocalStorage.hiddenPromos, JSON.stringify(newHiddenPromos));
   }
 
-  const Content = ({ title, subtitle, img }) => {
+  const Content: FC<PromoBannerItem> = ({ title, subtitle, img }) => {
     const { width, src, alt } = img || {};
 
     return (
@@ -38,7 +52,7 @@ const PromoDialogBanner = ({ promosForBanner }) => {
           }) : ''}
         </Typography>
 
-        {img.src && img.src !== '' && (
+        {img && img.src && img.src !== '' && (
           <Grid container justifyContent="center">
             <Grid item xs={11}>
               <Paper
