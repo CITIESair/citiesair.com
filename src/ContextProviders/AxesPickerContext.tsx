@@ -1,4 +1,4 @@
-import React, { createContext, useMemo, useState, useContext, ReactNode, Dispatch, SetStateAction } from 'react';
+import { createContext, useMemo, useState, useContext, ReactNode, Dispatch, SetStateAction } from 'react';
 
 export interface AxesPickerContextValue {
   hAxis: string | null;

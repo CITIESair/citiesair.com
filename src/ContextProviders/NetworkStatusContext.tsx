@@ -1,13 +1,13 @@
-import React, { createContext, useContext, useEffect, useMemo, useState, ReactNode, Dispatch, SetStateAction } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, ReactNode, Dispatch, SetStateAction } from 'react';
 import { onlineManager } from '@tanstack/react-query';
 import { useSnackbar } from 'notistack';
 import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
 
 type NetworkStatusContextValue = {
-  isDeviceOnline: boolean;
-  setIsDeviceOnline: Dispatch<SetStateAction<boolean>>;
-  isServerDown: boolean;
-  setIsServerDown: Dispatch<SetStateAction<boolean>>;
+    isDeviceOnline: boolean;
+    setIsDeviceOnline: Dispatch<SetStateAction<boolean>>;
+    isServerDown: boolean;
+    setIsServerDown: Dispatch<SetStateAction<boolean>>;
 };
 
 const NetworkStatusContext = createContext<NetworkStatusContextValue | undefined>(undefined);

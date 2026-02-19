@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useMemo, ReactNode } from 'react';
+import { useState, useEffect, createContext, useMemo, ReactNode } from 'react';
 
 export type Google = {
   charts: {

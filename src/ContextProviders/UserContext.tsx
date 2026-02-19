@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useMemo, ReactNode, Dispatch, SetStateAction } from 'react';
+import { useState, useEffect, createContext, useMemo, ReactNode, Dispatch, SetStateAction } from 'react';
 import { fetchDataFromURL } from '../API/ApiFetch';
 import { getApiUrl } from '../API/APIUtils';
 import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
@@ -29,7 +29,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   });
   const [user, setUser] = useState<UserData & { recently_registered?: boolean }>(EMPTY_USER_DATA);
   const [userRole, setUserRole] = useState<string>(UserRoles.school.id);
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (authenticationState.checkedAuthentication === true) return;
@@ -62,7 +62,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // If the user is authenticated but unverified, show it via SnackbarNotification
     if (!(authenticationState.authenticated && authenticationState.checkedAuthentication)) return;
-    if ((user as any).recently_registered) return; // don't show the snackbar either when the user has just signed up
+    if (user.recently_registered) return; // don't show the snackbar either when the user has just signed up
 
     if (user.is_verified === false) {
       enqueueSnackbar(
