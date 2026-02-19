@@ -6,7 +6,7 @@ import { getApiUrl } from '../../API/APIUtils';
 import { AppRoutes } from '../../Utils/AppRoutes';
 import { SnackbarMetadata } from '../../Utils/SnackbarMetadata';
 import { fetchDataFromURL } from '../../API/ApiFetch';
-import { MetadataContext } from '../../ContextProviders/MetadataContext';
+import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import GoogleOAuthButtonAndPopupHandler from './OAuth/GoogleOAuthButtonAndPopupHandler';
 import { LoginTypes, UserRoles } from './Utils';
 import { useSnackbar } from "notistack";
@@ -34,7 +34,7 @@ export default function Login() {
     if (authenticationState.authenticated && authenticationState.checkedAuthentication) navigate("/");
   }, [authenticationState, navigate]);
 
-  const { setCurrentPage } = useContext(MetadataContext);
+  const { setCurrentPage } = useContext(PreferenceContext);
 
   // set current page to login
   useEffect(() => {

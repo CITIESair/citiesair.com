@@ -6,7 +6,7 @@ import { getApiUrl } from "../../API/APIUtils";
 import { AppRoutes } from "../../Utils/AppRoutes";
 import { fetchDataFromURL } from "../../API/ApiFetch";
 import { validateEmail } from "../../Utils/UtilFunctions";
-import { MetadataContext } from "../../ContextProviders/MetadataContext";
+import { PreferenceContext } from "../../ContextProviders/PreferenceContext";
 import EmailVerificationDialog from "./EmailVerificationDialog";
 import GoogleOAuthButtonAndPopupHandler from "./OAuth/GoogleOAuthButtonAndPopupHandler";
 import { LoginTypes, UserRoles } from "./Utils";
@@ -48,7 +48,7 @@ export default function SignUp() {
   }, [authenticationState, showVerificationDialog, navigate]);
 
 
-  const { setCurrentPage } = useContext(MetadataContext);
+  const { setCurrentPage } = useContext(PreferenceContext);
   useEffect(() => {
     setCurrentPage(AppRoutes.signUp);
   }, [setCurrentPage]);

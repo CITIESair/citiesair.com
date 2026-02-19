@@ -2,7 +2,7 @@ import { useEffect, useContext } from "react";
 
 import Project from "./Project/Project";
 
-import { MetadataContext } from "../ContextProviders/MetadataContext";
+import { PreferenceContext } from "../ContextProviders/PreferenceContext";
 
 import { AppRoutes } from "../Utils/AppRoutes";
 import { CITIESair } from "../Utils/GlobalVariables";
@@ -19,7 +19,7 @@ const Dashboard = () => {
   }, [currentSchoolID]);
 
   // Update current page type
-  const { setCurrentPage } = useContext(MetadataContext);
+  const { setCurrentPage } = useContext(PreferenceContext);
   useEffect(() => {
     setCurrentPage(AppRoutes.dashboard);
   }, [setCurrentPage]);

@@ -2,7 +2,7 @@ import { useEffect, useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 import { Button, Box, Grid, Typography, Container, Divider, useMediaQuery } from '@mui/material';
-import { MetadataContext } from '../../ContextProviders/MetadataContext';
+import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 
 import UppercaseTitle from '../../Components/UppercaseTitle';
 import FullWidthBox from '../../Components/FullWidthBox';
@@ -128,7 +128,7 @@ function Home({ title }) {
     document.title = title;
   }, [title]);
 
-  const { setCurrentPage } = useContext(MetadataContext);
+  const { setCurrentPage } = useContext(PreferenceContext);
 
   // set current page to home
   useEffect(() => {

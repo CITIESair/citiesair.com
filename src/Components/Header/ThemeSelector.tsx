@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import { MenuItem, Typography } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 import { LightMode, DarkMode, Contrast } from '@mui/icons-material';
 
@@ -51,26 +51,29 @@ const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   },
 }));
 
-export default function ThemeSelector({ isFullWidth }) {
-  const { setThemePreference } = useContext(PreferenceContext);
+interface ThemeSelectorProps {
+  isFullWidth?: boolean;
+}
 
-  const [themeValue, setThemeValue] = useState(localStorage.getItem(LocalStorage.theme) || ThemePreferences.system);
+export default function ThemeSelector({ isFullWidth }: ThemeSelectorProps) {
+  const { setThemePreference } = useContext(PreferenceContext)!;
 
-  const handleChange = (event) => {
+  const [themeValue, setThemeValue] = useState<ThemePreferences>(
+    (localStorage.getItem(LocalStorage.theme) as ThemePreferences | null)
+    ?? ThemePreferences.system
+  );
+
+  const handleChange = (event: SelectChangeEvent<ThemePreferences>) => {
     Tracking.sendEventAnalytics(Tracking.Events.themeChange, {
       old_theme: themeValue,
       new_theme: event.target.value,
     });
     localStorage.setItem(LocalStorage.theme, event.target.value);
-    setThemeValue(event.target.value);
+    setThemeValue(event.target.value as ThemePreferences);
   };
 
-  const themeChangeHandler = useCallback(({ matches }) => {
-    if (matches) {
-      setThemePreference(ThemePreferences.dark);
-    } else {
-      setThemePreference(ThemePreferences.light);
-    }
+  const themeChangeHandler = useCallback(({ matches }: MediaQueryListEvent) => {
+    setThemePreference(matches ? ThemePreferences.dark : ThemePreferences.light);
   }, [setThemePreference]);
 
   useEffect(() => {

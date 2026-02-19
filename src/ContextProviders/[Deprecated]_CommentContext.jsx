@@ -1,4 +1,4 @@
-import { useState, createContext, useMemo } from 'react';
+import { createContext, useMemo } from 'react';
 
 // Temporarily not using HyvorTalk comment anymore
 // import { fetchDataFromURL } from '../API/ApiFetch';
@@ -29,16 +29,12 @@ export function MetadataProvider({ children }) {
   //   }
   // };
 
-  // ------ Current page and chart title list metadata -----
-  const [currentPage, setCurrentPage] = useState(null);
-
   const providerValue = useMemo(() => ({
     // commentCounts, fetchCommentCounts, setCommentCounts,
-    currentPage, setCurrentPage
   }), [
     // Temporarily not using HyvorTalk comment anymore
-    // commentCounts, 
-    currentPage]);
+    // commentCounts,
+  ]);
 
   // return context provider
   return (

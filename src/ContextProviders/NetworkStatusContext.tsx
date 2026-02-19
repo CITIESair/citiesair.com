@@ -1,19 +1,26 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState, ReactNode, Dispatch, SetStateAction } from 'react';
 import { onlineManager } from '@tanstack/react-query';
 import { useSnackbar } from 'notistack';
 import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
 
-const NetworkStatusContext = createContext();
+type NetworkStatusContextValue = {
+  isDeviceOnline: boolean;
+  setIsDeviceOnline: Dispatch<SetStateAction<boolean>>;
+  isServerDown: boolean;
+  setIsServerDown: Dispatch<SetStateAction<boolean>>;
+};
 
-export const NetworkStatusProvider = ({ children }) => {
+const NetworkStatusContext = createContext<NetworkStatusContextValue | undefined>(undefined);
+
+export const NetworkStatusProvider = ({ children }: { children: ReactNode }) => {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-    const [isDeviceOnline, setIsDeviceOnline] = useState(true);
-    const [isServerDown, setIsServerDown] = useState(false);
+    const [isDeviceOnline, setIsDeviceOnline] = useState<boolean>(true);
+    const [isServerDown, setIsServerDown] = useState<boolean>(false);
 
     // --- Device network status handler ---
     useEffect(() => {
-        let offlineSnackbarKey = null;
+        let offlineSnackbarKey: string | number | null = null;
 
         const unsub = onlineManager.subscribe(() => {
             const online = onlineManager.isOnline();
@@ -25,7 +32,7 @@ export const NetworkStatusProvider = ({ children }) => {
                     SnackbarMetadata.offline
                 );
             } else {
-                if (offlineSnackbarKey) closeSnackbar(offlineSnackbarKey);
+                if (offlineSnackbarKey != null) closeSnackbar(offlineSnackbarKey as any);
                 enqueueSnackbar('Back online!', SnackbarMetadata.success);
             }
         });
@@ -35,9 +42,9 @@ export const NetworkStatusProvider = ({ children }) => {
 
     // --- Server availability handler ---
     useEffect(() => {
-        let serverDownSnackbarKey = null;
+        let serverDownSnackbarKey: string | number | null = null;
 
-        const handleServerDown = () => {
+        const handleServerDown = (e?: Event) => {
             setIsServerDown(true);
             if (serverDownSnackbarKey) return;
             serverDownSnackbarKey = enqueueSnackbar(
@@ -46,21 +53,21 @@ export const NetworkStatusProvider = ({ children }) => {
             );
         };
 
-        const handleServerUp = () => {
+        const handleServerUp = (e?: Event) => {
             setIsServerDown(false);
             if (serverDownSnackbarKey) {
-                closeSnackbar(serverDownSnackbarKey);
+                closeSnackbar(serverDownSnackbarKey as any);
                 serverDownSnackbarKey = null;
                 enqueueSnackbar('Connection to server restored', SnackbarMetadata.success);
             }
         };
 
-        window.addEventListener('server:down', handleServerDown);
-        window.addEventListener('server:up', handleServerUp);
+        window.addEventListener('server:down', handleServerDown as EventListener);
+        window.addEventListener('server:up', handleServerUp as EventListener);
 
         return () => {
-            window.removeEventListener('server:down', handleServerDown);
-            window.removeEventListener('server:up', handleServerUp);
+            window.removeEventListener('server:down', handleServerDown as EventListener);
+            window.removeEventListener('server:up', handleServerUp as EventListener);
         };
     }, [enqueueSnackbar, closeSnackbar]);
 
@@ -76,4 +83,10 @@ export const NetworkStatusProvider = ({ children }) => {
     );
 };
 
-export const useNetworkStatusContext = () => useContext(NetworkStatusContext);
+export const useNetworkStatusContext = (): NetworkStatusContextValue => {
+    const ctx = useContext(NetworkStatusContext);
+    if (!ctx) throw new Error('useNetworkStatusContext must be used within NetworkStatusProvider');
+    return ctx;
+};
+
+export default NetworkStatusContext;

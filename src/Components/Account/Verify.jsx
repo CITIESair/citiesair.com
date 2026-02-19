@@ -7,10 +7,10 @@ import { UserContext } from "../../ContextProviders/UserContext";
 import { getApiUrl } from "../../API/APIUtils";
 import { fetchDataFromURL } from "../../API/ApiFetch";
 import { AppRoutes } from "../../Utils/AppRoutes";
-import { MetadataContext } from "../../ContextProviders/MetadataContext";
+import { PreferenceContext } from "../../ContextProviders/PreferenceContext";
 
 export default function Verify() {
-  const { setCurrentPage } = useContext(MetadataContext);
+  const { setCurrentPage } = useContext(PreferenceContext);
 
   // set current page to login
   useEffect(() => {

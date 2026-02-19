@@ -6,7 +6,7 @@ import App from './App';
 import { UserProvider } from './ContextProviders/UserContext';
 import { GoogleProvider } from './ContextProviders/GoogleContext';
 import { PreferenceProvider } from './ContextProviders/PreferenceContext';
-import { MetadataProvider } from './ContextProviders/MetadataContext';
+import { MetadataProvider } from './ContextProviders/[Deprecated]_CommentContext';
 import { SnackbarProvider } from 'notistack';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';

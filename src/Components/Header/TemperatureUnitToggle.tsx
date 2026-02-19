@@ -1,17 +1,20 @@
-import { useContext } from 'react';
+import { MouseEvent, useContext } from 'react';
 import { Box, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { LocalStorage } from '../../Utils/LocalStorage';
 import { TemperatureUnits } from '../../Utils/AirQuality/TemperatureUtils';
 import * as Tracking from '../../Utils/Tracking';
-import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
+import { PreferenceContext, TemperatureUnit } from '../../ContextProviders/PreferenceContext';
 
 export default function TemperatureUnitToggle() {
-  const { temperatureUnitPreference, setTemperatureUnitPreference } = useContext(PreferenceContext);
+  const { temperatureUnitPreference, setTemperatureUnitPreference } = useContext(PreferenceContext)!;
 
-  const handleChange = (event, newUnit) => {
+  const handleChange = (_event: MouseEvent<HTMLElement>, newUnit: TemperatureUnit | null) => {
+    // newUnit is null when the already-selected button is clicked — ignore that
+    if (newUnit === null) return;
+
     Tracking.sendEventAnalytics(Tracking.Events.temperatureUnitChange, {
       old_temperature: temperatureUnitPreference,
-      new_temperature: event.target.value,
+      new_temperature: newUnit,
     });
     localStorage.setItem(LocalStorage.temperatureUnit, newUnit);
     setTemperatureUnitPreference(newUnit);
@@ -35,6 +38,5 @@ export default function TemperatureUnitToggle() {
         </ToggleButton>
       </ToggleButtonGroup>
     </Box>
-
   );
 }

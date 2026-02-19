@@ -10,7 +10,7 @@ import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 
 import * as Tracking from '../../Utils/Tracking';
 
-import { MetadataContext } from '../../ContextProviders/MetadataContext';
+import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import FullWidthBox from '../FullWidthBox';
 
 import ThemeSelector from './ThemeSelector';
@@ -47,7 +47,7 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
 }));
 
 export default function Header() {
-  const { currentPage } = useContext(MetadataContext);
+  const { currentPage } = useContext(PreferenceContext);
 
   // trigger for hiding/showing the AppBar
   const triggerHideAppBar = useScrollTrigger({

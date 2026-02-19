@@ -33,7 +33,6 @@ import { AppRoutes } from "./Utils/AppRoutes";
 
 import { DashboardProvider } from "./ContextProviders/DashboardContext";
 import { PreferenceContext } from "./ContextProviders/PreferenceContext";
-import { MetadataContext } from "./ContextProviders/MetadataContext";
 
 import sectionData from "./SectionData/sectionData";
 
