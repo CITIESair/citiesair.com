@@ -4,14 +4,13 @@ import { AQI_Database } from "../../../Utils/AirQuality/AirQualityIndexHelper";
 import { SensorStatus } from "../SensorStatus";
 import { TypesOfScreen } from "./ScreenUtils";
 import { getTranslation } from "../../../Utils/UtilFunctions";
-import { useContext } from "react";
-import { PreferenceContext } from "../../../ContextProviders/PreferenceContext";
 
 import sectionData from '../../../SectionData/sectionData';
 import parse from 'html-react-parser';
+import { usePreferences } from "../../../ContextProviders/PreferenceContext";
 
 const Comparison = ({ data }) => {
-    const { language } = useContext(PreferenceContext);
+    const { language } = usePreferences();
 
     // Only display air quality comparison if every sensor is currently active
     if (
@@ -58,7 +57,7 @@ const Comparison = ({ data }) => {
 }
 
 const ScreenHealthSuggestions = ({ typeOfScreen, data }) => {
-    const { language } = useContext(PreferenceContext);
+    const { language } = usePreferences();
 
     const getHealthSuggestion = (sensorData) => {
         if (sensorData?.current?.aqi?.categoryIndex !== undefined) {

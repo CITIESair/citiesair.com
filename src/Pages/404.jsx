@@ -1,9 +1,9 @@
-import { useEffect, useContext } from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Typography, Container } from '@mui/material';
-import { PreferenceContext } from '../ContextProviders/PreferenceContext';
 import { AppRoutes } from '../Utils/AppRoutes';
 import { CITIESair } from '../Utils/GlobalVariables';
+import { usePreferences } from '../ContextProviders/PreferenceContext';
 
 export default function FourOhFour({ title }) {
   // Update the page's title
@@ -11,7 +11,7 @@ export default function FourOhFour({ title }) {
     document.title = title;
   }, [title]);
 
-  const { setCurrentPage } = useContext(PreferenceContext);
+  const { setCurrentPage } = usePreferences();
 
   // set underline link to 404 (to undo any other underlined links)
   useEffect(() => {

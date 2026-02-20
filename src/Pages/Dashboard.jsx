@@ -1,15 +1,12 @@
-import { useEffect, useContext } from "react";
-
+import { useEffect } from "react";
 import Project from "./Project/Project";
-
-import { PreferenceContext } from "../ContextProviders/PreferenceContext";
-
 import { AppRoutes } from "../Utils/AppRoutes";
 import { CITIESair } from "../Utils/GlobalVariables";
-import { DashboardContext } from "../ContextProviders/DashboardContext";
+import { usePreferences } from "../ContextProviders/PreferenceContext";
+import { useDashboard } from "../ContextProviders/DashboardContext";
 
 const Dashboard = () => {
-  const { currentSchoolID } = useContext(DashboardContext);
+  const { currentSchoolID } = useDashboard();
 
   // Update the page's title based on currentSchoolID
   useEffect(() => {
@@ -19,7 +16,7 @@ const Dashboard = () => {
   }, [currentSchoolID]);
 
   // Update current page type
-  const { setCurrentPage } = useContext(PreferenceContext);
+  const { setCurrentPage } = usePreferences();
   useEffect(() => {
     setCurrentPage(AppRoutes.dashboard);
   }, [setCurrentPage]);

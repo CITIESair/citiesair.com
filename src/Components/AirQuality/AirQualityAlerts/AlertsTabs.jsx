@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { Box, Tab, useMediaQuery } from '@mui/material';
 
 import StyledTabs from '../../StyledTabs';
@@ -7,8 +7,8 @@ import AlertsTable from './AlertsTable';
 import AlertTypes from './AlertTypes';
 import { isValidArray } from '../../../Utils/UtilFunctions';
 import { AirQualityAlertKeys, getAlertDefaultPlaceholder } from './AlertUtils';
-import { AirQualityAlertContext } from '../../../ContextProviders/AirQualityAlertContext';
 import { useAlerts } from '../../../hooks/alerts/useAlerts';
+import { useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
 
 function AlertTab(props) {
   const { children, value, index, alertType, alertsArray, ...other } = props;
@@ -31,7 +31,7 @@ function AlertTab(props) {
 }
 
 export default function AlertsTabs() {
-  const { setSelectedAlert } = useContext(AirQualityAlertContext);
+  const { setSelectedAlert } = useAirQualityAlert();
   const { data: alerts } = useAlerts();
 
   const smallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));

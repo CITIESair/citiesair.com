@@ -1,12 +1,12 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Button, Menu, MenuItem, Typography } from "@mui/material";
 import { isValidArray } from "../Utils/UtilFunctions";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { returnSelectedDataType } from "../Utils/AirQuality/DataTypes";
-import { DashboardContext } from "../ContextProviders/DashboardContext";
+import { useDashboard } from "../ContextProviders/DashboardContext";
 
 const DataTypeDropDownMenu = ({ selectedDataType, dataTypes, chartID }) => {
-  const { updateIndividualChartConfigQueryParams } = useContext(DashboardContext);
+  const { updateIndividualChartConfigQueryParams } = useDashboard();
 
   const [anchorEl, setAnchorEl] = useState(null);
 

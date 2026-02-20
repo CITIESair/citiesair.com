@@ -1,6 +1,4 @@
 import { useTheme } from '@mui/material';
-import { useContext } from "react";
-import { PreferenceContext } from "../../../ContextProviders/PreferenceContext";
 import { AQI_Database } from "../../../Utils/AirQuality/AirQualityIndexHelper";
 import { getTranslation } from "../../../Utils/UtilFunctions";
 import { Box, Grid, Stack, Typography } from "@mui/material";
@@ -12,6 +10,7 @@ import { CurrentHeatIndex, CurrentWeather } from "./CurrentMetero";
 import LastUpdateAndSensorStatus from "./LastUpdateAndSensorStatus";
 import { DataTypeKeys } from "../../../Utils/AirQuality/DataTypes";
 import useSchoolMetadata from '../../../hooks/useSchoolMetadata';
+import { usePreferences } from '../../../ContextProviders/PreferenceContext';
 
 const CurrentAQISingleSensor = (props) => {
     const {
@@ -20,7 +19,7 @@ const CurrentAQISingleSensor = (props) => {
     const { data: schoolMetadata } = useSchoolMetadata();
 
     const theme = useTheme();
-    const { language } = useContext(PreferenceContext);
+    const { language } = usePreferences();
 
     const categoryObject = AQI_Database[current?.aqi?.categoryIndex];
     const categoryText = categoryObject ? getTranslation(AQI_Database[current?.aqi?.categoryIndex]?.category, language) : null;

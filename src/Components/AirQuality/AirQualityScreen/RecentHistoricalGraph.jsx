@@ -1,6 +1,6 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useRef, useEffect, useContext } from 'react';
+import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 import { AQI_Database } from '../../../Utils/AirQuality/AirQualityIndexHelper';
 import { SensorStatus } from '../SensorStatus';
@@ -11,13 +11,13 @@ import { areDOMOverlapped, TypesOfScreen } from './ScreenUtils';
 import { capitalizePhrase, getTranslation } from '../../../Utils/UtilFunctions';
 import { INACTIVE_SENSOR_COLORS } from '../../../Themes/CustomColors';
 import { useTheme } from '@mui/material';
-import { PreferenceContext } from '../../../ContextProviders/PreferenceContext';
+import { usePreferences } from '../../../ContextProviders/PreferenceContext';
 
 const numberOfHoursForHistoricalData = 6;
 
 const RecentHistoricalGraph = (props) => {
   const { typeOfScreen, data } = props;
-  const { language } = useContext(PreferenceContext);
+  const { language } = usePreferences();
   const theme = useTheme();
 
   const graphContainer = useRef();

@@ -1,8 +1,5 @@
 /* eslint-disable */
-
-import { useContext, useEffect, useMemo, useState, useCallback } from 'react';
-
-import { GoogleContext } from '../../ContextProviders/GoogleContext';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 
 import { Box, Grid, Stack, useMediaQuery } from '@mui/material/';
 
@@ -26,14 +23,18 @@ import AxesPicker from '../../Components/AxesPicker/AxesPicker';
 import NoChartToRender from './NoChartToRender';
 import { PREDEFINED_TIMERANGES } from '../../Components/TimeRange/TimeRangeUtils';
 import TimeRangeSelectorWrapperForDataHook from '../../Components/TimeRange/TimeRangeSelectorWrapperForDataHook';
+import { useGoogle } from '../../ContextProviders/GoogleContext';
 
 export default function SubChart(props) {
+  // useGoogle for loading and manipulating the Google Charts, return if google hasn't been loaded
+  const google = useGoogle();
+  if (!google) {
+    return;
+  }
+
   // Props
   const { chartData, subchartIndex, windowSize, height, maxHeight, width, selectedDataType, allowedDataTypes } = props;
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down('sm'));
-
-  // Use GoogleContext for loading and manipulating the Google Charts
-  const google = useContext(GoogleContext);
 
   // States of the Google Charts
   const [dataTable, setDataTable] = useState();

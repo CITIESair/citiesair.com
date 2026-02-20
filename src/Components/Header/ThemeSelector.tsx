@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useContext } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { styled } from '@mui/material/styles';
 import { MenuItem, Typography } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
@@ -11,7 +11,7 @@ import ThemePreferences from '../../Themes/ThemePreferences';
 
 import * as Tracking from '../../Utils/Tracking';
 import { LocalStorage } from '../../Utils/LocalStorage';
-import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
+import { usePreferences } from '../../ContextProviders/PreferenceContext';
 
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
@@ -56,7 +56,7 @@ interface ThemeSelectorProps {
 }
 
 export default function ThemeSelector({ isFullWidth }: ThemeSelectorProps) {
-  const { setThemePreference } = useContext(PreferenceContext)!;
+  const { setThemePreference } = usePreferences();
 
   const [themeValue, setThemeValue] = useState<ThemePreferences>(
     (localStorage.getItem(LocalStorage.theme) as ThemePreferences | null)

@@ -1,12 +1,12 @@
-import { useContext, useState } from "react";
-import { DashboardContext } from "../../ContextProviders/DashboardContext";
+import { useState } from "react";
 import TimeRangeSelector from "./TimeRangeSelector";
 import { PREDEFINED_TIMERANGES } from "./TimeRangeUtils";
+import { useDashboard } from "../../ContextProviders/DashboardContext";
 
 const TimeRangeSelectorWrapperForDataHook = (props) => {
     const { defaultTimeRange, isResponsive, hasTitle, chartIndex } = props;
 
-    const { allChartsConfigs, updateIndividualChartConfigQueryParams } = useContext(DashboardContext);
+    const { allChartsConfigs, updateIndividualChartConfigQueryParams } = useDashboard();
     const chartConfig = allChartsConfigs[chartIndex] || {};
     const queryParams = chartConfig.queryParams || {};
     const { startTime, endTime } = queryParams;
@@ -21,7 +21,7 @@ const TimeRangeSelectorWrapperForDataHook = (props) => {
             timeRange={timeRange}
             defaultTimeRange={defaultTimeRange}
             handleChange={(newRange) => {
-                // Handle timeRange change → update DashboardContext queryParams
+                // Handle timeRange change → update queryParams
                 setTimeRange(newRange);
 
                 const [startTime, endTime] = newRange || [];

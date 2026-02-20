@@ -1,6 +1,6 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useEffect, useContext } from 'react';
+import { useEffect } from 'react';
 import { useParams } from "react-router-dom";
 
 import { Box, Grid, Typography, Stack } from '@mui/material';
@@ -15,10 +15,8 @@ import CurrentAQIGrid from '../../Components/AirQuality/CurrentAQI/CurrentAQIGri
 import { CurrentAQIGridSize } from '../../Components/AirQuality/CurrentAQI/CurrentAQIGridSize';
 import { getApiUrl } from '../../API/APIUtils';
 import { fetchAndProcessCurrentSensorsData } from '../../API/ApiFetch';
-import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import { CITIESair, CURRENT_DATA_EXPIRATION_TIME_MS, KAMPALA } from '../../Utils/GlobalVariables';
 import { INACTIVE_SENSOR_COLORS } from '../../Themes/CustomColors';
-import { DashboardContext } from '../../ContextProviders/DashboardContext';
 import { getTranslation } from '../../Utils/UtilFunctions';
 
 import sectionData from '../../SectionData/sectionData';
@@ -26,17 +24,19 @@ import sectionData from '../../SectionData/sectionData';
 import ScreenQRcode from '../../Components/AirQuality/AirQualityScreen/ScreenQRcode';
 import ScreenHealthSuggestions from '../../Components/AirQuality/AirQualityScreen/ScreenHealthSuggestions';
 import { TypesOfScreen } from '../../Components/AirQuality/AirQualityScreen/ScreenUtils';
-import { ScreenContext } from '../../ContextProviders/ScreenContext';
 import { useQuery } from '@tanstack/react-query';
 import BlackScreen from './BlackScreen';
 import AggregationType from '../../Components/DateRangePicker/AggregationType';
+import { usePreferences } from '../../ContextProviders/PreferenceContext';
+import { useDashboard } from '../../ContextProviders/DashboardContext';
+import { useScreen } from '../../ContextProviders/ScreenContext';
 
 const SensorPairScreen = ({ title }) => {
-  const { isLayoutReversed, shouldDisplayScreen } = useContext(ScreenContext);
-  const { language } = useContext(PreferenceContext);
+  const { isLayoutReversed, shouldDisplayScreen } = useScreen();
+  const { language } = usePreferences();
 
   // ---- DATA FETCHING FOR SCREEN ----
-  const { currentSchoolID } = useContext(DashboardContext);
+  const { currentSchoolID } = useDashboard();
   const { school_id_param, screen_id_param } = useParams();
   const school_id = school_id_param || currentSchoolID;
   const screen_id = screen_id_param || "screen";

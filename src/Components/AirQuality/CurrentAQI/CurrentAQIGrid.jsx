@@ -2,7 +2,7 @@ import { Grid, Skeleton, Stack, Typography } from '@mui/material';
 
 import { CurrentAQIGridSize, ElementSizes } from './CurrentAQIGridSize';
 import CurrentAQISingleSensor from './CurrentAQISingleSensor';
-import { useNetworkStatusContext } from '../../../ContextProviders/NetworkStatusContext';
+import { useNetworkStatus } from '../../../ContextProviders/NetworkStatusContext';
 
 const CurrentAQIGrid = (props) => {
   const {
@@ -28,7 +28,7 @@ const CurrentAQIGrid = (props) => {
   }
 
   // Do not render anything if the server is down
-  const { isServerDown } = useNetworkStatusContext();
+  const { isServerDown } = useNetworkStatus();
   if (isServerDown) return null;
 
   if (!currentSensorsData) {

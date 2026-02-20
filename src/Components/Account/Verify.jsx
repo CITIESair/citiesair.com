@@ -1,16 +1,15 @@
 /* eslint-disable */
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { CircularProgress, Typography, Container, Paper, Button, Box } from "@mui/material";
-
-import { UserContext } from "../../ContextProviders/UserContext";
 import { getApiUrl } from "../../API/APIUtils";
 import { fetchDataFromURL } from "../../API/ApiFetch";
 import { AppRoutes } from "../../Utils/AppRoutes";
-import { PreferenceContext } from "../../ContextProviders/PreferenceContext";
+import { usePreferences } from "../../ContextProviders/PreferenceContext";
+import { useUser } from "../../ContextProviders/UserContext";
 
 export default function Verify() {
-  const { setCurrentPage } = useContext(PreferenceContext);
+  const { setCurrentPage } = usePreferences();
 
   // set current page to login
   useEffect(() => {
@@ -21,7 +20,7 @@ export default function Verify() {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState(null);
 
-  const { setUser } = useContext(UserContext);
+  const { setUser } = useUser();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");

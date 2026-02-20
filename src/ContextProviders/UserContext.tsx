@@ -1,15 +1,11 @@
-import { useState, useEffect, createContext, useMemo, ReactNode, Dispatch, SetStateAction } from 'react';
+import { useState, useEffect, createContext, useMemo, ReactNode, Dispatch, SetStateAction, useContext } from 'react';
 import { fetchDataFromURL } from '../API/ApiFetch';
 import { getApiUrl } from '../API/APIUtils';
 import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
 import { EMPTY_USER_DATA, UserData } from '../types/UserData';
 import { useSnackbar } from 'notistack';
 import { UserRoles } from '../Components/Account/Utils';
-
-type AuthenticationState = {
-  checkedAuthentication: boolean;
-  authenticated: boolean;
-};
+import { AuthenticationState, defaultAuthenticationState, failedAuthenticationState } from '../types/AuthenticationState';
 
 type UserContextValue = {
   authenticationState: AuthenticationState;
@@ -20,13 +16,10 @@ type UserContextValue = {
   setUserRole: Dispatch<SetStateAction<string>>;
 };
 
-export const UserContext = createContext<UserContextValue | undefined>(undefined);
+const UserContext = createContext<UserContextValue | null>(null);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const [authenticationState, setAuthenticationState] = useState<AuthenticationState>({
-    checkedAuthentication: false,
-    authenticated: false,
-  });
+  const [authenticationState, setAuthenticationState] = useState<AuthenticationState>(defaultAuthenticationState);
   const [user, setUser] = useState<UserData & { recently_registered?: boolean }>(EMPTY_USER_DATA);
   const [userRole, setUserRole] = useState<string>(UserRoles.school.id);
   const { enqueueSnackbar } = useSnackbar();
@@ -36,18 +29,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     const url = getApiUrl({ endpoint: 'me' });
     fetchDataFromURL({ url })
-      .then((data: any) => {
+      .then((data: UserData) => {
         setAuthenticationState({
           checkedAuthentication: true,
           authenticated: !!data.authenticated,
         });
-        setUser(data as UserData & { recently_registered?: boolean });
+        setUser(data);
       })
       .catch((error: any) => {
-        setAuthenticationState({
-          checkedAuthentication: true,
-          authenticated: false,
-        });
+        setAuthenticationState(failedAuthenticationState);
         setUser(EMPTY_USER_DATA);
         enqueueSnackbar(error?.message ?? String(error), SnackbarMetadata.error);
       });
@@ -79,4 +69,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export default UserContext;
+export const useUser = (): UserContextValue => {
+  const context = useContext(UserContext);
+  if (context === null) {
+    throw new Error('useUser must be used within UserProvider');
+  }
+  return context;
+};

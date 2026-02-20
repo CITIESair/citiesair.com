@@ -1,8 +1,7 @@
-import { useEffect, useContext } from 'react';
+import { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 import { Button, Box, Grid, Typography, Container, Divider, useMediaQuery } from '@mui/material';
-import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 
 import UppercaseTitle from '../../Components/UppercaseTitle';
 import FullWidthBox from '../../Components/FullWidthBox';
@@ -26,13 +25,14 @@ import { SensorStatus } from "../../Components/AirQuality/SensorStatus";
 import AQIexplanation from '../../Components/AirQuality/AQIexplanation';
 import { NYUAD } from '../../Utils/GlobalVariables';
 import AtAGlance from './AtAGlance';
-import { DashboardContext } from '../../ContextProviders/DashboardContext';
-import { UserContext } from '../../ContextProviders/UserContext';
 import OutdoorStationUAE from '../../Components/AirQuality/AirQualityMap/OutdoorStationUAE';
 import useCurrentSensorsData from '../../hooks/useCurrentSensorsData';
 import CurrentAQIMapWithGrid from '../../Components/AirQuality/CurrentAQI/CurrentAQIMapWithGrid';
 import useSchoolMetadata from '../../hooks/useSchoolMetadata';
 import { getDashboardLabel } from '../../Components/Account/Utils';
+import { usePreferences } from '../../ContextProviders/PreferenceContext';
+import { useUser } from '../../ContextProviders/UserContext';
+import { useDashboard } from '../../ContextProviders/DashboardContext';
 
 const displaySensorCounts = (currentSensorsData) => {
   if (!currentSensorsData) return null;
@@ -128,17 +128,17 @@ function Home({ title }) {
     document.title = title;
   }, [title]);
 
-  const { setCurrentPage } = useContext(PreferenceContext);
+  const { setCurrentPage } = usePreferences();
 
   // set current page to home
   useEffect(() => {
     setCurrentPage(AppRoutes.home);
   }, [setCurrentPage]);
 
-  const { currentSchoolID } = useContext(DashboardContext);
+  const { currentSchoolID } = useDashboard();
   const { data: currentSensorsData } = useCurrentSensorsData({ schoolID: currentSchoolID || NYUAD });
   const { data: schoolMetadata } = useSchoolMetadata();
-  const { authenticationState, user } = useContext(UserContext);
+  const { authenticationState, user } = useUser();
 
   return (
     <Box width="100%">

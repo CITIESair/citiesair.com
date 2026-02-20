@@ -1,14 +1,12 @@
-import { useContext } from "react";
-import { PreferenceContext } from "../../../ContextProviders/PreferenceContext";
 import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import { AQI_Database } from "../../../Utils/AirQuality/AirQualityIndexHelper";
 import { getTranslation } from "../../../Utils/UtilFunctions";
 import { CurrentAQIGridSize, ElementSizes } from "./CurrentAQIGridSize";
+import { usePreferences } from "../../../ContextProviders/PreferenceContext";
 
 const AQIScale = (props) => {
     const { isOnBannerPage, isSmallScreen, showLabel = true, size = CurrentAQIGridSize.medium } = props;
-
-    const { themePreference, language } = useContext(PreferenceContext);
+    const { themePreference, language } = usePreferences();
 
     return (
         <Stack

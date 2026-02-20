@@ -1,10 +1,10 @@
-import { useState, useContext, ReactNode } from 'react';
+import { useState, ReactNode } from 'react';
 import { Chip, Tooltip, IconButton, DialogProps, Dialog, ButtonProps, Button, DialogActions, DialogTitle, DialogContent, useMediaQuery, Theme } from '@mui/material';
 import * as Tracking from '../../Utils/Tracking';
 import { EventName } from '../../Utils/Tracking';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { DashboardContext } from '../../ContextProviders/DashboardContext';
 import { useTheme } from '@mui/material';
+import { useDashboard } from '../../ContextProviders/DashboardContext';
 
 interface CustomDialogProps {
   buttonIcon?: ReactNode;
@@ -41,7 +41,7 @@ const CustomDialog = (props: CustomDialogProps) => {
   if (buttonIcon && !buttonLabel) iconOnly = true;
   else iconOnly = false;
 
-  const { currentSchoolID } = useContext(DashboardContext) as any;
+  const { currentSchoolID } = useDashboard();
 
   const smallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
 

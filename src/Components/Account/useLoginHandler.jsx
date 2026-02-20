@@ -1,13 +1,13 @@
-import { useContext, useCallback } from "react";
-import { UserContext } from "../../ContextProviders/UserContext";
-import { DashboardContext } from "../../ContextProviders/DashboardContext";
+import { useCallback } from "react";
 import { useSnackbar } from "notistack";
 import { SnackbarMetadata } from "../../Utils/SnackbarMetadata";
+import { useUser } from "../../ContextProviders/UserContext";
+import { useDashboard } from "../../ContextProviders/DashboardContext";
 
 const useLoginHandler = (openLoginPopup) => {
-    const { authenticationState, user } = useContext(UserContext);
+    const { authenticationState, user } = useUser();
     const loggedIn = authenticationState.authenticated && authenticationState.checkedAuthentication;
-    const { currentSchoolID } = useContext(DashboardContext);
+    const { currentSchoolID } = useDashboard();
     const { enqueueSnackbar } = useSnackbar()
 
     const handleRestrictedAccess = useCallback(

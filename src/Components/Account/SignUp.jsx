@@ -1,12 +1,10 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CircularProgress, Button, TextField, Box, Typography, Container, Paper, Divider, Stack } from "@mui/material";
-import { UserContext } from "../../ContextProviders/UserContext";
 import { getApiUrl } from "../../API/APIUtils";
 import { AppRoutes } from "../../Utils/AppRoutes";
 import { fetchDataFromURL } from "../../API/ApiFetch";
 import { validateEmail } from "../../Utils/UtilFunctions";
-import { PreferenceContext } from "../../ContextProviders/PreferenceContext";
 import EmailVerificationDialog from "./EmailVerificationDialog";
 import GoogleOAuthButtonAndPopupHandler from "./OAuth/GoogleOAuthButtonAndPopupHandler";
 import { LoginTypes, UserRoles } from "./Utils";
@@ -14,6 +12,9 @@ import { useSnackbar } from "notistack";
 import { SnackbarMetadata } from "../../Utils/SnackbarMetadata";
 import UserTypeSelector from "./UserTypeSelector";
 import sectionData from "../../SectionData/sectionData";
+import { successfulAuthenticationState } from "../../types/AuthenticationState";
+import { usePreferences } from "../../ContextProviders/PreferenceContext";
+import { useUser } from "../../ContextProviders/UserContext";
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 
@@ -28,7 +29,7 @@ export default function SignUp() {
 
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
-  const { setUser, authenticationState, setAuthenticationState, userRole } = useContext(UserContext);
+  const { setUser, authenticationState, setAuthenticationState, userRole } = useUser();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,7 +49,7 @@ export default function SignUp() {
   }, [authenticationState, showVerificationDialog, navigate]);
 
 
-  const { setCurrentPage } = useContext(PreferenceContext);
+  const { setCurrentPage } = usePreferences();
   useEffect(() => {
     setCurrentPage(AppRoutes.signUp);
   }, [setCurrentPage]);
@@ -101,10 +102,7 @@ export default function SignUp() {
           setLoading(false);
           setShowVerificationDialog(true);
 
-          setAuthenticationState({
-            checkedAuthentication: true,
-            authenticated: true
-          })
+          setAuthenticationState(successfulAuthenticationState);
           setUser(data);
 
           if (data.message) {

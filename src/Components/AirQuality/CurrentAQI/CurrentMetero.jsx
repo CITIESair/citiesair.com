@@ -1,13 +1,12 @@
 import { Typography } from "@mui/material"
 import ThermostatIcon from '@mui/icons-material/Thermostat';
 import WaterDropIcon from '@mui/icons-material/WaterDrop';
-import { useContext } from "react";
-import { PreferenceContext } from "../../../ContextProviders/PreferenceContext";
 import { ElementSizes } from "./CurrentAQIGridSize";
 import { getFormattedTemperature, TemperatureUnits } from "../../../Utils/AirQuality/TemperatureUtils";
+import { usePreferences } from "../../../ContextProviders/PreferenceContext";
 
 export const CurrentWeather = ({ size, current, roundTemperature, showWeatherText }) => {
-    const { temperatureUnitPreference } = useContext(PreferenceContext);
+    const { temperatureUnitPreference } = usePreferences();
 
     return (
         <Typography variant={ElementSizes[size].metero}>
@@ -28,7 +27,7 @@ export const CurrentWeather = ({ size, current, roundTemperature, showWeatherTex
 }
 
 export const CurrentHeatIndex = ({ sensor, current, size }) => {
-    const { temperatureUnitPreference } = useContext(PreferenceContext);
+    const { temperatureUnitPreference } = usePreferences();
 
     if (!sensor || !current) return null;
     if (!['outdoors', 'indoors_gym'].includes(sensor.location_type)) return null;

@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { Box, Button, IconButton, Stack, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, Alert, Grow, Switch, Chip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import AddAlarmIcon from '@mui/icons-material/AddAlarm';
@@ -16,7 +16,7 @@ import { DataTypes } from '../../../Utils/AirQuality/DataTypes';
 import { DAYS_OF_WEEK } from './AlertModificationDialog/AlertPropertyComponents/DAYS_OF_WEEK';
 import { returnHoursFromMinutesPastMidnight } from '../../TimeRange/TimeRangeUtils';
 import { useEditAlertMutation } from '../../../hooks/alerts/useEditAlertMutation';
-import { AirQualityAlertContext } from '../../../ContextProviders/AirQualityAlertContext';
+import { useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
 
 const returnDaysOfWeekString = (days_of_week) => {
   if (!days_of_week || !isValidArray(days_of_week)) return "N/A";
@@ -52,7 +52,7 @@ const returnAlertNotModifiableString = (owner_role, is_allowed_to_modify) => {
 };
 
 const AlertsTable = (props) => {
-  const { selectedAlert, setSelectedAlert } = useContext(AirQualityAlertContext);
+  const { selectedAlert, setSelectedAlert } = useAirQualityAlert();
   const { enqueueSnackbar } = useSnackbar()
   const { alertTypeKey, alertsForTable } = props;
   const theme = useTheme();

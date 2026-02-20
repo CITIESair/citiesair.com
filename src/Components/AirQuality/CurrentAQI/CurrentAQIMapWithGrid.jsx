@@ -1,5 +1,5 @@
 
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Box, Grid, Typography } from '@mui/material/';
 import { useMediaQuery, useTheme } from '@mui/material';
 import AQImap from '../AirQualityMap/AQImap';
@@ -8,12 +8,12 @@ import { TileOptions } from '../AirQualityMap/AirQualityMapUtils';
 import CurrentAQIGrid from './CurrentAQIGrid';
 import SimpleAQIList from './SimpleAQIList';
 import { CurrentAQIGridSize } from './CurrentAQIGridSize';
-import { PreferenceContext } from '../../../ContextProviders/PreferenceContext';
 import ThemePreferences from '../../../Themes/ThemePreferences';
 import { KAMPALA, NYUAD } from '../../../Utils/GlobalVariables';
-import { useNetworkStatusContext } from '../../../ContextProviders/NetworkStatusContext';
+import { useNetworkStatus } from '../../../ContextProviders/NetworkStatusContext';
 import AQIScale from './AQIScale';
 import { isValidArray } from '../../../Utils/UtilFunctions';
+import { usePreferences } from '../../../ContextProviders/PreferenceContext';
 
 const returnSpecialCenterCoordinatesForNYUAD = (isOnBannerPage) => {
     return isOnBannerPage ? [24.523, 54.4343] : null
@@ -70,13 +70,13 @@ const CurrentAQIMapWithGrid = (props) => {
         };
     }, [schoolID, currentSensorsData]);
 
-    const { themePreference } = useContext(PreferenceContext);
+    const { themePreference } = usePreferences();
     const isNYUAD = schoolID === NYUAD;
 
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
 
-    const { isServerDown } = useNetworkStatusContext();
+    const { isServerDown } = useNetworkStatus();
 
     const groupedSensorsBySortingId = useMemo(() => {
         if (!currentSensorsData) return { sensorsWithSortingId: [], sensorsWithoutSortingId: [] };

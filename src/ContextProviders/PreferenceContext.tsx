@@ -1,4 +1,4 @@
-import { useState, createContext, useMemo, ReactNode, Dispatch, SetStateAction } from 'react';
+import { useState, createContext, useContext, useMemo, ReactNode, Dispatch, SetStateAction } from 'react';
 import ThemePreferences from '../Themes/ThemePreferences';
 import { TemperatureUnits } from '../Utils/AirQuality/TemperatureUtils';
 import { LocalStorage } from '../Utils/LocalStorage';
@@ -9,7 +9,7 @@ import { AppRoute } from '../Utils/AppRoutes';
 // TemperatureUtils is converted to TypeScript.
 export type TemperatureUnit = 'C' | 'F';
 
-export interface PreferenceContextType {
+interface PreferenceContextType {
   themePreference: ThemePreferences;
   setThemePreference: Dispatch<SetStateAction<ThemePreferences>>;
   temperatureUnitPreference: TemperatureUnit;
@@ -22,7 +22,7 @@ export interface PreferenceContextType {
   setCurrentPage: Dispatch<SetStateAction<AppRoute | null>>;
 }
 
-export const PreferenceContext = createContext<PreferenceContextType | undefined>(undefined);
+const PreferenceContext = createContext<PreferenceContextType | undefined>(undefined);
 
 export function PreferenceProvider({ children }: { children: ReactNode }) {
   // Set theme preference state based on localStorage or system preference
@@ -71,3 +71,11 @@ export function PreferenceProvider({ children }: { children: ReactNode }) {
     </PreferenceContext.Provider>
   );
 }
+
+export const usePreferences = (): PreferenceContextType => {
+  const context = useContext(PreferenceContext);
+  if (context === null) {
+    throw new Error('usePreferences must be used within PreferenceProvider');
+  }
+  return context;
+};

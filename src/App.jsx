@@ -1,5 +1,5 @@
 // React components
-import { useMemo, Suspense, useContext, useEffect } from "react";
+import { useMemo, Suspense, useEffect } from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 
 // MUI components
@@ -32,7 +32,6 @@ import AllSensorsScreen from "./Pages/Screens/AllSensorsScreen";
 import { AppRoutes } from "./Utils/AppRoutes";
 
 import { DashboardProvider } from "./ContextProviders/DashboardContext";
-import { PreferenceContext } from "./ContextProviders/PreferenceContext";
 
 import sectionData from "./SectionData/sectionData";
 
@@ -41,6 +40,7 @@ import { CITIESair } from "./Utils/GlobalVariables";
 import ScrollToTop from "./Components/ScrollToTop";
 import { ScreenProvider } from "./ContextProviders/ScreenContext";
 import { GoogleChartGlobalStyles } from "./Graphs/Subchart/SubchartUtils/GoogleChartStyleWrapper";
+import { usePreferences } from "./ContextProviders/PreferenceContext";
 
 // Create theme design tokens based on theme preference
 export const getDesignTokens = (themePreference) => ({
@@ -61,7 +61,7 @@ export const getDesignTokens = (themePreference) => ({
 });
 
 export function App() {
-  const { themePreference, setThemePreference } = useContext(PreferenceContext);
+  const { themePreference, setThemePreference } = usePreferences();
 
   // Create theme using getDesignTokens
   const theme = useMemo(

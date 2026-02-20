@@ -19,8 +19,7 @@ import { MaxOnceADayCheckbox } from "./MaxOnceADayCheckbox";
 import { ThresholdType, ThresholdTypeToggle } from "./ThresholdAlertComponents/ThresholdTypeToggle";
 
 import useSchoolMetadata from "../../../../../hooks/useSchoolMetadata";
-import { useContext } from "react";
-import { AirQualityAlertContext } from "../../../../../ContextProviders/AirQualityAlertContext";
+import { useAirQualityAlert } from "../../../../../ContextProviders/AirQualityAlertContext";
 
 const returnFormattedStatusString = (editingAlert) => {
     const status = editingAlert[AirQualityAlertKeys.is_enabled] ? "enabled" : "disabled";
@@ -31,7 +30,7 @@ const returnFormattedStatusString = (editingAlert) => {
 
 export const AlertPropertyComponents = ({ alertTypeKey, crudType }) => {
     const { data: schoolMetadata } = useSchoolMetadata();
-    const { editingAlert, allowedDataTypesForSensor, setEditingAlert } = useContext(AirQualityAlertContext);
+    const { editingAlert, allowedDataTypesForSensor, setEditingAlert } = useAirQualityAlert();
 
     const theme = useTheme();
 

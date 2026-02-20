@@ -1,14 +1,14 @@
 import { Box, ToggleButtonGroup, ToggleButton, Typography, Stack, useTheme } from '@mui/material';
-import { cloneElement, useContext } from 'react';
-import { UserContext } from '../../ContextProviders/UserContext';
+import { cloneElement } from 'react';
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 import sectionData from '../../SectionData/sectionData';
 import { AppRoutes } from '../../Utils/AppRoutes';
 import { UserRolesForLogin } from './Utils';
+import { useUser } from '../../ContextProviders/UserContext';
 
 const UserTypeSelector = ({ route = AppRoutes.login }) => {
-    const { userRole, setUserRole } = useContext(UserContext);
+    const { userRole, setUserRole } = useUser();
     const theme = useTheme();
 
     const getLabelContent = () => {

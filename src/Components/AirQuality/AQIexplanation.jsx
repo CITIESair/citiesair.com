@@ -1,12 +1,10 @@
-import { useContext } from 'react';
 import { Typography, Box } from '@mui/material';
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 import AirQualityIndexTable from './AirQualityIndexTable';
 import ExpandableSection from '../ExpandableSection';
-import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
-
 import InfoIcon from '@mui/icons-material/Info';
+import { usePreferences } from '../../ContextProviders/PreferenceContext';
 
 const Explanation = {
   title: "Explanation of the US Air Quality Index (AQI) for PM2.5",
@@ -15,7 +13,7 @@ const Explanation = {
 }
 
 const AQIexplanation = () => {
-  const { themePreference } = useContext(PreferenceContext);
+  const { themePreference } = usePreferences();
 
   return (
     <ExpandableSection

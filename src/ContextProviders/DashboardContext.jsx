@@ -1,4 +1,4 @@
-import { useState, createContext, useMemo, useEffect, useContext } from 'react';
+import { useState, createContext, useContext, useMemo, useEffect } from 'react';
 import { ChartAPIEndpointsOrder } from '../API/APIUtils';
 import { AppRoutes } from '../Utils/AppRoutes';
 import { NYUAD } from '../Utils/GlobalVariables';
@@ -6,16 +6,16 @@ import { LocalStorage } from '../Utils/LocalStorage';
 import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
 import { isValidArray } from '../Utils/UtilFunctions';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { UserContext } from './UserContext';
 import { enqueueSnackbar } from 'notistack';
+import { useUser } from './UserContext';
 
-export const DashboardContext = createContext("");
+const DashboardContext = createContext(null);
 
 export function DashboardProvider({ children }) {
   const navigate = useNavigate();
 
   const { school_id_param } = useParams();
-  const { user, authenticationState } = useContext(UserContext);
+  const { user, authenticationState } = useUser();
 
   const location = useLocation();
   const locationPath = location.pathname;
@@ -149,3 +149,11 @@ export function DashboardProvider({ children }) {
     </DashboardContext.Provider>
   );
 }
+
+export const useDashboard = () => {
+  const context = useContext(DashboardContext);
+  if (context === null) {
+    throw new Error('useDashboard must be used within DashboardProvider');
+  }
+  return context;
+};

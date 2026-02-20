@@ -1,18 +1,17 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PromoAlert from './PromoAlert';
 import PromoDialogBanner from './PromoDialogBanner';
-import { UserContext } from '../../ContextProviders/UserContext';
 
 import { Stack } from '@mui/material';
 import sectionData from '../../SectionData/sectionData';
-import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import { isValidArray } from '../../Utils/UtilFunctions';
+import { usePreferences } from '../../ContextProviders/PreferenceContext';
+import { useUser } from '../../ContextProviders/UserContext';
 
 const Promo: React.FC = () => {
-  const { authenticationState } = useContext<any>(UserContext as any);
+  const { authenticationState } = useUser();
   const authenticated = authenticationState.authenticated && authenticationState.checkedAuthentication;
-
-  const { hiddenPromos } = useContext<any>(PreferenceContext as any);
+  const { hiddenPromos } = usePreferences();
 
   const promosForBanner = sectionData.promos
     .filter((promo: any) => !promo.expired) // only show non-expired promo

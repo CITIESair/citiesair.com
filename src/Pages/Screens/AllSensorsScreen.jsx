@@ -3,25 +3,24 @@ import AtAGlance from "../Home/AtAGlance";
 import AQImap from "../../Components/AirQuality/AirQualityMap/AQImap";
 import { LocationTitles } from '../../Components/AirQuality/AirQualityMap/AirQualityMapUtils';
 import { TileOptions } from '../../Components/AirQuality/AirQualityMap/AirQualityMapUtils';
-import { useContext } from "react";
 import { CITIESair, KAMPALA, NYUAD } from "../../Utils/GlobalVariables";
 import CITIESlogoLinkToHome from "../../Components/Header/CITIESlogoLinkToHome";
-import { ScreenContext } from "../../ContextProviders/ScreenContext";
 import ThemePreferences from "../../Themes/ThemePreferences";
 import CustomThemes from "../../Themes/CustomThemes";
 import OutdoorStationUAE from "../../Components/AirQuality/AirQualityMap/OutdoorStationUAE";
 import useCurrentSensorsData from "../../hooks/useCurrentSensorsData";
-import { DashboardContext } from "../../ContextProviders/DashboardContext";
 import useSchoolMetadata from "../../hooks/useSchoolMetadata";
 import CurrentAQIMapWithGrid from "../../Components/AirQuality/CurrentAQI/CurrentAQIMapWithGrid";
 import CurrentAQIGrid from "../../Components/AirQuality/CurrentAQI/CurrentAQIGrid";
 
 import sectionData from "../../SectionData/sectionData";
 import { getTranslation } from "../../Utils/UtilFunctions";
-import { PreferenceContext } from "../../ContextProviders/PreferenceContext";
 import BlackScreen from "./BlackScreen";
 import ScreenQRcode from "../../Components/AirQuality/AirQualityScreen/ScreenQRcode";
 import { CurrentAQIGridSize } from "../../Components/AirQuality/CurrentAQI/CurrentAQIGridSize";
+import { usePreferences } from "../../ContextProviders/PreferenceContext";
+import { useDashboard } from "../../ContextProviders/DashboardContext";
+import { useScreen } from "../../ContextProviders/ScreenContext";
 
 const lightOnlyTheme = createTheme({
     palette: {
@@ -32,9 +31,9 @@ const lightOnlyTheme = createTheme({
 });
 
 const AllSensorsScreen = () => {
-    const { shouldDisplayScreen } = useContext(ScreenContext);
-    const { language } = useContext(PreferenceContext);
-    const { currentSchoolID } = useContext(DashboardContext);
+    const { shouldDisplayScreen } = useScreen();
+    const { language } = usePreferences();
+    const { currentSchoolID } = useDashboard();
 
     const theme = useTheme();
 
@@ -140,8 +139,8 @@ const AllSensorsScreen = () => {
 }
 
 const GeneralScreen = () => {
-    const { shouldDisplayScreen } = useContext(ScreenContext);
-    const { currentSchoolID } = useContext(DashboardContext);
+    const { shouldDisplayScreen } = useScreen();
+    const { currentSchoolID } = useDashboard();
     const { data: currentSensorsData } = useCurrentSensorsData({ enabled: shouldDisplayScreen });
     const { data: schoolMetadata } = useSchoolMetadata({ enabled: shouldDisplayScreen });
 
@@ -169,7 +168,7 @@ const GeneralScreen = () => {
 }
 
 const NYUADscreen = () => {
-    const { shouldDisplayScreen } = useContext(ScreenContext);
+    const { shouldDisplayScreen } = useScreen();
     const { data: currentSensorsData } = useCurrentSensorsData({ enabled: shouldDisplayScreen, schoolID: NYUAD });
 
     return (

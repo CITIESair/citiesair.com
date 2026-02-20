@@ -83,10 +83,8 @@ export const NetworkStatusProvider = ({ children }: { children: ReactNode }) => 
     );
 };
 
-export const useNetworkStatusContext = (): NetworkStatusContextValue => {
+export const useNetworkStatus = (): NetworkStatusContextValue => {
     const ctx = useContext(NetworkStatusContext);
-    if (!ctx) throw new Error('useNetworkStatusContext must be used within NetworkStatusProvider');
+    if (!ctx) throw new Error('useNetworkStatus must be used within NetworkStatusProvider');
     return ctx;
 };
-
-export default NetworkStatusContext;

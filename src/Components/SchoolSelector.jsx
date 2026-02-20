@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Box, Menu, MenuItem, MenuList } from "@mui/material";
@@ -10,17 +10,16 @@ import { AppRoutes } from "../Utils/AppRoutes";
 
 import * as Tracking from '../Utils/Tracking';
 
-import { DashboardContext } from "../ContextProviders/DashboardContext";
-import { UserContext } from "../ContextProviders/UserContext";
-
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import useSchoolMetadata from "../hooks/useSchoolMetadata";
+import { useUser } from "../ContextProviders/UserContext";
+import { useDashboard } from "../ContextProviders/DashboardContext";
 
 const SchoolSelector = () => {
-  const { currentSchoolID } = useContext(DashboardContext);
+  const { currentSchoolID } = useDashboard();
   const { data: schoolMetadata } = useSchoolMetadata();
-  const { user } = useContext(UserContext);
+  const { user } = useUser();
   const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = useState(null);

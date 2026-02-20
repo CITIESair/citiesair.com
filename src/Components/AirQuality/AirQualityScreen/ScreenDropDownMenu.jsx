@@ -1,10 +1,10 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { Button, Menu, MenuItem } from "@mui/material";
 import TvIcon from "@mui/icons-material/Tv";
 import { useNavigate } from "react-router-dom";
-import { DashboardContext } from "../../../ContextProviders/DashboardContext";
 import { isValidArray } from "../../../Utils/UtilFunctions";
 import useSchoolMetadata from "../../../hooks/useSchoolMetadata";
+import { useDashboard } from "../../../ContextProviders/DashboardContext";
 
 // Use this code block if TV screen should be only for logged in users even for publicly available institutions
 // import useLoginHandler from "../../Account/useLoginHandler";
@@ -12,7 +12,7 @@ import useSchoolMetadata from "../../../hooks/useSchoolMetadata";
 const ScreenDropDownMenu = () => {
   // Use this code block if TV screen should be only for logged in users even for publicly available institutions
   // const ScreenDropDownMenu = ({ onButtonClick }) => {
-  const { currentSchoolID } = useContext(DashboardContext);
+  const { currentSchoolID } = useDashboard();
   const { data: schoolMetadata } = useSchoolMetadata();
 
   // Use this code block if TV screen should be only for logged in users even for publicly available institutions

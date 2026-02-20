@@ -1,10 +1,10 @@
 import { useState, useEffect, createContext, useMemo, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useSchoolMetadata from '../hooks/useSchoolMetadata';
-import { PreferenceContext } from './PreferenceContext';
 import { isValidArray } from '../Utils/UtilFunctions';
+import { usePreferences } from './PreferenceContext';
 
-export const ScreenContext = createContext();
+const ScreenContext = createContext(null);
 
 // Helper function to change layout of the screen based on current's month
 // (arrange the left and right sections of the screen)
@@ -48,7 +48,7 @@ export function ScreenProvider({ children }) {
 
     const navigate = useNavigate();
     const { data: schoolMetadata } = useSchoolMetadata();
-    const { setLanguage } = useContext(PreferenceContext);
+    const { setLanguage } = usePreferences();
 
     useEffect(() => {
         const intervals = [];
@@ -132,3 +132,11 @@ export function ScreenProvider({ children }) {
         </ScreenContext.Provider>
     );
 }
+
+export const useScreen = () => {
+    const context = useContext(ScreenContext);
+    if (context === null) {
+        throw new Error('useScreen must be used within ScreenProvider');
+    }
+    return context;
+};

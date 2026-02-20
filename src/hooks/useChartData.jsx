@@ -1,13 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { useContext } from 'react';
-
 import { fetchDataFromURL } from '../API/ApiFetch';
-import { DashboardContext } from '../ContextProviders/DashboardContext';
 import { getApiUrl } from '../API/APIUtils';
 import useSchoolMetadata from './useSchoolMetadata';
+import { useDashboard } from '../ContextProviders/DashboardContext';
 
 const useChartData = ({ chartID }) => {
-    const { allChartsConfigs, currentSchoolID } = useContext(DashboardContext);
+    const { allChartsConfigs, currentSchoolID } = useDashboard();
     const chartConfig = allChartsConfigs[chartID];
 
     const { isSuccess: isMetadataReady } = useSchoolMetadata();

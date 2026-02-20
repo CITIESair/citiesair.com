@@ -1,16 +1,15 @@
 import { useTheme } from '@mui/material';
-import { useContext } from "react";
 import { getTranslation } from "../../../Utils/UtilFunctions";
 import { Typography } from "@mui/material";
 import { ElementSizes } from "./CurrentAQIGridSize";
 import ErrorIcon from '@mui/icons-material/Error';
-import { PreferenceContext } from "../../../ContextProviders/PreferenceContext";
 import sectionData from '../../../SectionData/sectionData';
 import { getFormattedLastSeen, SensorStatus } from "../SensorStatus";
+import { usePreferences } from '../../../ContextProviders/PreferenceContext';
 
 const LastUpdateAndSensorStatus = ({ sensor, size }) => {
     const theme = useTheme();
-    const { language } = useContext(PreferenceContext);
+    const { language } = usePreferences();
 
     const offlineText = getTranslation(sectionData.status.content.offline, language);
     const lastUpdateText = getTranslation(sectionData.status.content.lastUpdate, language);

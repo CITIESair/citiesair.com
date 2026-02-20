@@ -4,16 +4,13 @@ import CustomDialog from '../../CustomDialog/CustomDialog';
 import EmailsInput from './EmailsInput';
 import AlertsTabs from './AlertsTabs';
 import useLoginHandler from '../../Account/useLoginHandler';
-import { useContext } from 'react';
-import { UserContext } from '../../../ContextProviders/UserContext';
 import { UserRoles } from '../../Account/Utils';
 import { AirQualityAlertProvider } from '../../../ContextProviders/AirQualityAlertContext';
+import { useUser } from '../../../ContextProviders/UserContext';
 
 export default function AirQualityAlerts({ onButtonClick }) {
   const { handleRestrictedAccess } = useLoginHandler(onButtonClick);
-
-  const { user } = useContext(UserContext);
-
+  const { user } = useUser();
   const isModifiable = [UserRoles.admin.id, UserRoles.school.id].includes(user?.user_role);
 
   return (

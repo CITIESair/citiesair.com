@@ -1,10 +1,10 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Select, MenuItem, FormControl, InputLabel, Button, Grid, Stack, useMediaQuery, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useAxesPicker } from '../../ContextProviders/AxesPickerContext';
-import { DashboardContext } from '../../ContextProviders/DashboardContext';
 import useChartData from '../../hooks/useChartData';
 import useSchoolMetadata from '../../hooks/useSchoolMetadata';
+import { useDashboard } from '../../ContextProviders/DashboardContext';
 
 const SELECT_MIN_WIDTH = "150px";
 
@@ -36,7 +36,7 @@ const StyledSelect = styled(FormControl)(({ theme, isForHorizontalAxis = true })
 }));
 
 const AxesPicker = (props) => {
-  const { allChartsConfigs, setIndividualChartConfig } = useContext(DashboardContext);
+  const { allChartsConfigs, setIndividualChartConfig } = useDashboard();
   const { data: schoolMetadata } = useSchoolMetadata();
   const allowedItemsForAxes = schoolMetadata?.sensors || [];
 

@@ -1,10 +1,10 @@
-import { createContext, useMemo, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useMemo, useState, useEffect, useCallback } from 'react';
 import { isValidArray } from '../Utils/UtilFunctions';
 import { DataTypes } from '../Utils/AirQuality/DataTypes';
 import useSchoolMetadata from '../hooks/useSchoolMetadata';
 import { AirQualityAlertKeys, getAlertDefaultPlaceholder } from '../Components/AirQuality/AirQualityAlerts/AlertUtils';
 
-export const AirQualityAlertContext = createContext();
+const AirQualityAlertContext = createContext(null);
 
 export function AirQualityAlertProvider({ children }) {
   const { data: schoolMetadata } = useSchoolMetadata();
@@ -57,3 +57,11 @@ export function AirQualityAlertProvider({ children }) {
     </AirQualityAlertContext.Provider>
   );
 }
+
+export const useAirQualityAlert = () => {
+  const context = useContext(AirQualityAlertContext);
+  if (context === null) {
+    throw new Error('useAirQualityAlert must be used within AirQualityAlertProvider');
+  }
+  return context;
+};

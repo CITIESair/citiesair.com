@@ -1,12 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { useContext } from 'react';
-
 import { fetchDataFromURL } from '../API/ApiFetch';
-import { DashboardContext } from '../ContextProviders/DashboardContext';
 import { getApiUrl } from '../API/APIUtils';
+import { useDashboard } from '../ContextProviders/DashboardContext';
 
 const useSchoolMetadata = ({ enabled = true } = {}) => {
-    const { currentSchoolID } = useContext(DashboardContext);
+    const { currentSchoolID } = useDashboard();
     const url = getApiUrl({
         endpoint: "school_metadata",
         paths: [currentSchoolID]

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useContext } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import { DateRangePicker, createStaticRanges } from 'react-date-range';
 import 'react-date-range/dist/styles.css'; // main style file
@@ -9,13 +9,13 @@ import { Box, Grid, Stack, Typography, useMediaQuery, useTheme } from '@mui/mate
 import { AggregationTypeMetadata, StyledDateRangePicker, returnCustomStaticRanges, returnFormattedDates } from './DateRangePickerUtils';
 import AggregationTypeToggle from './AggregationTypeToggle';
 import AggregationType from './AggregationType';
-import { DashboardContext } from '../../ContextProviders/DashboardContext';
 
 import { differenceInDays, isSameDay } from 'date-fns';
 
 import { useSnackbar } from "notistack";
 import { SnackbarMetadata } from '../../Utils/SnackbarMetadata';
 import useChartData from '../../hooks/useChartData';
+import { useDashboard } from '../../ContextProviders/DashboardContext';
 
 const CustomDateRangePicker = (props) => {
   const { minDateOfDataset, chartID } = props;
@@ -24,7 +24,7 @@ const CustomDateRangePicker = (props) => {
   const { enqueueSnackbar } = useSnackbar();
   const { isFetching } = useChartData({ chartID });
 
-  const { allChartsConfigs, updateIndividualChartConfigQueryParams } = useContext(DashboardContext);
+  const { allChartsConfigs, updateIndividualChartConfigQueryParams } = useDashboard();
   const chartConfig = allChartsConfigs[chartID] || {};
   const queryParams = chartConfig.queryParams || {};
 
@@ -69,7 +69,7 @@ const CustomDateRangePicker = (props) => {
     });
   }, [aggregationType]);
 
-  // Handle date range change → update DashboardContext queryParams
+  // Handle date range change → update useDashboard queryParams
   useEffect(() => {
     const { startDate, endDate } = dateRange || {};
     if (!startDate || !endDate) return;

@@ -2,11 +2,12 @@ import { Button } from "@mui/material";
 import { useTheme } from '@mui/material';
 import { AppRoutes } from '../../../Utils/AppRoutes';
 import { useLocation, useNavigate } from "react-router-dom";
-import { useContext, useEffect, useMemo, useState } from "react";
-import { UserContext } from "../../../ContextProviders/UserContext";
+import { useEffect, useMemo, useState } from "react";
 import { SnackbarMetadata } from '../../../Utils/SnackbarMetadata';
 import { LoginTypes } from "../Utils";
 import { useSnackbar } from "notistack";
+import { successfulAuthenticationState } from "../../../types/AuthenticationState";
+import { useUser } from "../../../ContextProviders/UserContext";
 
 const svgs = {
     light: 'images/oauth/google/web_light_sq_ctn.svg',
@@ -24,7 +25,7 @@ export default function GoogleOAuthButtonAndPopupHandler() {
     }, []);
 
     const navigate = useNavigate();
-    const { setUser, setAuthenticationState } = useContext(UserContext);
+    const { setUser, setAuthenticationState } = useUser();
     const { enqueueSnackbar } = useSnackbar()
 
     const theme = useTheme();
@@ -56,10 +57,7 @@ export default function GoogleOAuthButtonAndPopupHandler() {
 
                     window.close(); // Close the popup
                 } else {
-                    setAuthenticationState({
-                        checkedAuthentication: true,
-                        authenticated: true
-                    });
+                    setAuthenticationState(successfulAuthenticationState);
                     setUser(userData);
 
                     if (userData.message) {

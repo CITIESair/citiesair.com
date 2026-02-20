@@ -1,15 +1,16 @@
-import { useEffect, useRef, useCallback, useContext, useState } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { AppRoutes } from "../../Utils/AppRoutes";
 import { LoginTypes } from "../Account/Utils";
 import { SnackbarMetadata } from '../../Utils/SnackbarMetadata';
-import { UserContext } from "../../ContextProviders/UserContext";
 import EmailVerificationDialog from "./EmailVerificationDialog";
 import { useSnackbar } from "notistack";
+import { successfulAuthenticationState } from "../../types/AuthenticationState";
+import { useUser } from "../../ContextProviders/UserContext";
 
 const LoginPopupHandler = ({ onLoginSuccess, children }) => {
     const popupRef = useRef(null);
     const { enqueueSnackbar } = useSnackbar()
-    const { setAuthenticationState, setUser } = useContext(UserContext);
+    const { setAuthenticationState, setUser } = useUser();
 
     const [showVerificationDialog, setShowVerificationDialog] = useState(false);
     const [email, setEmail] = useState("");
@@ -20,10 +21,7 @@ const LoginPopupHandler = ({ onLoginSuccess, children }) => {
                 if (event.data.success) {
                     const user = event.data.user;
 
-                    setAuthenticationState({
-                        checkedAuthentication: true,
-                        authenticated: true,
-                    });
+                    setAuthenticationState(successfulAuthenticationState);
                     setUser(user);
 
                     if (user.message) {

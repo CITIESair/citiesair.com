@@ -1,11 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchDataFromURL } from '../API/ApiFetch';
-import { useContext } from 'react';
-import { DashboardContext } from '../ContextProviders/DashboardContext';
 import { getApiUrl } from '../API/APIUtils';
+import { useDashboard } from '../ContextProviders/DashboardContext';
 
 const useDatasetDownload = ({ sensor, aggregationType, isSample, enabled = true }) => {
-    const { currentSchoolID } = useContext(DashboardContext);
+    const { currentSchoolID } = useDashboard();
     const url = getApiUrl({
         endpoint: "raw",
         paths: [currentSchoolID, sensor],

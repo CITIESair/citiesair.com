@@ -1,6 +1,6 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useState, useMemo, useCallback, useContext } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Box, Typography, Stack, Link } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { MapContainer, TileLayer, Marker, Popup, useMap, AttributionControl, useMapEvent, Rectangle, CircleMarker, ImageOverlay } from 'react-leaflet';
@@ -14,15 +14,15 @@ import { getFormattedLastSeen, SensorStatus } from "../SensorStatus";
 import { getFormattedTemperature, TemperatureUnits } from '../../../Utils/AirQuality/TemperatureUtils';
 
 import { styled } from '@mui/material/styles';
-import { PreferenceContext } from '../../../ContextProviders/PreferenceContext';
 import { calculateCenterAndBounds, disableInteractionParameters, disableZoomParameters, displayAqiCategory, displayAqiValue, displayPM2_5, FitMapToDatapoints, getMiniMapColors, getTileUrl, MapPlaceholder, POSITION_CLASSES, tileAccessToken, tileAttribution, TileOptions } from './AirQualityMapUtils';
 import { isValidArray } from '../../../Utils/UtilFunctions';
 import LoadingAnimation from '../../LoadingAnimation';
 import { DataTypeKeys, DataTypes } from '../../../Utils/AirQuality/DataTypes';
 import getAQIDivIcon from './AQIDivIcon';
 import { calculateAQI } from '../../../Utils/AirQuality/aqiCalculator';
-import { useNetworkStatusContext } from '../../../ContextProviders/NetworkStatusContext';
+import { useNetworkStatus } from '../../../ContextProviders/NetworkStatusContext';
 import useSchoolMetadata from '../../../hooks/useSchoolMetadata';
+import { usePreferences } from '../../../ContextProviders/PreferenceContext';
 
 const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
     '& .leaflet-popup-tip-container': {
@@ -31,7 +31,7 @@ const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
 }));
 
 const AQImap = (props) => {
-    const { themePreference, temperatureUnitPreference, language } = useContext(PreferenceContext);
+    const { themePreference, temperatureUnitPreference, language } = usePreferences();
     const {
         overridenThemePreference = null,
         tileOption,
@@ -201,7 +201,7 @@ const AQImap = (props) => {
         )
     }
 
-    const { isServerDown } = useNetworkStatusContext();
+    const { isServerDown } = useNetworkStatus();
 
     // Only render map when data and computed geometry are available
     if (!isServerDown && (!sanitizedMapData || !isValidArray(center) || !isValidArray(fitBounds))) {

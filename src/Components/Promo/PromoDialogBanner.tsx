@@ -1,9 +1,9 @@
-import React, { useContext, useState, FC } from 'react';
+import { useState, FC } from 'react';
 import { Dialog, DialogActions, DialogContent, Typography, Button, Chip, Box, Stack, Divider, Paper, Grid } from "@mui/material";
-import { PreferenceContext, PreferenceContextType } from "../../ContextProviders/PreferenceContext";
 import { LocalStorage } from "../../Utils/LocalStorage";
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
+import { usePreferences } from '../../ContextProviders/PreferenceContext';
 
 interface Img {
   width?: string;
@@ -19,9 +19,7 @@ interface PromoBannerItem {
 }
 
 const PromoDialogBanner: FC<{ promosForBanner: PromoBannerItem[] }> = ({ promosForBanner }) => {
-  const pref = useContext(PreferenceContext as unknown as React.Context<PreferenceContextType | undefined>);
-  if (!pref) throw new Error('PreferenceContext not provided');
-  const { hiddenPromos, setHiddenPromos } = pref;
+  const { hiddenPromos, setHiddenPromos } = usePreferences();
   const [open, setOpen] = useState<any>(hiddenPromos);
 
   const handleClose = (event?: any, reason?: string) => {

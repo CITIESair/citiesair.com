@@ -1,10 +1,9 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import { Box, Tab, useMediaQuery, Typography, Menu, MenuItem, Stack } from '@mui/material/';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { DataTypes } from '../Utils/AirQuality/DataTypes';
-import { DashboardContext } from "../ContextProviders/DashboardContext";
 
 import SubChart from './Subchart/SubChart';
 
@@ -16,6 +15,7 @@ import StyledTabs from '../Components/StyledTabs';
 import NoChartToRender from './Subchart/NoChartToRender';
 import useChartData from '../hooks/useChartData';
 import LoadingAnimation from '../Components/LoadingAnimation';
+import { useDashboard } from '../ContextProviders/DashboardContext';
 
 const DEBOUNCE_IN_MILLISECONDS = 100;
 
@@ -57,7 +57,7 @@ const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
 function ChartComponentWrapper({ chartID }) {
   const { data: chartData, isLoading, isFetching, error } = useChartData({ chartID });
 
-  const { currentSchoolID } = useContext(DashboardContext);
+  const { currentSchoolID } = useDashboard();
 
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 

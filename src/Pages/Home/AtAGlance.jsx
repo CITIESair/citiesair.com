@@ -9,13 +9,11 @@ import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 
 import sectionData from "../../SectionData/sectionData";
 import { useQuery } from '@tanstack/react-query';
-import { useNetworkStatusContext } from '../../ContextProviders/NetworkStatusContext';
-import { useContext } from 'react';
-import { DashboardContext } from '../../ContextProviders/DashboardContext';
-import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
+import { useNetworkStatus } from '../../ContextProviders/NetworkStatusContext';
 import { getTranslation } from '../../Utils/UtilFunctions';
 import useSchoolMetadata from '../../hooks/useSchoolMetadata';
-
+import { usePreferences } from '../../ContextProviders/PreferenceContext';
+import { useDashboard } from '../../ContextProviders/DashboardContext';
 
 const IconLoader = ({ iconString }) => {
   switch (iconString) {
@@ -67,9 +65,9 @@ const placeholderStats = {
 };
 
 const AtAGlance = ({ statsForIndividualSchool = false }) => {
-  const { language } = useContext(PreferenceContext);
-  const { isServerDown } = useNetworkStatusContext();
-  const { currentSchoolID } = useContext(DashboardContext);
+  const { language } = usePreferences();
+  const { isServerDown } = useNetworkStatus();
+  const { currentSchoolID } = useDashboard();
 
   const { data: schoolStats } = useSchoolMetadata();
 

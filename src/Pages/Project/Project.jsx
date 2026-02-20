@@ -1,4 +1,3 @@
-import { useContext } from 'react';
 import ChartComponentWrapper from '../../Graphs/ChartComponentWrapper';
 import UppercaseTitle from '../../Components/UppercaseTitle';
 
@@ -14,9 +13,6 @@ import FullWidthBox from '../../Components/FullWidthBox';
 
 import CurrentAQIGrid from '../../Components/AirQuality/CurrentAQI/CurrentAQIGrid';
 
-import { DashboardContext } from '../../ContextProviders/DashboardContext';
-import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
-
 import AQIexplanation from '../../Components/AirQuality/AQIexplanation';
 import { AxesPickerProvider } from '../../ContextProviders/AxesPickerContext';
 import { NUMBER_OF_CHARTS_TO_LOAD_INITIALLY } from '../../Utils/GlobalVariables';
@@ -29,6 +25,8 @@ import CurrentAQIMapWithGrid from '../../Components/AirQuality/CurrentAQI/Curren
 import { ChartAPIEndpointsOrder } from '../../API/APIUtils';
 import useCurrentSensorsData from '../../hooks/useCurrentSensorsData';
 import useSchoolMetadata from '../../hooks/useSchoolMetadata';
+import { usePreferences } from '../../ContextProviders/PreferenceContext';
+import { useDashboard } from '../../ContextProviders/DashboardContext';
 
 // Temporarily not using HyvorTalk comment anymore
 // import CommentSection from '../../Components/[Deprecated]_CommentSection';
@@ -36,7 +34,7 @@ import useSchoolMetadata from '../../hooks/useSchoolMetadata';
 
 const Project = () => {
   const theme = useTheme();
-  const { currentSchoolID, loadMoreCharts } = useContext(DashboardContext);
+  const { currentSchoolID, loadMoreCharts } = useDashboard();
   const { data: currentSensorsData } = useCurrentSensorsData();
   const { data: schoolMetadata } = useSchoolMetadata();
 
@@ -44,7 +42,7 @@ const Project = () => {
     ? ChartAPIEndpointsOrder.length
     : NUMBER_OF_CHARTS_TO_LOAD_INITIALLY;
 
-  const { themePreference } = useContext(PreferenceContext);
+  const { themePreference } = usePreferences();
 
   // Temporarily not using HyvorTalk comment anymore
   // const [displayCommentSection, setDisplayCommentSection] = useState(false);

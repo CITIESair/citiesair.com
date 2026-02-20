@@ -1,6 +1,6 @@
-import { useState, useEffect, createContext, useMemo, ReactNode } from 'react';
+import { useState, useEffect, createContext, useMemo, useContext, ReactNode } from 'react';
 
-export type Google = {
+type Google = {
   charts: {
     load: (version?: string, options?: { packages?: string[] }) => void;
     setOnLoadCallback: (cb: () => void) => void;
@@ -12,7 +12,7 @@ export type Google = {
   [key: string]: any;
 };
 
-export const GoogleContext = createContext<Google | null>(null);
+const GoogleContext = createContext<Google | null>(null);
 
 export function GoogleProvider({ children }: { children: ReactNode }) {
   const [google, setGoogle] = useState<Google | null>(null);
@@ -57,4 +57,6 @@ export function GoogleProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export default GoogleContext;
+export const useGoogle = (): Google | null => {
+  return useContext(GoogleContext);
+};

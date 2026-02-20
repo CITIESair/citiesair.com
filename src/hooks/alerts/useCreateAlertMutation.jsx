@@ -1,15 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useContext } from "react";
-import { DashboardContext } from "../../ContextProviders/DashboardContext";
-import { UserContext } from "../../ContextProviders/UserContext";
 import { getApiUrl } from "../../API/APIUtils";
 import { addChildToAlerts } from "../../Components/AirQuality/AirQualityAlerts/AlertUtils";
 import { fetchDataFromURL } from "../../API/ApiFetch";
+import { useUser } from "../../ContextProviders/UserContext";
+import { useDashboard } from "../../ContextProviders/DashboardContext";
 
 export const useCreateAlertMutation = () => {
     const queryClient = useQueryClient();
-    const { currentSchoolID } = useContext(DashboardContext);
-    const { user } = useContext(UserContext);
+    const { currentSchoolID } = useDashboard();
+    const { user } = useUser();
 
     return useMutation({
         mutationFn: async ({ alertToCreate }) => {

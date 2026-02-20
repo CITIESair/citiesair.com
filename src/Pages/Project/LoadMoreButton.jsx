@@ -1,10 +1,9 @@
 import { Stack, Button } from "@mui/material";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { useContext } from "react";
-import { DashboardContext } from "../../ContextProviders/DashboardContext";
+import { useDashboard } from "../../ContextProviders/DashboardContext";
 
 const LoadMoreButton = () => {
-    const { loadMoreCharts, setLoadMoreCharts } = useContext(DashboardContext);
+    const { loadMoreCharts, setLoadMoreCharts } = useDashboard();
 
     if (loadMoreCharts === false) {
         return (

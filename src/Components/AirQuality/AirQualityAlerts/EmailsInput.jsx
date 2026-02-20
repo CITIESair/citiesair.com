@@ -1,14 +1,14 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Box, TextField, Chip, Menu, MenuItem, Grid, Typography, Button, Stack, useMediaQuery, Alert, Tooltip, Link, CircularProgress } from '@mui/material';
 import { fetchDataFromURL } from "../../../API/ApiFetch";
 import { getApiUrl } from "../../../API/APIUtils";
-import { DashboardContext } from '../../../ContextProviders/DashboardContext';
 import { isValidArray } from '../../../Utils/UtilFunctions';
 import { SnackbarMetadata } from '../../../Utils/SnackbarMetadata';
 import { validateEmail } from '../../../Utils/UtilFunctions';
 import { useSnackbar } from 'notistack';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import useSchoolMetadata from '../../../hooks/useSchoolMetadata';
+import { useDashboard } from '../../../ContextProviders/DashboardContext';
 
 const compareArrays = (arr1, arr2) => {
   return JSON.stringify(arr1) === JSON.stringify(arr2);
@@ -16,7 +16,7 @@ const compareArrays = (arr1, arr2) => {
 
 const EmailsInput = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const { currentSchoolID } = useContext(DashboardContext);
+  const { currentSchoolID } = useDashboard();
   const { data: schoolMetadata } = useSchoolMetadata();
 
   const url = getApiUrl({ endpoint: "alerts/emails", paths: [currentSchoolID] });

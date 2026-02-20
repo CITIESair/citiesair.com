@@ -2,8 +2,7 @@ import { Box, Table, TableBody, TableCell, TableHead, TableRow, styled } from '@
 import parse from 'html-react-parser';
 import { getTranslation, replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 import { AQI_Database } from '../../Utils/AirQuality/AirQualityIndexHelper';
-import { useContext } from 'react';
-import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
+import { usePreferences } from '../../ContextProviders/PreferenceContext';
 import { CITIESair } from '../../Utils/GlobalVariables';
 
 export const StyledTable = styled(Table, {
@@ -25,7 +24,7 @@ export const StyledTable = styled(Table, {
 }));
 
 function AirQualityIndexTable(props) {
-  const { themePreference, language } = useContext(PreferenceContext);
+  const { themePreference, language } = usePreferences();
 
   const { tiny, hideAQIDescription } = props;
 

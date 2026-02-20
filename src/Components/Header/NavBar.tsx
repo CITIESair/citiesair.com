@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, ReactNode } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import { styled, Theme } from '@mui/material/styles';
 import { MenuList } from '@mui/material';
 
@@ -8,7 +8,6 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import MenuItemAsNavLink from './MenuItemAsNavLink';
 import NavLinkBehavior from './NavLinkBehavior';
 // import MenuBookIcon from '@mui/icons-material/MenuBook';
-import { UserContext } from '../../ContextProviders/UserContext';
 
 // import BarChartIcon from '@mui/icons-material/BarChart';
 import PersonIcon from '@mui/icons-material/Person';
@@ -21,6 +20,7 @@ import { AppRoutes } from '../../Utils/AppRoutes';
 import type { AppRoute } from '../../Utils/AppRoutes';
 import { getDashboardLabel } from '../Account/Utils';
 import { NYUAD } from '../../Utils/GlobalVariables';
+import { useUser } from '../../ContextProviders/UserContext';
 // import { NYUAD } from '../../Utils/GlobalVariables';
 
 const StyledMenuList = styled(MenuList)(({ theme }: { theme: Theme }) => ({
@@ -39,8 +39,8 @@ interface NavBarProps {
 }
 
 const NavBar = ({ currentPage, isMobile }: NavBarProps) => {
-  const { user, authenticationState } = useContext(UserContext)!;
-  const [navbar, setNavbar] = useState<ReactNode[]>([]);
+  const { user, authenticationState } = useUser();
+  const [navbarElements, setNavbarElements] = useState<ReactNode[]>([]);
 
   const homeNavLink = (
     <MenuItemAsNavLink
@@ -121,10 +121,10 @@ const NavBar = ({ currentPage, isMobile }: NavBarProps) => {
   useEffect(() => {
     switch (currentPage) {
       case AppRoutes.home:
-        setNavbar([nyuadDashboardNavLink, reservedAreaMenu]);
+        setNavbarElements([nyuadDashboardNavLink, reservedAreaMenu]);
         break;
       default:
-        setNavbar([homeNavLink, reservedAreaMenu]);
+        setNavbarElements([homeNavLink, reservedAreaMenu]);
         break;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -132,7 +132,7 @@ const NavBar = ({ currentPage, isMobile }: NavBarProps) => {
 
   return (
     <StyledMenuList sx={{ height: '100%', p: 0 }}>
-      {navbar}
+      {navbarElements}
     </StyledMenuList>
   );
 };

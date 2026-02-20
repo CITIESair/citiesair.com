@@ -1,6 +1,6 @@
 import { createContext, useMemo, useState, useContext, ReactNode, Dispatch, SetStateAction } from 'react';
 
-export interface AxesPickerContextValue {
+interface AxesPickerContextValue {
   hAxis: string | null;
   setHAxis: Dispatch<SetStateAction<string | null>>;
   vAxis: string | null;

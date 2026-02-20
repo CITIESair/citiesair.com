@@ -1,11 +1,10 @@
-import { useState, useEffect, useContext, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { CircularProgress, Box, Link, Typography, Stack, Select, FormControl, MenuItem, Grid, Button, useMediaQuery, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import DownloadIcon from '@mui/icons-material/Download';
 import DataObjectIcon from '@mui/icons-material/DataObject';
 import * as Tracking from '../../Utils/Tracking';
 import LoadingAnimation from '../LoadingAnimation';
-import { DashboardContext } from '../../ContextProviders/DashboardContext';
 import CustomDialog from '../CustomDialog/CustomDialog';
 import { CITIESair } from '../../Utils/GlobalVariables';
 import useLoginHandler from '../Account/useLoginHandler';
@@ -14,6 +13,7 @@ import useCurrentSensorsData from '../../hooks/useCurrentSensorsData';
 import useDatasetDownload from '../../hooks/useDatasetDownload';
 import { enqueueSnackbar } from 'notistack';
 import { SnackbarMetadata } from '../../Utils/SnackbarMetadata';
+import { useDashboard } from '../../ContextProviders/DashboardContext';
 
 export default function DatasetDownloadDialog({ onButtonClick }) {
   const theme = useTheme();
@@ -114,7 +114,7 @@ export default function DatasetDownloadDialog({ onButtonClick }) {
 const Dataset = (props) => {
   const { sensorsList, sensor, previewingDataset, setPreviewingDataset, isPreviewing } = props;
   const [aggregationType, setAggregationType] = useState(AggregationType.hour);
-  const { currentSchoolID } = useContext(DashboardContext);
+  const { currentSchoolID } = useDashboard();
   const theme = useTheme();
 
   // Reset to .hour if currentSchoolID changes

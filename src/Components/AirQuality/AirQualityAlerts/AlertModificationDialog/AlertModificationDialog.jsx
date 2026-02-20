@@ -2,7 +2,7 @@ import { Button, Dialog, DialogTitle, DialogActions, DialogContent, Stack, useMe
 import { useTheme } from '@mui/material';
 import AlertTypes, { ThresholdAlertTypes } from '../AlertTypes';
 import { AirQualityAlertKeys, CrudTypes, getAlertDefaultPlaceholder } from '../AlertUtils';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SnackbarMetadata } from '../../../../Utils/SnackbarMetadata';
 import isEqual from 'lodash.isequal';
 import AlertDeletionDialog from './AlertDeletionDialog';
@@ -12,7 +12,7 @@ import { AlertPropertyComponents } from './AlertPropertyComponents/AlertProperty
 import { useCreateAlertMutation } from '../../../../hooks/alerts/useCreateAlertMutation';
 import { useEditAlertMutation } from '../../../../hooks/alerts/useEditAlertMutation';
 import { useDeleteAlertMutation } from '../../../../hooks/alerts/useDeleteAlertMutation';
-import { AirQualityAlertContext } from '../../../../ContextProviders/AirQualityAlertContext';
+import { useAirQualityAlert } from '../../../../ContextProviders/AirQualityAlertContext';
 
 const AlertModificationDialog = (props) => {
   const {
@@ -22,7 +22,7 @@ const AlertModificationDialog = (props) => {
     handleClose
   } = props;
 
-  const { selectedAlert, setSelectedAlert, editingAlert, setEditingAlert } = useContext(AirQualityAlertContext);
+  const { selectedAlert, setSelectedAlert, editingAlert, setEditingAlert } = useAirQualityAlert();
 
   const [shouldDisableButton, setShouldDisableButton] = useState(false);
 

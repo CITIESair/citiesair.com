@@ -1,21 +1,7 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { styled, SxProps, Theme } from '@mui/material/styles';
 import type { AppBarProps } from '@mui/material';
-import {
-  Link,
-  Tooltip,
-  Box,
-  Typography,
-  Container,
-  Paper,
-  AppBar,
-  Toolbar,
-  useScrollTrigger,
-  Slide,
-  Stack,
-  Drawer,
-  Divider,
-} from '@mui/material';
+import { Link, Tooltip, Box, Typography, Container, Paper, AppBar, Toolbar, useScrollTrigger, Slide, Stack, Drawer, Divider } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -25,7 +11,6 @@ import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 
 import * as Tracking from '../../Utils/Tracking';
 
-import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import FullWidthBox from '../FullWidthBox';
 
 import ThemeSelector from './ThemeSelector';
@@ -40,6 +25,7 @@ import type { AppRoute } from '../../Utils/AppRoutes';
 import { useTheme } from '@mui/material';
 import { CITIESair } from '../../Utils/GlobalVariables';
 import Promo from '../Promo/Promo';
+import { usePreferences } from '../../ContextProviders/PreferenceContext';
 
 export const showInMobile = (defaultDisplay?: string): SxProps<Theme> => ({ display: { xs: (defaultDisplay || 'block'), lg: 'none' } });
 export const showInDesktop = (defaultDisplay?: string): SxProps<Theme> => ({ display: { xs: 'none', lg: (defaultDisplay || 'block') } });
@@ -63,7 +49,7 @@ const StyledDrawer = styled(Drawer)(({ theme }: { theme: Theme }) => ({
 }));
 
 export default function Header(): JSX.Element {
-  const { currentPage } = useContext(PreferenceContext)!;
+  const { currentPage } = usePreferences();
 
   // trigger for hiding/showing the AppBar
   const triggerHideAppBar = useScrollTrigger({

@@ -1,17 +1,18 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import { CircularProgress, Button, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Paper, Divider, Stack } from "@mui/material";
-import { UserContext } from '../../ContextProviders/UserContext';
 import { getApiUrl } from '../../API/APIUtils';
 import { AppRoutes } from '../../Utils/AppRoutes';
 import { SnackbarMetadata } from '../../Utils/SnackbarMetadata';
 import { fetchDataFromURL } from '../../API/ApiFetch';
-import { PreferenceContext } from '../../ContextProviders/PreferenceContext';
 import GoogleOAuthButtonAndPopupHandler from './OAuth/GoogleOAuthButtonAndPopupHandler';
 import { LoginTypes, UserRoles } from './Utils';
 import { useSnackbar } from "notistack";
 import UserTypeSelector from './UserTypeSelector';
 import sectionData from "../../SectionData/sectionData";
+import { successfulAuthenticationState } from '../../types/AuthenticationState';
+import { usePreferences } from '../../ContextProviders/PreferenceContext';
+import { useUser } from '../../ContextProviders/UserContext';
 
 export default function Login() {
   const { enqueueSnackbar } = useSnackbar()
@@ -28,13 +29,13 @@ export default function Login() {
 
   const navigate = useNavigate();
 
-  const { setUser, authenticationState, setAuthenticationState, userRole } = useContext(UserContext);
+  const { setUser, authenticationState, setAuthenticationState, userRole } = useUser();
 
   useEffect(() => {
     if (authenticationState.authenticated && authenticationState.checkedAuthentication) navigate("/");
   }, [authenticationState, navigate]);
 
-  const { setCurrentPage } = useContext(PreferenceContext);
+  const { setCurrentPage } = usePreferences();
 
   // set current page to login
   useEffect(() => {
@@ -88,10 +89,7 @@ export default function Login() {
 
           window.close(); // Close the popup
         } else {
-          setAuthenticationState({
-            checkedAuthentication: true,
-            authenticated: true
-          });
+          setAuthenticationState(successfulAuthenticationState);
           setUser(data);
 
           if (data.message) {

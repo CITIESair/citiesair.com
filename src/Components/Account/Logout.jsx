@@ -1,22 +1,20 @@
 // disable eslint for this file
 /* eslint-disable */
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { CircularProgress } from '@mui/material';
-
 import LogoutIcon from '@mui/icons-material/Logout';
-
 import { StyledMenuItem } from '../Header/MenuItemAsNavLink';
-
-import { UserContext } from '../../ContextProviders/UserContext';
 import { getApiUrl } from '../../API/APIUtils';
 import { fetchDataFromURL } from '../../API/ApiFetch';
 import { EMPTY_USER_DATA } from "../../types/UserData";
 import { useSnackbar } from 'notistack';
 import { SnackbarMetadata } from '../../Utils/SnackbarMetadata';
+import { defaultAuthenticationState } from '../../types/AuthenticationState';
+import { useUser } from '../../ContextProviders/UserContext';
 
 export default function LogOut() {
-  const { setUser, setAuthenticationState } = useContext(UserContext);
+  const { setUser, setAuthenticationState } = useUser();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -31,10 +29,7 @@ export default function LogOut() {
     })
       .then((data) => {
         setLoading(false);
-        setAuthenticationState({
-          checkedAuthentication: false,
-          authenticated: false,
-        })
+        setAuthenticationState(defaultAuthenticationState);
         setUser(EMPTY_USER_DATA);
         enqueueSnackbar(data.message || "Logout successfully", SnackbarMetadata.success);
         navigate('/');

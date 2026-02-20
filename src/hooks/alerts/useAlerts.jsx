@@ -1,15 +1,14 @@
-import { useContext } from "react";
-import { DashboardContext } from "../../ContextProviders/DashboardContext";
-import { UserContext } from "../../ContextProviders/UserContext";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDataFromURL } from "../../API/ApiFetch";
 import { getApiUrl } from "../../API/APIUtils";
 import { isValidArray } from "../../Utils/UtilFunctions";
 import { addChildToAlerts } from "../../Components/AirQuality/AirQualityAlerts/AlertUtils";
+import { useUser } from "../../ContextProviders/UserContext";
+import { useDashboard } from "../../ContextProviders/DashboardContext";
 
 export const useAlerts = () => {
-    const { currentSchoolID } = useContext(DashboardContext);
-    const { authenticationState, user } = useContext(UserContext);
+    const { currentSchoolID } = useDashboard();
+    const { authenticationState, user } = useUser();
 
     const url = getApiUrl({
         endpoint: "alerts",
