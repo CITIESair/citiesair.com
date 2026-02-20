@@ -18,6 +18,18 @@ import { DataTypeKeys, DataTypes as DataTypesUntyped } from '../Utils/AirQuality
 // Loose typing for DataTypes until DataTypes.jsx is migrated to TypeScript
 const DataTypes = DataTypesUntyped as any;
 
+// Augment MUI's Palette with custom properties defined in UniversalTheme
+declare module '@mui/material/styles' {
+  interface Palette {
+    NYUpurple: string;
+    backgroundColorForNavLink: string;
+  }
+  interface PaletteOptions {
+    NYUpurple?: string;
+    backgroundColorForNavLink?: string;
+  }
+}
+
 interface ColorStop {
   color: string;
   offset: number;

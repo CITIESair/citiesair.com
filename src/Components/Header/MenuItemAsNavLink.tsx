@@ -1,19 +1,24 @@
 import React from 'react';
 import { styled, SxProps, Theme } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
-import { MenuItem, Box, Button, MenuItemProps } from '@mui/material';
-
+import { MenuItem, Box, Button } from '@mui/material';
 import NavLinkBehavior from './NavLinkBehavior';
 import type { NavLinkBehaviorValue } from './NavLinkBehavior';
-
 import * as Tracking from '../../Utils/Tracking';
-
 import { capitalizePhrase } from '../../Utils/UtilFunctions';
 
-export const StyledMenuItem: any = styled(MenuItem)(({ theme, sx }: any) => ({
-  ...sx,
+interface StyledMenuItemExtraProps {
+  component?: React.ElementType;
+  to?: string;
+  href?: string;
+  target?: string;
+  rel?: string;
+}
+
+export const StyledMenuItem = styled(MenuItem)<StyledMenuItemExtraProps>(({ theme }: { theme: Theme }) => ({
   whiteSpace: 'normal',
   overflowWrap: 'break-word',
+  textTransform: 'none',
   minHeight: 'unset',
   // Make height 100% and vertical align text elements of popup menu
   '& .MuiBox-root': {
@@ -70,7 +75,7 @@ export default function MenuItemAsNavLink(props: MenuItemAsNavLinkProps) {
       return (
         <StyledMenuItem
           sx={sx}
-          component={Link as any}
+          component={Link}
           to={to}
           onClick={() => {
             Tracking.sendEventAnalytics(
@@ -93,7 +98,7 @@ export default function MenuItemAsNavLink(props: MenuItemAsNavLinkProps) {
     case NavLinkBehavior.toExternalPage:
       return (
         <StyledMenuItem
-          sx={{ ...(sx as any), textTransform: 'none' }}
+          sx={sx}
           component={Button}
           href={to}
           target='blank'
@@ -141,7 +146,7 @@ export default function MenuItemAsNavLink(props: MenuItemAsNavLinkProps) {
       return (
         <StyledMenuItem
           sx={sx}
-          component={to ? (Link as any) : undefined}
+          component={to ? Link : undefined}
           to={to}
           onClick={() => {
             Tracking.sendEventAnalytics(
