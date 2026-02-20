@@ -181,10 +181,10 @@ function Home({ title }) {
                 />
               ) : (
                 <Grid item xs={12} lg={10}>
-                  {/* <CurrentAQIGrid
+                  <CurrentAQIGrid
                     currentSensorsData={currentSensorsData?.slice(0, 3)}
                     isScreen={false}
-                  /> */}
+                  />
                 </Grid>
               )
             }
