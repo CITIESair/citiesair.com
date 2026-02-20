@@ -10,7 +10,7 @@ import { LightMode, DarkMode, Contrast } from '@mui/icons-material';
 import ThemePreferences from '../../Themes/ThemePreferences';
 
 import * as Tracking from '../../Utils/Tracking';
-import { LocalStorage } from '../../Utils/LocalStorage';
+import { LocalStorage, parseLocalStorageEnum } from '../../Utils/LocalStorage';
 import { usePreferences } from '../../ContextProviders/PreferenceContext';
 
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
@@ -59,8 +59,11 @@ export default function ThemeSelector({ isFullWidth }: ThemeSelectorProps) {
   const { setThemePreference } = usePreferences();
 
   const [themeValue, setThemeValue] = useState<ThemePreferences>(
-    (localStorage.getItem(LocalStorage.theme) as ThemePreferences | null)
-    ?? ThemePreferences.system
+    parseLocalStorageEnum(
+      LocalStorage.theme,
+      Object.values(ThemePreferences),
+      ThemePreferences.system
+    )
   );
 
   const handleChange = (event: SelectChangeEvent<ThemePreferences>) => {

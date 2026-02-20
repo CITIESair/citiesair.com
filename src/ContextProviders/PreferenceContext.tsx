@@ -1,7 +1,7 @@
 import { useState, createContext, useContext, useMemo, ReactNode, Dispatch, SetStateAction } from 'react';
 import ThemePreferences from '../Themes/ThemePreferences';
 import { TemperatureUnits } from '../Utils/AirQuality/TemperatureUtils';
-import { LocalStorage } from '../Utils/LocalStorage';
+import { LocalStorage, parseLocalStorageEnum, parseLocalStorageStringArray } from '../Utils/LocalStorage';
 import { AppRoute } from '../Utils/AppRoutes';
 
 // TemperatureUtils.jsx is not yet typed (no `as const`), so TypeScript widens
@@ -27,27 +27,31 @@ const PreferenceContext = createContext<PreferenceContextType | undefined>(undef
 export function PreferenceProvider({ children }: { children: ReactNode }) {
   // Set theme preference state based on localStorage or system preference
   const [themePreference, setThemePreference] = useState<ThemePreferences>(
-    (localStorage.getItem(LocalStorage.theme) as ThemePreferences | null)
-    ?? (window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? ThemePreferences.dark : ThemePreferences.light)
+    parseLocalStorageEnum(
+      LocalStorage.theme,
+      Object.values(ThemePreferences),
+      window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? ThemePreferences.dark : ThemePreferences.light
+    )
   );
 
   // Set temperature unit preference state based on localStorage
   const [temperatureUnitPreference, setTemperatureUnitPreference] = useState<TemperatureUnit>(
-    (localStorage.getItem(LocalStorage.temperatureUnit) as TemperatureUnit | null)
-    ?? (TemperatureUnits.celsius as TemperatureUnit)
+    parseLocalStorageEnum<TemperatureUnit>(
+      LocalStorage.temperatureUnit,
+      Object.values(TemperatureUnits) as TemperatureUnit[],
+      TemperatureUnits.celsius as TemperatureUnit
+    )
   );
 
   // Set promo dialog display preference state based on localStorage.
   // It is an array containing unique IDs of promos that have already been shown before.
   // Initialise as an empty array [].
   const [hiddenPromos, setHiddenPromos] = useState<string[]>(() => {
-    const storedValue = localStorage.getItem(LocalStorage.hiddenPromos);
-    if (storedValue === null) {
-      localStorage.setItem(LocalStorage.hiddenPromos, JSON.stringify([]));
-      return [];
-    }
-    return JSON.parse(storedValue) as string[];
+    const parsed = parseLocalStorageStringArray(LocalStorage.hiddenPromos);
+    // Always sync back so the key is initialised (or reset if the stored shape was invalid)
+    localStorage.setItem(LocalStorage.hiddenPromos, JSON.stringify(parsed));
+    return parsed;
   });
 
   // ------ Language ------
