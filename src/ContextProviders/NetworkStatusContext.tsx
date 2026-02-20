@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, ReactNode, Dispatch, SetStateAction } from 'react';
 import { onlineManager } from '@tanstack/react-query';
-import { useSnackbar } from 'notistack';
+import { useSnackbar, SnackbarKey } from 'notistack';
 import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
 
 type NetworkStatusContextValue = {
@@ -20,7 +20,7 @@ export const NetworkStatusProvider = ({ children }: { children: ReactNode }) => 
 
     // --- Device network status handler ---
     useEffect(() => {
-        let offlineSnackbarKey: string | number | null = null;
+        let offlineSnackbarKey: SnackbarKey | null = null;
 
         const unsub = onlineManager.subscribe(() => {
             const online = onlineManager.isOnline();
@@ -32,7 +32,7 @@ export const NetworkStatusProvider = ({ children }: { children: ReactNode }) => 
                     SnackbarMetadata.offline
                 );
             } else {
-                if (offlineSnackbarKey != null) closeSnackbar(offlineSnackbarKey as any);
+                if (offlineSnackbarKey != null) closeSnackbar(offlineSnackbarKey);
                 enqueueSnackbar('Back online!', SnackbarMetadata.success);
             }
         });
@@ -42,7 +42,7 @@ export const NetworkStatusProvider = ({ children }: { children: ReactNode }) => 
 
     // --- Server availability handler ---
     useEffect(() => {
-        let serverDownSnackbarKey: string | number | null = null;
+        let serverDownSnackbarKey: SnackbarKey | null = null;
 
         const handleServerDown = (e?: Event) => {
             setIsServerDown(true);
@@ -56,7 +56,7 @@ export const NetworkStatusProvider = ({ children }: { children: ReactNode }) => 
         const handleServerUp = (e?: Event) => {
             setIsServerDown(false);
             if (serverDownSnackbarKey) {
-                closeSnackbar(serverDownSnackbarKey as any);
+                closeSnackbar(serverDownSnackbarKey);
                 serverDownSnackbarKey = null;
                 enqueueSnackbar('Connection to server restored', SnackbarMetadata.success);
             }
