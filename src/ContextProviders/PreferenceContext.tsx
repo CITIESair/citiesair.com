@@ -78,7 +78,7 @@ export function PreferenceProvider({ children }: { children: ReactNode }) {
 
 export const usePreferences = (): PreferenceContextType => {
   const context = useContext(PreferenceContext);
-  if (context === null) {
+  if (!context) {
     throw new Error('usePreferences must be used within PreferenceProvider');
   }
   return context;

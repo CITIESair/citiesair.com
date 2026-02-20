@@ -16,7 +16,7 @@ type UserContextValue = {
   setUserRole: Dispatch<SetStateAction<string>>;
 };
 
-const UserContext = createContext<UserContextValue | null>(null);
+const UserContext = createContext<UserContextValue | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [authenticationState, setAuthenticationState] = useState<AuthenticationState>(defaultAuthenticationState);
@@ -71,7 +71,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
 export const useUser = (): UserContextValue => {
   const context = useContext(UserContext);
-  if (context === null) {
+  if (!context) {
     throw new Error('useUser must be used within UserProvider');
   }
   return context;

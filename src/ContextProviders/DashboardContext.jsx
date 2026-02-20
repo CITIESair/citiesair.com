@@ -9,7 +9,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { enqueueSnackbar } from 'notistack';
 import { useUser } from './UserContext';
 
-const DashboardContext = createContext(null);
+const DashboardContext = createContext(undefined);
 
 export function DashboardProvider({ children }) {
   const navigate = useNavigate();
@@ -152,7 +152,7 @@ export function DashboardProvider({ children }) {
 
 export const useDashboard = () => {
   const context = useContext(DashboardContext);
-  if (context === null) {
+  if (!context) {
     throw new Error('useDashboard must be used within DashboardProvider');
   }
   return context;

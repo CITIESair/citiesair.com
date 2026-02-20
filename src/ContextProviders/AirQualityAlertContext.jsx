@@ -4,7 +4,7 @@ import { DataTypes } from '../Utils/AirQuality/DataTypes';
 import useSchoolMetadata from '../hooks/useSchoolMetadata';
 import { AirQualityAlertKeys, getAlertDefaultPlaceholder } from '../Components/AirQuality/AirQualityAlerts/AlertUtils';
 
-const AirQualityAlertContext = createContext(null);
+const AirQualityAlertContext = createContext(undefined);
 
 export function AirQualityAlertProvider({ children }) {
   const { data: schoolMetadata } = useSchoolMetadata();
@@ -60,7 +60,7 @@ export function AirQualityAlertProvider({ children }) {
 
 export const useAirQualityAlert = () => {
   const context = useContext(AirQualityAlertContext);
-  if (context === null) {
+  if (!context) {
     throw new Error('useAirQualityAlert must be used within AirQualityAlertProvider');
   }
   return context;

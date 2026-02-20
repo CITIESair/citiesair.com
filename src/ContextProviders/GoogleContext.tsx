@@ -12,7 +12,7 @@ type Google = {
   [key: string]: any;
 };
 
-const GoogleContext = createContext<Google | null>(null);
+const GoogleContext = createContext<Google | undefined>(undefined);
 
 export function GoogleProvider({ children }: { children: ReactNode }) {
   const [google, setGoogle] = useState<Google | null>(null);
@@ -57,6 +57,6 @@ export function GoogleProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export const useGoogle = (): Google | null => {
+export const useGoogle = (): Google | undefined => {
   return useContext(GoogleContext);
 };

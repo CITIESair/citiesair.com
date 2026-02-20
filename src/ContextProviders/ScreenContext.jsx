@@ -4,7 +4,7 @@ import useSchoolMetadata from '../hooks/useSchoolMetadata';
 import { isValidArray } from '../Utils/UtilFunctions';
 import { usePreferences } from './PreferenceContext';
 
-const ScreenContext = createContext(null);
+const ScreenContext = createContext(undefined);
 
 // Helper function to change layout of the screen based on current's month
 // (arrange the left and right sections of the screen)
@@ -135,7 +135,7 @@ export function ScreenProvider({ children }) {
 
 export const useScreen = () => {
     const context = useContext(ScreenContext);
-    if (context === null) {
+    if (!context) {
         throw new Error('useScreen must be used within ScreenProvider');
     }
     return context;
