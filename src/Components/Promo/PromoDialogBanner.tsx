@@ -1,28 +1,18 @@
-import { useState, FC } from 'react';
+import { useState, FC, SyntheticEvent } from 'react';
 import { Dialog, DialogActions, DialogContent, Typography, Button, Chip, Box, Stack, Divider, Paper, Grid } from "@mui/material";
 import { LocalStorage } from "../../Utils/LocalStorage";
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 import { usePreferences } from '../../ContextProviders/PreferenceContext';
+import type { PromoBanner } from '../../types/SectionData';
 
-interface Img {
-  width?: string;
-  src?: string;
-  alt?: string;
-}
-
-interface PromoBannerItem {
-  id?: string;
-  title?: string;
-  subtitle?: string;
-  img?: Img;
-}
+type PromoBannerItem = PromoBanner & { id: string };
 
 const PromoDialogBanner: FC<{ promosForBanner: PromoBannerItem[] }> = ({ promosForBanner }) => {
   const { hiddenPromos, setHiddenPromos } = usePreferences();
-  const [open, setOpen] = useState<any>(hiddenPromos);
+  const [open, setOpen] = useState<boolean>(true);
 
-  const handleClose = (event?: any, reason?: string) => {
+  const handleClose = (event?: SyntheticEvent, reason?: string) => {
     if (reason && reason === "backdropClick") return;
 
     setOpen(false);
@@ -33,24 +23,24 @@ const PromoDialogBanner: FC<{ promosForBanner: PromoBannerItem[] }> = ({ promosF
     localStorage.setItem(LocalStorage.hiddenPromos, JSON.stringify(newHiddenPromos));
   }
 
-  const Content: FC<PromoBannerItem> = ({ title, subtitle, img }) => {
-    const { width, src, alt } = img || {};
+  const Content: FC<PromoBanner> = ({ title, subtitle, img }) => {
+    const { width, src, alt } = img;
 
     return (
       <Box>
         <Typography variant="h5" fontWeight="500" color="text.primary" gutterBottom>
-          {title ? parse(title, {
+          {parse(title, {
             replace: replacePlainHTMLWithMuiComponents,
-          }) : ''}
+          })}
         </Typography>
 
         <Typography variant="body1" component="div" color="text.secondary">
-          {subtitle ? parse(subtitle, {
+          {parse(subtitle, {
             replace: replacePlainHTMLWithMuiComponents,
-          }) : ''}
+          })}
         </Typography>
 
-        {img && img.src && img.src !== '' && (
+        {src !== '' && (
           <Grid container justifyContent="center">
             <Grid item xs={11}>
               <Paper

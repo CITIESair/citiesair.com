@@ -14,17 +14,15 @@ const Promo: React.FC = () => {
   const { hiddenPromos } = usePreferences();
 
   const promosForBanner = sectionData.promos
-    .filter((promo: any) => !promo.expired) // only show non-expired promo
-    .filter((promo: any) => promo.isPublic || (!promo.isPublic && authenticated)) // only show promo depends on if it is public or private
-    .filter((promo: any) => !hiddenPromos.includes(promo.id)) // only show promo not hidden before
-    .map((promo: any) => {
-      return {
-        ...promo.banner,
-        id: promo.id
-      }
-    });
+    .filter((promo) => !promo.expired) // only show non-expired promo
+    .filter((promo) => promo.isPublic || (!promo.isPublic && authenticated)) // only show promo depends on if it is public or private
+    .filter((promo) => !hiddenPromos.includes(promo.id)) // only show promo not hidden before
+    .map((promo) => ({
+      ...promo.banner,
+      id: promo.id
+    }));
 
-  const promoStack = sectionData.promos.filter((promo: any) => !promo.expired);
+  const promoStack = sectionData.promos.filter((promo) => !promo.expired);
 
   return (
     <>
@@ -32,7 +30,7 @@ const Promo: React.FC = () => {
         promoStack.length > 0 ?
           (
             <Stack spacing={1} alignItems="center" sx={{ pt: 2 }}>
-              {promoStack.map((e: any, index: number) => {
+              {promoStack.map((e, index) => {
                 if (e.isPublic || (!e.isPublic && authenticated)) {
                   return (
                     <PromoAlert
