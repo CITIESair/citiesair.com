@@ -16,11 +16,7 @@ const Promo: React.FC = () => {
   const promosForBanner = sectionData.promos
     .filter((promo) => !promo.expired) // only show non-expired promo
     .filter((promo) => promo.isPublic || (!promo.isPublic && authenticated)) // only show promo depends on if it is public or private
-    .filter((promo) => !hiddenPromos.includes(promo.id)) // only show promo not hidden before
-    .map((promo) => ({
-      ...promo.banner,
-      id: promo.id
-    }));
+    .filter((promo) => !(hiddenPromos ?? []).includes(promo.id)) // only show promo not hidden before
 
   const promoStack = sectionData.promos.filter((promo) => !promo.expired);
 

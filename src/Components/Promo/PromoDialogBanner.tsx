@@ -4,11 +4,9 @@ import { LocalStorage } from "../../Utils/LocalStorage";
 import parse from 'html-react-parser';
 import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 import { usePreferences } from '../../ContextProviders/PreferenceContext';
-import type { PromoBanner } from '../../types/SectionData';
+import type { Promo } from '../../types/SectionData';
 
-type PromoBannerItem = PromoBanner & { id: string };
-
-const PromoDialogBanner: FC<{ promosForBanner: PromoBannerItem[] }> = ({ promosForBanner }) => {
+const PromoDialogBanner: FC<{ promosForBanner: Promo[] }> = ({ promosForBanner }) => {
   const { hiddenPromos, setHiddenPromos } = usePreferences();
   const [open, setOpen] = useState<boolean>(true);
 
@@ -23,7 +21,8 @@ const PromoDialogBanner: FC<{ promosForBanner: PromoBannerItem[] }> = ({ promosF
     localStorage.setItem(LocalStorage.hiddenPromos, JSON.stringify(newHiddenPromos));
   }
 
-  const Content: FC<PromoBanner> = ({ title, subtitle, img }) => {
+  const Content: FC<{ banner: Promo["banner"] }> = ({ banner }) => {
+    const { title, subtitle, img } = banner;
     const { width, src, alt } = img;
 
     return (
@@ -88,17 +87,9 @@ const PromoDialogBanner: FC<{ promosForBanner: PromoBannerItem[] }> = ({ promosF
         />
 
         <Stack spacing={2} divider={<Divider flexItem />}>
-          {promosForBanner.map((promo, index) => {
-            const { title, subtitle, img } = promo;
-            return (
-              <Content
-                key={index}
-                title={title}
-                subtitle={subtitle}
-                img={img}
-              />
-            )
-          })}
+          {promosForBanner.map((promo) => (
+            <Content key={promo.id} banner={promo.banner} />
+          ))}
         </Stack>
 
       </DialogContent>
