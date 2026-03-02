@@ -1,10 +1,27 @@
 import { lightShade, darkShade, maroon, INACTIVE_SENSOR_COLORS } from '../../Themes/CustomColors';
 import { colors } from '@mui/material';
 import ThemePreferences from '../../Themes/ThemePreferences';
-import { DataTypeKeys, DataTypes } from './DataTypes';
+import { DataTypeKeys, DataTypes, type DataTypeKey } from './DataTypes';
 import { SensorStatus } from '../../Components/AirQuality/SensorStatus';
+import type { BaseCategory, ThemeColor } from './AirQuality.types';
 
-export const AQI_Database = [
+// --- Return types for getCategoryColorAxis ---
+
+interface GradientColorStep {
+  color: string;
+  offset: number;
+}
+
+export interface GradientColorAxisResult {
+  minValue: number;
+  maxValue: number;
+  defaultValueForAlert: number;
+  defaultValueForChildAlert: number;
+  gradientSteps: number;
+  colors: GradientColorStep[];
+}
+
+export const AQI_Database: BaseCategory[] = [
   {
     id: 0,
     category: { en: 'Good', lg: 'Mulungi' },
@@ -101,6 +118,7 @@ export const AQI_Database = [
       outdoors: {
         en: 'Children and individuals with respiratory issues should limit outdoor exertion', lg: "Abaana ne bassekinoomu abalina obuzibu mu kussa balina okukendeeza obudde bwebamala ebweru w'ebizimbe"
       },
+      indoors_generic: 'Prolonged exposure to this indoor air quality level is not healthy for sensitive individuals.',
       indoors_dining_hall: 'Consider take-aways<br>Avoid Grill area',
       indoors_gym: 'Individuals with respiratory issues should lower the intensity of indoor exercises',
       indoors_vulnerable: 'Monitor closely individuals with respiratory issues for any symptom'
@@ -134,6 +152,7 @@ export const AQI_Database = [
       outdoors: {
         en: 'Everyone should limit outdoor activities<br>Wear masks when going outside', lg: "Buli muntu akendeze ku byakolera ebweru w'enju<br>Wandyambedde masiki nga oli bweru"
       },
+      indoors_generic: 'Prolonged exposure to this indoor air quality level is not healthy for anyone.',
       indoors_dining_hall:
         'Consider take-aways<br>Avoid Grill area<br>Come back at off-peak hours',
       indoors_gym: 'Everyone should lower the intensity of indoor exercises',
@@ -168,6 +187,7 @@ export const AQI_Database = [
       outdoors: {
         en: 'Avoid outdoor activities at all cost<br>Wear N95 masks when going outside', lg: 'Okulabula eri obulamu: Obulabe eri obulamu bweyongedde eri buli muntu'
       },
+      indoors_generic: 'Exposure to this indoor air quality level is not healthy for anyone.',
       indoors_dining_hall:
         'Consider take-aways<br>Avoid Grill area<br>Come back at off-peak hours',
       indoors_gym: 'Indoor air quality is not suitable for any physical activities',
@@ -199,7 +219,8 @@ export const AQI_Database = [
     },
     description: 'Health warning of emergency conditions: everyone is more likely to be affected',
     healthSuggestions: {
-      outdoors: { en: 'Avoid outdoor activities at all cost<br>Wear N95 masks when going outside', lg: "Okulabula eri okwamangu eri eby'obulamu: Buli bulamu bw’omuntu bwandikosebwa" },
+      outdoors: { en: 'Avoid outdoor activities at all cost<br>Wear N95 masks when going outside', lg: "Okulabula eri okwamangu eri eby'obulamu: Buli bulamu bw'omuntu bwandikosebwa" },
+      indoors_generic: 'Exposure to this indoor air quality level is not healthy for anyone.',
       indoors_dining_hall:
         'Consider take-aways<br>Avoid Grill area<br>Come back at off-peak hours',
       indoors_gym: 'Indoor air quality is not suitable for any physical activities',
@@ -209,7 +230,7 @@ export const AQI_Database = [
 ];
 
 // From https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme680-ds001.pdf
-export const VOC_Database = [
+export const VOC_Database: BaseCategory[] = [
   {
     id: 0,
     category: 'Excellent',
@@ -220,6 +241,14 @@ export const VOC_Database = [
     color: {
       Light: colors.lightBlue[lightShade],
       Dark: colors.lightBlue[darkShade]
+    },
+    description: 'VOC level is excellent. No health effects expected.',
+    healthSuggestions: {
+      outdoors: 'Enjoy outdoor activities, VOC level is great!',
+      indoors_generic: 'Indoor VOC level is safe, enjoy.',
+      indoors_dining_hall: 'Indoor air is great for dining. Enjoy your meal!',
+      indoors_gym: 'Indoor VOC level is ideal for physical activities.',
+      indoors_vulnerable: 'VOC level is safe for everyone, including sensitive groups.'
     }
   },
   {
@@ -232,6 +261,14 @@ export const VOC_Database = [
     color: {
       Light: colors.green[lightShade],
       Dark: colors.green[darkShade]
+    },
+    description: 'VOC level is excellent. No health effects expected.',
+    healthSuggestions: {
+      outdoors: 'Enjoy outdoor activities, VOC level is great!',
+      indoors_generic: 'Indoor VOC level is safe, enjoy.',
+      indoors_dining_hall: 'Indoor air is great for dining. Enjoy your meal!',
+      indoors_gym: 'Indoor VOC level is ideal for physical activities.',
+      indoors_vulnerable: 'VOC level is safe for everyone, including sensitive groups.'
     }
   },
   {
@@ -244,6 +281,14 @@ export const VOC_Database = [
     color: {
       Light: "#ffb600",
       Dark: colors.yellow[darkShade + 200]
+    },
+    description: 'VOC level is acceptable but may cause slight discomfort for sensitive individuals.',
+    healthSuggestions: {
+      outdoors: 'VOC level is acceptable. Enjoy outdoor activities.',
+      indoors_generic: 'VOC levels indoor is acceptable but pay attention to good ventilation.',
+      indoors_dining_hall: 'Consider sitting in well-ventilated areas for comfort.',
+      indoors_gym: 'VOC level is moderate. Consider taking breaks during exercise.',
+      indoors_vulnerable: 'Sensitive groups may feel slight discomfort. Ensure good airflow indoors.'
     }
   },
   {
@@ -256,6 +301,14 @@ export const VOC_Database = [
     color: {
       Light: colors.orange[lightShade],
       Dark: colors.orange[darkShade]
+    },
+    description: 'Sensitive individuals may experience discomfort due to higher VOC levels.',
+    healthSuggestions: {
+      outdoors: 'Sensitive individuals may need to take short breaks outdoors.',
+      indoors_generic: 'Ensure good ventilation indoors, as VOC levels may cause discomfort.',
+      indoors_dining_hall: 'Sensitive individuals should avoid crowded dining areas.',
+      indoors_gym: 'Take breaks during intense activities. Ventilate the space well.',
+      indoors_vulnerable: 'Monitor air quality closely and ventilate, particularly for individuals with respiratory issues.'
     }
   },
   {
@@ -268,6 +321,14 @@ export const VOC_Database = [
     color: {
       Light: colors.red[lightShade],
       Dark: colors.red[darkShade]
+    },
+    description: 'VOC level is high and may cause noticeable discomfort for many people, such as dizziness and reduced cognitive functions.',
+    healthSuggestions: {
+      outdoors: 'Reduce outdoor activities if you experience discomfort.',
+      indoors_generic: 'Consider ventilating indoor spaces more frequently to reduce VOC levels. Open windows if outdoor air quality is not poor.',
+      indoors_dining_hall: 'Avoid crowded areas and ensure the dining hall is well-ventilated.',
+      indoors_gym: 'Limit the intensity of physical activities indoors due to VOC buildup. Open windows if outdoor air quality is not poor.',
+      indoors_vulnerable: 'Sensitive groups should limit time in areas with poor ventilation. Open windows if outdoor air quality is not poor'
     }
   },
   {
@@ -280,10 +341,18 @@ export const VOC_Database = [
     color: {
       Light: colors.purple[lightShade],
       Dark: colors.purple[darkShade]
+    },
+    description: 'VOC level is very high, and health effect is likely for everyone, such as dizziness and reduced cognitive functions. Indoor air is likely to have a stale smell.',
+    healthSuggestions: {
+      outdoors: 'Limit outdoor exposure if you feel uncomfortable or lightheaded.',
+      indoors_generic: 'Improve ventilation by opening windows or consider moving to a different area with better air quality.',
+      indoors_dining_hall: 'Avoid dining in areas with poor ventilation; consider takeaways. Open windows.',
+      indoors_gym: 'It is unsafe for strenuous activities indoors. Reduce or avoid exercise. Open windows.',
+      indoors_vulnerable: 'Move vulnerable individuals to areas with better air quality and ventilation. Open windows.'
     }
   },
   {
-    id: 5,
+    id: 6,
     category: 'Extremely Polluted',
     rawVOC: {
       low: 351,
@@ -292,12 +361,20 @@ export const VOC_Database = [
     color: {
       Light: maroon[lightShade],
       Dark: maroon[darkShade]
+    },
+    description: 'VOC level is dangerously high, and everyone is at risk of health effects, such as dizziness and reduced cognitive functions. Indoor air is likely to have a stale smell.',
+    healthSuggestions: {
+      outdoors: 'Avoid outdoor activities as much as possible if VOC levels remain this high.',
+      indoors_generic: 'Avoid staying in poorly ventilated areas; seek fresh air immediately. Open windows.',
+      indoors_dining_hall: 'Do not stay in the dining hall. Get food to go and seek better air quality. Open windows.',
+      indoors_gym: 'Physical activity is not safe indoors at these VOC levels. Open windows.',
+      indoors_vulnerable: 'Vulnerable individuals should be evacuated to safer environments immediately. Open windows to ventilate indoor spaces.'
     }
   }
 ];
 
-// heat_index_F original categorization is in Farenheit; we convert it to heat_index_C for the gradient as well
-export const HeatIndex_Database = [
+// heat_index_F original categorization is in Fahrenheit; we convert it to heat_index_C for the gradient as well
+export const HeatIndex_Database: BaseCategory[] = [
   {
     id: 0,
     category: 'No Caution',
@@ -317,6 +394,8 @@ export const HeatIndex_Database = [
     healthSuggestions: {
       outdoors: { en: 'Enjoy outdoor activities as usual.', lg: 'Placeholder' },
       indoors_generic: 'No special precautions needed.',
+      indoors_dining_hall: 'No special precautions needed.',
+      indoors_gym: 'No special precautions needed.',
       indoors_vulnerable: 'No special precautions needed.'
     }
   },
@@ -339,7 +418,9 @@ export const HeatIndex_Database = [
     healthSuggestions: {
       outdoors: { en: 'Take breaks in the shade and stay hydrated.', lg: 'Placeholder' },
       indoors_generic: 'Ensure good ventilation and stay hydrated.',
-      indoors_vulnerable: 'Monitor for signs of heat stress.'
+      indoors_dining_hall: 'Stay hydrated and avoid prolonged stays in warm areas.',
+      indoors_gym: 'Reduce exercise intensity and take frequent breaks.',
+      indoors_vulnerable: 'Monitor vulnerable individuals for signs of heat stress.'
     }
   },
   {
@@ -355,12 +436,14 @@ export const HeatIndex_Database = [
     },
     heat_index_C: {
       low: 32.3,
-      high: 40.6
+      high: 40.5
     },
     description: 'Heat cramps and heat exhaustion possible with prolonged exposure and/or physical activity.',
     healthSuggestions: {
       outdoors: { en: 'Limit strenuous outdoor activities. Take frequent breaks.', lg: 'Placeholder' },
       indoors_generic: 'Use fans or air conditioning if available.',
+      indoors_dining_hall: 'Avoid prolonged stays in warm dining areas.',
+      indoors_gym: 'Limit exercise intensity and duration.',
       indoors_vulnerable: 'Check on vulnerable individuals regularly.'
     }
   },
@@ -383,6 +466,8 @@ export const HeatIndex_Database = [
     healthSuggestions: {
       outdoors: { en: 'Avoid strenuous activities. Stay in the shade or indoors.', lg: 'Placeholder' },
       indoors_generic: 'Use air conditioning. Stay hydrated.',
+      indoors_dining_hall: 'Avoid warm or crowded dining areas.',
+      indoors_gym: 'Avoid indoor exercise.',
       indoors_vulnerable: 'Extreme caution for elderly, children, and those with health conditions.'
     }
   },
@@ -405,50 +490,62 @@ export const HeatIndex_Database = [
     healthSuggestions: {
       outdoors: { en: 'Avoid all outdoor activities. Seek cool environments immediately.', lg: 'Placeholder' },
       indoors_generic: 'Stay in air-conditioned spaces. Drink plenty of fluids.',
+      indoors_dining_hall: 'Avoid dining in warm environments.',
+      indoors_gym: 'All physical activity is unsafe.',
       indoors_vulnerable: 'Immediate action required to prevent heat stroke.'
     }
   }
 ];
 
-export const getCategoryColorAxis = ({ themePreference = ThemePreferences.light, dataTypeKey, isGradient }) => {
+export const getCategoryColorAxis = ({
+  themePreference = ThemePreferences.light,
+  dataTypeKey,
+  isGradient
+}: {
+  themePreference?: keyof ThemeColor;
+  dataTypeKey: DataTypeKey;
+  isGradient: boolean;
+}): GradientColorAxisResult | string[] => {
   const dataType = DataTypes[dataTypeKey];
-  const thresholdMappingName = dataType.threshold_mapping_name;
+  const thresholdMappingName = dataType.threshold_mapping_name as keyof BaseCategory;
 
-  let database;
-  let defaultValueForAlert, defaultValueForChildAlert;
+  let database: BaseCategory[];
+  let defaultValueForAlert: number, defaultValueForChildAlert: number;
   switch (dataTypeKey) {
     case DataTypeKeys.voc:
       database = VOC_Database;
-      defaultValueForAlert = database[3][thresholdMappingName].low;
-      defaultValueForChildAlert = database[2][thresholdMappingName].low
+      defaultValueForAlert = (database[3][thresholdMappingName] as { low: number }).low;
+      defaultValueForChildAlert = (database[2][thresholdMappingName] as { low: number }).low;
       break;
     case DataTypeKeys.heat_index_C:
       database = HeatIndex_Database;
-      defaultValueForAlert = database[3][thresholdMappingName].low;
-      defaultValueForChildAlert = database[2][thresholdMappingName].low
+      defaultValueForAlert = (database[3][thresholdMappingName] as { low: number }).low;
+      defaultValueForChildAlert = (database[2][thresholdMappingName] as { low: number }).low;
       break;
     default:
       database = AQI_Database;
-      defaultValueForAlert = database[3][thresholdMappingName].low;
-      defaultValueForChildAlert = database[2][thresholdMappingName].low
+      defaultValueForAlert = (database[3][thresholdMappingName] as { low: number }).low;
+      defaultValueForChildAlert = (database[2][thresholdMappingName] as { low: number }).low;
       break;
   }
 
   // Return an object with a color gradient of colors associated with different categories for this dataType
   if (isGradient) {
     // If the minimum value is -Infinity, set it to a reasonable finite value for gradient axis
-    let minValue = database[0][thresholdMappingName].low;
+    let minValue = (database[0][thresholdMappingName] as { low: number }).low;
     if (minValue === -Infinity) {
       // Stack another interval of the next higher category if the lowest category has a -Infinity low threshold
-      const secondLowestCategoryRange = database[1][thresholdMappingName].high - database[1][thresholdMappingName].low;
-      minValue = database[1][thresholdMappingName].low - secondLowestCategoryRange;
+      const secondLowestEntry = database[1][thresholdMappingName] as { low: number; high: number };
+      const secondLowestCategoryRange = secondLowestEntry.high - secondLowestEntry.low;
+      minValue = secondLowestEntry.low - secondLowestCategoryRange;
     }
 
-    let maxValue = database[database.length - 1][thresholdMappingName].high;
+    let maxValue = (database[database.length - 1][thresholdMappingName] as { high: number }).high;
     if (maxValue === Infinity) {
       // just stack another interval of the next lower category if the highest category has an Infinity high threshold
-      const secondHighestCategoryRange = (database[database.length - 2][thresholdMappingName].high - database[database.length - 2][thresholdMappingName].low);
-      maxValue = database[database.length - 2][thresholdMappingName].high + secondHighestCategoryRange;
+      const secondHighestEntry = database[database.length - 2][thresholdMappingName] as { low: number; high: number };
+      const secondHighestCategoryRange = secondHighestEntry.high - secondHighestEntry.low;
+      maxValue = secondHighestEntry.high + secondHighestCategoryRange;
     }
 
     return {
@@ -458,7 +555,8 @@ export const getCategoryColorAxis = ({ themePreference = ThemePreferences.light,
       defaultValueForChildAlert,
       gradientSteps: dataType.gradient_steps,
       colors: database.flatMap(category => {
-        const { low, high } = category[thresholdMappingName];
+        const thresholds = category[thresholdMappingName] as { low: number; high: number };
+        const { low, high } = thresholds;
         return [
           { color: category.color[themePreference], offset: low === -Infinity ? minValue : low },
           { color: category.color[themePreference], offset: high === Infinity ? maxValue : high }
@@ -475,20 +573,21 @@ export const getCategoryColorAxis = ({ themePreference = ThemePreferences.light,
 
     return colorArray;
   }
-}
+};
 
-export const getTextColorsForAQI = ({ themePreference = ThemePreferences.light }) => {
+export const getTextColorsForAQI = ({ themePreference = ThemePreferences.light }: {
+  themePreference?: keyof ThemeColor;
+}): Record<number | string, string> => {
   const obj = AQI_Database
-    .reduce((acc, category) => {
+    .reduce<Record<number | string, string>>((acc, category) => {
       return ({
         ...acc,
         [category.id]: category.color[themePreference]
-      })
+      });
     }, {});
 
   obj[SensorStatus.offline] = INACTIVE_SENSOR_COLORS[themePreference];
   obj.screen = INACTIVE_SENSOR_COLORS.screen;
 
   return obj;
-}
-
+};

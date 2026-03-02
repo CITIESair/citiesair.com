@@ -1,5 +1,36 @@
-const DataTypesObj = {
-  heat_index_C: {
+export const DataTypeKeys = {
+  aqi: "aqi",
+  pm2_5: "pm2.5",
+  pm10_raw: "pm10_raw",
+  co2: "co2",
+  voc: "voc",
+  temperature_C: "temperature_C",
+  temperature_F: "temperature_F",
+  pressure: "pressure",
+  rel_humidity: "rel_humidity",
+  heat_index_C: "heat_index_C"
+} as const;
+
+export type DataTypeKey = typeof DataTypeKeys[keyof typeof DataTypeKeys];
+
+/**
+ * Interface defining the properties for each data type.
+ */
+export interface DataType {
+  name: string;
+  name_short: string;
+  name_title: string;
+  db_name?: string; // Maps dataType to the database column name
+  threshold_mapping_name?: string; // Maps to threshold breakpoints in AQI/VOC/HeatIndex databases
+  color_axis: string;
+  gradient_steps: number;
+  unit: string;
+  pattern: string; // Number format pattern, e.g. "#.#" for 1 decimal place
+  has_category: boolean; // Whether this datatype is categorizable (vs continuous)
+}
+
+export const DataTypes: Record<DataTypeKey, DataType> = {
+  [DataTypeKeys.heat_index_C]: {
     name: "Heat Index",
     name_short: "Heat Index",
     name_title: "Heat Index °C",
@@ -7,9 +38,10 @@ const DataTypesObj = {
     color_axis: "heat_index_C",
     gradient_steps: 500,
     unit: "°C",
-    pattern: "#.#"
+    pattern: "#.#",
+    has_category: true
   },
-  aqi: {
+  [DataTypeKeys.aqi]: {
     name: "Air Quality Index (US)",
     name_short: "AQI",
     name_title: "AQI",
@@ -17,9 +49,10 @@ const DataTypesObj = {
     color_axis: "aqi",
     gradient_steps: 5000,
     unit: "",
-    pattern: "#"
+    pattern: "#",
+    has_category: true
   },
-  "pm2.5": {
+  [DataTypeKeys.pm2_5]: {
     name: "Particulate matter smaller than 2.5μm",
     name_short: "PM2.5",
     name_title: "PM2.5",
@@ -28,9 +61,10 @@ const DataTypesObj = {
     color_axis: "pm2.5",
     gradient_steps: 20000,
     unit: "μg/m3",
-    pattern: "#.#"
+    pattern: "#.#",
+    has_category: true
   },
-  "pm10_raw": {
+  [DataTypeKeys.pm10_raw]: {
     name: "Particulate matter smaller than 10μm",
     name_short: "PM10",
     name_title: "PM10",
@@ -39,9 +73,10 @@ const DataTypesObj = {
     gradient_steps: 2000,
     threshold_mapping_name: "rawPM10",
     unit: "μg/m3",
-    pattern: "#"
+    pattern: "#",
+    has_category: true
   },
-  co2: {
+  [DataTypeKeys.co2]: {
     name: "Carbon Dioxide",
     name_short: "CO2",
     name_title: "CO2",
@@ -50,9 +85,10 @@ const DataTypesObj = {
     gradient_steps: 5000,
     threshold_mapping_name: "rawCO2",
     unit: "PPM",
-    pattern: "#"
+    pattern: "#",
+    has_category: true
   },
-  voc: {
+  [DataTypeKeys.voc]: {
     name: "Volatile Organic Compounds",
     name_short: "VOC",
     name_title: "Volatile Organic Compounds",
@@ -61,9 +97,10 @@ const DataTypesObj = {
     gradient_steps: 5000,
     threshold_mapping_name: "rawVOC",
     unit: "",
-    pattern: "#"
+    pattern: "#",
+    has_category: true
   },
-  temperature_C: {
+  [DataTypeKeys.temperature_C]: {
     name: "Temperature",
     name_short: "Temp.",
     name_title: "Temperature °C",
@@ -71,9 +108,10 @@ const DataTypesObj = {
     color_axis: "temperature",
     gradient_steps: 20,
     unit: "°C",
-    pattern: "#.#"
+    pattern: "#.#",
+    has_category: false
   },
-  temperature_F: {
+  [DataTypeKeys.temperature_F]: {
     name: "Temperature",
     name_short: "Temp.",
     name_title: "Temperature °F",
@@ -81,9 +119,10 @@ const DataTypesObj = {
     color_axis: "temperature",
     gradient_steps: 20,
     unit: "°F",
-    pattern: "#.#"
+    pattern: "#.#",
+    has_category: false
   },
-  pressure: {
+  [DataTypeKeys.pressure]: {
     name: "Pressure",
     name_short: "Pressure",
     name_title: "Pressure",
@@ -91,9 +130,10 @@ const DataTypesObj = {
     color_axis: "pressure",
     gradient_steps: 100,
     unit: "hPa",
-    pattern: "#.#"
+    pattern: "#.#",
+    has_category: false
   },
-  rel_humidity: {
+  [DataTypeKeys.rel_humidity]: {
     name: "Relative Humidity",
     name_short: "RH",
     name_title: "Relative Humidity",
@@ -101,37 +141,31 @@ const DataTypesObj = {
     color_axis: "humidity",
     gradient_steps: 100,
     unit: "%",
-    pattern: "#.#"
+    pattern: "#.#",
+    has_category: false
   }
+};
+
+interface DataTypeWithKey extends DataType {
+  key: DataTypeKey;
 }
 
-export const DataTypeKeys = {
-  aqi: "aqi",
-  pm2_5: "pm2.5",
-  pm10_raw: "pm10_raw",
-  co2: "co2",
-  voc: "voc",
-  temperature_C: "temperature_C",
-  pressure: "pressure",
-  rel_humidity: "rel_humidity",
-  heat_index_C: "heat_index_C"
-}
-
-// map DataTypeKeys to DataTypesObj
-export const DataTypes = Object.entries(DataTypeKeys).reduce((acc, [key, value]) => {
-  acc[value] = DataTypesObj[value];
-  return acc;
-}, {});
-
-export const returnSelectedDataType = ({ dataTypeKey, dataTypes, showUnit = false }) => {
-  return (dataTypes
+export const returnSelectedDataType = ({
+  dataTypeKey,
+  dataTypes,
+  showUnit = false
+}: {
+  dataTypeKey: DataTypeKey;
+  dataTypes: DataTypeWithKey[];
+  showUnit?: boolean;
+}): string[] => {
+  return dataTypes
     .filter(dataType => dataType.key === dataTypeKey)
     .map((dataType) => {
       if (showUnit) {
         const unitString = `${dataType.unit !== '' ? ` (${dataType.unit})` : ''}`;
         return `${dataType.name_short}${unitString}`;
       }
-      else return dataType.name_short;
-    })
-  )
-}
+      return dataType.name_short;
+    });
+};

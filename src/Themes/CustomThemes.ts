@@ -3,20 +3,16 @@ import { colors } from '@mui/material';
 import ThemePreferences from './ThemePreferences';
 import { darkShade, lightShade, maroon, darkShadeColorAxis } from './CustomColors';
 
-// Type declarations for AirQuality modules (outside migration scope)
-// These provide loose typing to prevent TypeScript errors during compilation
-// Once AirQualityIndexHelper.jsx is migrated, these casts can be removed
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-import { getCategoryColorAxis, getTextColorsForAQI } from '../Utils/AirQuality/AirQualityIndexHelper';
+import { getCategoryColorAxis, getTextColorsForAQI, type GradientColorAxisResult } from '../Utils/AirQuality/AirQualityIndexHelper';
+import type { ThemeColor } from '../Utils/AirQuality/AirQuality.types';
 
 // Type declarations for DataTypes module (outside migration scope)
 // These provide loose typing to prevent TypeScript errors during compilation
 // Once DataTypes.jsx is migrated, these casts can be removed
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-import { DataTypeKeys, DataTypes as DataTypesUntyped } from '../Utils/AirQuality/DataTypes';
+import { DataTypeKeys, DataTypes as ImportedDataTypes } from "../Utils/AirQuality/DataTypes";
 
-// Loose typing for DataTypes until DataTypes.jsx is migrated to TypeScript
-const DataTypes = DataTypesUntyped as any;
+const DataTypes = ImportedDataTypes as any;
 
 // Augment MUI's Palette with custom properties defined in UniversalTheme
 declare module '@mui/material/styles' {
@@ -47,17 +43,14 @@ interface ColorAxesForContinuousData {
   [key: string]: ContinuousColorAxis;
 }
 
-// Loose typing for color axis options from getCategoryColorAxis (outside migration scope)
-// Once AirQualityIndexHelper.jsx is migrated, proper types can be defined
 interface ColorAxesForCategorizedData {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
+  [key: string]: string[] | GradientColorAxisResult;
 }
 
 interface ThemePaletteChart {
   optionsColors: ColorAxesForCategorizedData;
   colorAxisFirstColor: string;
-  colorAxes: ColorAxesForContinuousData & ColorAxesForCategorizedData;
+  colorAxes: Record<string, ContinuousColorAxis | GradientColorAxisResult | string[]>;
   axisTitle: string;
   axisText: string;
   gridlines: string;
@@ -84,10 +77,7 @@ interface CustomTheme {
     customAlternateBackground?: string;
     text: {
       secondaryRGB: string;
-      // Loose typing for AQI text colors from getTextColorsForAQI (outside migration scope)
-      // Once AirQualityIndexHelper.jsx is migrated, proper types can be defined
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      aqi: any;
+      aqi: Record<number | string, string>;
     },
     chart: ThemePaletteChart;
   },
@@ -157,10 +147,7 @@ const getColorAxisForDataTypesWithCategorization = ({
   themePreference,
 }: {
   isGradient: boolean;
-  // Loose typing for themePreference (outside migration scope)
-  // Once ThemePreferences is properly typed end-to-end, this can use ThemePreferences type
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  themePreference: any;
+  themePreference: keyof ThemeColor;
 }): ColorAxesForCategorizedData => {
   return [
     DataTypeKeys.aqi,
@@ -195,9 +182,7 @@ const CustomThemes: { dark: CustomTheme; light: CustomTheme; universal: Universa
       },
       customBackground: '#202020',
       customAlternateBackground: '#303030',
-      // Cast to any: getTextColorsForAQI is from untyped AirQualityIndexHelper.jsx (outside migration scope)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      text: { secondaryRGB: '#c1c1c1', aqi: (getTextColorsForAQI as any)({ themePreference: ThemePreferences.dark }) },
+      text: { secondaryRGB: '#c1c1c1', aqi: getTextColorsForAQI({ themePreference: ThemePreferences.dark }) },
       chart: {
         optionsColors: {
           monochromatic2Colors: [colors.purple[darkShade - 100], colors.purple[darkShade + 200]],
@@ -235,9 +220,7 @@ const CustomThemes: { dark: CustomTheme; light: CustomTheme; universal: Universa
       background: { NYUpurpleLight: 'rgba(87, 6, 140, 0.1)' },
       customBackground: '#f6f6f6',
       customAlternateBackground: '#ffffff',
-      // Cast to any: getTextColorsForAQI is from untyped AirQualityIndexHelper.jsx (outside migration scope)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      text: { secondaryRGB: '#666666', aqi: (getTextColorsForAQI as any)({ themePreference: ThemePreferences.light }) },
+      text: { secondaryRGB: '#666666', aqi: getTextColorsForAQI({ themePreference: ThemePreferences.light }) },
       chart: {
         optionsColors: {
           monochromatic2Colors: [colors.purple[lightShade], colors.purple[lightShade - 300]],

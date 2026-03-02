@@ -1,13 +1,10 @@
 import { useState, createContext, useContext, useMemo, ReactNode, Dispatch, SetStateAction } from 'react';
 import ThemePreferences from '../Themes/ThemePreferences';
-import { TemperatureUnits } from '../Utils/AirQuality/TemperatureUtils';
+import { TemperatureUnits, TemperatureUnit } from '../Utils/AirQuality/TemperatureUtils';
 import { LocalStorage, parseLocalStorageEnum, parseLocalStorageStringArray } from '../Utils/LocalStorage';
 import { AppRoute } from '../Utils/AppRoutes';
 
-// TemperatureUtils.jsx is not yet typed (no `as const`), so TypeScript widens
-// its values to `string`. Define the literal union explicitly here until
-// TemperatureUtils is converted to TypeScript.
-export type TemperatureUnit = 'C' | 'F';
+export type { TemperatureUnit };
 
 interface PreferenceContextType {
   themePreference: ThemePreferences;
