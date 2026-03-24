@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button, Menu, MenuItem, Typography } from "@mui/material";
 import { isValidArray } from "../Utils/UtilFunctions";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { returnSelectedDataType } from "../Utils/AirQuality/DataTypes";
+import { returnFormattedDataType } from "../business-domain/data-types/data-type.formatter";
 import { useDashboard } from "../ContextProviders/DashboardContext";
 
 const DataTypeDropDownMenu = ({ selectedDataType, dataTypes, chartID }) => {
@@ -55,7 +55,7 @@ const DataTypeDropDownMenu = ({ selectedDataType, dataTypes, chartID }) => {
         }}
       >
         <Typography display="inline" variant="h6" borderBottom="dotted">
-          {returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: dataTypes, showUnit: true })}
+          {returnFormattedDataType({ dataTypeKey: selectedDataType, dataTypes: dataTypes, showUnit: true })}
         </Typography>
         <ArrowDropDownIcon />
       </Button>

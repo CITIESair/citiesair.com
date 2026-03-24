@@ -1,6 +1,6 @@
 import { List, ListItem, ListItemText, Typography } from "@mui/material";
 import { INACTIVE_SENSOR_COLORS } from "../../../Themes/CustomColors";
-import { AQI_Database } from "../../../Utils/AirQuality/AirQualityIndexHelper";
+import { AQI_Database } from "../../../business-domain/air-quality/air-quality.database";
 import { SensorStatus } from "../SensorStatus";
 import { TypesOfScreen } from "./ScreenUtils";
 import { getTranslation } from "../../../Utils/UtilFunctions";
@@ -8,6 +8,7 @@ import { getTranslation } from "../../../Utils/UtilFunctions";
 import sectionData from '../../../SectionData/sectionData';
 import parse from 'html-react-parser';
 import { usePreferences } from "../../../ContextProviders/PreferenceContext";
+import { DataTypeKeys } from "../../../business-domain/data-types/data-type.types";
 
 const Comparison = ({ data }) => {
     const { language } = usePreferences();
@@ -23,7 +24,7 @@ const Comparison = ({ data }) => {
     const outdoorsSensor = data.find(d => d.sensor?.location_type === "outdoors");
     const outdoorsAQI = outdoorsSensor.current.aqi.val;
     // Don’t display comparison if outdoor air is already good
-    if (outdoorsAQI <= AQI_Database[0].aqiUS.high) return null;
+    if (outdoorsAQI <= AQI_Database[0][DataTypeKeys.aqi].high) return null;
 
     const indoorsSensor = data.find(d => d.sensor?.location_type.startsWith("indoors"));
     const indoorsAQI = indoorsSensor.current.aqi.val;
@@ -86,7 +87,7 @@ const ScreenHealthSuggestions = ({ typeOfScreen, data }) => {
         if (!suggestion) return;
 
         const isUnhealthy =
-            sensorData.current?.aqi?.val >= AQI_Database[2].aqiUS.low;
+            sensorData.current?.aqi?.val >= AQI_Database[2][DataTypeKeys.aqi].low;
 
         // If suggestion already exists, keep it unhealthy if ANY sensor was unhealthy
         if (suggestionsMap.has(suggestion)) {

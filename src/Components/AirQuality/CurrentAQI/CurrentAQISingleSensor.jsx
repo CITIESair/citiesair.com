@@ -1,5 +1,5 @@
 import { useTheme } from '@mui/material';
-import { AQI_Database } from "../../../Utils/AirQuality/AirQualityIndexHelper";
+import { AQI_Database } from "../../../business-domain/air-quality/air-quality.database";
 import { getTranslation } from "../../../Utils/UtilFunctions";
 import { Box, Grid, Stack, Typography } from "@mui/material";
 import { returnSensorStatusString, SensorStatus } from "../SensorStatus";
@@ -8,7 +8,7 @@ import { returnLocationName } from "./AQIGridUtils";
 import { ElementSizes } from "./CurrentAQIGridSize";
 import { CurrentHeatIndex, CurrentWeather } from "./CurrentMetero";
 import LastUpdateAndSensorStatus from "./LastUpdateAndSensorStatus";
-import { DataTypeKeys } from "../../../Utils/AirQuality/DataTypes";
+import { DataTypeKeys } from "../../../business-domain/data-types/data-type.types";
 import useSchoolMetadata from '../../../hooks/useSchoolMetadata';
 import { usePreferences } from '../../../ContextProviders/PreferenceContext';
 
@@ -94,7 +94,7 @@ const CurrentAQISingleSensor = (props) => {
             >
                 {
                     schoolMetadata?.sensors.find(
-                        s => s.sensor_id === sensor.sensor_id
+                        s => String(s.sensor_id) === String(sensor.sensor_id)
                     )?.allowedDataTypes?.includes(DataTypeKeys.temperature_C) && <>
                         {
                             showWeather &&

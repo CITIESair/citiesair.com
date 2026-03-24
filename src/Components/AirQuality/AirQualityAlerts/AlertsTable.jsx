@@ -12,7 +12,7 @@ import { TransitionGroup } from 'react-transition-group';
 import { SnackbarMetadata } from '../../../Utils/SnackbarMetadata';
 import { useSnackbar } from 'notistack';
 import { UserRoles } from '../../Account/Utils';
-import { DataTypes } from '../../../Utils/AirQuality/DataTypes';
+import { DataTypes } from '../../../business-domain/data-types/data-type.types';
 import { DAYS_OF_WEEK } from './AlertModificationDialog/AlertPropertyComponents/DAYS_OF_WEEK';
 import { returnHoursFromMinutesPastMidnight } from '../../TimeRange/TimeRangeUtils';
 import { useEditAlertMutation } from '../../../hooks/alerts/useEditAlertMutation';

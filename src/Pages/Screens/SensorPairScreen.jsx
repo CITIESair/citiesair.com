@@ -9,7 +9,7 @@ import CITIESlogoLinkToHome from '../../Components/Header/CITIESlogoLinkToHome';
 
 import RecentHistoricalGraph from '../../Components/AirQuality/AirQualityScreen/RecentHistoricalGraph';
 
-import { AQI_Database } from '../../Utils/AirQuality/AirQualityIndexHelper';
+import { AQI_Database } from '../../business-domain/air-quality/air-quality.database';
 
 import CurrentAQIGrid from '../../Components/AirQuality/CurrentAQI/CurrentAQIGrid';
 import { CurrentAQIGridSize } from '../../Components/AirQuality/CurrentAQI/CurrentAQIGridSize';

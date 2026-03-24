@@ -3,16 +3,11 @@ import { colors } from '@mui/material';
 import ThemePreferences from './ThemePreferences';
 import { darkShade, lightShade, maroon, darkShadeColorAxis } from './CustomColors';
 
-import { getCategoryColorAxis, getTextColorsForAQI, type GradientColorAxisResult } from '../Utils/AirQuality/AirQualityIndexHelper';
-import type { ThemeColor } from '../Utils/AirQuality/AirQuality.types';
+import { type GradientColorAxisResult } from '../business-domain/air-quality/air-quality.database';
+import { getCategoryColorAxis, getTextColorsForAQI } from './air-quality.utils';
+import type { ThemeColor } from '../business-domain/air-quality/air-quality.types';
 
-// Type declarations for DataTypes module (outside migration scope)
-// These provide loose typing to prevent TypeScript errors during compilation
-// Once DataTypes.jsx is migrated, these casts can be removed
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-import { DataTypeKeys, DataTypes as ImportedDataTypes } from "../Utils/AirQuality/DataTypes";
-
-const DataTypes = ImportedDataTypes as any;
+import { DataTypeKeys, DataTypes } from "../business-domain/data-types/data-type.types";
 
 // Augment MUI's Palette with custom properties defined in UniversalTheme
 declare module '@mui/material/styles' {

@@ -1,7 +1,7 @@
 import { MouseEvent } from 'react';
 import { Box, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { LocalStorage } from '../../Utils/LocalStorage';
-import { TemperatureUnits } from '../../Utils/AirQuality/TemperatureUtils';
+import { TemperatureUnits } from '../../business-domain/air-quality/temperature.utils';
 import * as Tracking from '../../Utils/Tracking';
 import { TemperatureUnit, usePreferences } from '../../ContextProviders/PreferenceContext';
 
@@ -30,11 +30,11 @@ export default function TemperatureUnitToggle() {
         aria-label="temperature unit toggle"
         size="small"
       >
-        <ToggleButton sx={{ px: "0.75rem" }} value={TemperatureUnits.celsius} aria-label={TemperatureUnits.celsius}>
-          °{TemperatureUnits.celsius}
+        <ToggleButton sx={{ px: "0.75rem" }} value={TemperatureUnits.CELSIUS} aria-label={TemperatureUnits.CELSIUS}>
+          {TemperatureUnits.CELSIUS}
         </ToggleButton>
-        <ToggleButton sx={{ px: "0.75rem" }} value={TemperatureUnits.fahrenheit} aria-label={TemperatureUnits.fahrenheit}>
-          °{TemperatureUnits.fahrenheit}
+        <ToggleButton sx={{ px: "0.75rem" }} value={TemperatureUnits.FAHRENHEIT} aria-label={TemperatureUnits.FAHRENHEIT}>
+          {TemperatureUnits.FAHRENHEIT}
         </ToggleButton>
       </ToggleButtonGroup>
     </Box>

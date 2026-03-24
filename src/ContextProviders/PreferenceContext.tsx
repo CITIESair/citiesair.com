@@ -1,6 +1,6 @@
 import { useState, createContext, useContext, useMemo, ReactNode, Dispatch, SetStateAction } from 'react';
 import ThemePreferences from '../Themes/ThemePreferences';
-import { TemperatureUnits, TemperatureUnit } from '../Utils/AirQuality/TemperatureUtils';
+import { TemperatureUnits, TemperatureUnit } from '../business-domain/air-quality/temperature.utils';
 import { LocalStorage, parseLocalStorageEnum, parseLocalStorageStringArray } from '../Utils/LocalStorage';
 import { AppRoute } from '../Utils/AppRoutes';
 
@@ -37,7 +37,7 @@ export function PreferenceProvider({ children }: { children: ReactNode }) {
     parseLocalStorageEnum<TemperatureUnit>(
       LocalStorage.temperatureUnit,
       Object.values(TemperatureUnits) as TemperatureUnit[],
-      TemperatureUnits.celsius as TemperatureUnit
+      TemperatureUnits.CELSIUS as TemperatureUnit
     )
   );
 

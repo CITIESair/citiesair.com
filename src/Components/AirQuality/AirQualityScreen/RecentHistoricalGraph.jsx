@@ -2,7 +2,7 @@
 /* eslint-disable */
 import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
-import { AQI_Database } from '../../../Utils/AirQuality/AirQualityIndexHelper';
+import { AQI_Database } from '../../../business-domain/air-quality/air-quality.database';
 import { SensorStatus } from '../SensorStatus';
 import { Box } from '@mui/material';
 
@@ -12,6 +12,7 @@ import { capitalizePhrase, getTranslation } from '../../../Utils/UtilFunctions';
 import { INACTIVE_SENSOR_COLORS } from '../../../Themes/CustomColors';
 import { useTheme } from '@mui/material';
 import { usePreferences } from '../../../ContextProviders/PreferenceContext';
+import { DataTypeKeys } from '../../../business-domain/data-types/data-type.types';
 
 const numberOfHoursForHistoricalData = 6;
 
@@ -86,8 +87,8 @@ const RecentHistoricalGraph = (props) => {
     maxAQItoDisplay = Math.ceil(maxAQItoDisplay / 50) * 50; // round to the nearest 50 points
 
     for (let category of AQI_Database) {
-      if (maxAQItoDisplay >= category.aqiUS.low && maxAQItoDisplay <= category.aqiUS.high) {
-        maxAQItoDisplay = category.aqiUS.high === Infinity ? maxAQItoDisplay : category.aqiUS.high;
+      if (maxAQItoDisplay >= category[DataTypeKeys.aqi].low && maxAQItoDisplay <= category[DataTypeKeys.aqi].high) {
+        maxAQItoDisplay = category[DataTypeKeys.aqi].high === Infinity ? maxAQItoDisplay : category[DataTypeKeys.aqi].high;
         break;
       }
     };
@@ -103,15 +104,15 @@ const RecentHistoricalGraph = (props) => {
 
     // 3. Add the background category layer and the AQI levels (rectangles) and the grids
     let font_size = Math.max(
-      Math.floor(((AQI_Database[1].aqiUS.high - AQI_Database[0].aqiUS.high) / maxAQItoDisplay) * height / 2),
+      Math.floor(((AQI_Database[1][DataTypeKeys.aqi].high - AQI_Database[0][DataTypeKeys.aqi].high) / maxAQItoDisplay) * height / 2),
       20);
 
     let marginText = Math.floor(font_size / 5);
     // 4. Loop through all the aqi_category and add each category into the graph
     for (let i = 0; i < AQI_Database.length; i++) {
       const element = AQI_Database[i];
-      const upper = element.aqiUS.high === Infinity ? maxAQItoDisplay : element.aqiUS.high;
-      const lower = element.aqiUS.low;
+      const upper = element[DataTypeKeys.aqi].high === Infinity ? maxAQItoDisplay : element[DataTypeKeys.aqi].high;
+      const lower = element[DataTypeKeys.aqi].low;
 
       if (maxAQItoDisplay <= lower) break;
 
@@ -132,12 +133,12 @@ const RecentHistoricalGraph = (props) => {
         .attr(
           "y",
           height -
-          (element.aqiUS.low / maxAQItoDisplay) * height -
+          (element[DataTypeKeys.aqi].low / maxAQItoDisplay) * height -
           3.5 * marginText + margin.top
         )
         .attr("fill", element.color.Light)
         .attr("font-size", font_size)
-        .text(Math.floor(element.aqiUS.low / 50) * 50);
+        .text(Math.floor(element[DataTypeKeys.aqi].low / 50) * 50);
 
       d3.select(layerTexts.current)
         .append("text")
@@ -145,7 +146,7 @@ const RecentHistoricalGraph = (props) => {
         .attr("x", marginText + 2)
         .attr(
           "y",
-          height - (element.aqiUS.low / maxAQItoDisplay) * height - marginText + margin.top
+          height - (element[DataTypeKeys.aqi].low / maxAQItoDisplay) * height - marginText + margin.top
         )
         .attr("fill", element.color.Light)
         .attr("font-size", font_size / 2)

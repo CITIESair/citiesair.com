@@ -1,9 +1,8 @@
-import { lightShade, darkShade, maroon, INACTIVE_SENSOR_COLORS } from '../../Themes/CustomColors';
+import { lightShade, darkShade, maroon } from '../../Themes/CustomColors';
 import { colors } from '@mui/material';
-import ThemePreferences from '../../Themes/ThemePreferences';
-import { DataTypeKeys, DataTypes, type DataTypeKey } from './DataTypes';
-import { SensorStatus } from '../../Components/AirQuality/SensorStatus';
-import type { BaseCategory, ThemeColor } from './AirQuality.types';
+import { DataTypeKeys, type DataTypeKey } from '../data-types/data-type.types';
+import type { BaseCategory } from './air-quality.types';
+import { assertNever } from '../../shared/utils/assertNever';
 
 // --- Return types for getCategoryColorAxis ---
 
@@ -29,21 +28,17 @@ export const AQI_Database: BaseCategory[] = [
       Light: colors.green[lightShade],
       Dark: colors.green[darkShade]
     },
-    aqiUS: {
+    [DataTypeKeys.aqi]: {
       low: 0,
       high: 50
     },
-    rawPM2_5: {
+    [DataTypeKeys.pm2_5]: {
       low: 0.0,
       high: 9.0
     },
-    rawPM10: {
+    [DataTypeKeys.pm10_raw]: {
       low: 0.0,
       high: 54
-    },
-    rawCO2: {
-      low: 0.0,
-      high: 700
     },
     description: 'Air quality is satisfactory, and air pollution poses little or no risk',
     healthSuggestions: {
@@ -63,21 +58,17 @@ export const AQI_Database: BaseCategory[] = [
       Light: "#ffb600",
       Dark: colors.yellow[darkShade + 200]
     },
-    aqiUS: {
+    [DataTypeKeys.aqi]: {
       low: 51,
       high: 100
     },
-    rawPM2_5: {
+    [DataTypeKeys.pm2_5]: {
       low: 9.1,
       high: 35.4
     },
-    rawPM10: {
+    [DataTypeKeys.pm10_raw]: {
       low: 55,
       high: 154
-    },
-    rawCO2: {
-      low: 701,
-      high: 1000
     },
     description: 'Air quality is acceptable. However, there may be a risk for some people, particularly those who are unusually sensitive to air pollution',
     healthSuggestions: {
@@ -97,21 +88,17 @@ export const AQI_Database: BaseCategory[] = [
       Light: colors.orange[lightShade],
       Dark: colors.orange[darkShade]
     },
-    aqiUS: {
+    [DataTypeKeys.aqi]: {
       low: 101,
       high: 150
     },
-    rawPM2_5: {
+    [DataTypeKeys.pm2_5]: {
       low: 35.5,
       high: 55.4
     },
-    rawPM10: {
+    [DataTypeKeys.pm10_raw]: {
       low: 155,
       high: 254
-    },
-    rawCO2: {
-      low: 1001,
-      high: 1500
     },
     description: 'Members of sensitive groups may experience health effects. The general public is less likely to be affected',
     healthSuggestions: {
@@ -131,21 +118,17 @@ export const AQI_Database: BaseCategory[] = [
       Light: colors.red[lightShade],
       Dark: colors.red[darkShade]
     },
-    aqiUS: {
+    [DataTypeKeys.aqi]: {
       low: 151,
       high: 200
     },
-    rawPM2_5: {
+    [DataTypeKeys.pm2_5]: {
       low: 55.5,
       high: 125.4
     },
-    rawPM10: {
+    [DataTypeKeys.pm10_raw]: {
       low: 255,
       high: 354
-    },
-    rawCO2: {
-      low: 1501,
-      high: 2000
     },
     description: 'Some members of the general public may experience health effects; members of sensitive groups may experience more serious health effects',
     healthSuggestions: {
@@ -166,21 +149,17 @@ export const AQI_Database: BaseCategory[] = [
       Light: colors.purple[lightShade],
       Dark: colors.purple[darkShade]
     },
-    aqiUS: {
+    [DataTypeKeys.aqi]: {
       low: 201,
       high: 300
     },
-    rawPM2_5: {
+    [DataTypeKeys.pm2_5]: {
       low: 125.5,
       high: 225.4
     },
-    rawPM10: {
+    [DataTypeKeys.pm10_raw]: {
       low: 355,
       high: 424
-    },
-    rawCO2: {
-      low: 2001,
-      high: 3000
     },
     description: 'Health alert: The risk of health effects is increased for everyone',
     healthSuggestions: {
@@ -201,20 +180,16 @@ export const AQI_Database: BaseCategory[] = [
       Light: maroon[lightShade],
       Dark: maroon[darkShade]
     },
-    aqiUS: {
+    [DataTypeKeys.aqi]: {
       low: 301,
       high: Infinity
     },
-    rawPM2_5: {
+    [DataTypeKeys.pm2_5]: {
       low: 225.5,
       high: Infinity
     },
-    rawPM10: {
+    [DataTypeKeys.pm10_raw]: {
       low: 425,
-      high: Infinity
-    },
-    rawCO2: {
-      low: 3001,
       high: Infinity
     },
     description: 'Health warning of emergency conditions: everyone is more likely to be affected',
@@ -229,12 +204,135 @@ export const AQI_Database: BaseCategory[] = [
   },
 ];
 
+export const CO2_Database: BaseCategory[] = [
+  {
+    id: 0,
+    category: 'Good',
+    color: {
+      Light: colors.green[lightShade],
+      Dark: colors.green[darkShade]
+    },
+    [DataTypeKeys.co2]: {
+      low: 0,
+      high: 700
+    },
+    description: 'CO2 level is excellent. No health effects expected.',
+    healthSuggestions: {
+      outdoors: 'Enjoy outdoor activities, CO2 level is great!',
+      indoors_generic: 'Indoor CO2 level is safe, enjoy.',
+      indoors_dining_hall: 'Indoor air is great for dining. Enjoy your meal!',
+      indoors_gym: 'Indoor CO2 level is ideal for physical activities.',
+      indoors_vulnerable: 'CO2 level is safe for everyone, including sensitive groups.'
+    }
+  },
+  {
+    id: 1,
+    category: 'Moderate',
+    color: {
+      Light: "#ffb600",
+      Dark: colors.yellow[darkShade + 200]
+    },
+    [DataTypeKeys.co2]: {
+      low: 701,
+      high: 1000
+    },
+    description: 'CO2 level is acceptable but may cause slight discomfort for sensitive individuals.',
+    healthSuggestions: {
+      outdoors: 'CO2 level is acceptable. Enjoy outdoor activities.',
+      indoors_generic: 'CO2 levels indoor is acceptable but pay attention to good ventilation.',
+      indoors_dining_hall: 'Consider sitting in well-ventilated areas for comfort.',
+      indoors_gym: 'CO2 level is moderate. Consider taking breaks during exercise.',
+      indoors_vulnerable: 'Sensitive groups may feel slight discomfort. Ensure good airflow indoors.'
+    }
+  },
+  {
+    id: 2,
+    category: 'Unhealthy for Sensitive Groups',
+    color: {
+      Light: colors.orange[lightShade],
+      Dark: colors.orange[darkShade]
+    },
+    [DataTypeKeys.co2]: {
+      low: 1001,
+      high: 1500
+    },
+    description: 'Sensitive individuals may experience discomfort due to higher CO2 levels.',
+    healthSuggestions: {
+      outdoors: 'Sensitive individuals may need to take short breaks outdoors.',
+      indoors_generic: 'Ensure good ventilation indoors, as CO2 levels may cause discomfort.',
+      indoors_dining_hall: 'Sensitive individuals should avoid crowded dining areas.',
+      indoors_gym: 'Take breaks during intense activities. Ventilate the space well.',
+      indoors_vulnerable: 'Monitor air quality closely and ventilate, particularly for individuals with respiratory issues.'
+    }
+  },
+  {
+    id: 3,
+    category: 'Unhealthy',
+    color: {
+      Light: colors.red[lightShade],
+      Dark: colors.red[darkShade]
+    },
+    [DataTypeKeys.co2]: {
+      low: 1501,
+      high: 2000
+    },
+    description: 'CO2 level is high and may cause noticeable discomfort for many people, such as dizziness and reduced cognitive functions.',
+    healthSuggestions: {
+      outdoors: 'Reduce outdoor activities if you experience discomfort.',
+      indoors_generic: 'Consider ventilating indoor spaces more frequently to reduce CO2 levels. Open windows if outdoor air quality is not poor.',
+      indoors_dining_hall: 'Avoid crowded areas and ensure the dining hall is well-ventilated.',
+      indoors_gym: 'Limit the intensity of physical activities indoors due to CO2 buildup. Open windows if outdoor air quality is not poor.',
+      indoors_vulnerable: 'Sensitive groups should limit time in areas with poor ventilation. Open windows if outdoor air quality is not poor'
+    }
+  },
+  {
+    id: 4,
+    category: 'Very Unhealthy',
+    color: {
+      Light: colors.purple[lightShade],
+      Dark: colors.purple[darkShade]
+    },
+    [DataTypeKeys.co2]: {
+      low: 2001,
+      high: 3000
+    },
+    description: 'CO2 level is very high, and health effect is likely for everyone, such as dizziness and reduced cognitive functions. Indoor air is likely to have a stale smell.',
+    healthSuggestions: {
+      outdoors: 'Limit outdoor exposure if you feel uncomfortable or lightheaded.',
+      indoors_generic: 'Improve ventilation by opening windows or consider moving to a different area with better air quality.',
+      indoors_dining_hall: 'Avoid dining in areas with poor ventilation; consider takeaways. Open windows.',
+      indoors_gym: 'It is unsafe for strenuous activities indoors. Reduce or avoid exercise. Open windows.',
+      indoors_vulnerable: 'Move vulnerable individuals to areas with better air quality and ventilation. Open windows.'
+    }
+  },
+  {
+    id: 5,
+    category: 'Hazardous',
+    color: {
+      Light: maroon[lightShade],
+      Dark: maroon[darkShade]
+    },
+    [DataTypeKeys.co2]: {
+      low: 3001,
+      high: Infinity
+    },
+    description: 'CO2 level is dangerously high, and everyone is at risk of health effects, such as dizziness and reduced cognitive functions. Indoor air is likely to have a stale smell.',
+    healthSuggestions: {
+      outdoors: 'Avoid outdoor activities as much as possible if CO2 levels remain this high.',
+      indoors_generic: 'Avoid staying in poorly ventilated areas; seek fresh air immediately. Open windows.',
+      indoors_dining_hall: 'Do not stay in the dining hall. Get food to go and seek better air quality. Open windows.',
+      indoors_gym: 'Physical activity is not safe indoors at these CO2 levels. Open windows.',
+      indoors_vulnerable: 'Vulnerable individuals should be evacuated to safer environments immediately. Open windows to ventilate indoor spaces.'
+    }
+  }
+];
+
 // From https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme680-ds001.pdf
 export const VOC_Database: BaseCategory[] = [
   {
     id: 0,
     category: 'Excellent',
-    rawVOC: {
+    [DataTypeKeys.voc]: {
       low: 0,
       high: 50
     },
@@ -254,7 +352,7 @@ export const VOC_Database: BaseCategory[] = [
   {
     id: 1,
     category: 'Good',
-    rawVOC: {
+    [DataTypeKeys.voc]: {
       low: 51,
       high: 100
     },
@@ -274,7 +372,7 @@ export const VOC_Database: BaseCategory[] = [
   {
     id: 2,
     category: 'Lightly Polluted',
-    rawVOC: {
+    [DataTypeKeys.voc]: {
       low: 101,
       high: 150
     },
@@ -294,7 +392,7 @@ export const VOC_Database: BaseCategory[] = [
   {
     id: 3,
     category: 'Moderately Polluted',
-    rawVOC: {
+    [DataTypeKeys.voc]: {
       low: 151,
       high: 200
     },
@@ -314,7 +412,7 @@ export const VOC_Database: BaseCategory[] = [
   {
     id: 4,
     category: 'Heavily Polluted',
-    rawVOC: {
+    [DataTypeKeys.voc]: {
       low: 201,
       high: 250
     },
@@ -334,7 +432,7 @@ export const VOC_Database: BaseCategory[] = [
   {
     id: 5,
     category: 'Severely Polluted',
-    rawVOC: {
+    [DataTypeKeys.voc]: {
       low: 251,
       high: 350
     },
@@ -354,7 +452,7 @@ export const VOC_Database: BaseCategory[] = [
   {
     id: 6,
     category: 'Extremely Polluted',
-    rawVOC: {
+    [DataTypeKeys.voc]: {
       low: 351,
       high: Infinity
     },
@@ -386,7 +484,7 @@ export const HeatIndex_Database: BaseCategory[] = [
       low: -Infinity,
       high: 80
     },
-    heat_index_C: {
+    [DataTypeKeys.heat_index_C]: {
       low: -Infinity,
       high: 26.7
     },
@@ -410,7 +508,7 @@ export const HeatIndex_Database: BaseCategory[] = [
       low: 80.1,
       high: 90
     },
-    heat_index_C: {
+    [DataTypeKeys.heat_index_C]: {
       low: 26.7,
       high: 32.2
     },
@@ -434,7 +532,7 @@ export const HeatIndex_Database: BaseCategory[] = [
       low: 90.1,
       high: 105
     },
-    heat_index_C: {
+    [DataTypeKeys.heat_index_C]: {
       low: 32.3,
       high: 40.5
     },
@@ -458,7 +556,7 @@ export const HeatIndex_Database: BaseCategory[] = [
       low: 105.1,
       high: 130
     },
-    heat_index_C: {
+    [DataTypeKeys.heat_index_C]: {
       low: 40.6,
       high: 54.4
     },
@@ -482,7 +580,7 @@ export const HeatIndex_Database: BaseCategory[] = [
       low: 130.1,
       high: Infinity
     },
-    heat_index_C: {
+    [DataTypeKeys.heat_index_C]: {
       low: 54.5,
       high: Infinity
     },
@@ -497,97 +595,33 @@ export const HeatIndex_Database: BaseCategory[] = [
   }
 ];
 
-export const getCategoryColorAxis = ({
-  themePreference = ThemePreferences.light,
-  dataTypeKey,
-  isGradient
-}: {
-  themePreference?: keyof ThemeColor;
-  dataTypeKey: DataTypeKey;
-  isGradient: boolean;
-}): GradientColorAxisResult | string[] => {
-  const dataType = DataTypes[dataTypeKey];
-  const thresholdMappingName = dataType.threshold_mapping_name as keyof BaseCategory;
+export const getCategoryDatabaseForDataType = (
+  dataType: DataTypeKey
+): BaseCategory[] | null => {
+  switch (dataType) {
+    case DataTypeKeys.aqi:
+    case DataTypeKeys.pm2_5:
+    case DataTypeKeys.pm10_raw:
+      return AQI_Database;
 
-  let database: BaseCategory[];
-  let defaultValueForAlert: number, defaultValueForChildAlert: number;
-  switch (dataTypeKey) {
+    case DataTypeKeys.co2:
+      return CO2_Database;
+
     case DataTypeKeys.voc:
-      database = VOC_Database;
-      defaultValueForAlert = (database[3][thresholdMappingName] as { low: number }).low;
-      defaultValueForChildAlert = (database[2][thresholdMappingName] as { low: number }).low;
-      break;
+      return VOC_Database;
+
     case DataTypeKeys.heat_index_C:
-      database = HeatIndex_Database;
-      defaultValueForAlert = (database[3][thresholdMappingName] as { low: number }).low;
-      defaultValueForChildAlert = (database[2][thresholdMappingName] as { low: number }).low;
-      break;
+      return HeatIndex_Database;
+
+    // Those without categories (continuous data type)
+    case DataTypeKeys.temperature_C:
+    case DataTypeKeys.rel_humidity:
+    case DataTypeKeys.pressure:
+      return null;
+
     default:
-      database = AQI_Database;
-      defaultValueForAlert = (database[3][thresholdMappingName] as { low: number }).low;
-      defaultValueForChildAlert = (database[2][thresholdMappingName] as { low: number }).low;
-      break;
-  }
-
-  // Return an object with a color gradient of colors associated with different categories for this dataType
-  if (isGradient) {
-    // If the minimum value is -Infinity, set it to a reasonable finite value for gradient axis
-    let minValue = (database[0][thresholdMappingName] as { low: number }).low;
-    if (minValue === -Infinity) {
-      // Stack another interval of the next higher category if the lowest category has a -Infinity low threshold
-      const secondLowestEntry = database[1][thresholdMappingName] as { low: number; high: number };
-      const secondLowestCategoryRange = secondLowestEntry.high - secondLowestEntry.low;
-      minValue = secondLowestEntry.low - secondLowestCategoryRange;
-    }
-
-    let maxValue = (database[database.length - 1][thresholdMappingName] as { high: number }).high;
-    if (maxValue === Infinity) {
-      // just stack another interval of the next lower category if the highest category has an Infinity high threshold
-      const secondHighestEntry = database[database.length - 2][thresholdMappingName] as { low: number; high: number };
-      const secondHighestCategoryRange = secondHighestEntry.high - secondHighestEntry.low;
-      maxValue = secondHighestEntry.high + secondHighestCategoryRange;
-    }
-
-    return {
-      minValue,
-      maxValue,
-      defaultValueForAlert,
-      defaultValueForChildAlert,
-      gradientSteps: dataType.gradient_steps,
-      colors: database.flatMap(category => {
-        const thresholds = category[thresholdMappingName] as { low: number; high: number };
-        const { low, high } = thresholds;
-        return [
-          { color: category.color[themePreference], offset: low === -Infinity ? minValue : low },
-          { color: category.color[themePreference], offset: high === Infinity ? maxValue : high }
-        ];
-      })
-    };
-  }
-
-  // Just return an array with colors associated with different categories for this dataType
-  else {
-    const colorArray = database.map(category => category.color[themePreference]);
-    const noDataColor = colors.grey[themePreference === ThemePreferences.dark ? darkShade + 400 : lightShade - 300];
-    colorArray.push(noDataColor);
-
-    return colorArray;
+      return assertNever(dataType);
   }
 };
 
-export const getTextColorsForAQI = ({ themePreference = ThemePreferences.light }: {
-  themePreference?: keyof ThemeColor;
-}): Record<number | string, string> => {
-  const obj = AQI_Database
-    .reduce<Record<number | string, string>>((acc, category) => {
-      return ({
-        ...acc,
-        [category.id]: category.color[themePreference]
-      });
-    }, {});
 
-  obj[SensorStatus.offline] = INACTIVE_SENSOR_COLORS[themePreference];
-  obj.screen = INACTIVE_SENSOR_COLORS.screen;
-
-  return obj;
-};

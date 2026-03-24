@@ -5,7 +5,6 @@ export const DataTypeKeys = {
   co2: "co2",
   voc: "voc",
   temperature_C: "temperature_C",
-  temperature_F: "temperature_F",
   pressure: "pressure",
   rel_humidity: "rel_humidity",
   heat_index_C: "heat_index_C"
@@ -17,16 +16,15 @@ export type DataTypeKey = typeof DataTypeKeys[keyof typeof DataTypeKeys];
  * Interface defining the properties for each data type.
  */
 export interface DataType {
-  name: string;
-  name_short: string;
-  name_title: string;
-  db_name?: string; // Maps dataType to the database column name
-  threshold_mapping_name?: string; // Maps to threshold breakpoints in AQI/VOC/HeatIndex databases
-  color_axis: string;
-  gradient_steps: number;
-  unit: string;
-  pattern: string; // Number format pattern, e.g. "#.#" for 1 decimal place
-  has_category: boolean; // Whether this datatype is categorizable (vs continuous)
+  name: string; // Full name
+  name_short: string; // Short name
+  name_title: string; // Title
+  db_name?: string; // Maps the dataType to the column name in the database
+  color_axis: string; // Used in the frontend to determine the color scheme used for rendering this datatype
+  gradient_steps: number; // Used in the frontend to determine the number of gradient steps for the color axis
+  unit: string; // Datatype's unit
+  pattern: string; // Used in the frontend to determine number of decimal places, e.g #.# for 1 decimal place
+  has_category: boolean; // If this datatype is categorizable (or continuous otherwise)
 }
 
 export const DataTypes: Record<DataTypeKey, DataType> = {
@@ -34,7 +32,6 @@ export const DataTypes: Record<DataTypeKey, DataType> = {
     name: "Heat Index",
     name_short: "Heat Index",
     name_title: "Heat Index °C",
-    threshold_mapping_name: "heat_index_C",
     color_axis: "heat_index_C",
     gradient_steps: 500,
     unit: "°C",
@@ -45,7 +42,6 @@ export const DataTypes: Record<DataTypeKey, DataType> = {
     name: "Air Quality Index (US)",
     name_short: "AQI",
     name_title: "AQI",
-    threshold_mapping_name: "aqiUS",
     color_axis: "aqi",
     gradient_steps: 5000,
     unit: "",
@@ -57,7 +53,6 @@ export const DataTypes: Record<DataTypeKey, DataType> = {
     name_short: "PM2.5",
     name_title: "PM2.5",
     db_name: "pm2.5",
-    threshold_mapping_name: "rawPM2_5",
     color_axis: "pm2.5",
     gradient_steps: 20000,
     unit: "μg/m3",
@@ -71,7 +66,6 @@ export const DataTypes: Record<DataTypeKey, DataType> = {
     db_name: "pm10_raw",
     color_axis: "pm10",
     gradient_steps: 2000,
-    threshold_mapping_name: "rawPM10",
     unit: "μg/m3",
     pattern: "#",
     has_category: true
@@ -83,7 +77,6 @@ export const DataTypes: Record<DataTypeKey, DataType> = {
     db_name: "co2",
     color_axis: "co2",
     gradient_steps: 5000,
-    threshold_mapping_name: "rawCO2",
     unit: "PPM",
     pattern: "#",
     has_category: true
@@ -95,7 +88,6 @@ export const DataTypes: Record<DataTypeKey, DataType> = {
     db_name: "voc",
     color_axis: "voc",
     gradient_steps: 5000,
-    threshold_mapping_name: "rawVOC",
     unit: "",
     pattern: "#",
     has_category: true
@@ -111,17 +103,17 @@ export const DataTypes: Record<DataTypeKey, DataType> = {
     pattern: "#.#",
     has_category: false
   },
-  [DataTypeKeys.temperature_F]: {
-    name: "Temperature",
-    name_short: "Temp.",
-    name_title: "Temperature °F",
-    db_name: "temperature",
-    color_axis: "temperature",
-    gradient_steps: 20,
-    unit: "°F",
-    pattern: "#.#",
-    has_category: false
-  },
+  // [DataTypeKeys.temperature_F]: {
+  //   name: "Temperature",
+  //   name_short: "Temp.",
+  //   name_title: "Temperature °F",
+  //   db_name: "temperature",
+  //   color_axis: "temperature",
+  //   gradient_steps: 20,
+  //   unit: "°F",
+  //   pattern: "#.#",
+  //   has_category: false
+  // },
   [DataTypeKeys.pressure]: {
     name: "Pressure",
     name_short: "Pressure",
@@ -146,26 +138,6 @@ export const DataTypes: Record<DataTypeKey, DataType> = {
   }
 };
 
-interface DataTypeWithKey extends DataType {
+export interface DataTypeWithKey extends DataType {
   key: DataTypeKey;
 }
-
-export const returnSelectedDataType = ({
-  dataTypeKey,
-  dataTypes,
-  showUnit = false
-}: {
-  dataTypeKey: DataTypeKey;
-  dataTypes: DataTypeWithKey[];
-  showUnit?: boolean;
-}): string[] => {
-  return dataTypes
-    .filter(dataType => dataType.key === dataTypeKey)
-    .map((dataType) => {
-      if (showUnit) {
-        const unitString = `${dataType.unit !== '' ? ` (${dataType.unit})` : ''}`;
-        return `${dataType.name_short}${unitString}`;
-      }
-      return dataType.name_short;
-    });
-};

@@ -1,6 +1,6 @@
 import { ThresholdSlider } from "./ThresholdSlider";
-import { DataTypeKeys, DataTypes } from "../../../../../../Utils/AirQuality/DataTypes";
-import { AQI_Database, HeatIndex_Database, VOC_Database } from "../../../../../../Utils/AirQuality/AirQualityIndexHelper";
+import { DataTypeKeys, DataTypes } from "../../../../../../business-domain/data-types/data-type.types";
+import { AQI_Database, HeatIndex_Database, VOC_Database } from "../../../../../../business-domain/air-quality/air-quality.database";
 import { useTheme } from '@mui/material';
 import { generateCssBackgroundGradient } from "../../../../../../Utils/Gradient/GradientUtils";
 import { getTranslation } from "../../../../../../Utils/UtilFunctions";
@@ -60,7 +60,7 @@ export const ThresholdComponentWrapper = (props) => {
             marks = database
                 .filter((_, index) => index !== 0) // do not return the lowest category
                 .map((element) => {
-                    const val = element[dataType.threshold_mapping_name].low;
+                    const val = element[currentDataTypeKey].low;
                     return {
                         value: val,
                         label: getTranslation(element.category, language)

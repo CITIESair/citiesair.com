@@ -1,9 +1,10 @@
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, styled } from '@mui/material';
 import parse from 'html-react-parser';
 import { getTranslation, replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
-import { AQI_Database } from '../../Utils/AirQuality/AirQualityIndexHelper';
+import { AQI_Database } from '../../business-domain/air-quality/air-quality.database';
 import { usePreferences } from '../../ContextProviders/PreferenceContext';
 import { CITIESair } from '../../Utils/GlobalVariables';
+import { DataTypeKeys } from '../../business-domain/data-types/data-type.types';
 
 export const StyledTable = styled(Table, {
   shouldForwardProp: (prop) => prop !== 'tiny',
@@ -74,10 +75,10 @@ function AirQualityIndexTable(props) {
                   {getTranslation(element.category, language)}
                 </TableCell>
                 <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
-                  {returnFormattedBreakpoints(element.aqiUS.low, element.aqiUS.high)}
+                  {returnFormattedBreakpoints(element[DataTypeKeys.aqi].low, element[DataTypeKeys.aqi].high)}
                 </TableCell>
                 <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
-                  {returnFormattedBreakpoints(element.rawPM2_5.low, element.rawPM2_5.high)}
+                  {returnFormattedBreakpoints(element[DataTypeKeys.pm2_5].low, element[DataTypeKeys.pm2_5].high)}
                 </TableCell>
                 {!hideAQIDescription && <TableCell align="left">{element.description}</TableCell>}
                 {!hideAQIDescription

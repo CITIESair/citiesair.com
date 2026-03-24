@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, useState, useEffect, useCallback } from 'react';
 import { isValidArray } from '../Utils/UtilFunctions';
-import { DataTypes } from '../Utils/AirQuality/DataTypes';
+import { DataTypes } from '../business-domain/data-types/data-type.types';
 import useSchoolMetadata from '../hooks/useSchoolMetadata';
 import { AirQualityAlertKeys, getAlertDefaultPlaceholder } from '../Components/AirQuality/AirQualityAlerts/AlertUtils';
 

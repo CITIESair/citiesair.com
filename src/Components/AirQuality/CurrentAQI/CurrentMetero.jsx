@@ -2,31 +2,47 @@ import { Typography } from "@mui/material"
 import ThermostatIcon from '@mui/icons-material/Thermostat';
 import WaterDropIcon from '@mui/icons-material/WaterDrop';
 import { ElementSizes } from "./CurrentAQIGridSize";
-import { getFormattedTemperature, TemperatureUnits } from "../../../Utils/AirQuality/TemperatureUtils";
+import { convertTemperature, TemperatureUnits } from "../../../business-domain/air-quality/temperature.utils";
 import { usePreferences } from "../../../ContextProviders/PreferenceContext";
 
-export const CurrentWeather = ({ size, current, roundTemperature, showWeatherText }) => {
+const TemperatureString = ({ temperature, roundTemperature }) => {
     const { temperatureUnitPreference } = usePreferences();
+    const formattedTemperature = roundTemperature ? Math.round(temperature) : temperature;
+
+    const temperatureUnitLabel = temperatureUnitPreference?.charAt(0).toUpperCase();
 
     return (
+        <>
+            {formattedTemperature ? convertTemperature(
+                temperature,
+                TemperatureUnits.CELSIUS,
+                temperatureUnitPreference
+            ) : "--"}
+            °{temperatureUnitLabel}
+        </>
+    );
+}
+
+export const CurrentWeather = ({ size, current, roundTemperature, showWeatherText = true, showWeatherIcon = true }) => {
+    return (
         <Typography variant={ElementSizes[size].metero}>
-            {showWeatherText ? "Weather:" : null}
-            <ThermostatIcon />
-            {
-                getFormattedTemperature({
-                    rawTemp: roundTemperature ? Math.round(current?.temperature) : current?.temperature,
-                    currentUnit: TemperatureUnits.celsius,
-                    returnUnit: temperatureUnitPreference
-                })
-            }
+            {showWeatherText ?
+                <Typography variant='caption' fontWeight="500">Weather: </Typography>
+                : null}
+
+            {showWeatherIcon ? <ThermostatIcon /> : null}
+            <TemperatureString temperature={current?.temperature} roundTemperature={roundTemperature} />
+
             &nbsp;&nbsp;-&nbsp;
-            <WaterDropIcon sx={{ transform: 'scaleX(0.9)' }} />
+
+            {showWeatherIcon ? <WaterDropIcon sx={{ transform: 'scaleX(0.9)' }} /> : null}
             {current?.rel_humidity ? Math.round(current?.rel_humidity) : "--"}%
+
         </Typography>
     )
 }
 
-export const CurrentHeatIndex = ({ sensor, current, size }) => {
+export const CurrentHeatIndex = ({ sensor, current, size, roundTemperature }) => {
     const { temperatureUnitPreference } = usePreferences();
 
     if (!sensor || !current) return null;
@@ -39,11 +55,7 @@ export const CurrentHeatIndex = ({ sensor, current, size }) => {
             Heat Index:&nbsp;
             {heatIndexObject && heatIndexObject.val !== undefined && heatIndexObject.val !== null
                 ? <>
-                    {getFormattedTemperature({
-                        rawTemp: heatIndexObject.val,
-                        currentUnit: TemperatureUnits.celsius,
-                        returnUnit: temperatureUnitPreference
-                    })}
+                    <TemperatureString temperature={heatIndexObject.val} roundTemperature={roundTemperature} />
                     &nbsp;
                     ({heatIndexObject.category || '--'})
                 </>

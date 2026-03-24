@@ -6,7 +6,7 @@ import AggregationType from './AggregationType';
 import { AggregationTypeMetadata } from './DateRangePickerUtils';
 import { useTheme } from '@mui/material';
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
-import { AQI_Database } from '../../Utils/AirQuality/AirQualityIndexHelper';
+import { AQI_Database } from '../../business-domain/air-quality/air-quality.database';
 
 const pulse = keyframes`
   0% { opacity: 1; }

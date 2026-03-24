@@ -1,8 +1,9 @@
 import { Box, Stack, Tooltip, Typography } from "@mui/material";
-import { AQI_Database } from "../../../Utils/AirQuality/AirQualityIndexHelper";
+import { AQI_Database } from "../../../business-domain/air-quality/air-quality.database";
 import { getTranslation } from "../../../Utils/UtilFunctions";
 import { CurrentAQIGridSize, ElementSizes } from "./CurrentAQIGridSize";
 import { usePreferences } from "../../../ContextProviders/PreferenceContext";
+import { DataTypeKeys } from "../../../business-domain/data-types/data-type.types";
 
 const AQIScale = (props) => {
     const { isOnBannerPage, isSmallScreen, showLabel = true, size = CurrentAQIGridSize.medium } = props;
@@ -40,7 +41,7 @@ const AQIScale = (props) => {
                             lineHeight={1}
                             color="text.secondary"
                         >
-                            <small>{element.aqiUS.low === 301 ? '301+' : element.aqiUS.low}</small>
+                            <small>{element[DataTypeKeys.aqi].high === Infinity ? `${element[DataTypeKeys.aqi].low}+` : element[DataTypeKeys.aqi].low}</small>
                         </Typography>
                         <Box
                             backgroundColor={element.color[themePreference]}

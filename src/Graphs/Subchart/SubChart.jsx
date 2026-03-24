@@ -16,7 +16,7 @@ import { generateSvgFillGradient, BackgroundGradient } from '../../Utils/Gradien
 
 import CustomDateRangePicker from '../../Components/DateRangePicker/CustomDateRangePicker'
 import { isValidArray } from '../../Utils/UtilFunctions';
-import { returnSelectedDataType } from '../../Utils/AirQuality/DataTypes';
+import { returnFormattedDataType } from "../../business-domain/data-types/data-type.formatter";
 
 import AxesPicker from '../../Components/AxesPicker/AxesPicker';
 
@@ -98,12 +98,12 @@ export default function SubChart(props) {
     return (
       <>
         {
-          !shouldRenderChart ? <NoChartToRender dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} /> : null
+          !shouldRenderChart ? <NoChartToRender dataType={returnFormattedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })} /> : null
         }
 
         <NivoCalendarChart
           dataArray={shouldRenderChart ? calendarDataArray : []}
-          valueRangeBoxTitle={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes, showUnit: true })}
+          valueRangeBoxTitle={returnFormattedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes, showUnit: true })}
           options={options}
           windowSize={windowSize}
         />
@@ -667,7 +667,7 @@ export default function SubChart(props) {
       ) :
       (
         <NoChartToRender
-          dataType={returnSelectedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })}
+          dataType={returnFormattedDataType({ dataTypeKey: selectedDataType, dataTypes: allowedDataTypes })}
           // If the visualization has a series selector or control, we need to account for its height
           // And since the height is a string, we need to parse it to a number before adding to it
           height={seriesSelector || hasChartControl ? (parseFloat(height) * 1.2 + 'vw') : height}

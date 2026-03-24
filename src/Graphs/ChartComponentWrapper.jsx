@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import { Box, Tab, useMediaQuery, Typography, Menu, MenuItem, Stack } from '@mui/material/';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-import { DataTypes } from '../Utils/AirQuality/DataTypes';
+import { DataTypes } from '../business-domain/data-types/data-type.types';
 
 import SubChart from './Subchart/SubChart';
 

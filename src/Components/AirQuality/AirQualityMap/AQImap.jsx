@@ -11,18 +11,20 @@ import LaunchIcon from '@mui/icons-material/Launch';
 
 import { getFormattedLastSeen, SensorStatus } from "../SensorStatus";
 
-import { getFormattedTemperature, TemperatureUnits } from '../../../Utils/AirQuality/TemperatureUtils';
+import { convertTemperature, TemperatureUnits } from '../../../business-domain/air-quality/temperature.utils';
 
 import { styled } from '@mui/material/styles';
 import { calculateCenterAndBounds, disableInteractionParameters, disableZoomParameters, displayAqiCategory, displayAqiValue, displayPM2_5, FitMapToDatapoints, getMiniMapColors, getTileUrl, MapPlaceholder, POSITION_CLASSES, tileAccessToken, tileAttribution, TileOptions } from './AirQualityMapUtils';
 import { isValidArray } from '../../../Utils/UtilFunctions';
 import LoadingAnimation from '../../LoadingAnimation';
-import { DataTypeKeys, DataTypes } from '../../../Utils/AirQuality/DataTypes';
+import { DataTypeKeys } from '../../../business-domain/data-types/data-type.types';
 import getAQIDivIcon from './AQIDivIcon';
-import { calculateAQI } from '../../../Utils/AirQuality/aqiCalculator';
+import { calculateAQIforSingleDataType } from '../../../business-domain/air-quality/air-quality.calculator';
 import { useNetworkStatus } from '../../../ContextProviders/NetworkStatusContext';
 import useSchoolMetadata from '../../../hooks/useSchoolMetadata';
 import { usePreferences } from '../../../ContextProviders/PreferenceContext';
+import { CurrentWeather } from '../CurrentAQI/CurrentMetero';
+import { CurrentAQIGridSize } from '../CurrentAQI/CurrentAQIGridSize';
 
 const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
     '& .leaflet-popup-tip-container': {
@@ -231,7 +233,7 @@ const AQImap = (props) => {
         const avgPM25 = values.length ? values.reduce((a, b) => a + b) / values.length : null;
         const roundedPM25 = Number.isFinite(avgPM25) ? Math.round(avgPM25 * 10) / 10 : null;
         const { aqi, category, categoryIndex } =
-            calculateAQI(roundedPM25, DataTypes[DataTypeKeys.pm2_5].threshold_mapping_name);
+            calculateAQIforSingleDataType(roundedPM25, DataTypeKeys.pm2_5);
 
         // Aggregate sensor status: at least one sensor active -> this cluster active
         const allStatuses = cluster
@@ -345,23 +347,18 @@ const AQImap = (props) => {
                             </Typography>
 
                             {
-                                schoolMetadata?.sensors.find(
-                                    sensor => sensor.sensor_id === location.sensor.sensor_id
-                                )?.allowedDataTypes?.includes(DataTypeKeys.temperature_C) && (
-                                    <Typography
-                                        variant="caption"
-                                        sx={{ display: 'block' }}
-                                    >
-                                        <Typography variant='caption' fontWeight="500">Weather: </Typography>
-                                        {getFormattedTemperature({
-                                            rawTemp: location.current?.temperature,
-                                            currentUnit: TemperatureUnits.celsius,
-                                            returnUnit: temperatureUnitPreference
-                                        })}
-                                        &nbsp;-&nbsp;
-                                        {location.current?.rel_humidity ? Math.round(location.current?.rel_humidity) : "--"}%
-                                    </Typography>
-                                )
+                                <Typography
+                                    variant="caption"
+                                    sx={{ display: 'block' }}
+                                >
+                                    <CurrentWeather
+                                        size={CurrentAQIGridSize.small}
+                                        current={location.current}
+                                        showWeatherText={true}
+                                        roundTemperature={false}
+                                        showWeatherIcon={false}
+                                    />
+                                </Typography>
                             }
 
                             <Typography variant="caption">

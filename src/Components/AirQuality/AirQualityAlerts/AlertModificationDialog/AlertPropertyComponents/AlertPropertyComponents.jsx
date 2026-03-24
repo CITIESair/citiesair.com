@@ -5,7 +5,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PlaceIcon from '@mui/icons-material/Place';
 import { AirQualityAlertKeys, getAlertDefaultPlaceholder, SharedColumnHeader } from "../../AlertUtils";
 import TimeRangeSelector from "../../../../TimeRange/TimeRangeSelector";
-import { DataTypes } from "../../../../../Utils/AirQuality/DataTypes";
+import { DataTypes } from "../../../../../business-domain/data-types/data-type.types";
 import { capitalizePhrase } from "../../../../../Utils/UtilFunctions";
 import { HOURS } from "../../../../TimeRange/TimeRangeUtils";
 import { Checkbox, DialogContentText, FormControlLabel, FormGroup, Grid, Stack, Switch, Typography, useTheme } from "@mui/material";
