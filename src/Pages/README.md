@@ -31,7 +31,7 @@ As alluded to earlier, `Project` visualizes fetched data for each school:
 - Current sensor measurements
 - Charts and subcharts
 - Map (if `schoolMetadata.has_map === true`)
-- Explanation of US AQI and  [AirQualityIndexLegendQuickGlance](/src/Components/AirQuality/AirQualityIndexLegendQuickGlance.jsx)
+- Explanation of US AQI and  [AirQualityIndexLegendQuickGlance](/src/Components/AirQuality/AirQualityIndexLegendQuickGlance.tsx)
   ![us-aqi-explanation](/documentation/us-aqi-explanation.png)
 
   ![aqi-at-a-glance](/documentation/aqi-at-a-glance.png)

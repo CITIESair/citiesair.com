@@ -8,16 +8,24 @@ import { FadeInButtonForSpeedDial } from '../SpeedDial/FadeInButtonForSpeedDial'
 import * as Tracking from '../../Utils/Tracking';
 import AirQualityIndexTable from './AirQualityIndexTable';
 
-export default function AirQualityIndexLegendQuickGlance(props) {
+type AirQualityIndexLegendQuickGlanceProps = Omit<
+  React.ComponentProps<typeof FadeInButtonForSpeedDial>,
+  'children' | 'distanceFromBottomOfWindow'
+>;
+
+export default function AirQualityIndexLegendQuickGlance(props: AirQualityIndexLegendQuickGlanceProps) {
   // Mechanism for opening and closing the Quick Glance on hover
-  const [anchorEl, setAnchorEl] = useState(null);
-  const handlePopperOpen = (event) => {
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+  const handlePopperOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
     Tracking.sendEventAnalytics(Tracking.Events.airQualityIndexLegendQuickGlance);
   };
+
   const handlePopperClose = () => {
     setAnchorEl(null);
   };
+
   const open = Boolean(anchorEl);
 
   return (
@@ -34,7 +42,7 @@ export default function AirQualityIndexLegendQuickGlance(props) {
           color="primary"
         >
           <Stack direction="column" alignItems="center">
-            <AirIcon fontSize="1rem" />
+            <AirIcon sx={{ fontSize: '1rem' }} />
             <Typography variant="body2" fontWeight="500">
               AQI
             </Typography>
@@ -51,7 +59,6 @@ export default function AirQualityIndexLegendQuickGlance(props) {
         open={open}
         anchorEl={anchorEl}
         placement="top-end"
-        onClose={handlePopperClose}
         keepMounted
         transition
       >

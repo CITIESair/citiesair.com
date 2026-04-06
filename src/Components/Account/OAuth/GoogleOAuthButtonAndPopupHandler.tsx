@@ -1,21 +1,42 @@
 import { Button } from "@mui/material";
-import { useTheme } from '@mui/material';
-import { AppRoutes } from '../../../Utils/AppRoutes';
-import { useLocation, useNavigate } from "react-router-dom";
+import { useTheme } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import { SnackbarMetadata } from '../../../Utils/SnackbarMetadata';
-import { LoginTypes } from "../Utils";
+import { useLocation, useNavigate } from "react-router-dom";
+
 import { useSnackbar } from "notistack";
-import { successfulAuthenticationState } from "../../../types/AuthenticationState";
+
+import { AppRoutes } from "../../../Utils/AppRoutes";
+import { SnackbarMetadata } from "../../../Utils/SnackbarMetadata";
 import { useUser } from "../../../ContextProviders/UserContext";
+import { successfulAuthenticationState } from "../../../types/AuthenticationState";
+import type { UserData } from "../../../types/UserData";
+import { LoginTypes } from "../Utils";
 
 const svgs = {
-    light: 'images/oauth/google/web_light_sq_ctn.svg',
-    dark: 'images/oauth/google/web_dark_sq_ctn.svg'
-}
+    light: "images/oauth/google/web_light_sq_ctn.svg",
+    dark: "images/oauth/google/web_dark_sq_ctn.svg",
+} as const;
+
+type GoogleOAuthCallbackMessage =
+    | {
+          type: typeof LoginTypes.google;
+          success: true;
+          user: UserData & { recently_registered?: boolean; message?: string };
+      }
+    | {
+          type: typeof LoginTypes.google;
+          success: false;
+          errorMessage?: string;
+      };
+
+const isGoogleOAuthCallbackMessage = (data: unknown): data is GoogleOAuthCallbackMessage => {
+    if (!data || typeof data !== "object") return false;
+    const maybe = data as { type?: unknown; success?: unknown };
+    return maybe.type === LoginTypes.google && typeof maybe.success === "boolean";
+};
 
 export default function GoogleOAuthButtonAndPopupHandler() {
-    const [isPopupItself, setIsPopupItself] = useState(false);
+    const [isPopupItself, setIsPopupItself] = useState<boolean>(false);
 
     useEffect(() => {
         // Check if the window was opened as a popup
@@ -26,10 +47,10 @@ export default function GoogleOAuthButtonAndPopupHandler() {
 
     const navigate = useNavigate();
     const { setUser, setAuthenticationState } = useUser();
-    const { enqueueSnackbar } = useSnackbar()
+    const { enqueueSnackbar } = useSnackbar();
 
     const theme = useTheme();
-    const currentSvg = theme.palette.mode === 'dark' ? svgs.dark : svgs.light;
+    const currentSvg = theme.palette.mode === "dark" ? svgs.dark : svgs.light;
 
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
@@ -38,22 +59,24 @@ export default function GoogleOAuthButtonAndPopupHandler() {
     const googleOAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=205604064780-1jsjqcvf6isv0up6v29c42uvdigb0pbp.apps.googleusercontent.com&redirect_uri=${window.location.origin}${AppRoutes.googleCallback}&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&access_type=offline&prompt=consent&hl=en`;
 
     const handleMessage = useMemo(
-        () => (event) => {
+        () => (event: MessageEvent) => {
             if (event.origin !== window.location.origin) return;
-            if (event.data?.type !== LoginTypes.google) return;
+            if (!isGoogleOAuthCallbackMessage(event.data)) return;
 
-            if (event.data.success) {
+            if (event.data.success === true) {
                 const userData = event.data.user;
                 if (isPopupItself) {
                     // Send the result to the main window
-                    window.opener.postMessage(
-                        {
-                            type: LoginTypes.password,
-                            success: true,
-                            user: userData,
-                        },
-                        window.location.origin
-                    );
+                    if (window.opener) {
+                        window.opener.postMessage(
+                            {
+                                type: LoginTypes.password,
+                                success: true,
+                                user: userData,
+                            },
+                            window.location.origin
+                        );
+                    }
 
                     window.close(); // Close the popup
                 } else {
@@ -67,7 +90,7 @@ export default function GoogleOAuthButtonAndPopupHandler() {
                     navigate(redirect_url, { replace: true });
                 }
             } else {
-                enqueueSnackbar(event.data.errorMessage, SnackbarMetadata.error);
+                enqueueSnackbar(event.data.errorMessage ?? "Authentication failed", SnackbarMetadata.error);
             }
         },
         [enqueueSnackbar, isPopupItself, navigate, redirect_url, setAuthenticationState, setUser]
@@ -86,11 +109,7 @@ export default function GoogleOAuthButtonAndPopupHandler() {
         const left = (window.screen.width - width) / 2;
         const top = (window.screen.height - height) / 2;
 
-        const popup = window.open(
-            googleOAuthUrl,
-            "GoogleOAuth",
-            `width=${width},height=${height},top=${top},left=${left}`
-        );
+        const popup = window.open(googleOAuthUrl, "GoogleOAuth", `width=${width},height=${height},top=${top},left=${left}`);
 
         if (!popup) {
             alert("Popup blocked. Please enable popups for Google Login.");

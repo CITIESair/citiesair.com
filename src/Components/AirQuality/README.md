@@ -3,7 +3,7 @@
 > This folder groups components that are specifically for displaying air quality measurements in CITIESair. They are strictly unique for CITIESair and can not be found in CITIES Dashboard.
 
 
-### [AirQualityIndexLegendQuickGlance.jsx](./AirQualityIndexLegendQuickGlance.jsx): 
+### [AirQualityIndexLegendQuickGlance.tsx](./AirQualityIndexLegendQuickGlance.tsx): 
 
 ![aqi-at-a-glance](/documentation/aqi-at-a-glance.png)
 
@@ -13,7 +13,7 @@
 
 - Under the hood, it calls component `AirQualityIndexTable` which will be explained next
 
-### [AirQualityIndexTable.jsx](./AirQualityIndexTable.jsx): 
+### [AirQualityIndexTable.tsx](./AirQualityIndexTable.tsx): 
 
 This is a reusable and versatile table that summarizes different AQI categories. It is used in 2 different places with a few visual differences:
 
@@ -21,7 +21,7 @@ This is a reusable and versatile table that summarizes different AQI categories.
   
 - (In `AQIexplanation`) Full-length explanation of AQI right above the first chart in `/dashboard` page: longer, in addition to the color schemes and thresholds, it contains suggestions on what the user can do in each category
     
-### [AQIexplanation.jsx](./AQIexplanation.jsx): 
+### [AQIexplanation.tsx](./AQIexplanation.tsx): 
 
 Utilizes component from [ExpandableSection.jsx](/src/Components/ExpandableSection/ExpandableSection.jsx) to display, with elegance, a short explanation of what the US AQI system is. This can be found in the `/dashboard` page, right above the first chart:
 

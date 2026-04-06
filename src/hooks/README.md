@@ -2,8 +2,8 @@
 
 **Except for:**
 - [UserContext](/src/ContextProviders/UserContext.jsx)
-- [Login](/src/Components/Account/Login.jsx), [Logout](/src/Components/Account/Logout.jsx), [Account Verify](/src/Components/Account/Verify.jsx), [Signup](/src/Components/Account/Signup.jsx)
-- [GoogleOAuthCallback](/src/Components/Account/OAuth/GoogleOAuthCallback.jsx)
+- [Login](/src/Components/Account/Login.tsx), [Logout](/src/Components/Account/Logout.tsx), [Account Verify](/src/Components/Account/Verify.tsx), [SignUp](/src/Components/Account/SignUp.tsx)
+- [GoogleOAuthCallback](/src/Components/Account/OAuth/GoogleOAuthCallback.tsx)
 - [Alerts Unsubcribe](/src/Pages/UnsubscribeAlert.jsx)
 
 ...all data fetches in CITIESair uses **custom React Query hooks** for fetching and mutating server-side data. These hooks provide a consistent interface for retrieving real-time air quality measurements, alerts, school metadata, and user-related information.

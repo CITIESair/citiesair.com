@@ -8,7 +8,7 @@ import { Box, Grid, Stack, Typography, useMediaQuery, useTheme } from '@mui/mate
 
 import { AggregationTypeMetadata, StyledDateRangePicker, returnCustomStaticRanges, returnFormattedDates } from './DateRangePickerUtils';
 import AggregationTypeToggle from './AggregationTypeToggle';
-import AggregationType from './AggregationType';
+import { AggregationType } from '../../shared/constants';
 
 import { differenceInDays, isSameDay } from 'date-fns';
 

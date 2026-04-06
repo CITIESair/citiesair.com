@@ -38,6 +38,12 @@ export interface TextSection extends Section {
   content: string;
 }
 
+/** A section with a title and a single HTML string as content. */
+export interface TitledTextSection extends Section {
+  title: string;
+  content: string;
+}
+
 // ---------------------------------------------------------------------------
 // Auth (login / signup)
 // ---------------------------------------------------------------------------
@@ -123,6 +129,7 @@ export interface SectionData {
   siteDescription: string;
   login: AuthSection;
   signup: AuthSection;
+  emailVerification: TitledTextSection;
   charts: Section;
   topAnchor: Section;
   about: AboutSection;

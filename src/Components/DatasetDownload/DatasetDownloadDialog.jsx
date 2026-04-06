@@ -8,7 +8,7 @@ import LoadingAnimation from '../LoadingAnimation';
 import CustomDialog from '../CustomDialog/CustomDialog';
 import { CITIESair } from '../../Utils/GlobalVariables';
 import useLoginHandler from '../Account/useLoginHandler';
-import AggregationType from '../DateRangePicker/AggregationType';
+import { AggregationType } from '../../shared/constants';
 import useCurrentSensorsData from '../../hooks/useCurrentSensorsData';
 import useDatasetDownload from '../../hooks/useDatasetDownload';
 import { enqueueSnackbar } from 'notistack';

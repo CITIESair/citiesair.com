@@ -1,6 +1,6 @@
 import sectionData from '../../SectionData/sectionData';
 import { getTranslation } from '../../Utils/UtilFunctions';
-import AggregationType from '../DateRangePicker/AggregationType';
+import { AggregationType } from '../../shared/constants';
 
 export const SensorStatus = {
   active: "active",

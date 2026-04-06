@@ -26,7 +26,7 @@ import ScreenHealthSuggestions from '../../Components/AirQuality/AirQualityScree
 import { TypesOfScreen } from '../../Components/AirQuality/AirQualityScreen/ScreenUtils';
 import { useQuery } from '@tanstack/react-query';
 import BlackScreen from './BlackScreen';
-import AggregationType from '../../Components/DateRangePicker/AggregationType';
+import { AggregationType } from '../../shared/constants';
 import { usePreferences } from '../../ContextProviders/PreferenceContext';
 import { useDashboard } from '../../ContextProviders/DashboardContext';
 import { useScreen } from '../../ContextProviders/ScreenContext';

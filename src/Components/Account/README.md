@@ -9,12 +9,12 @@
 - Signup is currently only for individual user to access public institutions like `NYUAD`. Institution Admin cannot create a new account (yet).
 - Email verification is sent to Individual User upon signing up with an email-password combo. No further action is required if they signed up via Google OAuth.
 
-### [UserTypeSelector.jsx](./UserTypeSelector.jsx): 
-Used for both [Login.jsx](./Login.jsx) and [Signup.jsx](./Signup.jsx) to let users choose which type of user they want to be identified for the dashboard. There are two user types at the moment:
+### [UserTypeSelector.tsx](./UserTypeSelector.tsx): 
+Used for both [Login.tsx](./Login.tsx) and [SignUp.tsx](./SignUp.tsx) to let users choose which type of user they want to be identified for the dashboard. There are two user types at the moment:
 - Institution Admin: corresponds to `admin` and `school` in the backend. Has access to one or more private institution dashboards
 - Individual User: corresponds to `individual` in the backend. Only has access to public institutions like `NYUAD` for setting personal email alerts or downloading raw data
 
-### [Login.jsx](./Login.jsx) and [Signup.jsx](./Signup.jsx): 
+### [Login.tsx](./Login.tsx) and [SignUp.tsx](./SignUp.tsx): 
 
 ![login-page](/documentation/login.png)
 ![signup-page](/documentation/signup.png)
@@ -39,7 +39,7 @@ With [UserContext.jsx](/src/ContextProviders/UserContext.jsx), `Login`/`Signup` 
     ![verify-email-first](/documentation/verify-email-first.png)
 
 
-### [Logout.jsx](./Logout.jsx): 
+### [Logout.tsx](./Logout.tsx): 
 
   `Logout` is only a `MenuItem` component when the user hovers upon their account on the `Header`. Upon the user clicking `Logout`, it will send a `GET` request to the backend to remove the current session from the database.. Upon logging out successfully (`204 OK`), the application will return to the home page by calling `navigate('/')`.
 
