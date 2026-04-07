@@ -6,9 +6,9 @@ import 'react-date-range/dist/theme/default.css'; // theme css file
 
 import { Box, Grid, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 
-import { AggregationTypeMetadata, StyledDateRangePicker, returnCustomStaticRanges, returnFormattedDates } from './DateRangePickerUtils';
+import { StyledDateRangePicker, returnCustomStaticRanges, returnFormattedDates } from './DateRangePickerUtils';
 import AggregationTypeToggle from './AggregationTypeToggle';
-import { AggregationType } from '../../shared/constants';
+import { AggregationType, AggregationTypeMetadata } from '../../shared/constants';
 
 import { differenceInDays, isSameDay } from 'date-fns';
 

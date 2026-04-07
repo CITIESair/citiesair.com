@@ -2,8 +2,7 @@ import { ToggleButton, ToggleButtonGroup, useMediaQuery, useTheme } from '@mui/m
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import { keyframes } from '@mui/system';
 
-import { AggregationType, type AggregationTypeValue } from '../../shared/constants';
-import { AggregationTypeMetadata } from './DateRangePickerUtils';
+import { AggregationType, AggregationTypeMetadata, type AggregationTypeValue } from '../../shared/constants';
 import { AQI_Database } from '../../business-domain/air-quality/air-quality.database';
 
 const pulse = keyframes`
@@ -57,13 +56,13 @@ export default function AggregationTypeToggle({
               sx={{
                 ...(isLargeScreen
                   ? {
-                      position: 'absolute',
-                      left: '50%',
-                      transform: 'translateX(calc(-50% - 2.5rem))',
-                    }
+                    position: 'absolute',
+                    left: '50%',
+                    transform: 'translateX(calc(-50% - 2.5rem))',
+                  }
                   : {
-                      mr: 0.3,
-                    }),
+                    mr: 0.3,
+                  }),
                 color: AQI_Database[3].color.Light,
                 fontSize: '0.75rem',
                 animation: `${pulse} 2s infinite ease-in-out`,

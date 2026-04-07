@@ -3,13 +3,13 @@ import { isMobile } from 'react-device-detect';
 
 import { Fab, Fade, Popper, Paper, Typography, Stack } from '@mui/material';
 import AirIcon from '@mui/icons-material/Air';
-import { FadeInButtonForSpeedDial } from '../SpeedDial/FadeInButtonForSpeedDial';
+import { FadeInButtonForSpeedDial, FadeInButtonForSpeedDialProps } from '../SpeedDial/FadeInButtonForSpeedDial';
 
 import * as Tracking from '../../Utils/Tracking';
 import AirQualityIndexTable from './AirQualityIndexTable';
 
 type AirQualityIndexLegendQuickGlanceProps = Omit<
-  React.ComponentProps<typeof FadeInButtonForSpeedDial>,
+  FadeInButtonForSpeedDialProps,
   'children' | 'distanceFromBottomOfWindow'
 >;
 

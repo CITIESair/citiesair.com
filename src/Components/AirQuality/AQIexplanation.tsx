@@ -4,7 +4,6 @@ import { replacePlainHTMLWithMuiComponents } from '../../Utils/UtilFunctions';
 import AirQualityIndexTable from './AirQualityIndexTable';
 import ExpandableSection from '../ExpandableSection';
 import InfoIcon from '@mui/icons-material/Info';
-import { usePreferences } from '../../ContextProviders/PreferenceContext';
 
 const Explanation = {
   title: 'Explanation of the US Air Quality Index (AQI) for PM2.5',
@@ -13,15 +12,13 @@ const Explanation = {
 } as const;
 
 const AQIexplanation = () => {
-  const { themePreference } = usePreferences();
-
   return (
     <ExpandableSection
       title={Explanation.title}
       icon={<InfoIcon sx={{ fontSize: '1rem' }} />}
       content={(
         <Box>
-          <AirQualityIndexTable themePreference={themePreference} />
+          <AirQualityIndexTable />
           <Typography
             component="div"
             variant="body1"

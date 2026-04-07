@@ -26,6 +26,4 @@ Could be generalized more, but `DateRangePicker` is only used for chart `histori
   
   With these presets, the users can quickly choose a pre-determined time period, speeding up the querying process
 
-  - Also contain `AggregationTypeMetadata` (from `src/shared/constants.ts`) to specify the maximum number of days that each `AggregationType` can be queried for
-
   - Contains helper wrapper to **heavily** formats the `react-date-range` picker with additional `CSS` because a few things are hardcoded by that library and requires overriding to achieve our desired appearance.

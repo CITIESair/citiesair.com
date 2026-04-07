@@ -11,11 +11,6 @@ import type { LocalizedText } from '../../types/SectionData';
 export interface AirQualityIndexTableProps {
   tiny?: boolean;
   hideAQIDescription?: boolean;
-  /**
-   * Legacy prop kept for compatibility with existing call sites.
-   * The component currently derives theme from PreferenceContext.
-   */
-  themePreference?: string;
 }
 
 export const StyledTable = styled(Table, {
@@ -49,15 +44,6 @@ const coerceLocalizedText = (field: unknown): string | LocalizedText => {
 function AirQualityIndexTable(props: AirQualityIndexTableProps) {
   const { themePreference, language } = usePreferences();
   const { tiny, hideAQIDescription } = props;
-
-  const effectiveThemeKey: 'Light' | 'Dark' =
-    themePreference === ThemePreferences.dark
-      ? 'Dark'
-      : themePreference === ThemePreferences.light
-        ? 'Light'
-        : window.matchMedia('(prefers-color-scheme: dark)').matches
-          ? 'Dark'
-          : 'Light';
 
   return (
     <Box overflow="auto">
@@ -100,7 +86,7 @@ function AirQualityIndexTable(props: AirQualityIndexTableProps) {
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCell sx={{ pr: 0 }}>
-                  <Box sx={{ width: '1em', height: '1em', backgroundColor: element.color[effectiveThemeKey] }} />
+                  <Box sx={{ width: '1em', height: '1em', backgroundColor: element.color[themePreference] }} />
                 </TableCell>
                 <TableCell sx={{ pl: 1 }}>
                   {getTranslation(coerceLocalizedText(element.category), language)}

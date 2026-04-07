@@ -1,9 +1,9 @@
 import { MouseEvent } from 'react';
 import { Box, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { LocalStorage } from '../../Utils/LocalStorage';
-import { TemperatureUnits } from '../../business-domain/air-quality/temperature.utils';
+import { TemperatureUnits, TemperatureUnit } from '../../business-domain/air-quality/temperature.utils';
 import * as Tracking from '../../Utils/Tracking';
-import { TemperatureUnit, usePreferences } from '../../ContextProviders/PreferenceContext';
+import { usePreferences } from '../../ContextProviders/PreferenceContext';
 
 export default function TemperatureUnitToggle() {
   const { temperatureUnitPreference, setTemperatureUnitPreference } = usePreferences();

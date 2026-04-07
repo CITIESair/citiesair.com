@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles';
 import { Paper } from '@mui/material';
 
 import { addDays, endOfDay, startOfDay, format, addHours } from "date-fns";
-import { AggregationType, AggregationTypeMetadata } from '../../shared/constants';
+import { AggregationType } from '../../shared/constants';
 
 const today = new Date();
 
@@ -64,8 +64,6 @@ export const returnCustomStaticRanges = ({ minDateOfDataset, aggregationType }) 
       return [last14Days, last30Days];
   }
 };
-
-export { AggregationTypeMetadata };
 
 export const StyledDateRangePicker = styled(Paper, {
   shouldForwardProp: (prop) => prop !== 'showPickerPanel' && prop !== 'smallScreen',
