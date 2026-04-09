@@ -74,6 +74,20 @@ export interface AboutSection extends Section {
 }
 
 // ---------------------------------------------------------------------------
+// AQI Explanation
+// ---------------------------------------------------------------------------
+
+export interface AQIExplanationContent {
+  mainText: string;
+  reference: string;
+}
+
+export interface AQIExplanationSection extends Section {
+  title: string;
+  content: AQIExplanationContent;
+}
+
+// ---------------------------------------------------------------------------
 // Promos
 // ---------------------------------------------------------------------------
 
@@ -137,6 +151,7 @@ export interface SectionData {
   disclaimer: TextSection;
   publicOutdoorStations: TextSection;
   getInTouch: TextSection;
+  aqiExplanation: AQIExplanationSection;
   promos: Promo[];
   atAGlance: AtAGlanceSection;
   screen: LocalizedSection;

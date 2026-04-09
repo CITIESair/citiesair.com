@@ -5,18 +5,14 @@ import { CircularProgress, Container, Paper, Typography } from "@mui/material";
 import { fetchDataFromURL } from "../../../API/ApiFetch";
 import { getApiUrl } from "../../../API/APIUtils";
 import type { UserData } from "../../../types/UserData";
-import { LoginTypes } from "../Utils";
+import { LoginTypes, type AuthSuccessMessage, type AuthFailureMessage } from "../Utils";
 
-type GoogleOAuthCallbackSuccessMessage = {
+type GoogleOAuthCallbackSuccessMessage = AuthSuccessMessage & {
     type: typeof LoginTypes.google;
-    success: true;
-    user: UserData & { recently_registered?: boolean; message?: string };
 };
 
-type GoogleOAuthCallbackFailureMessage = {
+type GoogleOAuthCallbackFailureMessage = AuthFailureMessage & {
     type: typeof LoginTypes.google;
-    success: false;
-    errorMessage: string;
 };
 
 export default function GoogleOAuthCallback() {
@@ -46,7 +42,7 @@ export default function GoogleOAuthCallback() {
                     const message: GoogleOAuthCallbackSuccessMessage = {
                         type: LoginTypes.google,
                         success: true,
-                        user: data as UserData & { recently_registered?: boolean; message?: string },
+                        user: data as UserData,
                     };
 
                     // Send the result to the main window

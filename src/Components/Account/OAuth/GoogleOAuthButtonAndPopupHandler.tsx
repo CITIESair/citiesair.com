@@ -9,30 +9,20 @@ import { AppRoutes } from "../../../Utils/AppRoutes";
 import { SnackbarMetadata } from "../../../Utils/SnackbarMetadata";
 import { useUser } from "../../../ContextProviders/UserContext";
 import { successfulAuthenticationState } from "../../../types/AuthenticationState";
-import type { UserData } from "../../../types/UserData";
-import { LoginTypes } from "../Utils";
+import { LoginTypes, type AuthMessage, isAuthMessage } from "../Utils";
 
 const svgs = {
     light: "images/oauth/google/web_light_sq_ctn.svg",
     dark: "images/oauth/google/web_dark_sq_ctn.svg",
 } as const;
 
-type GoogleOAuthCallbackMessage =
-    | {
-          type: typeof LoginTypes.google;
-          success: true;
-          user: UserData & { recently_registered?: boolean; message?: string };
-      }
-    | {
-          type: typeof LoginTypes.google;
-          success: false;
-          errorMessage?: string;
-      };
+type GoogleOAuthCallbackMessage = AuthMessage & {
+    type: typeof LoginTypes.google;
+};
 
 const isGoogleOAuthCallbackMessage = (data: unknown): data is GoogleOAuthCallbackMessage => {
-    if (!data || typeof data !== "object") return false;
-    const maybe = data as { type?: unknown; success?: unknown };
-    return maybe.type === LoginTypes.google && typeof maybe.success === "boolean";
+    if (!isAuthMessage(data)) return false;
+    return data.type === LoginTypes.google;
 };
 
 export default function GoogleOAuthButtonAndPopupHandler() {

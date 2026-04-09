@@ -29,17 +29,10 @@ import { AppRoutes } from "../../Utils/AppRoutes";
 import { SnackbarMetadata } from "../../Utils/SnackbarMetadata";
 import GoogleOAuthButtonAndPopupHandler from "./OAuth/GoogleOAuthButtonAndPopupHandler";
 import UserTypeSelector from "./UserTypeSelector";
-import { LoginTypes, UserRoles } from "./Utils";
+import { LoginTypes, UserRoles, getLoginLabels, type AuthSuccessMessage } from "./Utils";
 
-type LoginResponse = UserData & {
-  message?: string;
-  recently_registered?: boolean;
-};
-
-type PasswordLoginSuccessMessage = {
+type PasswordLoginSuccessMessage = AuthSuccessMessage & {
   type: typeof LoginTypes.password;
-  success: true;
-  user: LoginResponse;
 };
 
 export default function Login() {
@@ -101,7 +94,7 @@ export default function Login() {
     })
       .then((data: unknown) => {
         setLoading(false);
-        const userData = data as LoginResponse;
+        const userData = data as UserData;
 
         if (isPopupItself) {
           // Send the result to the main window
@@ -131,8 +124,7 @@ export default function Login() {
       });
   };
 
-  const roleDefinition = (UserRoles as Record<string, (typeof UserRoles)[keyof typeof UserRoles]>)[userRole];
-  const loginLabels = roleDefinition && "loginLabels" in roleDefinition ? roleDefinition.loginLabels : undefined;
+  const loginLabels = getLoginLabels(userRole);
 
   return (
     <Container maxWidth="sm" sx={{ my: 3 }}>
@@ -178,7 +170,7 @@ export default function Login() {
               {loading ? <CircularProgress disableShrink color="inherit" size="1.5rem" /> : sectionData.login.title}
             </Button>
 
-            {userRole === UserRoles.individual.id && (
+            {userRole === 'individual' && (
               <>
                 <Divider sx={{ mx: "40%", mb: 1 }}>
                   <Typography color="text.secondary">or</Typography>
@@ -193,7 +185,7 @@ export default function Login() {
         </Stack>
       </Paper>
 
-      {userRole === UserRoles.individual.id && (
+      {userRole === 'individual' && (
         <>
           <Divider textAlign="center" sx={{ my: 3 }}>
             <Typography variant="body1" align="center" color="text.secondary">

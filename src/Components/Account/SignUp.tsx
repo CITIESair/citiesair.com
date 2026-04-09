@@ -29,19 +29,12 @@ import { validateEmail } from "../../Utils/UtilFunctions";
 import EmailVerificationDialog from "./EmailVerificationDialog";
 import GoogleOAuthButtonAndPopupHandler from "./OAuth/GoogleOAuthButtonAndPopupHandler";
 import UserTypeSelector from "./UserTypeSelector";
-import { LoginTypes, UserRoles } from "./Utils";
+import { LoginTypes, UserRoles, type AuthSuccessMessage } from "./Utils";
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 
-type SignUpResponse = UserData & {
-  message?: string;
-  recently_registered?: boolean;
-};
-
-type PasswordLoginSuccessMessage = {
+type PasswordLoginSuccessMessage = AuthSuccessMessage & {
   type: typeof LoginTypes.password;
-  success: true;
-  user: SignUpResponse;
 };
 
 export default function SignUp() {
@@ -107,7 +100,7 @@ export default function SignUp() {
       },
     })
       .then((data: unknown) => {
-        const userData = data as SignUpResponse;
+        const userData = data as UserData;
 
         if (isPopupItself) {
           const message: PasswordLoginSuccessMessage = {
@@ -152,7 +145,7 @@ export default function SignUp() {
 
           <UserTypeSelector route={AppRoutes.signUp} />
 
-          {userRole === UserRoles.individual.id && (
+          {userRole === 'individual' && (
             <Box component="form" onSubmit={handleSubmit} noValidate>
               <TextField
                 margin="normal"

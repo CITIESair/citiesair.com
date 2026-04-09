@@ -11,7 +11,7 @@ import { useUser } from '../../../ContextProviders/UserContext';
 export default function AirQualityAlerts({ onButtonClick }) {
   const { handleRestrictedAccess } = useLoginHandler(onButtonClick);
   const { user } = useUser();
-  const isModifiable = [UserRoles.admin.id, UserRoles.school.id].includes(user?.user_role);
+  const isModifiable = ['admin', 'school'].includes(user?.user_role);
 
   return (
     <CustomDialog

@@ -5,8 +5,9 @@ import parse from "html-react-parser";
 
 import { replacePlainHTMLWithMuiComponents } from "../../Utils/UtilFunctions";
 import sectionData from "../../SectionData/sectionData";
+import type { AuthSection } from "../../types/SectionData";
 import { AppRoutes } from "../../Utils/AppRoutes";
-import { UserRolesForLogin } from "./Utils";
+import { UserRoles, UserRoleKeysForLogin, type UserRoleId } from "./Utils";
 import { useUser } from "../../ContextProviders/UserContext";
 
 type UserTypeSelectorProps = {
@@ -20,12 +21,16 @@ const UserTypeSelector = ({ route = AppRoutes.login }: UserTypeSelectorProps) =>
     const getLabelContent = (): string => {
         const cleanedRoute = route.startsWith("/") ? route.slice(1) : route;
 
-        if (cleanedRoute !== "login" && cleanedRoute !== "signup") return "";
+        // Only show content for login and signup routes
+        const validRoutes = [AppRoutes.login.slice(1), AppRoutes.signUp.slice(1)] as const;
+        if (!validRoutes.includes(cleanedRoute as any)) return "";
 
-        const content = sectionData[cleanedRoute].content;
-        if (userRole === "school") return content.school;
-        if (userRole === "individual") return content.individual;
-        return "";
+        // Type-safe access to AuthSection content
+        const section = sectionData[cleanedRoute as 'login' | 'signup'] as AuthSection;
+        const content = section.content;
+
+        // Dynamically return content for the current user role (scales with new roles)
+        return content[userRole as keyof typeof content] ?? "";
     };
 
     return (
@@ -36,29 +41,32 @@ const UserTypeSelector = ({ route = AppRoutes.login }: UserTypeSelectorProps) =>
                     exclusive
                     value={userRole}
                     onChange={(_, value: string | null) => {
-                        if (value) setUserRole(value);
+                        if (value) setUserRole(value as UserRoleId);
                     }}
                     sx={{ width: "100%" }}
                 >
-                    {UserRolesForLogin.map((role) => (
-                        <ToggleButton
-                            key={role.id}
-                            value={role.id}
-                            sx={{
-                                width: `${100 / UserRolesForLogin.length}%`,
-                                flexDirection: "column",
-                                py: 3,
-                            }}
-                        >
-                            {role.loginLabels?.icon &&
-                                (isValidElement(role.loginLabels.icon)
-                                    ? cloneElement(role.loginLabels.icon as ReactElement, { fontSize: "large" })
-                                    : role.loginLabels.icon)}
-                            <Typography sx={{ typography: { sm: "h6", xs: "body1" } }} mt={1}>
-                                <Box fontWeight={500}>{role.name}</Box>
-                            </Typography>
-                        </ToggleButton>
-                    ))}
+                    {UserRoleKeysForLogin.map((roleKey) => {
+                        const role = UserRoles[roleKey];
+                        return (
+                            <ToggleButton
+                                key={roleKey}
+                                value={roleKey}
+                                sx={{
+                                    width: `${100 / UserRoleKeysForLogin.length}%`,
+                                    flexDirection: "column",
+                                    py: 3,
+                                }}
+                            >
+                                {role.loginLabels?.icon &&
+                                    (isValidElement(role.loginLabels.icon)
+                                        ? cloneElement(role.loginLabels.icon as ReactElement, { fontSize: "large" })
+                                        : role.loginLabels.icon)}
+                                <Typography sx={{ typography: { sm: "h6", xs: "body1" } }} mt={1}>
+                                    <Box fontWeight={500}>{role.name}</Box>
+                                </Typography>
+                            </ToggleButton>
+                        );
+                    })}
                 </ToggleButtonGroup>
             </Box>
 

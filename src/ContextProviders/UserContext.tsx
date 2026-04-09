@@ -4,24 +4,24 @@ import { getApiUrl } from '../API/APIUtils';
 import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
 import { EMPTY_USER_DATA, UserData } from '../types/UserData';
 import { useSnackbar } from 'notistack';
-import { UserRoles } from '../Components/Account/Utils';
+import { UserRoles, type UserRoleId } from '../Components/Account/Utils';
 import { AuthenticationState, defaultAuthenticationState, failedAuthenticationState } from '../types/AuthenticationState';
 
 type UserContextValue = {
   authenticationState: AuthenticationState;
   setAuthenticationState: Dispatch<SetStateAction<AuthenticationState>>;
-  user: UserData & { recently_registered?: boolean };
-  setUser: Dispatch<SetStateAction<UserData & { recently_registered?: boolean }>>;
-  userRole: string;
-  setUserRole: Dispatch<SetStateAction<string>>;
+  user: UserData;
+  setUser: Dispatch<SetStateAction<UserData>>;
+  userRole: UserRoleId;
+  setUserRole: Dispatch<SetStateAction<UserRoleId>>;
 };
 
 const UserContext = createContext<UserContextValue | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [authenticationState, setAuthenticationState] = useState<AuthenticationState>(defaultAuthenticationState);
-  const [user, setUser] = useState<UserData & { recently_registered?: boolean }>(EMPTY_USER_DATA);
-  const [userRole, setUserRole] = useState<string>(UserRoles.school.id);
+  const [user, setUser] = useState<UserData>(EMPTY_USER_DATA);
+  const [userRole, setUserRole] = useState<UserRoleId>('school');
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {

@@ -6,6 +6,7 @@ export interface UserData {
     email: string | null;
     is_verified: boolean;
     recently_registered?: boolean;
+    message?: string;
 }
 
 export const EMPTY_USER_DATA: UserData = {

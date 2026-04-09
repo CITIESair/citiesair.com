@@ -6,28 +6,18 @@ import { useSnackbar } from "notistack";
 import { AppRoutes } from "../../Utils/AppRoutes";
 import { SnackbarMetadata } from "../../Utils/SnackbarMetadata";
 import { successfulAuthenticationState } from "../../types/AuthenticationState";
-import type { UserData } from "../../types/UserData";
 import { useUser } from "../../ContextProviders/UserContext";
-import { LoginTypes } from "../Account/Utils";
+import { LoginTypes, type AuthMessage, isAuthMessage } from "../Account/Utils";
 
 import EmailVerificationDialog from "./EmailVerificationDialog";
 
-type PasswordLoginMessage =
-  | {
-      type: typeof LoginTypes.password;
-      success: true;
-      user: UserData & { message?: string; recently_registered?: boolean };
-    }
-  | {
-      type: typeof LoginTypes.password;
-      success: false;
-      errorMessage?: string;
-    };
+type PasswordLoginMessage = AuthMessage & {
+  type: typeof LoginTypes.password;
+};
 
 const isPasswordLoginMessage = (data: unknown): data is PasswordLoginMessage => {
-  if (!data || typeof data !== "object") return false;
-  const maybe = data as { type?: unknown; success?: unknown };
-  return maybe.type === LoginTypes.password && typeof maybe.success === "boolean";
+  if (!isAuthMessage(data)) return false;
+  return data.type === LoginTypes.password;
 };
 
 type LoginPopupHandlerChildrenArgs = {
