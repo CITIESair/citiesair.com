@@ -4,7 +4,6 @@ import CustomDialog from '../../CustomDialog/CustomDialog';
 import EmailsInput from './EmailsInput';
 import AlertsTabs from './AlertsTabs';
 import useLoginHandler from '../../Account/useLoginHandler';
-import { UserRoles } from '../../Account/Utils';
 import { AirQualityAlertProvider } from '../../../ContextProviders/AirQualityAlertContext';
 import { useUser } from '../../../ContextProviders/UserContext';
 

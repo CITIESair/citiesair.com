@@ -1,21 +1,22 @@
 import { Box, ToggleButtonGroup, ToggleButton, Typography, Stack, useTheme } from "@mui/material";
 import { cloneElement, isValidElement } from "react";
-import type { ReactElement } from "react";
+import type { Dispatch, ReactElement, SetStateAction } from "react";
 import parse from "html-react-parser";
 
 import { replacePlainHTMLWithMuiComponents } from "../../Utils/UtilFunctions";
 import sectionData from "../../SectionData/sectionData";
 import type { AuthSection } from "../../types/SectionData";
 import { AppRoutes } from "../../Utils/AppRoutes";
-import { UserRoles, UserRoleKeysForLogin, type UserRoleId } from "./Utils";
-import { useUser } from "../../ContextProviders/UserContext";
+import { UserRoleKeysForLogin } from "./Utils";
+import { UserRoleKey, UserRoles } from "../../types/UserData";
 
 type UserTypeSelectorProps = {
+    indicatedUserRole: UserRoleKey;
+    setIndicatedUserRole: Dispatch<SetStateAction<UserRoleKey>>,
     route?: string;
 };
 
-const UserTypeSelector = ({ route = AppRoutes.login }: UserTypeSelectorProps) => {
-    const { userRole, setUserRole } = useUser();
+const UserTypeSelector = ({ indicatedUserRole = 'school', setIndicatedUserRole, route = AppRoutes.login }: UserTypeSelectorProps) => {
     const theme = useTheme();
 
     const getLabelContent = (): string => {
@@ -30,7 +31,7 @@ const UserTypeSelector = ({ route = AppRoutes.login }: UserTypeSelectorProps) =>
         const content = section.content;
 
         // Dynamically return content for the current user role (scales with new roles)
-        return content[userRole as keyof typeof content] ?? "";
+        return content[indicatedUserRole as keyof typeof content] ?? "";
     };
 
     return (
@@ -39,9 +40,9 @@ const UserTypeSelector = ({ route = AppRoutes.login }: UserTypeSelectorProps) =>
                 <ToggleButtonGroup
                     color="primary"
                     exclusive
-                    value={userRole}
-                    onChange={(_, value: string | null) => {
-                        if (value) setUserRole(value as UserRoleId);
+                    value={indicatedUserRole}
+                    onChange={(_, value: UserRoleKey) => {
+                        if (value) setIndicatedUserRole(value);
                     }}
                     sx={{ width: "100%" }}
                 >

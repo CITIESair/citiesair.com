@@ -4,7 +4,6 @@ import { getApiUrl } from '../API/APIUtils';
 import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
 import { EMPTY_USER_DATA, UserData } from '../types/UserData';
 import { useSnackbar } from 'notistack';
-import { UserRoles, type UserRoleId } from '../Components/Account/Utils';
 import { AuthenticationState, defaultAuthenticationState, failedAuthenticationState } from '../types/AuthenticationState';
 
 type UserContextValue = {
@@ -12,8 +11,6 @@ type UserContextValue = {
   setAuthenticationState: Dispatch<SetStateAction<AuthenticationState>>;
   user: UserData;
   setUser: Dispatch<SetStateAction<UserData>>;
-  userRole: UserRoleId;
-  setUserRole: Dispatch<SetStateAction<UserRoleId>>;
 };
 
 const UserContext = createContext<UserContextValue | undefined>(undefined);
@@ -21,7 +18,6 @@ const UserContext = createContext<UserContextValue | undefined>(undefined);
 export function UserProvider({ children }: { children: ReactNode }) {
   const [authenticationState, setAuthenticationState] = useState<AuthenticationState>(defaultAuthenticationState);
   const [user, setUser] = useState<UserData>(EMPTY_USER_DATA);
-  const [userRole, setUserRole] = useState<UserRoleId>('school');
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
@@ -45,9 +41,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const providerValue = useMemo(() => ({
     authenticationState, setAuthenticationState,
-    user, setUser,
-    userRole, setUserRole
-  }), [user, authenticationState, userRole]);
+    user, setUser
+  }), [user, authenticationState]);
 
   useEffect(() => {
     // If the user is authenticated but unverified, show it via SnackbarNotification

@@ -11,12 +11,12 @@ import { AirQualityAlertKeys, CrudTypes, getAlertDefaultPlaceholder, SharedColum
 import { TransitionGroup } from 'react-transition-group';
 import { SnackbarMetadata } from '../../../Utils/SnackbarMetadata';
 import { useSnackbar } from 'notistack';
-import { UserRoles } from '../../Account/Utils';
 import { DataTypes } from '../../../business-domain/data-types/data-type.types';
 import { DAYS_OF_WEEK } from './AlertModificationDialog/AlertPropertyComponents/DAYS_OF_WEEK';
 import { returnHoursFromMinutesPastMidnight } from '../../TimeRange/TimeRangeUtils';
 import { useEditAlertMutation } from '../../../hooks/alerts/useEditAlertMutation';
 import { useAirQualityAlert } from '../../../ContextProviders/AirQualityAlertContext';
+import { UserRoles } from '../../../types/UserData';
 
 const returnDaysOfWeekString = (days_of_week) => {
   if (!days_of_week || !isValidArray(days_of_week)) return "N/A";

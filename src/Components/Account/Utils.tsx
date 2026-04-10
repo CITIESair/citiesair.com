@@ -1,9 +1,4 @@
-import type { ReactNode } from 'react';
-
-import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
-import PeopleIcon from '@mui/icons-material/People';
-
-import type { UserData } from '../../types/UserData';
+import { type UserData, type UserRoleKey } from '../../types/UserData';
 
 export const LoginTypes = {
     google: 'login-google',
@@ -40,59 +35,12 @@ export const isAuthMessage = (data: unknown): data is AuthMessage => {
     );
 };
 
-export type UserRoleLoginLabels = {
-    icon: ReactNode;
-    username: string;
-    password: string;
-};
-
-export type UserRoleDefinition = {
-    name: string;
-    loginLabels?: UserRoleLoginLabels;
-};
-
-export const UserRoles = {
-    admin: {
-        name: 'CITIESair Admin'
-    },
-    individual: {
-        name: 'Individual User',
-        loginLabels: {
-            icon: <PeopleIcon />,
-            username: 'Email',
-            password: 'Password'
-        }
-    },
-    school: {
-        name: 'Institution Admin',
-        loginLabels: {
-            icon: <AssuredWorkloadIcon />,
-            username: 'Institution ID',
-            password: 'Access Code'
-        }
-    }
-} as const satisfies Record<string, UserRoleDefinition>;
-
-export type UserRoleKey = keyof typeof UserRoles;
-export type UserRoleId = UserRoleKey;
-
 // Array of role keys that can be used for login
 export const UserRoleKeysForLogin = ['school', 'individual'] as const satisfies readonly UserRoleKey[];
+export type UserRoleKeyForLogin = (typeof UserRoleKeysForLogin)[number];
 
-// Helper to get login labels by user role ID
-export const getLoginLabels = (userRoleId: UserRoleId): UserRoleLoginLabels | undefined => {
-    const role = UserRoles[userRoleId as UserRoleKey];
-    return role && 'loginLabels' in role ? role.loginLabels : undefined;
-};
-
-export type DashboardLabelUser = {
-    user_role?: string | null;
-    email?: string | null;
-    username?: string | null;
-};
-
-export const getDashboardLabel = (user?: DashboardLabelUser | null, schoolID: string | null = null): string => {
-    const role = user?.user_role;
+export const getDashboardLabel = (user: UserData, schoolID: string | null = null): string => {
+    const role = user.user_role;
 
     switch (role) {
         case 'individual':

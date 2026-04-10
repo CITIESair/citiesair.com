@@ -29,7 +29,7 @@ import { validateEmail } from "../../Utils/UtilFunctions";
 import EmailVerificationDialog from "./EmailVerificationDialog";
 import GoogleOAuthButtonAndPopupHandler from "./OAuth/GoogleOAuthButtonAndPopupHandler";
 import UserTypeSelector from "./UserTypeSelector";
-import { LoginTypes, UserRoles, type AuthSuccessMessage } from "./Utils";
+import { LoginTypes, UserRoleKeyForLogin, type AuthSuccessMessage } from "./Utils";
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 
@@ -49,7 +49,8 @@ export default function SignUp() {
 
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
-  const { setUser, authenticationState, setAuthenticationState, userRole } = useUser();
+  const { setUser, authenticationState, setAuthenticationState } = useUser();
+  const [indicatedUserRole, setIndicatedUserRole] = useState<UserRoleKeyForLogin>('individual')
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -99,8 +100,7 @@ export default function SignUp() {
         password,
       },
     })
-      .then((data: unknown) => {
-        const userData = data as UserData;
+      .then((userData: UserData) => {
 
         if (isPopupItself) {
           const message: PasswordLoginSuccessMessage = {
@@ -143,9 +143,13 @@ export default function SignUp() {
             {sectionData.signup.title}
           </Typography>
 
-          <UserTypeSelector route={AppRoutes.signUp} />
+          <UserTypeSelector
+            route={AppRoutes.signUp}
+            indicatedUserRole={indicatedUserRole}
+            setIndicatedUserRole={setIndicatedUserRole}
+          />
 
-          {userRole === 'individual' && (
+          {indicatedUserRole === 'individual' && (
             <Box component="form" onSubmit={handleSubmit} noValidate>
               <TextField
                 margin="normal"

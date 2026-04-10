@@ -24,12 +24,12 @@ import { usePreferences } from "../../ContextProviders/PreferenceContext";
 import { useUser } from "../../ContextProviders/UserContext";
 import sectionData from "../../SectionData/sectionData";
 import { successfulAuthenticationState } from "../../types/AuthenticationState";
-import type { UserData } from "../../types/UserData";
+import { UserRoles, type UserData } from "../../types/UserData";
 import { AppRoutes } from "../../Utils/AppRoutes";
 import { SnackbarMetadata } from "../../Utils/SnackbarMetadata";
 import GoogleOAuthButtonAndPopupHandler from "./OAuth/GoogleOAuthButtonAndPopupHandler";
 import UserTypeSelector from "./UserTypeSelector";
-import { LoginTypes, UserRoles, getLoginLabels, type AuthSuccessMessage } from "./Utils";
+import { LoginTypes, UserRoleKeyForLogin, type AuthSuccessMessage } from "./Utils";
 
 type PasswordLoginSuccessMessage = AuthSuccessMessage & {
   type: typeof LoginTypes.password;
@@ -49,7 +49,9 @@ export default function Login() {
   }, [enqueueSnackbar]);
 
   const navigate = useNavigate();
-  const { setUser, authenticationState, setAuthenticationState, userRole } = useUser();
+  const { setUser, authenticationState, setAuthenticationState } = useUser();
+
+  const [indicatedUserRole, setIndicatedUserRole] = useState<UserRoleKeyForLogin>('school')
 
   useEffect(() => {
     if (authenticationState.authenticated && authenticationState.checkedAuthentication) navigate("/");
@@ -92,9 +94,8 @@ export default function Login() {
         remember_me: rememberMe,
       },
     })
-      .then((data: unknown) => {
+      .then((userData: UserData) => {
         setLoading(false);
-        const userData = data as UserData;
 
         if (isPopupItself) {
           // Send the result to the main window
@@ -124,7 +125,7 @@ export default function Login() {
       });
   };
 
-  const loginLabels = getLoginLabels(userRole);
+  const loginLabels = UserRoles[indicatedUserRole].loginLabels;
 
   return (
     <Container maxWidth="sm" sx={{ my: 3 }}>
@@ -134,7 +135,11 @@ export default function Login() {
             {sectionData.login.title}
           </Typography>
 
-          <UserTypeSelector route={AppRoutes.login} />
+          <UserTypeSelector
+            route={AppRoutes.login}
+            indicatedUserRole={indicatedUserRole}
+            setIndicatedUserRole={setIndicatedUserRole}
+          />
 
           <Box component="form" onSubmit={handleSubmit} noValidate>
             <TextField
@@ -142,7 +147,7 @@ export default function Login() {
               required
               fullWidth
               id="username"
-              label={loginLabels?.username}
+              label={loginLabels.username}
               name="username"
               autoComplete="username"
               onChange={(e) => setUserName(e.target.value)}
@@ -153,7 +158,7 @@ export default function Login() {
               required
               fullWidth
               name="password"
-              label={loginLabels?.password}
+              label={loginLabels.password}
               type="password"
               id="password"
               autoComplete="current-password"
@@ -170,7 +175,7 @@ export default function Login() {
               {loading ? <CircularProgress disableShrink color="inherit" size="1.5rem" /> : sectionData.login.title}
             </Button>
 
-            {userRole === 'individual' && (
+            {indicatedUserRole === 'individual' && (
               <>
                 <Divider sx={{ mx: "40%", mb: 1 }}>
                   <Typography color="text.secondary">or</Typography>
@@ -185,7 +190,7 @@ export default function Login() {
         </Stack>
       </Paper>
 
-      {userRole === 'individual' && (
+      {indicatedUserRole === 'individual' && (
         <>
           <Divider textAlign="center" sx={{ my: 3 }}>
             <Typography variant="body1" align="center" color="text.secondary">

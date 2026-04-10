@@ -17,10 +17,6 @@ type LogoutResponse = {
   message?: string;
 };
 
-const isLogoutResponse = (value: unknown): value is LogoutResponse => {
-  return !!value && typeof value === "object";
-};
-
 export default function LogOut() {
   const { setUser, setAuthenticationState } = useUser();
   const [loading, setLoading] = useState<boolean>(false);
@@ -35,13 +31,11 @@ export default function LogOut() {
       url: getApiUrl({ endpoint: "logout" }),
       RESTmethod: "GET",
     })
-      .then((data: unknown) => {
+      .then((data: LogoutResponse) => {
         setLoading(false);
         setAuthenticationState(defaultAuthenticationState);
         setUser(EMPTY_USER_DATA);
-
-        const message = isLogoutResponse(data) && typeof data.message === "string" ? data.message : "Logout successfully";
-        enqueueSnackbar(message, SnackbarMetadata.success);
+        enqueueSnackbar(data.message || "Logout successfully", SnackbarMetadata.success);
         navigate("/");
       })
       .catch((error: unknown) => {
