@@ -4,15 +4,17 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchDataFromURL } from '../API/ApiFetch';
 import { getApiUrl } from '../API/APIUtils';
 
-const UnsubscribeAlert = () => {
+type Status = 'success' | 'error' | null;
+
+const UnsubscribeAlert: React.FC = () => {
     const navigate = useNavigate();
 
     const [searchParams] = useSearchParams();
     const token = searchParams.get("token");
 
-    const [loading, setLoading] = useState(true);
-    const [message, setMessage] = useState("");
-    const [status, setStatus] = useState(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [message, setMessage] = useState<string>("");
+    const [status, setStatus] = useState<Status>(null);
 
     useEffect(() => {
         const handleUnsubscribe = async () => {
@@ -23,7 +25,7 @@ const UnsubscribeAlert = () => {
                     body: { token },
                 });
 
-                if (data.is_enabled === false) {
+                if ((data as any).is_enabled === false) {
                     setMessage("You have successfully unsubscribed from this alert.");
                     setStatus("success");
                 } else {

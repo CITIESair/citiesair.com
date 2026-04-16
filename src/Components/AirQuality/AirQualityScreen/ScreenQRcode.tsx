@@ -3,10 +3,10 @@ import { CITIESair_HOST_NAME } from "../../../Utils/GlobalVariables";
 import useSchoolMetadata from "../../../hooks/useSchoolMetadata";
 import { useDashboard } from "../../../ContextProviders/DashboardContext";
 
-const ScreenQRcode = () => {
+const ScreenQRcode: React.FC = () => {
     const { currentSchoolID } = useDashboard();
     const { data: schoolMetadata } = useSchoolMetadata();
-    const isPublic = schoolMetadata?.is_public;
+    const isPublic = (schoolMetadata as any)?.is_public;
 
     const url = document.location.href;
     const urlComponents = url.split('screen');
@@ -28,4 +28,3 @@ const ScreenQRcode = () => {
 };
 
 export default ScreenQRcode;
-

@@ -18,7 +18,7 @@ Could be generalized more, but `DateRangePicker` is only used for chart `histori
 
       ![date-range-picker-error-2](/documentation/date-range-picker-error-2.png)
 
-### [DateRangePickerUtils.jsx](./DateRangePickerUtils.jsx): 
+### [DateRangePickerUtils.tsx](./DateRangePickerUtils.tsx): 
   - Contains helper function to return the appropriate static ranges for each aggregation type (`hourly` or `daily`):
     - `hourly`: last 14 days, last 30 days
     - `daily`: last 30 days, all time

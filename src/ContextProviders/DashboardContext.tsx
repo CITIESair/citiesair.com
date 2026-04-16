@@ -1,4 +1,4 @@
-import { useState, createContext, useContext, useMemo, useEffect } from 'react';
+import { useState, createContext, useContext, useMemo, useEffect, ReactNode } from 'react';
 import { ChartAPIEndpointsOrder } from '../API/APIUtils';
 import { AppRoutes } from '../Utils/AppRoutes';
 import { NYUAD } from '../Utils/GlobalVariables';
@@ -9,38 +9,63 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { enqueueSnackbar } from 'notistack';
 import { useUser } from './UserContext';
 
-const DashboardContext = createContext(undefined);
+interface ChartConfig {
+  endpoint: string;
+  queryParams: Record<string, any>;
+}
 
-export function DashboardProvider({ children }) {
+interface ChartData {
+  [key: string]: any;
+}
+
+interface DashboardContextType {
+  currentSchoolID: string | undefined;
+  setCurrentSchoolID: (schoolID: string | undefined) => void;
+  allChartsConfigs: Record<number, ChartConfig>;
+  setIndividualChartConfig: (chartID: number, chartConfig: ChartConfig) => void;
+  updateIndividualChartConfigQueryParams: (chartID: number, newQueryParams: Record<string, any>) => void;
+  allChartsData: Record<number, ChartData>;
+  setIndividualChartData: (chartID: number, chartData: ChartData) => void;
+  loadMoreCharts: boolean;
+  setLoadMoreCharts: (load: boolean) => void;
+}
+
+interface DashboardProviderProps {
+  children: ReactNode;
+}
+
+const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
+
+export function DashboardProvider({ children }: DashboardProviderProps) {
   const navigate = useNavigate();
 
-  const { school_id_param } = useParams();
+  const { school_id_param } = useParams<{ school_id_param: string }>();
   const { user, authenticationState } = useUser();
 
   const location = useLocation();
   const locationPath = location.pathname;
   const isDashboardPage = locationPath.includes(AppRoutes.dashboard);
 
-  const [currentSchoolID, setCurrentSchoolID] = useState();
+  const [currentSchoolID, setCurrentSchoolID] = useState<string | undefined>();
 
-  const [allChartsConfigs, setAllChartsConfigs] = useState(() =>
+  const [allChartsConfigs, setAllChartsConfigs] = useState<Record<number, ChartConfig>>(() =>
     ChartAPIEndpointsOrder.reduce((acc, endpoint, index) => {
       acc[index] = { endpoint, queryParams: {} };
       return acc;
-    }, {})
+    }, {} as Record<number, ChartConfig>)
   );
-  const [allChartsData, setAllChartsData] = useState({});
-  const [loadMoreCharts, setLoadMoreCharts] = useState(false);
+  const [allChartsData, setAllChartsData] = useState<Record<number, ChartData>>({});
+  const [loadMoreCharts, setLoadMoreCharts] = useState<boolean>(false);
 
   /** --- SETTERS --- **/
-  const setIndividualChartConfig = (chartID, chartConfig) => {
+  const setIndividualChartConfig = (chartID: number, chartConfig: ChartConfig) => {
     setAllChartsConfigs(prevData => ({
       ...prevData,
       [chartID]: chartConfig
     }));
   };
 
-  const updateIndividualChartConfigQueryParams = (chartID, newQueryParams) => {
+  const updateIndividualChartConfigQueryParams = (chartID: number, newQueryParams: Record<string, any>) => {
     setAllChartsConfigs(prev => ({
       ...prev,
       [chartID]: {
@@ -53,14 +78,14 @@ export function DashboardProvider({ children }) {
     }));
   };
 
-  const setIndividualChartData = (chartID, chartData) => {
+  const setIndividualChartData = (chartID: number, chartData: ChartData) => {
     setAllChartsData(prevData => ({
       ...prevData,
       [chartID]: chartData
     }));
   };
 
-  const providerValue = useMemo(() => ({
+  const providerValue = useMemo<DashboardContextType>(() => ({
     currentSchoolID, setCurrentSchoolID,
     allChartsConfigs, setIndividualChartConfig, updateIndividualChartConfigQueryParams,
     allChartsData, setIndividualChartData,
@@ -72,20 +97,20 @@ export function DashboardProvider({ children }) {
     if (!authenticationState.checkedAuthentication || !isValidArray(user.allowedSchools)) return;
 
     // CASE: NYUAD
-    if ([AppRoutes.nyuadBanner, AppRoutes.allSensorsScreen, AppRoutes.nyuadMap].includes(locationPath)) {
+    if ([AppRoutes.nyuadBanner as string, AppRoutes.allSensorsScreen as string, AppRoutes.nyuadMap as string].includes(locationPath)) {
       setCurrentSchoolID(NYUAD);
       return;
     }
 
     // If the user isn't logged in (after checking authentication status)
     if (authenticationState.authenticated === false) {
-      // If in home, set to the first publicly available institution in allowedSchools 
+      // If in home, set to the first publicly available institution in allowedSchools
       if (locationPath === AppRoutes.home) {
         setCurrentSchoolID(user.allowedSchools[0].school_id);
       }
 
       // Elsewhere, set to school_id_param or navigate to login page
-      else if (user.allowedSchools.map(school => school.school_id).includes(school_id_param)) {
+      else if (school_id_param && user.allowedSchools.map(school => school.school_id).includes(school_id_param)) {
         setCurrentSchoolID(school_id_param);
         return;
       } else {
@@ -98,12 +123,12 @@ export function DashboardProvider({ children }) {
     if (isValidArray(user.allowedSchools)) {
       // If no school_id_param is given
       if (!school_id_param) {
-        let school_id;
+        let school_id: string;
 
         // If there has been a previouslySelectedSchoolID, then load dashboard data for this one
-        const previouslySelectedSchoolID = localStorage.getItem(LocalStorage.schoolID);
+        const previouslySelectedSchoolID = localStorage.getItem(LocalStorage.schoolId);
 
-        if (user.allowedSchools.map((school) => school.school_id).includes(previouslySelectedSchoolID)) {
+        if (previouslySelectedSchoolID && user.allowedSchools.map((school) => school.school_id).includes(previouslySelectedSchoolID)) {
           school_id = previouslySelectedSchoolID;
           setCurrentSchoolID(school_id);
         }
@@ -111,7 +136,7 @@ export function DashboardProvider({ children }) {
         else {
           school_id = user.allowedSchools[0].school_id;
           setCurrentSchoolID(school_id);
-          localStorage.setItem(LocalStorage.schoolID, school_id);
+          localStorage.setItem(LocalStorage.schoolId, school_id);
         }
 
         if (isDashboardPage) {
@@ -122,7 +147,7 @@ export function DashboardProvider({ children }) {
       else {
         if (user.allowedSchools.map((school) => school.school_id).includes(school_id_param)) {
           setCurrentSchoolID(school_id_param);
-          localStorage.setItem(LocalStorage.schoolID, school_id_param);
+          localStorage.setItem(LocalStorage.schoolId, school_id_param);
         }
         // If the school_id_param is not in the allowedSchools
         else {
@@ -150,7 +175,7 @@ export function DashboardProvider({ children }) {
   );
 }
 
-export const useDashboard = () => {
+export const useDashboard = (): DashboardContextType => {
   const context = useContext(DashboardContext);
   if (!context) {
     throw new Error('useDashboard must be used within DashboardProvider');

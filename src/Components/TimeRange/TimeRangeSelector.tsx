@@ -1,42 +1,51 @@
 import { useState, useEffect, useCallback } from "react";
-import { Box, Stack, ToggleButtonGroup, ToggleButton, useMediaQuery, useTheme, Typography } from "@mui/material";
+import { Box, Stack, ToggleButtonGroup, ToggleButton, useMediaQuery, useTheme, Typography, Theme } from "@mui/material";
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import { SimplePicker } from "../AirQuality/AirQualityAlerts/AlertModificationDialog/AlertPropertyComponents/SimplePicker";
 import { HOURS } from "./TimeRangeUtils";
 import { isValidArray } from "../../Utils/UtilFunctions";
 import { PREDEFINED_TIMERANGES } from "./TimeRangeUtils";
 
-const TimeRangeSelector = (props) => {
+interface TimeRangeSelectorProps {
+    timeRange: [number | string, number | string] | null;
+    defaultTimeRange: [number | string, number | string];
+    disabled?: boolean;
+    handleChange: (range: [number | string, number | string | null]) => void;
+    isResponsive?: boolean;
+    hasTitle?: boolean;
+}
+
+const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = (props) => {
     const { timeRange, defaultTimeRange, disabled, handleChange, isResponsive = false, hasTitle = false } = props;
 
     const theme = useTheme();
-    const isLargeScreen = useMediaQuery(theme => theme.breakpoints.up('lg'));
+    const isLargeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'));
 
-    const [displayFromToPickers, setDisplayFromToPickers] = useState(false);
+    const [displayFromToPickers, setDisplayFromToPickers] = useState<boolean>(false);
 
     // Always normalize into a [string, string]
     const [startTime, endTime] = isValidArray(timeRange) ? timeRange : defaultTimeRange;
 
-    const [predefinedRange, setPredefinedRange] = useState(() => {
+    const [predefinedRange, setPredefinedRange] = useState<string>(() => {
         // Sync initial toggle‑button state
         const match = Object.values(PREDEFINED_TIMERANGES)
-            .find(r => r.start === startTime && r.end === endTime);
+            .find(r => 'start' in r && r.start === Number(startTime) && 'end' in r && r.end === Number(endTime));
         return match ? match.id : PREDEFINED_TIMERANGES.custom.id;
     });
 
     // When `timeRange` actually changes, keep buttons in sync:
     useEffect(() => {
         const match = Object.values(PREDEFINED_TIMERANGES)
-            .find(r => r.start === startTime && r.end === endTime);
+            .find(r => 'start' in r && r.start === Number(startTime) && 'end' in r && r.end === Number(endTime));
         setPredefinedRange(match ? match.id : PREDEFINED_TIMERANGES.custom.id);
     }, [startTime, endTime]);
 
-    const handleModeChange = useCallback((_, newMode) => {
+    const handleModeChange = useCallback((event: React.MouseEvent<HTMLElement>, newMode: string | null) => {
         if (!newMode) return;
         setPredefinedRange(newMode);
-        const range = PREDEFINED_TIMERANGES[newMode];
-        if (range.start != null && range.end != null) {
-            handleChange([range.start, range.end]);
+        const range = PREDEFINED_TIMERANGES[newMode as keyof typeof PREDEFINED_TIMERANGES];
+        if ('start' in range && 'end' in range && range.start != null && range.end != null) {
+            handleChange([range.start.toString(), range.end.toString()]);
         }
 
         // only display the hour pickers if custom time is used
@@ -44,7 +53,7 @@ const TimeRangeSelector = (props) => {
     }, [handleChange]);
 
     // Add useMediaQuery to detect xs screens
-    const extraSmallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
+    const extraSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
 
     return (
         <Stack direction={hasTitle ? "column" : "row"} alignItems="start" gap={0.5} width="100%">
@@ -97,7 +106,7 @@ const TimeRangeSelector = (props) => {
                             size="small"
                         >
                             {range.label}
-                            {range.timeRangeLabel && (
+                            {'timeRangeLabel' in range && range.timeRangeLabel && (
                                 <>
                                     &nbsp;({range.timeRangeLabel})
                                 </>
@@ -116,8 +125,10 @@ const TimeRangeSelector = (props) => {
                                 options={HOURS}
                                 disabled={disabled || predefinedRange !== "custom"}
                                 handleChange={(e) => {
+                                    const newStartTime = Number(e.target.value);
+                                    const currentEndTime = Number(endTime);
                                     // Set toValue to null if new startTime is larger than endTime's current value
-                                    if (e.target.value > endTime) {
+                                    if (newStartTime > currentEndTime) {
                                         handleChange([e.target.value, null]);
                                     }
                                     // Else, proceed with startTime
@@ -130,7 +141,7 @@ const TimeRangeSelector = (props) => {
                             <SimplePicker
                                 label="To"
                                 value={endTime}
-                                options={HOURS.filter(h => h.value > startTime)}
+                                options={HOURS.filter(h => h.value > Number(startTime))}
                                 disabled={disabled || predefinedRange !== "custom"}
                                 handleChange={e => handleChange([startTime, e.target.value])}
                                 flex={1}

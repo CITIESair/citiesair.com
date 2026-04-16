@@ -1,14 +1,47 @@
 /* eslint-disable */
 
 import { styled } from '@mui/material/styles';
-import { Paper } from '@mui/material';
-
+import { Paper, Theme } from '@mui/material';
 import { addDays, endOfDay, startOfDay, format, addHours } from "date-fns";
-import { AggregationType } from '../../shared/constants';
+import { AggregationType, AggregationTypeValue } from '../../shared/constants';
+
+interface DateRange {
+  startDate: Date;
+  endDate: Date;
+}
+
+interface StaticRange {
+  label: string;
+  range: () => DateRange;
+}
+
+interface AllTimeOptions {
+  minDateOfDataset: Date;
+}
+
+interface CustomStaticRangesOptions {
+  minDateOfDataset: Date;
+  aggregationType: AggregationTypeValue;
+}
+
+interface FormattedDates {
+  startDate: string;
+  endDate: string;
+}
+
+interface FormattedDatesOptions {
+  startDateObject: Date;
+  endDateObject: Date;
+}
+
+interface StyledDateRangePickerProps {
+  showPickerPanel?: boolean;
+  smallScreen?: boolean;
+}
 
 const today = new Date();
 
-const yesterday = {
+const yesterday: StaticRange = {
   label: "Yesterday",
   range: () => ({
     startDate: startOfDay(addHours(today, -48)),
@@ -16,7 +49,7 @@ const yesterday = {
   })
 };
 
-const last14Days = {
+const last14Days: StaticRange = {
   label: "Last 14d",
   range: () => ({
     startDate: startOfDay(addDays(today, -14)),
@@ -24,7 +57,7 @@ const last14Days = {
   })
 };
 
-const last30Days = {
+const last30Days: StaticRange = {
   label: "Last 30d",
   range: () => ({
     startDate: startOfDay(addDays(today, -30)),
@@ -32,7 +65,7 @@ const last30Days = {
   })
 };
 
-const last365Days = {
+const last365Days: StaticRange = {
   label: "Last 365d",
   range: () => ({
     startDate: startOfDay(addDays(today, -365)),
@@ -40,7 +73,7 @@ const last365Days = {
   })
 };
 
-const allTime = ({ minDateOfDataset }) => {
+const allTime = ({ minDateOfDataset }: AllTimeOptions): StaticRange => {
   const formattedMinDate = format(minDateOfDataset, "MMM yyyy");
   return {
     label: `All Time (${formattedMinDate} - Now)`,
@@ -51,7 +84,7 @@ const allTime = ({ minDateOfDataset }) => {
   }
 };
 
-export const returnCustomStaticRanges = ({ minDateOfDataset, aggregationType }) => {
+export const returnCustomStaticRanges = ({ minDateOfDataset, aggregationType }: CustomStaticRangesOptions): StaticRange[] => {
   switch (aggregationType) {
     case AggregationType.minute:
       return [yesterday];
@@ -67,14 +100,14 @@ export const returnCustomStaticRanges = ({ minDateOfDataset, aggregationType }) 
 
 export const StyledDateRangePicker = styled(Paper, {
   shouldForwardProp: (prop) => prop !== 'showPickerPanel' && prop !== 'smallScreen',
-})(({ theme, showPickerPanel, smallScreen }) => ({
-  zIndex: showPickerPanel === true && 1,
+})<StyledDateRangePickerProps>(({ theme, showPickerPanel, smallScreen }) => ({
+  zIndex: showPickerPanel === true ? 1 : undefined,
   position: "relative",
   padding: showPickerPanel ? theme.spacing(1) : 0,
   margin: (showPickerPanel && !smallScreen) ? theme.spacing(-1) : 0,
   maxWidth: '100%',
   background: showPickerPanel ? theme.palette.customAlternateBackground : 'transparent',
-  boxShadow: showPickerPanel === false && 'none',
+  boxShadow: showPickerPanel === false ? 'none' : undefined,
   '& .rdrDateInput::before': {
     display: "none !important"
   },
@@ -87,7 +120,7 @@ export const StyledDateRangePicker = styled(Paper, {
     background: 'transparent'
   },
   '& .rdrDateDisplayItemActive': {
-    border: showPickerPanel === false && 'none'
+    border: showPickerPanel === false ? 'none' : undefined
   },
   '& .rdrDateDisplay': {
     margin: 0,
@@ -105,26 +138,26 @@ export const StyledDateRangePicker = styled(Paper, {
     }
   },
   '& .rdrDateDisplayItem:hover:not(.rdrDateDisplayItemActive)': {
-    border: showPickerPanel === false && '1px solid transparent'
+    border: showPickerPanel === false ? '1px solid transparent' : undefined
   },
   '& .rdrDateDisplayItem + .rdrDateDisplayItem': {
     margin: 0
   },
   '& .rdrDateDisplayItem:first-of-type': {
-    borderRight: showPickerPanel === false && `1px solid ${theme.palette.action.disabled} !important`
+    borderRight: showPickerPanel === false ? `1px solid ${theme.palette.action.disabled} !important` : undefined
   },
   '& .rdrMonthAndYearWrapper, .rdrInputRanges': {
-    display: showPickerPanel === false && 'none !important',
+    display: showPickerPanel === false ? 'none !important' : undefined,
     padding: 0
   },
   '& .rdrMonthName': {
     display: 'none',
   },
   '& .rdrDefinedRangesWrapper, .rdrMonths': {
-    display: showPickerPanel === false && 'none'
+    display: showPickerPanel === false ? 'none' : undefined
   },
   '&  .rdrInfiniteMonths': {
-    visibility: showPickerPanel === false && 'hidden',
+    visibility: showPickerPanel === false ? 'hidden' : undefined,
     width: "100% !important",
     maxWidth: "675px",
     margin: "auto"
@@ -259,7 +292,7 @@ export const StyledDateRangePicker = styled(Paper, {
   }
 }));
 
-export const returnFormattedDates = ({ startDateObject, endDateObject }) => {
+export const returnFormattedDates = ({ startDateObject, endDateObject }: FormattedDatesOptions): FormattedDates => {
   return {
     startDate: format(startDateObject, 'yyyy-MM-dd'),
     endDate: format(endDateObject, 'yyyy-MM-dd')

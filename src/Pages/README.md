@@ -39,7 +39,7 @@ As alluded to earlier, `Project` visualizes fetched data for each school:
 **Lazy loading charts**
 To prioritize loading speed, it will only display the first 2 visualizations specified in the array `ChartAPIEndpointsOrder` in [src/API/APIUtils.tsx](src/API/APIUtils.tsx). Only when `Load More Charts` button in is clicked will it load the rest of the visualizations specified in that array `ChartAPIEndpointsOrder`.
 
-### [404.jsx](404.jsx)
+### [404.tsx](404.tsx)
 
 The 404 page is a simple page that is displayed when a user navigates to a page that does not exist. It does so via the following `Router` setup in [App.jsx](../App.jsx):
 

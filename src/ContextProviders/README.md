@@ -41,7 +41,7 @@ These are contexts used only by a specific component in the application:
   - `editingAlert`: the alert being edited (CRUD) at the moment
   - `selectedAlert`: a server-ground-truth copy of the currently selected alert for CRUD operations. `selectedAlert` can be compared with `editingAlert` in [AlertModificationDialog](/src/Components/AirQuality/AirQualityAlerts/AlertModificationDialog/AlertModificationDialog.jsx) to see if the user has made ANY edit to it.
 
-[DashboardContext](./DashboardContext.jsx): Provides a centralized store for managing and sharing metadata relevant to displaying the dashboard:
+[DashboardContext](./DashboardContext.tsx): Provides a centralized store for managing and sharing metadata relevant to displaying the dashboard:
 
   - Currently selected school and its metadata
   - Whether or not to load more charts in the `/dashboard` page beyond the first two charts (`historical` and `dailyAverageAllTime`)

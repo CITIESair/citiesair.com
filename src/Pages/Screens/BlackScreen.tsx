@@ -1,6 +1,6 @@
 import { Grid } from "@mui/material"
 
-const BlackScreen = () => {
+const BlackScreen: React.FC = () => {
     return (
         <Grid
             container
@@ -15,4 +15,4 @@ const BlackScreen = () => {
     )
 }
 
-export default BlackScreen; 
+export default BlackScreen;

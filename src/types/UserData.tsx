@@ -2,10 +2,14 @@ import type { ReactNode } from 'react';
 import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 import PeopleIcon from '@mui/icons-material/People';
 
+export interface AllowedSchool {
+    school_id: string;
+}
+
 // To be harmonized with backend's openapi doc?
 export interface UserData {
     authenticated: boolean;
-    allowedSchools: string[];
+    allowedSchools: AllowedSchool[];
     username: string | null;
     email: string | null;
     is_verified: boolean;

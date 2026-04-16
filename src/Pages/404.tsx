@@ -5,7 +5,11 @@ import { AppRoutes } from '../Utils/AppRoutes';
 import { CITIESair } from '../Utils/GlobalVariables';
 import { usePreferences } from '../ContextProviders/PreferenceContext';
 
-export default function FourOhFour({ title }) {
+interface FourOhFourProps {
+  title: string;
+}
+
+export default function FourOhFour({ title }: FourOhFourProps) {
   // Update the page's title
   useEffect(() => {
     document.title = title;

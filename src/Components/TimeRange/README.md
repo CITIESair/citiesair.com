@@ -5,7 +5,7 @@ Used to constrain **intra-day (hour)** queries for charts (to filter data to onl
 ![dashboard-page-1](/documentation/dashboard-page-1.png)
 *The time range selector as seen in the historical dashboard chart*
 
-### [TimeRangeSelector.jsx](./TimeRangeSelector.jsx):
+### [TimeRangeSelector.tsx](./TimeRangeSelector.tsx):
 Provides a compact UI for selecting a **start hour** and **end hour**. Supports two selection modes:
 - **Predefined ranges**:
     - `All Day` (0–23h)

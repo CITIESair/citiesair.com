@@ -14,10 +14,14 @@ declare module '@mui/material/styles' {
   interface Palette {
     NYUpurple: string;
     backgroundColorForNavLink: string;
+    customBackground: string;
+    customAlternateBackground: string;
   }
   interface PaletteOptions {
     NYUpurple?: string;
     backgroundColorForNavLink?: string;
+    customBackground?: string;
+    customAlternateBackground?: string;
   }
 }
 
