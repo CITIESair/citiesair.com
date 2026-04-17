@@ -33,7 +33,7 @@ const SchoolSelector = () => {
 
   const handleItemSelect = (newSchoolID) => () => {
     if (currentSchoolID !== newSchoolID) {
-      localStorage.setItem(LocalStorage.schoolID, newSchoolID)
+      localStorage.setItem(LocalStorage.schoolId, newSchoolID)
 
       Tracking.sendEventAnalytics(Tracking.Events.internalNavigation,
         {

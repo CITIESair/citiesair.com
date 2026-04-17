@@ -41,7 +41,7 @@ const CustomDateRangePicker = (props) => {
     // Default if not set
     return {
       startDate: null,
-      endDate: null,
+      endDate: new Date(""), // so that the calendar doesn't highlight all dates when the value is null
       key: 'selection',
     };
   });

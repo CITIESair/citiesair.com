@@ -96,8 +96,8 @@ export function DashboardProvider({ children }: DashboardProviderProps) {
   useEffect(() => {
     if (!authenticationState.checkedAuthentication || !isValidArray(user.allowedSchools)) return;
 
-    // CASE: NYUAD
-    if ([AppRoutes.nyuadBanner as string, AppRoutes.allSensorsScreen as string, AppRoutes.nyuadMap as string].includes(locationPath)) {
+    // CASE: NYUAD or all sensor screen
+    if (locationPath === AppRoutes.nyuadBanner || locationPath === AppRoutes.nyuadMap) {
       setCurrentSchoolID(NYUAD);
       return;
     }
