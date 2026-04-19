@@ -7,11 +7,17 @@ import { isValidArray } from "../../Utils/UtilFunctions";
 import { PREDEFINED_TIMERANGES } from "./TimeRangeUtils";
 
 interface TimeRangeSelectorProps {
-    timeRange: [number | string, number | string] | null;
-    defaultTimeRange: [number | string, number | string];
+    /** Current time range as [startTime, endTime] in minutes past midnight, or null */
+    timeRange: [number, number] | null;
+    /** Default time range as [startTime, endTime] in minutes past midnight */
+    defaultTimeRange: [number, number];
+    /** Whether the selector is disabled */
     disabled?: boolean;
-    handleChange: (range: [number | string, number | string | null]) => void;
+    /** Callback when time range changes. Values are in minutes past midnight. */
+    handleChange: (range: [number, number | null]) => void;
+    /** Whether to use responsive layout */
     isResponsive?: boolean;
+    /** Whether to show title */
     hasTitle?: boolean;
 }
 
@@ -29,14 +35,14 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = (props) => {
     const [predefinedRange, setPredefinedRange] = useState<string>(() => {
         // Sync initial toggle‑button state
         const match = Object.values(PREDEFINED_TIMERANGES)
-            .find(r => 'start' in r && r.start === Number(startTime) && 'end' in r && r.end === Number(endTime));
+            .find(r => 'start' in r && r.start === startTime && 'end' in r && r.end === endTime);
         return match ? match.id : PREDEFINED_TIMERANGES.custom.id;
     });
 
     // When `timeRange` actually changes, keep buttons in sync:
     useEffect(() => {
         const match = Object.values(PREDEFINED_TIMERANGES)
-            .find(r => 'start' in r && r.start === Number(startTime) && 'end' in r && r.end === Number(endTime));
+            .find(r => 'start' in r && r.start === startTime && 'end' in r && r.end === endTime);
         setPredefinedRange(match ? match.id : PREDEFINED_TIMERANGES.custom.id);
     }, [startTime, endTime]);
 
@@ -45,7 +51,8 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = (props) => {
         setPredefinedRange(newMode);
         const range = PREDEFINED_TIMERANGES[newMode as keyof typeof PREDEFINED_TIMERANGES];
         if ('start' in range && 'end' in range && range.start != null && range.end != null) {
-            handleChange([range.start.toString(), range.end.toString()]);
+            // Pass numbers directly - they represent minutes past midnight
+            handleChange([range.start, range.end]);
         }
 
         // only display the hour pickers if custom time is used
@@ -126,14 +133,14 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = (props) => {
                                 disabled={disabled || predefinedRange !== "custom"}
                                 handleChange={(e) => {
                                     const newStartTime = Number(e.target.value);
-                                    const currentEndTime = Number(endTime);
+                                    const currentEndTime = endTime;
                                     // Set toValue to null if new startTime is larger than endTime's current value
                                     if (newStartTime > currentEndTime) {
-                                        handleChange([e.target.value, null]);
+                                        handleChange([newStartTime, null]);
                                     }
                                     // Else, proceed with startTime
                                     else {
-                                        handleChange([e.target.value, endTime])
+                                        handleChange([newStartTime, currentEndTime])
                                     }
                                 }}
                                 flex={1}
@@ -141,9 +148,9 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = (props) => {
                             <SimplePicker
                                 label="To"
                                 value={endTime}
-                                options={HOURS.filter(h => h.value > Number(startTime))}
+                                options={HOURS.filter(h => h.value > startTime)}
                                 disabled={disabled || predefinedRange !== "custom"}
-                                handleChange={e => handleChange([startTime, e.target.value])}
+                                handleChange={e => handleChange([startTime, Number(e.target.value)])}
                                 flex={1}
                             />
                         </Stack>
