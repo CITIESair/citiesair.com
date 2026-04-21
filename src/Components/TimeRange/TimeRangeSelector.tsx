@@ -35,22 +35,22 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = (props) => {
     const [predefinedRange, setPredefinedRange] = useState<string>(() => {
         // Sync initial toggle‑button state
         const match = Object.values(PREDEFINED_TIMERANGES)
-            .find(r => 'start' in r && r.start === startTime && 'end' in r && r.end === endTime);
+            .find(r => r.start === startTime && r.end === endTime);
         return match ? match.id : PREDEFINED_TIMERANGES.custom.id;
     });
 
     // When `timeRange` actually changes, keep buttons in sync:
     useEffect(() => {
         const match = Object.values(PREDEFINED_TIMERANGES)
-            .find(r => 'start' in r && r.start === startTime && 'end' in r && r.end === endTime);
+            .find(r => r.start === startTime && r.end === endTime);
         setPredefinedRange(match ? match.id : PREDEFINED_TIMERANGES.custom.id);
     }, [startTime, endTime]);
 
     const handleModeChange = useCallback((event: React.MouseEvent<HTMLElement>, newMode: string | null) => {
         if (!newMode) return;
         setPredefinedRange(newMode);
-        const range = PREDEFINED_TIMERANGES[newMode as keyof typeof PREDEFINED_TIMERANGES];
-        if ('start' in range && 'end' in range && range.start != null && range.end != null) {
+        const range = PREDEFINED_TIMERANGES[newMode];
+        if (range.start !== undefined && range.end !== undefined) {
             // Pass numbers directly - they represent minutes past midnight
             handleChange([range.start, range.end]);
         }
@@ -113,12 +113,11 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = (props) => {
                             size="small"
                         >
                             {range.label}
-                            {'timeRangeLabel' in range && range.timeRangeLabel && (
+                            {range.timeRangeLabel && (
                                 <>
                                     &nbsp;({range.timeRangeLabel})
                                 </>
-                            )
-                            }
+                            )}
                         </ToggleButton>
                     ))}
                 </ToggleButtonGroup>
