@@ -1,0 +1,84 @@
+import { Box, Stack, Tooltip, Typography } from "@mui/material";
+import { AQI_Database } from "../../../business-domain/air-quality/air-quality.database";
+import { getTranslation } from "../../../Utils/UtilFunctions";
+import { CurrentAQIGridSize, CurrentAQIGridSizeType, ElementSizes } from "./CurrentAQIGridSize";
+import { usePreferences } from "../../../ContextProviders/PreferenceContext";
+import { DataTypeKeys } from "../../../business-domain/data-types/data-type.types";
+
+interface AQIScaleProps {
+    isOnBannerPage?: boolean;
+    isSmallScreen: boolean;
+    showLabel?: boolean;
+    size?: CurrentAQIGridSizeType;
+}
+
+const AQIScale = ({ isOnBannerPage, isSmallScreen, showLabel = true, size = CurrentAQIGridSize.medium }: AQIScaleProps) => {
+    const { themePreference, language } = usePreferences();
+
+    return (
+        <Stack
+            direction={isSmallScreen ? "column-reverse" : "row"}
+            justifyContent="center"
+            flex={1}
+        >
+            {AQI_Database.map((element, index) => (
+                <Tooltip
+                    key={index}
+                    title={(!isOnBannerPage && isSmallScreen && getTranslation(element.category as any, language)) || ""}
+                    slotProps={{
+                        popper: {
+                            modifiers: [
+                                { name: 'offset', options: { offset: [0, -48] } }
+                            ],
+                        },
+                    }}
+                >
+                    <Stack
+                        direction={isSmallScreen ? "row-reverse" : "column"}
+                        width={isSmallScreen ? "auto" : "15%"}
+                        justifyContent={isSmallScreen ? "flex-end" : undefined}
+                        alignItems={isSmallScreen ? "flex-end" : undefined}
+                        spacing={0.5}
+                        flex={1}
+                    >
+                        <Typography
+                            variant={ElementSizes[size].aqiScaleText}
+                            fontWeight={500}
+                            lineHeight={1}
+                            color="text.secondary"
+                        >
+                            <small>{element[DataTypeKeys.aqi].high === Infinity ? `${element[DataTypeKeys.aqi].low}+` : element[DataTypeKeys.aqi].low}</small>
+                        </Typography>
+                        <Box
+                            sx={{
+                                backgroundColor: element.color[themePreference],
+                                width: isSmallScreen ? ElementSizes[size].aqiScaleWidth : "100%",
+                                height: isSmallScreen ? "100%" : ElementSizes[size].aqiScaleHeight
+                            }}
+                        />
+
+                        {(showLabel === true) &&
+                            <Typography
+                                variant={ElementSizes[size].aqiScaleText}
+                                lineHeight={0.9}
+                                color="text.secondary"
+                                sx={{
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    display: "-webkit-box",
+                                    WebkitBoxOrient: "vertical",
+                                    WebkitLineClamp: 3,
+                                    px: 0.25
+                                }}
+                            >
+                                <small>{getTranslation(element.category as any, language)}</small>
+                            </Typography>
+                        }
+                    </Stack>
+                </Tooltip>
+            ))}
+        </Stack>
+    )
+}
+
+export default AQIScale;

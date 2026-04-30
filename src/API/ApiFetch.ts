@@ -22,31 +22,23 @@ interface FetchOptions {
   signal: AbortSignal;
 }
 
-// Types for sensor data structures
-// Loose typing for sensor data (complex nested structure from API)
-// Once API response types are formally defined, these can be refined
-interface SensorMetadata {
-  last_seen?: string;
-  lastSeenInMinutes?: number | null;
-  sensor_status?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
-}
+// Import OpenAPI types for proper typing
+import type { components } from "../types/backend-api.types";
+import type { SensorStatusType } from "../Components/AirQuality/SensorStatus";
 
-interface CurrentData {
-  timestamp?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
-}
+// Backend returns this structure
+type ProcessedSensorData = components["schemas"]["ProcessedSensorData"];
 
-interface SensorData {
-  sensor?: SensorMetadata;
-  current?: CurrentData;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
-}
+// After processing, we add these fields
+type ProcessedSensorDataWithStatus = {
+  sensor: ProcessedSensorData["sensor"] & {
+    lastSeenInMinutes: number | null;
+    sensor_status: SensorStatusType;
+  };
+  current: ProcessedSensorData["current"];
+};
 
-type SensorsDataResponse = Record<string, SensorData>;
+type SensorsDataResponse = ProcessedSensorDataWithStatus[];
 
 interface FetchAndProcessParams {
   url: string;
@@ -91,6 +83,9 @@ export const fetchDataFromURL = async ({
     }
 
     const response = await fetch(url, fetchOptions);
+    // Debug: log outgoing fetch URL
+    // eslint-disable-next-line no-console
+    console.debug('fetchDataFromURL -> fetching', url);
     clearTimeout(timeoutId);
 
     if (response.status >= 500 && response.status < 600) {
@@ -137,33 +132,42 @@ export const fetchDataFromURL = async ({
 
 export const fetchAndProcessCurrentSensorsData = async ({ url }: FetchAndProcessParams): Promise<SensorsDataResponse | undefined> => {
   try {
-    const data = await fetchDataFromURL({ url }) as SensorsDataResponse;
+    const data = await fetchDataFromURL({ url }) as ProcessedSensorData[];
 
     if (!data) {
       throw new Error('Returned data is empty');
     }
 
+    if (!Array.isArray(data)) {
+      throw new Error('Expected array response from API');
+    }
+
     try {
-      Object.entries(data).forEach(([_, sensorData]) => {
+      // Process each sensor data item
+      const processedData: SensorsDataResponse = data.map(sensorData => {
         // Calculate if the sensor is currently active or not
         const now = new Date();
         const lastSeen = sensorData.sensor?.last_seen || sensorData.current?.timestamp;
         const lastSeenTimestamp = new Date(lastSeen as string);
         const lastSeenInMinutes = Math.round((now.getTime() - lastSeenTimestamp.getTime()) / 1000 / 60);
 
-        // Update sensor metadata
-        sensorData.sensor = {
-          ...sensorData.sensor,
-          lastSeenInMinutes: lastSeenInMinutes > 10 * 365 * 24 * 60 ? null : lastSeenInMinutes, // if more than 10 years (likely UNIX time = 0), then return null
-          sensor_status: calculateSensorStatus(lastSeenInMinutes)
+        // Return processed sensor data with additional fields
+        return {
+          ...sensorData,
+          sensor: {
+            ...sensorData.sensor,
+            lastSeenInMinutes: lastSeenInMinutes > 10 * 365 * 24 * 60 ? null : lastSeenInMinutes, // if more than 10 years (likely UNIX time = 0), then return null
+            sensor_status: calculateSensorStatus(lastSeenInMinutes)
+          }
         };
       });
 
-      return data;
+      return processedData;
 
     } catch (error) {
-      // Handle the case where data is not an iterable object
-      console.error("Error: data is not iterable", error);
+      // Handle the case where data is not processable
+      console.error("Error processing sensor data", error);
+      throw error;
     }
   }
   catch (error) {

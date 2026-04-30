@@ -1,0 +1,53 @@
+import { useTheme } from '@mui/material';
+import { getTranslation } from "../../../Utils/UtilFunctions";
+import { Typography } from "@mui/material";
+import { CurrentAQIGridSizeType, ElementSizes } from "./CurrentAQIGridSize";
+import ErrorIcon from '@mui/icons-material/Error';
+import sectionData from '../../../SectionData/sectionData';
+import { getFormattedLastSeen, SensorStatus, SensorStatusType } from "../SensorStatus";
+import { usePreferences } from '../../../ContextProviders/PreferenceContext';
+import type { components } from "../../../types/backend-api.types";
+
+type SensorInfo = components["schemas"]["SensorInfo"];
+
+interface LastUpdateAndSensorStatusProps {
+    sensor: (SensorInfo & { sensor_status?: SensorStatusType; lastSeenInMinutes?: number }) | null | undefined;
+    size: CurrentAQIGridSizeType;
+}
+
+const LastUpdateAndSensorStatus = ({ sensor, size }: LastUpdateAndSensorStatusProps) => {
+    const theme = useTheme();
+    const { language } = usePreferences();
+
+    const offlineText = getTranslation(sectionData.status.content.offline, language);
+    const lastUpdateText = getTranslation(sectionData.status.content.lastUpdate, language);
+
+    return (
+        <Typography
+            variant={ElementSizes[size].sensorStatus}
+            display="block"
+            sx={{
+                mt: 0,
+                fontWeight: ElementSizes[size].importantFontWeight
+            }}
+        >
+            {
+                sensor?.sensor_status !== SensorStatus.active
+                &&
+                <>
+                    <ErrorIcon
+                        sx={{
+                            '& *': {
+                                color: `${(theme.palette.text as any).aqi[3]} !important` // red
+                            },
+                            mr: 0.5
+                        }} />
+                    {offlineText}.&nbsp;
+                </>
+            }
+            {`${lastUpdateText}: ${getFormattedLastSeen(sensor?.lastSeenInMinutes, language)}`}
+        </Typography>
+    )
+}
+
+export default LastUpdateAndSensorStatus;
