@@ -111,6 +111,716 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/raw/{school}/{location_short}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download aggregated sensor data as a CSV file */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Time aggregation level used to group exported measurements. */
+                    aggregationType?: "minute" | "hour" | "day" | "month" | "year";
+                    /** @description When true, returns only the earliest and latest sample rows if more than 10 grouped rows exist. */
+                    isSample?: boolean;
+                };
+                header?: never;
+                path: {
+                    /** @description School ID used to scope sensor access and dataset lookup. */
+                    school: string;
+                    /** @description Sensor short location code, such as `c2` or `outdoor`. */
+                    location_short: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description CSV attachment containing the requested dataset. */
+                200: {
+                    headers: {
+                        /** @description Attachment filename in the format `{school}-{location_short}-{aggregationType}[-sample].csv`. */
+                        "Content-Disposition"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/csv": string;
+                    };
+                };
+                /** @description Invalid aggregation type, unknown sensor metadata, or no data available for the requested school and sensor. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Authentication or privilege failure. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Server error while generating the CSV dataset. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/school_metadata/{school}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get metadata and sensor capabilities for a school */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description School ID used to scope the metadata lookup. */
+                    school: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description School metadata, screen configuration, and per-sensor available data types. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SchoolMetadataResponse"];
+                    };
+                };
+                /** @description Authentication failure. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The user does not have permission to view this school. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description School does not exist. */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+                /** @description Server error while fetching school metadata. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the current user profile and accessible schools
+         * @description Returns authenticated user details when a valid session cookie is present, otherwise returns only publicly accessible schools.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Current user payload or anonymous public-school payload. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserMeResponse"];
+                    };
+                };
+                /** @description Server error while fetching user info. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Authenticate with username and password */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AuthLoginRequest"];
+                };
+            };
+            responses: {
+                /** @description Authenticated session payload. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthLoginResponse"];
+                    };
+                };
+                /** @description Missing login fields. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthMessageResponse"];
+                    };
+                };
+                /** @description Invalid credentials or unsupported auth type for password login. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthMessageResponse"];
+                    };
+                };
+                /** @description Login failure. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthMessageResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Clear the current session */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Logout completed and cookie cleared. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthMessageResponse"];
+                    };
+                };
+                /** @description Other logout failure. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthMessageResponse"];
+                    };
+                };
+                /** @description No active login session cookie was present. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthMessageResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/signup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Register a password-based user account */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AuthSignupRequest"];
+                };
+            };
+            responses: {
+                /** @description Account created and session started. */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthSignupResponse"];
+                    };
+                };
+                /** @description Missing fields, weak password, or duplicate email. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthMessageResponse"];
+                    };
+                };
+                /** @description Signup failure. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthMessageResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Verify a password account email token */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AuthVerifyRequest"];
+                };
+            };
+            responses: {
+                /** @description Email verification succeeded. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthVerifyResponse"];
+                    };
+                };
+                /** @description Missing or expired token. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthMessageResponse"];
+                    };
+                };
+                /** @description Unknown verification token. */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthMessageResponse"];
+                    };
+                };
+                /** @description Verification failure. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthMessageResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/google/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Complete Google OAuth login or signup */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AuthGoogleCallbackRequest"];
+                };
+            };
+            responses: {
+                /** @description Existing user logged in through Google. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthGoogleCallbackResponse"];
+                    };
+                };
+                /** @description New user created through Google login. */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthGoogleCallbackResponse"];
+                    };
+                };
+                /** @description Missing auth code, invalid Google token, or unsupported auth type. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthMessageResponse"];
+                    };
+                };
+                /** @description Google OAuth failure. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthMessageResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/screen/{school}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get screen data for the default school screen */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Screen data resolution. Hour uses the wider default lookback window. */
+                    aggregationType?: "minute" | "hour";
+                    /** @description Optional custom lookback window in hours. */
+                    hoursToShow?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description School ID used to scope screen access and sensor lookup. */
+                    school: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Screen sensor data. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ScreenResponse"][];
+                    };
+                };
+                /** @description Authentication failure. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The user does not have permission to view this school. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Screen does not exist. */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+                /** @description Server error while fetching screen data. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/screen/{school}/{screen_name}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get screen data for a named school screen */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Screen data resolution. Hour uses the wider default lookback window. */
+                    aggregationType?: "minute" | "hour";
+                    /** @description Optional custom lookback window in hours. */
+                    hoursToShow?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description School ID used to scope screen access and sensor lookup. */
+                    school: string;
+                    /** @description Screen name stored in `screen.screen_name`. */
+                    screen_name: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Screen sensor data. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ScreenResponse"][];
+                    };
+                };
+                /** @description Authentication failure. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The user does not have permission to view this school. */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Screen does not exist. */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+                /** @description Server error while fetching screen data. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get public global at-a-glance statistics */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Global public statistics for the CITIESair system. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StatsResponse"];
+                    };
+                };
+                /** @description Error fetching at-a-glance statistics. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/chart/historical/{school}": {
         parameters: {
             query?: never;
@@ -216,6 +926,158 @@ export interface components {
         ProcessedSensorData: {
             sensor: components["schemas"]["SensorInfo"];
             current: components["schemas"]["CurrentMeasurement"] | null;
+        };
+        SchoolMetadataScreen: {
+            screen_name: string | null;
+            location_long: string | null;
+        };
+        SchoolMetadataSensor: {
+            sensor_id: number;
+            location_short: string | null;
+            allowedDataTypes: components["schemas"]["ChartDataTypeKey"][];
+        };
+        SchoolMetadataResponse: {
+            school_id: string;
+            name: string;
+            contactPerson: string | null;
+            contactEmail: string | null;
+            description: string;
+            screens: components["schemas"]["SchoolMetadataScreen"][];
+            sensors: components["schemas"]["SchoolMetadataSensor"][];
+            sensorsCount: number | null;
+            languages: string[] | null;
+            timezone: string;
+            has_map: boolean;
+            is_public: boolean;
+            max_email_alert_recipients: number;
+            students: number | null;
+        };
+        AccessibleSchool: {
+            school_id: string;
+            name: string;
+            sorting_id?: number | null;
+        };
+        /** @enum {string} */
+        UserRole: "individual" | "school" | "admin";
+        UserMeAnonymousResponse: {
+            /** @enum {boolean} */
+            authenticated: false;
+            allowedSchools: components["schemas"]["AccessibleSchool"][];
+        };
+        UserMeAuthenticatedResponse: {
+            /** @enum {boolean} */
+            authenticated: true;
+            allowedSchools: components["schemas"]["AccessibleSchool"][];
+            username: string | null;
+            is_verified: boolean;
+            email: string | null;
+            user_role: components["schemas"]["UserRole"];
+        };
+        UserMeResponse: components["schemas"]["UserMeAnonymousResponse"] | components["schemas"]["UserMeAuthenticatedResponse"];
+        ScreenResponseMetadata: {
+            /** @enum {string} */
+            aggregationType: "minute" | "hour";
+            viewHours: number;
+        };
+        ScreenSensorInfo: {
+            sensor_id: number;
+            location_type: string;
+            location_short: string | null;
+            location_long: string | null;
+        };
+        ScreenCurrentMeasurement: {
+            /** Format: date-time */
+            timestamp: string;
+            temperature: number | null;
+            rel_humidity: number | null;
+            aqi: components["schemas"]["OverallAQIResult"] | null;
+            heat_index_C: components["schemas"]["HeatIndexResult"] | null;
+            "pm2.5": number | null;
+            pm10_raw: number | null;
+        };
+        ScreenHistoricalMeasurement: {
+            /** Format: date-time */
+            timestamp: string;
+            aqi: components["schemas"]["OverallAQIResult"] | null;
+            "pm2.5": number | null;
+            pm10_raw: number | null;
+        };
+        ScreenEmptyCurrentMeasurement: {
+            /** Format: date-time */
+            timestamp?: string;
+        };
+        ScreenEmptyResponse: {
+            sensor: components["schemas"]["ScreenSensorInfo"];
+            current: components["schemas"]["ScreenEmptyCurrentMeasurement"];
+            historical: unknown[];
+        };
+        ScreenResponseWithData: {
+            metadata: components["schemas"]["ScreenResponseMetadata"];
+            sensor: components["schemas"]["ScreenSensorInfo"];
+            current: components["schemas"]["ScreenCurrentMeasurement"];
+            historical: components["schemas"]["ScreenHistoricalMeasurement"][];
+        };
+        ScreenResponse: components["schemas"]["ScreenEmptyResponse"] | components["schemas"]["ScreenResponseWithData"];
+        StatsResponse: {
+            /** @description PostgreSQL COUNT result for distinct schools. */
+            schools: string;
+            /** @description PostgreSQL COUNT result for deployed non-virtual sensors. */
+            sensorsCount: string;
+            /** @description Rounded display string based on summed school size, such as `10,000+`. */
+            students: string | null;
+            /** @description Rounded display string based on the `misc.iqair_followers` value, such as `10,000+`. */
+            communityMembers: string | null;
+        };
+        AuthMessageResponse: {
+            message: string;
+        };
+        AuthLoginRequest: {
+            username: string;
+            password: string;
+            remember_me?: boolean;
+        };
+        AuthSignupRequest: {
+            email: string;
+            password: string;
+        };
+        AuthVerifyRequest: {
+            token: string;
+        };
+        AuthGoogleCallbackRequest: {
+            code: string;
+        };
+        AuthLoginResponse: {
+            message: string;
+            username: string;
+            is_verified: boolean;
+            email: string | null;
+            user_role: components["schemas"]["UserRole"];
+            allowedSchools: components["schemas"]["AccessibleSchool"][];
+        };
+        AuthSignupResponse: {
+            message: string;
+            username: string | null;
+            is_verified: boolean;
+            email: string;
+            allowedSchools: components["schemas"]["AccessibleSchool"][];
+            /** @enum {string} */
+            user_role: "individual";
+            /** @enum {boolean} */
+            recently_registered: true;
+        };
+        AuthVerifyResponse: {
+            message: string;
+            username: string | null;
+            email: string | null;
+        };
+        AuthGoogleCallbackResponse: {
+            message: string;
+            username: string | null;
+            email: string | null;
+            is_verified: boolean;
+            user_role: components["schemas"]["UserRole"];
+            allowedSchools: components["schemas"]["AccessibleSchool"][];
+            recently_registered: boolean;
         };
         /** @enum {string} */
         ChartDataTypeKey: "aqi" | "pm2.5" | "pm10_raw" | "co2" | "voc" | "temperature_C" | "pressure" | "rel_humidity" | "heat_index_C";
