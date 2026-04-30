@@ -6,7 +6,7 @@ import { useDashboard } from "../../../ContextProviders/DashboardContext";
 const ScreenQRcode: React.FC = () => {
     const { currentSchoolID } = useDashboard();
     const { data: schoolMetadata } = useSchoolMetadata();
-    const isPublic = (schoolMetadata as any)?.is_public;
+    const isPublic = schoolMetadata?.is_public;
 
     const url = document.location.href;
     const urlComponents = url.split('screen');
