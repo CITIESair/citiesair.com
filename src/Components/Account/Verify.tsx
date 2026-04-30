@@ -8,18 +8,12 @@ import { getApiUrl } from "../../API/APIUtils";
 import { usePreferences } from "../../ContextProviders/PreferenceContext";
 import { useUser } from "../../ContextProviders/UserContext";
 import { AppRoutes } from "../../Utils/AppRoutes";
+import type { paths } from "../../types/backend-api.types";
 
 type VerifyStatus = "success" | "error" | null;
 
-type VerifyResponse = {
-  message?: string;
-  email?: string | null;
-  username?: string | null;
-};
-
-const isVerifyResponse = (value: unknown): value is VerifyResponse => {
-  return !!value && typeof value === "object";
-};
+type VerifyResponse =
+  paths["/verify"]["post"]["responses"][200]["content"]["application/json"];
 
 export default function Verify() {
   const { setCurrentPage } = usePreferences();
@@ -43,11 +37,7 @@ export default function Verify() {
         url: getApiUrl({ endpoint: "verify" }),
         RESTmethod: "POST",
         body: { token: tokenValue },
-      });
-
-      if (!isVerifyResponse(response)) {
-        throw new Error("Verification failed");
-      }
+      }) as VerifyResponse;
 
       if (response.message === "Email verified") {
         setStatus("success");
@@ -96,7 +86,7 @@ export default function Verify() {
         )}
 
         {!loading && status === "success" && (
-          <Button variant="contained" sx={{ mt: 3 }} onClick={() => navigate("/")}> 
+          <Button variant="contained" sx={{ mt: 3 }} onClick={() => navigate("/")}>
             Refresh
           </Button>
         )}

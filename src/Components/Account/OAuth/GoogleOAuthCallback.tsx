@@ -6,6 +6,10 @@ import { fetchDataFromURL } from "../../../API/ApiFetch";
 import { getApiUrl } from "../../../API/APIUtils";
 import type { UserData } from "../../../types/UserData";
 import { LoginTypes, type AuthSuccessMessage, type AuthFailureMessage } from "../Utils";
+import type { paths } from "../../../types/backend-api.types";
+
+type GoogleCallbackResponse =
+  paths["/google/callback"]["post"]["responses"][200]["content"]["application/json"];
 
 type GoogleOAuthCallbackSuccessMessage = AuthSuccessMessage & {
     type: typeof LoginTypes.google;
@@ -38,11 +42,23 @@ export default function GoogleOAuthCallback() {
                 RESTmethod: "POST",
                 body: { code },
             })
-                .then((data) => {
+                .then((response: GoogleCallbackResponse) => {
+                    // Convert backend response to UserData format
+                    const userData: UserData = {
+                        authenticated: true,
+                        allowedSchools: response.allowedSchools,
+                        username: response.username,
+                        email: response.email,
+                        is_verified: response.is_verified ?? false,
+                        user_role: response.user_role,
+                        recently_registered: response.recently_registered,
+                        message: response.message,
+                    };
+
                     const message: GoogleOAuthCallbackSuccessMessage = {
                         type: LoginTypes.google,
                         success: true,
-                        user: data as UserData,
+                        user: userData,
                     };
 
                     // Send the result to the main window

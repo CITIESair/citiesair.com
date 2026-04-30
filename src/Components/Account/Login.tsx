@@ -30,6 +30,10 @@ import { SnackbarMetadata } from "../../Utils/SnackbarMetadata";
 import GoogleOAuthButtonAndPopupHandler from "./OAuth/GoogleOAuthButtonAndPopupHandler";
 import UserTypeSelector from "./UserTypeSelector";
 import { LoginTypes, UserRoleKeyForLogin, type AuthSuccessMessage } from "./Utils";
+import type { paths } from "../../types/backend-api.types";
+
+type LoginResponse =
+  paths["/login"]["post"]["responses"][200]["content"]["application/json"];
 
 type PasswordLoginSuccessMessage = AuthSuccessMessage & {
   type: typeof LoginTypes.password;
@@ -94,8 +98,19 @@ export default function Login() {
         remember_me: rememberMe,
       },
     })
-      .then((userData: UserData) => {
+      .then((response: LoginResponse) => {
         setLoading(false);
+
+        // Convert backend response to UserData format
+        const userData: UserData = {
+          authenticated: true,
+          allowedSchools: response.allowedSchools,
+          username: response.username,
+          email: response.email,
+          is_verified: response.is_verified ?? false,
+          user_role: response.user_role,
+          message: response.message,
+        };
 
         if (isPopupItself) {
           // Send the result to the main window
