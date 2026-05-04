@@ -34,6 +34,7 @@ import { usePreferences } from '../../ContextProviders/PreferenceContext';
 import { useUser } from '../../ContextProviders/UserContext';
 import { useDashboard } from '../../ContextProviders/DashboardContext';
 import type { UserData } from '../../types/UserData';
+import { AuthenticationState } from '../../types/AuthenticationState';
 
 const displaySensorCounts = (currentSensorsData: CurrentSensorsData | undefined) => {
   if (!currentSensorsData) return null;
@@ -42,14 +43,14 @@ const displaySensorCounts = (currentSensorsData: CurrentSensorsData | undefined)
     <Grid item xs={12} mt={1}>
       <Typography variant='body2' color="text.secondary">
         <b>Sensors status: </b>{
-          currentSensorsData.reduce((count, obj) => obj?.sensor?.sensor_status === SensorStatus.active ? count + 1 : count, 0)
+          currentSensorsData.reduce((count, obj) => obj.sensor.sensor_status === SensorStatus.active ? count + 1 : count, 0)
         } active out of {currentSensorsData.length}
       </Typography>
     </Grid>
   );
 }
 
-const displayDashboardButtons = (authenticationState: { authenticated: boolean }, user: UserData, isSmallScreen: boolean) => {
+const displayDashboardButtons = (authenticationState: AuthenticationState, user: UserData, isSmallScreen: boolean) => {
   const isAllowedOnlyNYUAD =
     isValidArray(user?.allowedSchools) &&
     user.allowedSchools.length === 1 &&

@@ -83,9 +83,7 @@ export const fetchDataFromURL = async ({
     }
 
     const response = await fetch(url, fetchOptions);
-    // Debug: log outgoing fetch URL
-    // eslint-disable-next-line no-console
-    console.debug('fetchDataFromURL -> fetching', url);
+
     clearTimeout(timeoutId);
 
     if (response.status >= 500 && response.status < 600) {

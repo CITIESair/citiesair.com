@@ -1,11 +1,11 @@
-import { Grid, Skeleton, Stack, Typography } from '@mui/material';
+import { Grid, Skeleton, Stack } from '@mui/material';
 
 import { CurrentAQIGridSize, CurrentAQIGridSizeType, ElementSizes } from './CurrentAQIGridSize';
 import CurrentAQISingleSensor from './CurrentAQISingleSensor';
 import { useNetworkStatus } from '../../../ContextProviders/NetworkStatusContext';
 import type { CurrentSensorsData } from '../../../hooks/useCurrentSensorsData';
 
-interface GridSizes {
+export interface MUIGridSizes {
   xs: number;
   sm: number;
   lg: number;
@@ -40,7 +40,7 @@ const CurrentAQIGrid = (props: CurrentAQIGridProps) => {
     size = CurrentAQIGridSize.medium
   } = props;
 
-  const getGridItemSizes = (numOfItems: number): GridSizes => {
+  const getGridItemSizes = (numOfItems: number): MUIGridSizes => {
     return {
       xs: Math.max(12 / numOfItems, 6),
       sm: Math.max(12 / numOfItems, 4),

@@ -6,16 +6,14 @@ import ErrorIcon from '@mui/icons-material/Error';
 import sectionData from '../../../SectionData/sectionData';
 import { getFormattedLastSeen, SensorStatus, SensorStatusType } from "../SensorStatus";
 import { usePreferences } from '../../../ContextProviders/PreferenceContext';
-import type { components } from "../../../types/backend-api.types";
-
-type SensorInfo = components["schemas"]["SensorInfo"];
 
 interface LastUpdateAndSensorStatusProps {
-    sensor: (SensorInfo & { sensor_status?: SensorStatusType; lastSeenInMinutes?: number }) | null | undefined;
+    sensor_status: SensorStatusType;
+    lastSeenInMinutes: number | null;
     size: CurrentAQIGridSizeType;
 }
 
-const LastUpdateAndSensorStatus = ({ sensor, size }: LastUpdateAndSensorStatusProps) => {
+const LastUpdateAndSensorStatus = ({ sensor_status, lastSeenInMinutes, size }: LastUpdateAndSensorStatusProps) => {
     const theme = useTheme();
     const { language } = usePreferences();
 
@@ -32,7 +30,7 @@ const LastUpdateAndSensorStatus = ({ sensor, size }: LastUpdateAndSensorStatusPr
             }}
         >
             {
-                sensor?.sensor_status !== SensorStatus.active
+                sensor_status !== SensorStatus.active
                 &&
                 <>
                     <ErrorIcon
@@ -45,7 +43,7 @@ const LastUpdateAndSensorStatus = ({ sensor, size }: LastUpdateAndSensorStatusPr
                     {offlineText}.&nbsp;
                 </>
             }
-            {`${lastUpdateText}: ${getFormattedLastSeen(sensor?.lastSeenInMinutes, language)}`}
+            {`${lastUpdateText}: ${getFormattedLastSeen(lastSeenInMinutes, language)}`}
         </Typography>
     )
 }

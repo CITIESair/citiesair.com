@@ -20,10 +20,9 @@ const displayAQI = ({ aqi, category, showCategory }: DisplayAQIParams): string =
 
 interface SimpleAQIListProps {
     currentSensorsData: CurrentSensorsData | undefined;
-    useLocationShort?: boolean;
-    size?: CurrentAQIGridSizeType;
-    showCategory?: boolean;
-    isOnBannerPage?: boolean;
+    useLocationShort: boolean;
+    size: CurrentAQIGridSizeType;
+    showCategory: boolean;
 }
 
 const SimpleAQIList = (props: SimpleAQIListProps) => {
@@ -75,16 +74,16 @@ const SimpleAQIList = (props: SimpleAQIListProps) => {
                             >
                                 {returnLocationName({
                                     useLocationShort,
-                                    location_short: sensorData.sensor?.location_short,
-                                    location_long: sensorData.sensor?.location_long
+                                    location_short: sensorData.sensor.location_short,
+                                    location_long: sensorData.sensor.location_long
                                 })}
                                 :
                                 &nbsp;
                                 <Box
                                     component="span"
                                     color={
-                                        (sensorData?.current?.aqi?.categoryIndex !== null && sensorData.sensor?.sensor_status === SensorStatus.active) ?
-                                            theme.palette.text.aqi[sensorData?.current?.aqi?.categoryIndex] :
+                                        (sensorData.current?.aqi?.categoryIndex !== null && sensorData.sensor?.sensor_status === SensorStatus.active) ?
+                                            theme.palette.text.aqi[sensorData.current?.aqi?.categoryIndex] :
                                             'text.secondary'
                                     }
                                 >

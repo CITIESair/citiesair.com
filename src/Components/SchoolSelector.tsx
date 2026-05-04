@@ -50,7 +50,7 @@ const SchoolSelector = () => {
   if (!schoolMetadata) return null;
 
   // If there is only one school, return a Chip displaying the name of that school
-  if (!Array.isArray(user.allowedSchools) || user.allowedSchools.length <= 1)
+  if (user.allowedSchools.length <= 1)
     return (
       <CustomChip
         icon={<PlaceIcon />}

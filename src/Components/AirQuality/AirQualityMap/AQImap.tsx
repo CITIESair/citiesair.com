@@ -54,7 +54,7 @@ interface AQImapProps {
 }
 
 const AQImap = (props: AQImapProps) => {
-    const { themePreference, temperatureUnitPreference, language } = usePreferences();
+    const { themePreference, language } = usePreferences();
     const {
         overridenThemePreference = null,
         tileOption,
@@ -73,8 +73,6 @@ const AQImap = (props: AQImapProps) => {
         shouldCluster = true,
         ariaLabel = "A map of air quality sensors",
     } = props;
-
-    const { data: schoolMetadata } = useSchoolMetadata();
 
     // Filter out invalid mapData entries
     const sanitizedMapData = useMemo((): ProcessedSensorDataWithStatus[] => {
@@ -384,7 +382,8 @@ const AQImap = (props: AQImapProps) => {
                                 >
                                     <CurrentWeather
                                         size={CurrentAQIGridSize.small}
-                                        current={location.current}
+                                        temperature={location.current?.temperature}
+                                        rel_humidity={location.current?.rel_humidity}
                                         showWeatherText={true}
                                         roundTemperature={false}
                                         showWeatherIcon={false}

@@ -6,8 +6,7 @@ import { convertTemperature, TemperatureUnits } from "../../../business-domain/a
 import { usePreferences } from "../../../ContextProviders/PreferenceContext";
 import type { components } from "../../../types/backend-api.types";
 
-type CurrentMeasurement = components["schemas"]["CurrentMeasurement"];
-type SensorInfo = components["schemas"]["SensorInfo"];
+type HeatIndexResult = components["schemas"]["HeatIndexResult"];
 
 interface TemperatureStringProps {
     temperature: number | null | undefined;
@@ -34,7 +33,8 @@ const TemperatureString = ({ temperature, roundTemperature }: TemperatureStringP
 
 interface CurrentWeatherProps {
     size: CurrentAQIGridSizeType;
-    current: CurrentMeasurement | null | undefined;
+    temperature: number | null | undefined;
+    rel_humidity: number | null | undefined;
     roundTemperature?: boolean;
     showWeatherText?: boolean;
     showWeatherIcon?: boolean;
@@ -42,11 +42,13 @@ interface CurrentWeatherProps {
 
 export const CurrentWeather = ({
     size,
-    current,
+    temperature,
+    rel_humidity,
     roundTemperature,
     showWeatherText = true,
     showWeatherIcon = true
 }: CurrentWeatherProps) => {
+
     return (
         <Typography variant={ElementSizes[size].metero}>
             {showWeatherText ?
@@ -54,40 +56,36 @@ export const CurrentWeather = ({
                 : null}
 
             {showWeatherIcon ? <ThermostatIcon /> : null}
-            <TemperatureString temperature={current?.temperature} roundTemperature={roundTemperature} />
+            <TemperatureString temperature={temperature} roundTemperature={roundTemperature} />
 
             &nbsp;&nbsp;-&nbsp;
 
             {showWeatherIcon ? <WaterDropIcon sx={{ transform: 'scaleX(0.9)' }} /> : null}
-            {current?.rel_humidity ? Math.round(current?.rel_humidity) : "--"}%
+            {rel_humidity ? Math.round(rel_humidity) : "--"}%
 
         </Typography>
     )
 }
 
 interface CurrentHeatIndexProps {
-    sensor: SensorInfo | null | undefined;
-    current: CurrentMeasurement | null | undefined;
+    locationType: string;
+    heatIndex: HeatIndexResult | null | undefined;
     size: CurrentAQIGridSizeType;
     roundTemperature?: boolean;
 }
 
-export const CurrentHeatIndex = ({ sensor, current, size, roundTemperature }: CurrentHeatIndexProps) => {
-    const { temperatureUnitPreference } = usePreferences();
-
-    if (!sensor || !current) return null;
-    if (!['outdoors', 'indoors_gym'].includes(sensor.location_type)) return null;
-
-    const heatIndexObject = current?.heat_index_C;
+export const CurrentHeatIndex = ({ locationType, heatIndex, size, roundTemperature }: CurrentHeatIndexProps) => {
+    if (!heatIndex) return null;
+    if (!['outdoors', 'indoors_gym'].includes(locationType)) return null;
 
     return (
         <Typography variant={ElementSizes[size].heatIndex} sx={{ fontWeight: '300 !important' }}>
             Heat Index:&nbsp;
-            {heatIndexObject && heatIndexObject.val !== undefined && heatIndexObject.val !== null
+            {heatIndex && heatIndex.val !== undefined && heatIndex.val !== null
                 ? <>
-                    <TemperatureString temperature={heatIndexObject.val} roundTemperature={roundTemperature} />
+                    <TemperatureString temperature={heatIndex.val} roundTemperature={roundTemperature} />
                     &nbsp;
-                    ({heatIndexObject.category || '--'})
+                    ({heatIndex.category || '--'})
                 </>
                 : '--'
             }

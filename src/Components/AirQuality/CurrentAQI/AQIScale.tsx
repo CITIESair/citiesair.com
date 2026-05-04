@@ -6,10 +6,10 @@ import { usePreferences } from "../../../ContextProviders/PreferenceContext";
 import { DataTypeKeys } from "../../../business-domain/data-types/data-type.types";
 
 interface AQIScaleProps {
-    isOnBannerPage?: boolean;
+    isOnBannerPage: boolean;
     isSmallScreen: boolean;
-    showLabel?: boolean;
-    size?: CurrentAQIGridSizeType;
+    showLabel: boolean;
+    size: CurrentAQIGridSizeType;
 }
 
 const AQIScale = ({ isOnBannerPage, isSmallScreen, showLabel = true, size = CurrentAQIGridSize.medium }: AQIScaleProps) => {

@@ -2,18 +2,16 @@ import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { fetchDataFromURL } from '../API/ApiFetch';
 import { getApiUrl } from '../API/APIUtils';
 import { useDashboard } from '../ContextProviders/DashboardContext';
-import type { paths, components } from '../types/backend-api.types';
+import type { paths } from '../types/backend-api.types';
 
 type GetSchoolMetadataResponse =
     paths["/school_metadata/{school}"]["get"]["responses"][200]["content"]["application/json"];
-
-export type SchoolMetadata = components["schemas"]["SchoolMetadataResponse"];
 
 interface UseSchoolMetadataParams {
     enabled?: boolean;
 }
 
-const useSchoolMetadata = ({ enabled = true }: UseSchoolMetadataParams = {}): UseQueryResult<SchoolMetadata, Error> => {
+const useSchoolMetadata = ({ enabled = true }: UseSchoolMetadataParams = {}): UseQueryResult<GetSchoolMetadataResponse, Error> => {
     const { currentSchoolID } = useDashboard();
     const url = getApiUrl({
         endpoint: "school_metadata",

@@ -38,7 +38,7 @@ interface CurrentAQIMapWithGridProps {
     isOnBannerPage?: boolean;
     defaultZoom?: number;
     maxBounds?: [[number, number], [number, number]];
-    maxWidth?: Breakpoint | false;
+    maxWidth?: Breakpoint | null;
     minMapHeight?: string;
     sx?: Record<string, unknown>;
     size?: CurrentAQIGridSizeType;
@@ -136,7 +136,7 @@ const CurrentAQIMapWithGrid = (props: CurrentAQIMapWithGridProps) => {
             item
             overflow="hidden"
             flex={1}
-            {...(maxWidth !== false && { maxWidth })}
+            maxWidth={maxWidth}
             margin="auto"
             alignItems="space-around"
             gap={2}
@@ -284,7 +284,6 @@ const CurrentAQIMapWithGrid = (props: CurrentAQIMapWithGridProps) => {
                                 <SimpleAQIList
                                     currentSensorsData={groupedSensorsBySortingId.sensorsWithoutSortingId}
                                     useLocationShort={isSmallScreen}
-                                    isOnBannerPage={isOnBannerPage}
                                     showCategory={false}
                                     size={size}
                                 />

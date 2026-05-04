@@ -28,7 +28,7 @@ const ScreenDropDownMenu = () => {
   if (!isValidArray(screens)) return null;
 
   const handleSingleScreenClick = () => {
-    const screen_name = screens && screens[0]?.screen_name;
+    const screen_name = screens && screens[0].screen_name;
     if (screen_name === "screen") navigate(`/screen/${currentSchoolID}`);
     else navigate(`/screen/${currentSchoolID}/${screen_name}`);
 

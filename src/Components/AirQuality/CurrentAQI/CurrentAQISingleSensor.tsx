@@ -12,14 +12,7 @@ import { DataTypeKeys } from "../../../business-domain/data-types/data-type.type
 import useSchoolMetadata from '../../../hooks/useSchoolMetadata';
 import { usePreferences } from '../../../ContextProviders/PreferenceContext';
 import type { ProcessedSensorDataWithStatus } from '../../../hooks/useCurrentSensorsData';
-
-interface GridSizes {
-    xs?: number;
-    sm?: number;
-    md?: number;
-    lg?: number;
-    xl?: number;
-}
+import { MUIGridSizes } from './CurrentAQIGrid';
 
 interface CurrentAQISingleSensorProps {
     sensor: ProcessedSensorDataWithStatus["sensor"];
@@ -27,7 +20,7 @@ interface CurrentAQISingleSensorProps {
     size: CurrentAQIGridSizeType;
     showLastUpdate?: boolean;
     showWeatherText?: boolean;
-    gridSizes: GridSizes;
+    gridSizes: MUIGridSizes;
     isScreen?: boolean;
     showAQI?: boolean;
     useLocationShort?: boolean;
@@ -68,8 +61,8 @@ const CurrentAQISingleSensor = (props: CurrentAQISingleSensorProps) => {
                             <Typography variant={ElementSizes[size].locationAndCategory} fontWeight="500" className='condensedFont' textTransform="capitalize">
                                 {returnLocationName({
                                     useLocationShort,
-                                    location_short: sensor?.location_short,
-                                    location_long: sensor?.location_long
+                                    location_short: sensor.location_short,
+                                    location_long: sensor.location_long
                                 })}
                             </Typography>
                             <Typography variant={ElementSizes[size].aqi} fontWeight="500" lineHeight={ElementSizes[size].aqiLineHeight}>
@@ -123,30 +116,36 @@ const CurrentAQISingleSensor = (props: CurrentAQISingleSensorProps) => {
                         (s) => String(s.sensor_id) === String(sensor.sensor_id)
                     )?.allowedDataTypes?.includes(DataTypeKeys.temperature_C) && <>
                         {
-                            showWeather &&
-                            <CurrentWeather
-                                size={size}
-                                current={current}
-                                showWeatherText={showWeatherText}
-                                roundTemperature={roundTemperature}
-                            />
+                            showWeather && (
+                                <CurrentWeather
+                                    size={size}
+                                    temperature={current?.temperature}
+                                    rel_humidity={current?.rel_humidity}
+                                    showWeatherText={showWeatherText}
+                                    roundTemperature={roundTemperature}
+                                />
+                            )
                         }
                         {
-                            showHeatIndex && <CurrentHeatIndex
-                                sensor={sensor}
-                                size={size}
-                                current={current}
-                            />
+                            showHeatIndex && (
+                                <CurrentHeatIndex
+                                    locationType={sensor.location_type}
+                                    size={size}
+                                    heatIndex={current?.heat_index_C}
+                                />)
                         }
                     </>
                 }
 
                 {/* If the sensor is offline then show last update and status message regardless of given preference  */}
                 {
-                    (showLastUpdate || (!showLastUpdate && sensor?.sensor_status !== SensorStatus.active)) && <LastUpdateAndSensorStatus
-                        sensor={sensor}
-                        size={size}
-                    />
+                    (showLastUpdate || (!showLastUpdate && sensor.sensor_status !== SensorStatus.active)) && (
+                        <LastUpdateAndSensorStatus
+                            sensor_status={sensor.sensor_status}
+                            lastSeenInMinutes={sensor.lastSeenInMinutes}
+                            size={size}
+                        />
+                    )
                 }
             </Stack>
         </Grid>
