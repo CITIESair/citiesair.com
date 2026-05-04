@@ -36,7 +36,7 @@ const StyledSelect = styled(FormControl)(({ theme, isForHorizontalAxis = true })
 }));
 
 const AxesPicker = (props) => {
-  const { allChartsConfigs, setIndividualChartConfig } = useDashboard();
+  const { currentSchoolID, allChartsConfigs, updateIndividualChartConfigQueryParams } = useDashboard();
   const { data: schoolMetadata } = useSchoolMetadata();
   const allowedItemsForAxes = schoolMetadata?.sensors || [];
 
@@ -66,13 +66,10 @@ const AxesPicker = (props) => {
   const applyChanges = () => {
     if (!(vAxis && hAxis)) return;
 
-    setIndividualChartConfig(chartID, {
-      ...allChartsConfigs[chartID],
-      queryParams: {
-        dataType: dataType,
-        sensorX: hAxis,
-        sensorY: vAxis
-      }
+    updateIndividualChartConfigQueryParams(chartID, {
+      dataType: dataType,
+      sensorX: hAxis,
+      sensorY: vAxis
     });
   }
 

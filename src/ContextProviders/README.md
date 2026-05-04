@@ -45,7 +45,7 @@ These are contexts used only by a specific component in the application:
 
   - Currently selected school and its metadata
   - Whether or not to load more charts in the `/dashboard` page beyond the first two charts (`historical` and `dailyAverageAllTime`)
-  - Configs of all charts in `/dashboard` and a function (`setIndividualChartConfig`) to update data for **INDIVIDUAL** chart (as the user might interact with only one chart and change its data type, for example, `PM2.5` to `PM10`)
+  - Configs of all charts in `/dashboard` and a function (`updateIndividualChartConfigQueryParams`) to update `queryParams` data for **INDIVIDUAL** chart (as the user might interact with only one chart and change its data type, for example, `PM2.5` to `PM10`)
 
 ## Chart-specific contexts
 
