@@ -38,7 +38,7 @@ const LastUpdateAndSensorStatus = ({ sensor, size }: LastUpdateAndSensorStatusPr
                     <ErrorIcon
                         sx={{
                             '& *': {
-                                color: `${(theme.palette.text as any).aqi[3]} !important` // red
+                                color: `${theme.palette.text.aqi[3]} !important` // red
                             },
                             mr: 0.5
                         }} />

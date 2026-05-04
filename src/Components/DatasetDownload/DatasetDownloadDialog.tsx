@@ -113,7 +113,6 @@ export default function DatasetDownloadDialog({ onButtonClick }: DatasetDownload
         {/* Dataset previewing panel */}
         <Grid item sm={12} md={6} maxWidth={smallScreen ? '100%' : 'unset'} sx={{ mt: 1 }}>
           <PreviewDataset
-            sensorsList={sensorsList}
             previewingDataset={previewingDataset}
           />
         </Grid>
@@ -168,7 +167,7 @@ const Dataset = (props: DatasetProps) => {
           sx={{
             pl: 1,
             cursor: 'pointer',
-            background: isPreviewing && (theme.palette.background as any).NYUpurpleLight
+            background: isPreviewing && theme.palette.background.NYUpurpleLight
           }}
           onClick={setThisSensorToPreview}>
           {sensorsList[sensor].location_long}
@@ -177,7 +176,7 @@ const Dataset = (props: DatasetProps) => {
         <TableCell
           sx={{
             position: 'relative',
-            background: isPreviewing && (theme.palette.background as any).NYUpurpleLight
+            background: isPreviewing && theme.palette.background.NYUpurpleLight
           }}>
           <FormControl size="small">
             <Select
@@ -204,20 +203,19 @@ const Dataset = (props: DatasetProps) => {
   )
 }
 
-const INIT_PREVIEWING_DATASET_NAME = "Dataset Preview";
+const INIT_PREVIEWING_DATASET_NAME = "Previewing: No Dataset Selected";
 const INIT_CSV_FILE_NAME = "Download Dataset";
 
 interface PreviewDatasetProps {
   previewingDataset: PreviewingDataset | null;
-  sensorsList: SensorsList;
 }
 
-const PreviewDataset = ({ previewingDataset, sensorsList }: PreviewDatasetProps) => {
+const PreviewDataset = ({ previewingDataset }: PreviewDatasetProps) => {
   const { data: previewData, isLoading: isPreviewDataLoading } = useDatasetDownload({
     sensor: previewingDataset?.sensor,
     aggregationType: previewingDataset?.aggregationType,
     isSample: true,
-    enabled: !!previewingDataset && !!sensorsList?.[previewingDataset.sensor]
+    enabled: !!previewingDataset
   });
 
   const { refetch: refetchFullData, isLoading: isFullDataLoading } = useDatasetDownload({

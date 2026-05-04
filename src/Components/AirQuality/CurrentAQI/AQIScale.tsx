@@ -24,7 +24,7 @@ const AQIScale = ({ isOnBannerPage, isSmallScreen, showLabel = true, size = Curr
             {AQI_Database.map((element, index) => (
                 <Tooltip
                     key={index}
-                    title={(!isOnBannerPage && isSmallScreen && getTranslation(element.category as any, language)) || ""}
+                    title={(!isOnBannerPage && isSmallScreen && getTranslation(element.category, language)) || ""}
                     slotProps={{
                         popper: {
                             modifiers: [
@@ -71,7 +71,7 @@ const AQIScale = ({ isOnBannerPage, isSmallScreen, showLabel = true, size = Curr
                                     px: 0.25
                                 }}
                             >
-                                <small>{getTranslation(element.category as any, language)}</small>
+                                <small>{getTranslation(element.category, language)}</small>
                             </Typography>
                         }
                     </Stack>

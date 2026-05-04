@@ -1,8 +1,10 @@
 // disable eslint for this file
 /* eslint-disable */
+// still not finished typing, waiting for backend to type outdoor map return
+
 import { useState, useMemo, useCallback } from 'react';
 import { Box, Typography, Stack, Link } from '@mui/material';
-import { useMediaQuery, useTheme, Theme } from '@mui/material';
+import { useMediaQuery, useTheme } from '@mui/material';
 import { MapContainer, TileLayer, Marker, Popup, useMap, AttributionControl, useMapEvent, Rectangle, CircleMarker, ImageOverlay } from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { useEventHandlers } from '@react-leaflet/core';
@@ -10,12 +12,10 @@ import { LatLngBounds, Map } from 'leaflet';
 
 import LaunchIcon from '@mui/icons-material/Launch';
 
-import { getFormattedLastSeen, SensorStatus, SensorStatusType } from "../SensorStatus";
-
-import { convertTemperature, TemperatureUnits } from '../../../business-domain/air-quality/temperature.utils';
+import { getFormattedLastSeen, SensorStatus } from "../SensorStatus";
 
 import { styled } from '@mui/material/styles';
-import { calculateCenterAndBounds, disableInteractionParameters, disableZoomParameters, displayAqiCategory, displayAqiValue, displayPM2_5, FitMapToDatapoints, getMiniMapColors, getTileUrl, LocationTitleKey, MapPlaceholder, PositionClassKey, POSITION_CLASSES, tileAccessToken, tileAttribution, TileOptions, TileOptionKey } from './AirQualityMapUtils';
+import { calculateCenterAndBounds, disableInteractionParameters, disableZoomParameters, displayAqiCategory, displayAqiValue, displayPM2_5, FitMapToDatapoints, getMiniMapColors, getTileUrl, LocationTitleKey, MapPlaceholder, PositionClassKey, POSITION_CLASSES, tileAttribution, TileOptions, TileOptionKey } from './AirQualityMapUtils';
 import { isValidArray } from '../../../Utils/UtilFunctions';
 import LoadingAnimation from '../../LoadingAnimation';
 import { DataTypeKeys } from '../../../business-domain/data-types/data-type.types';
@@ -180,13 +180,12 @@ const AQImap = (props: AQImapProps) => {
                     center={parentMap.getCenter()}
                     zoom={mapZoom}
                     scrollWheelZoom={false}
-                    {...disableInteractionParameters as any} // always disable interaction for minimap
-                    {...disableZoomParameters as any} // always disable zoom for minimap
+                    {...disableInteractionParameters} // always disable interaction for minimap
+                    {...disableZoomParameters} // always disable zoom for minimap
                     attributionControl={false}
                 >
                     <TileLayer
                         url={getTileUrl({ tileOption, themePreference: effectiveThemePreference, isMiniMap: true })}
-                        {...({ accessToken: tileAccessToken } as any)}
                     />
                     {mapData
                         ? mapData
@@ -201,13 +200,13 @@ const AQImap = (props: AQImapProps) => {
                             .map((location, index) => (
                                 <CircleMarker
                                     key={index}
-                                    center={[location.sensor.coordinates.latitude!, location.sensor.coordinates.longitude!] as any}
+                                    center={[location.sensor.coordinates.latitude!, location.sensor.coordinates.longitude!]}
                                     pathOptions={{
                                         fillColor:
                                             location?.current?.aqi?.categoryIndex !== null &&
                                                 location?.sensor?.sensor_status === SensorStatus.active
-                                                ? (theme.palette.text as any).aqi[location.current.aqi.categoryIndex]
-                                                : (theme.palette.text as any).aqi[SensorStatus.offline],
+                                                ? theme.palette.text.aqi[location.current.aqi.categoryIndex]
+                                                : theme.palette.text.aqi[SensorStatus.offline],
                                         radius: 3,
                                         weight: 0,
                                         fillOpacity: 1,
@@ -274,8 +273,8 @@ const AQImap = (props: AQImapProps) => {
             ? SensorStatus.active
             : SensorStatus.offline;
 
-        const markerColor = (categoryIndex != null && aggregatedStatus === SensorStatus.active) ? (theme.palette.text as any).aqi[categoryIndex]
-            : (theme.palette.text as any).aqi[SensorStatus.offline];
+        const markerColor = (categoryIndex != null && aggregatedStatus === SensorStatus.active) ? theme.palette.text.aqi[categoryIndex]
+            : theme.palette.text.aqi[SensorStatus.offline];
 
         return getAQIDivIcon({
             theme, markerSizeInRem, markerColor,
@@ -294,8 +293,8 @@ const AQImap = (props: AQImapProps) => {
             const markerColor =
                 location?.current?.aqi?.categoryIndex !== null &&
                     location?.sensor?.sensor_status === SensorStatus.active
-                    ? (theme.palette.text as any).aqi[location.current.aqi.categoryIndex]
-                    : (theme.palette.text as any).aqi[SensorStatus.offline];
+                    ? theme.palette.text.aqi[location.current.aqi.categoryIndex]
+                    : theme.palette.text.aqi[SensorStatus.offline];
 
             const markerIcon = getAQIDivIcon({ theme, markerColor, markerSizeInRem, locationTitle, location });
 
@@ -305,7 +304,7 @@ const AQImap = (props: AQImapProps) => {
                     position={[
                         location.sensor?.coordinates?.latitude!,
                         location.sensor?.coordinates?.longitude!
-                    ] as any}
+                    ]}
                     {...({
                         options: {
                             [DataTypeKeys.pm2_5]: location.current?.[DataTypeKeys.pm2_5],
@@ -484,7 +483,7 @@ const AQImap = (props: AQImapProps) => {
                 scrollWheelZoom={false}
                 placeholder={<MapPlaceholder placeholderText={ariaLabel} />}
                 attributionControl={false}
-                {...(disableInteraction ? { ...disableInteractionParameters as any, ...disableZoomParameters as any } : {})}
+                {...(disableInteraction ? { ...disableInteractionParameters, ...disableZoomParameters } : {})}
             >
                 {/* If defaultZoom isn't supplied, then automatically fit the viewport to the fetched data points  */}
                 {!defaultZoom && sanitizedMapData && isValidArray(fitBounds) && <FitMapToDatapoints bounds={fitBounds} />}
@@ -500,9 +499,11 @@ const AQImap = (props: AQImapProps) => {
                     />
                 ) : (
                     <TileLayer
-                        attribution={tileAttribution}
+                        {...({
+                            attribution: tileAttribution,
+                        } satisfies { attribution: string; })}
+
                         url={getTileUrl({ tileOption, themePreference: effectiveThemePreference })}
-                        {...({ bounds: maxBounds, accessToken: tileAccessToken } as any)}
                     />
                 )}
 

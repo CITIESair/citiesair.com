@@ -2,7 +2,7 @@ import { useTheme } from '@mui/material';
 import { AQI_Database } from "../../../business-domain/air-quality/air-quality.database";
 import { getTranslation } from "../../../Utils/UtilFunctions";
 import { Box, Grid, Stack, Typography } from "@mui/material";
-import { returnSensorStatusString, SensorStatus } from "../SensorStatus";
+import { SensorStatus } from "../SensorStatus";
 import { INACTIVE_SENSOR_COLORS } from "../../../Themes/CustomColors";
 import { returnLocationName } from "./AQIGridUtils";
 import { CurrentAQIGridSizeType, ElementSizes } from "./CurrentAQIGridSize";
@@ -48,7 +48,7 @@ const CurrentAQISingleSensor = (props: CurrentAQISingleSensorProps) => {
     const { language } = usePreferences();
 
     const categoryObject = AQI_Database[current?.aqi?.categoryIndex ?? 0];
-    const categoryText = categoryObject ? getTranslation(AQI_Database[current?.aqi?.categoryIndex ?? 0]?.category as any, language) : null;
+    const categoryText = categoryObject ? getTranslation(AQI_Database[current?.aqi?.categoryIndex ?? 0]?.category, language) : null;
 
     return (
         <Grid
@@ -61,8 +61,8 @@ const CurrentAQISingleSensor = (props: CurrentAQISingleSensorProps) => {
                         <Box sx={{
                             '& .MuiTypography-root': {
                                 color: (current?.aqi?.categoryIndex !== null && sensor?.sensor_status === SensorStatus.active) ?
-                                    (theme.palette.text as any).aqi[current?.aqi?.categoryIndex]
-                                    : (isScreen ? INACTIVE_SENSOR_COLORS.screen : (theme.palette.text as any).aqi[SensorStatus.offline])
+                                    theme.palette.text.aqi[current?.aqi?.categoryIndex]
+                                    : (isScreen ? INACTIVE_SENSOR_COLORS.screen : theme.palette.text.aqi[SensorStatus.offline])
                             }
                         }}>
                             <Typography variant={ElementSizes[size].locationAndCategory} fontWeight="500" className='condensedFont' textTransform="capitalize">
@@ -149,13 +149,6 @@ const CurrentAQISingleSensor = (props: CurrentAQISingleSensorProps) => {
                     />
                 }
             </Stack>
-
-            {
-                sensor?.sensor_status !== SensorStatus.active &&
-                <Typography variant={ElementSizes[size].sensorStatus} className="condensedFont">
-                    {returnSensorStatusString(current as any, language)}
-                </Typography>
-            }
         </Grid>
     )
 }

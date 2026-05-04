@@ -9,7 +9,7 @@ import { LoginTypes, type AuthSuccessMessage, type AuthFailureMessage } from "..
 import type { paths } from "../../../types/backend-api.types";
 
 type GoogleCallbackResponse =
-  paths["/google/callback"]["post"]["responses"][200]["content"]["application/json"];
+    paths["/google/callback"]["post"]["responses"][200]["content"]["application/json"];
 
 type GoogleOAuthCallbackSuccessMessage = AuthSuccessMessage & {
     type: typeof LoginTypes.google;
@@ -49,7 +49,7 @@ export default function GoogleOAuthCallback() {
                         allowedSchools: response.allowedSchools,
                         username: response.username,
                         email: response.email,
-                        is_verified: response.is_verified ?? false,
+                        is_verified: response.is_verified,
                         user_role: response.user_role,
                         recently_registered: response.recently_registered,
                         message: response.message,

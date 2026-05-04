@@ -7,7 +7,7 @@ interface UseDatasetDownloadParams {
     sensor: string | null | undefined;
     aggregationType: string | null | undefined;
     isSample: boolean;
-    enabled?: boolean;
+    enabled: boolean;
 }
 
 const useDatasetDownload = ({

@@ -107,7 +107,7 @@ export default function Login() {
           allowedSchools: response.allowedSchools,
           username: response.username,
           email: response.email,
-          is_verified: response.is_verified ?? false,
+          is_verified: response.is_verified,
           user_role: response.user_role,
           message: response.message,
         };

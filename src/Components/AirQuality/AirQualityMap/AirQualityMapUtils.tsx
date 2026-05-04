@@ -5,6 +5,7 @@ import { isValidArray, roundNumberTo } from "../../../Utils/UtilFunctions";
 import ThemePreferences from "../../../Themes/ThemePreferences";
 import type { ProcessedSensorDataWithStatus } from "../../../hooks/useCurrentSensorsData";
 import type { components } from "../../../types/backend-api.types";
+import { MapOptions } from 'leaflet';
 
 type SensorCoordinates = components["schemas"]["SensorCoordinates"];
 
@@ -18,7 +19,7 @@ export const POSITION_CLASSES = {
 export type PositionClassKey = keyof typeof POSITION_CLASSES;
 
 export const tileAttribution = '<a href="https://leafletjs.com/" target="_blank"><b>Leaflet</b></a> | <a href="https://jawg.io" target="_blank">&copy; <b>Jawg</b>Maps</a> <a href="https://www.openstreetmap.org/copyright">&copy; OpenStreetMap</a> contributors';
-export const tileAccessToken = 'N4ppJQTC3M3uFOAsXTbVu6456x1MQnQTYityzGPvAkVB3pS27NMwJ4b3AfebMfjY';
+const tileAccessToken = 'N4ppJQTC3M3uFOAsXTbVu6456x1MQnQTYityzGPvAkVB3pS27NMwJ4b3AfebMfjY';
 
 export const TileOptions = {
     default: 'default',
@@ -60,7 +61,7 @@ export const getTileUrl = ({ tileOption, themePreference, isMiniMap }: GetTileUr
     }
 
     if (tileOption === TileOptions.nyuad && svgUrl) return svgUrl;
-    else return `https://{s}.tile.jawg.io/${Tiles[tileOption][tileTheme]}/{z}/{x}/{y}{r}.png?access-token={accessToken}`;
+    else return `https://{s}.tile.jawg.io/${Tiles[tileOption][tileTheme]}/{z}/{x}/{y}{r}.png?access-token=${tileAccessToken}`;
 }
 
 interface GetMiniMapColorsParams {
@@ -102,16 +103,16 @@ export const MapPlaceholder = ({ placeholderText }: MapPlaceholderProps) => {
     );
 };
 
-export const disableZoomParameters = {
-    doubleClickZoom: false,
-    attributionControl: false,
-    zoomControl: false
-} as const;
 
-export const disableInteractionParameters = {
+export const disableInteractionParameters: Partial<MapOptions> = {
     dragging: false,
     tap: false
-} as const;
+};
+
+export const disableZoomParameters: Partial<MapOptions> = {
+    doubleClickZoom: false,
+    zoomControl: false
+};
 
 interface FitMapToDatapointsProps {
     bounds: [[number, number], [number, number]] | [null, null];

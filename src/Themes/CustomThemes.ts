@@ -11,12 +11,23 @@ import { DataTypeKeys, DataTypes } from "../business-domain/data-types/data-type
 
 // Augment MUI's Palette with custom properties defined in UniversalTheme
 declare module '@mui/material/styles' {
+  interface TypeBackground {
+    paperBackgroundGradient?: string;
+    NYUpurpleLight?: string;
+  }
+
+  interface TypeText {
+    secondaryRGB?: string;
+    aqi: Record<number | string, string>;
+  }
+
   interface Palette {
     NYUpurple: string;
     backgroundColorForNavLink: string;
     customBackground: string;
     customAlternateBackground: string;
   }
+
   interface PaletteOptions {
     NYUpurple?: string;
     backgroundColorForNavLink?: string;

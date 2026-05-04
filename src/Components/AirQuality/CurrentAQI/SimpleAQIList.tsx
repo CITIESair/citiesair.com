@@ -84,7 +84,7 @@ const SimpleAQIList = (props: SimpleAQIListProps) => {
                                     component="span"
                                     color={
                                         (sensorData?.current?.aqi?.categoryIndex !== null && sensorData.sensor?.sensor_status === SensorStatus.active) ?
-                                            (theme.palette.text as any).aqi[sensorData?.current?.aqi?.categoryIndex] :
+                                            theme.palette.text.aqi[sensorData?.current?.aqi?.categoryIndex] :
                                             'text.secondary'
                                     }
                                 >
