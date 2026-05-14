@@ -9,9 +9,19 @@ import sectionData from '../../../SectionData/sectionData';
 import parse from 'html-react-parser';
 import { usePreferences } from "../../../ContextProviders/PreferenceContext";
 import { DataTypeKeys } from "../../../business-domain/data-types/data-type.types";
+import type { ScreenResponse } from "../../../Pages/Screens/SensorPairScreen";
 
-const Comparison = ({ data }) => {
+interface ComparisonProps {
+    data: ScreenResponse[] | undefined;
+}
+
+const Comparison = ({ data }: ComparisonProps) => {
     const { language } = usePreferences();
+
+    // Type guard to check if response has data
+    const hasData = (sensor: ScreenResponse): sensor is import("../../../Pages/Screens/SensorPairScreen").ScreenResponseWithData => {
+        return 'metadata' in sensor && 'current' in sensor && sensor.current.aqi !== null;
+    };
 
     // Only display air quality comparison if every sensor is currently active
     if (
@@ -21,13 +31,20 @@ const Comparison = ({ data }) => {
         )
     ) return null;
 
-    const outdoorsSensor = data.find(d => d.sensor?.location_type === "outdoors");
-    const outdoorsAQI = outdoorsSensor.current.aqi.val;
-    // Don’t display comparison if outdoor air is already good
+    const outdoorsSensor = data?.find(d => hasData(d) && d.sensor?.location_type === "outdoors");
+    if (!outdoorsSensor || !hasData(outdoorsSensor)) return null;
+
+    const outdoorsAQI = outdoorsSensor.current.aqi?.val;
+    if (!outdoorsAQI) return null;
+
+    // Don't display comparison if outdoor air is already good
     if (outdoorsAQI <= AQI_Database[0][DataTypeKeys.aqi].high) return null;
 
-    const indoorsSensor = data.find(d => d.sensor?.location_type.startsWith("indoors"));
-    const indoorsAQI = indoorsSensor.current.aqi.val;
+    const indoorsSensor = data?.find(d => hasData(d) && d.sensor?.location_type.startsWith("indoors"));
+    if (!indoorsSensor || !hasData(indoorsSensor)) return null;
+
+    const indoorsAQI = indoorsSensor.current.aqi?.val;
+    if (!indoorsAQI) return null;
 
     const ratio = outdoorsAQI / indoorsAQI;
     const comparison =
@@ -57,11 +74,23 @@ const Comparison = ({ data }) => {
     );
 }
 
-const ScreenHealthSuggestions = ({ typeOfScreen, data }) => {
+interface ScreenHealthSuggestionsProps {
+    typeOfScreen: number;
+    data: ScreenResponse[] | undefined;
+}
+
+const ScreenHealthSuggestions = ({ typeOfScreen, data }: ScreenHealthSuggestionsProps) => {
     const { language } = usePreferences();
 
-    const getHealthSuggestion = (sensorData) => {
-        if (sensorData?.current?.aqi?.categoryIndex !== undefined) {
+    // Type guard to check if response has data
+    const hasData = (sensor: ScreenResponse): sensor is import("../../../Pages/Screens/SensorPairScreen").ScreenResponseWithData => {
+        return 'metadata' in sensor && 'current' in sensor && sensor.current.aqi !== null;
+    };
+
+    const getHealthSuggestion = (sensorData: ScreenResponse): string | null => {
+        if (!hasData(sensorData)) return null;
+
+        if (sensorData.current?.aqi?.categoryIndex !== undefined && sensorData.current.aqi.categoryIndex !== null) {
             const { healthSuggestions, category } =
                 AQI_Database[sensorData.current.aqi.categoryIndex];
             const healthSuggestionText = getTranslation(
@@ -71,29 +100,32 @@ const ScreenHealthSuggestions = ({ typeOfScreen, data }) => {
 
             switch (typeOfScreen) {
                 case TypesOfScreen.indoorsVsOutdoors:
-                    return healthSuggestionText;
+                    return typeof healthSuggestionText === 'string' ? healthSuggestionText : String(healthSuggestionText);
                 default:
                     const categoryText = getTranslation(category, language);
-                    return `${categoryText}: ${healthSuggestionText}`
+                    const categoryStr = typeof categoryText === 'string' ? categoryText : String(categoryText);
+                    const healthStr = typeof healthSuggestionText === 'string' ? healthSuggestionText : String(healthSuggestionText);
+                    return `${categoryStr}: ${healthStr}`;
             }
         }
         return null;
     };
 
     // Collect unique suggestions + whether they are unhealthy
-    const suggestionsMap = new Map();
+    const suggestionsMap = new Map<string, boolean>();
     Object.values(data ?? {}).forEach((sensorData) => {
         const suggestion = getHealthSuggestion(sensorData);
         if (!suggestion) return;
 
-        const isUnhealthy =
-            sensorData.current?.aqi?.val >= AQI_Database[2][DataTypeKeys.aqi].low;
+        const isUnhealthy = hasData(sensorData) &&
+            sensorData.current?.aqi?.val !== undefined &&
+            sensorData.current.aqi.val >= AQI_Database[2][DataTypeKeys.aqi].low;
 
         // If suggestion already exists, keep it unhealthy if ANY sensor was unhealthy
         if (suggestionsMap.has(suggestion)) {
             suggestionsMap.set(
                 suggestion,
-                suggestionsMap.get(suggestion) || isUnhealthy
+                suggestionsMap.get(suggestion)! || isUnhealthy
             );
         } else {
             suggestionsMap.set(suggestion, isUnhealthy);

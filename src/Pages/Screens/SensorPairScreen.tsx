@@ -1,5 +1,3 @@
-// disable eslint for this file
-/* eslint-disable */
 import { useEffect } from 'react';
 import { useParams } from "react-router-dom";
 
@@ -30,14 +28,57 @@ import { AggregationType } from '../../shared/constants';
 import { usePreferences } from '../../ContextProviders/PreferenceContext';
 import { useDashboard } from '../../ContextProviders/DashboardContext';
 import { useScreen } from '../../ContextProviders/ScreenContext';
+import type { paths, components } from '../../types/backend-api.types';
+import type { SensorStatusType } from '../../Components/AirQuality/SensorStatus';
 
-const SensorPairScreen = ({ title }) => {
+// OpenAPI type for screen endpoint response
+type GetScreenResponse =
+  paths["/screen/{school}/{screen_name}"]["get"]["responses"][200]["content"]["application/json"];
+
+// Base OpenAPI types
+type ScreenResponseBase = components["schemas"]["ScreenResponse"];
+type ScreenResponseWithDataBase = components["schemas"]["ScreenResponseWithData"];
+type ScreenEmptyResponseBase = components["schemas"]["ScreenEmptyResponse"];
+type ScreenSensorInfoBase = components["schemas"]["ScreenSensorInfo"];
+
+// Extended types with frontend-added fields
+export interface ScreenSensorInfo extends ScreenSensorInfoBase {
+  lastSeenInMinutes?: number | null;
+  sensor_status?: SensorStatusType;
+  last_seen?: string;
+  coordinates?: { latitude: number; longitude: number; };
+  sorting_id?: number;
+}
+
+export interface ScreenResponseWithData extends Omit<ScreenResponseWithDataBase, 'sensor'> {
+  sensor: ScreenSensorInfo;
+}
+
+export interface ScreenEmptyResponse extends Omit<ScreenEmptyResponseBase, 'sensor'> {
+  sensor: ScreenSensorInfo;
+}
+
+export type ScreenResponse = ScreenEmptyResponse | ScreenResponseWithData;
+
+interface SensorPairScreenProps {
+  title?: string;
+}
+
+interface ScreenQueryData {
+  screenData: ScreenResponse[];
+  screenType: number;
+}
+
+const SensorPairScreen = ({ title }: SensorPairScreenProps) => {
   const { isLayoutReversed, shouldDisplayScreen } = useScreen();
   const { language } = usePreferences();
 
   // ---- DATA FETCHING FOR SCREEN ----
   const { currentSchoolID } = useDashboard();
-  const { school_id_param, screen_id_param } = useParams();
+  const { school_id_param, screen_id_param } = useParams<{
+    school_id_param?: string;
+    screen_id_param?: string;
+  }>();
   const school_id = school_id_param || currentSchoolID;
   const screen_id = screen_id_param || "screen";
   const queryParams = {
@@ -50,10 +91,10 @@ const SensorPairScreen = ({ title }) => {
     queryParams
   });
 
-  const { data } = useQuery({
+  const { data } = useQuery<ScreenQueryData>({
     queryKey: [url],
     queryFn: async () => {
-      const screenData = await fetchAndProcessCurrentSensorsData({ url });
+      const screenData = await fetchAndProcessCurrentSensorsData({ url }) as unknown as ScreenResponse[];
 
       // Determine the type of screen
       const hasOutdoor = screenData.some(({ sensor }) => sensor.location_type === "outdoors");
@@ -64,7 +105,7 @@ const SensorPairScreen = ({ title }) => {
           ? TypesOfScreen.bothIndoors
           : hasOutdoor
             ? TypesOfScreen.bothOutdoors
-            : null;
+            : TypesOfScreen.indoorsVsOutdoors;
 
       return { screenData, screenType };
     },
@@ -74,12 +115,15 @@ const SensorPairScreen = ({ title }) => {
     enabled: Boolean(shouldDisplayScreen && school_id && screen_id),
     placeholderData: (prev) => prev,
   });
-  const { screenData, screenType } = data || { screenType: TypesOfScreen.indoorsVsOutdoors };
+  const { screenData, screenType } = data || {
+    screenData: undefined,
+    screenType: TypesOfScreen.indoorsVsOutdoors
+  };
 
   // Update the page's title
   useEffect(() => {
     document.title = `${CITIESair} | ${(screen_id_param || "").toUpperCase()} Screen`;
-  }, [title]);
+  }, [screen_id_param, title]);
 
   const aqiTitle = getTranslation(sectionData.screen.content.aqiTitle, language);
   const pm25Title = getTranslation(sectionData.screen.content.pm25Title, language);

@@ -1,40 +1,54 @@
-// disable eslint for this file
-/* eslint-disable */
 import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
+import type { Line, ScaleTime, ScaleLinear, Selection } from 'd3';
 import { AQI_Database } from '../../../business-domain/air-quality/air-quality.database';
 import { SensorStatus } from '../SensorStatus';
-import { Box } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 
 import { areDOMOverlapped, TypesOfScreen } from './ScreenUtils';
 
 import { capitalizePhrase, getTranslation } from '../../../Utils/UtilFunctions';
 import { INACTIVE_SENSOR_COLORS } from '../../../Themes/CustomColors';
-import { useTheme } from '@mui/material';
 import { usePreferences } from '../../../ContextProviders/PreferenceContext';
 import { DataTypeKeys } from '../../../business-domain/data-types/data-type.types';
+import type { ScreenResponse, ScreenResponseWithData } from '../../../Pages/Screens/SensorPairScreen';
+import type { components } from '../../../types/backend-api.types';
 
 const numberOfHoursForHistoricalData = 6;
 
-const RecentHistoricalGraph = (props) => {
-  const { typeOfScreen, data } = props;
+// Historical data point with parsed Date timestamp
+interface HistoricalDataPoint {
+  timestamp: Date;
+  aqi: components["schemas"]["OverallAQIResult"];
+  "pm2.5": number | null;
+  pm10_raw: number | null;
+}
+
+interface RecentHistoricalGraphProps {
+  typeOfScreen: number;
+  data: ScreenResponse[] | undefined;
+}
+
+const RecentHistoricalGraph = ({ typeOfScreen, data }: RecentHistoricalGraphProps) => {
   const { language } = usePreferences();
   const theme = useTheme();
 
-  const graphContainer = useRef();
-  const layerBackground = useRef();
-  const layerTexts = useRef();
-  const layerXaxisWrapper = useRef();
-  const layerLines = useRef();
+  const graphContainer = useRef<SVGSVGElement>(null);
+  const layerBackground = useRef<SVGGElement>(null);
+  const layerTexts = useRef<SVGGElement>(null);
+  const layerXaxisWrapper = useRef<SVGGElement>(null);
+  const layerLines = useRef<SVGGElement>(null);
 
-  let width, height, xAxis, yAxis;
+  let width: number, height: number;
+  let xAxis: ScaleTime<number, number>;
+  let yAxis: ScaleLinear<number, number>;
   let maxAQItoDisplay = 200;
   const dotRadius = 10;
   const margin = { top: 30, right: 80, bottom: 0, left: 70 };
 
   // Set up D3's line generator
-  const lineGenerator = d3
-    .line()
+  const lineGenerator: Line<HistoricalDataPoint> = d3
+    .line<HistoricalDataPoint>()
     .x(function (d) {
       return xAxis(d.timestamp);
     }) // set the x values for the line generator
@@ -51,7 +65,13 @@ const RecentHistoricalGraph = (props) => {
     if (!layerXaxisWrapper.current) return;
     if (!layerLines.current) return;
 
-    const viewHours = data?.[0]?.metadata?.viewHours || numberOfHoursForHistoricalData;
+    // Type guard to check if sensor has data
+    const hasData = (sensor: ScreenResponse): sensor is ScreenResponseWithData => {
+      return 'metadata' in sensor && 'historical' in sensor && Array.isArray(sensor.historical);
+    };
+
+    const firstSensorWithData = data.find(hasData);
+    const viewHours = firstSensorWithData?.metadata?.viewHours || numberOfHoursForHistoricalData;
     const xTickInterval = Math.floor(viewHours / 6);
 
     width = graphContainer.current.clientWidth;
@@ -68,18 +88,20 @@ const RecentHistoricalGraph = (props) => {
     d3.select(layerTexts.current)
       .attr("filter", "brightness(0.8) contrast(1.2) saturate(1.2)");
 
-    Object.entries(data).forEach(([key, sensorData]) => {
+    data.forEach((sensorData) => {
+      if (!hasData(sensorData)) return;
+
       // Create the JS date object and calculate AQI from raw measurements
       sensorData.historical?.forEach(function (d) {
-        d.timestamp = new Date(d.timestamp)
+        (d as unknown as HistoricalDataPoint).timestamp = new Date(d.timestamp);
       });
 
       // Calculate the maximum value AQI of this sensor
       if (sensorData.historical && Array.isArray(sensorData.historical)) {
         const max = d3.max(sensorData.historical, function (d) {
-          return d.aqi.val;
+          return d.aqi?.val || 0;
         });
-        if (max > maxAQItoDisplay) maxAQItoDisplay = max;
+        if (max && max > maxAQItoDisplay) maxAQItoDisplay = max;
       }
     });
 
@@ -140,6 +162,7 @@ const RecentHistoricalGraph = (props) => {
         .attr("font-size", font_size)
         .text(Math.floor(element[DataTypeKeys.aqi].low / 50) * 50);
 
+      const categoryText = getTranslation(element.category, language);
       d3.select(layerTexts.current)
         .append("text")
         .attr("class", "category-text-graph-sm")
@@ -150,7 +173,7 @@ const RecentHistoricalGraph = (props) => {
         )
         .attr("fill", element.color.Light)
         .attr("font-size", font_size / 2)
-        .text(getTranslation(element.category, language));
+        .text(typeof categoryText === 'string' ? categoryText : String(categoryText));
     };
 
     // 5. Add the xAxisWrapper and its texts
@@ -166,7 +189,7 @@ const RecentHistoricalGraph = (props) => {
     // Floor xAxisMax to the top of the hour (e.g. 11:34 → 11:00)
     xAxisMax.setMinutes(0, 0, 0);
     // Generate tick array starting from floored max
-    const ticks = [];
+    const ticks: Date[] = [];
     for (let t = new Date(xAxisMax); t >= xAxisMin; t.setHours(t.getHours() - xTickInterval)) {
       ticks.push(new Date(t));
     }
@@ -192,11 +215,13 @@ const RecentHistoricalGraph = (props) => {
       .attr('stroke-width', 2)
       .attr('opacity', 0.5);
 
-    Object.entries(data).forEach(([_, sensorData], index) => {
+    data.forEach((sensorData, index) => {
+      if (!hasData(sensorData)) return;
+
       // 7.1. Append the line chart for this location
-      const path = d3.select(layerLines.current)
+      const path = d3.select(layerLines.current!)
         .append("path")
-        .datum(sensorData.historical || [])
+        .datum(sensorData.historical as unknown as HistoricalDataPoint[] || [])
         .attr("x", margin.left)
         .attr("class", "line")
         .attr("d", lineGenerator)
@@ -210,7 +235,8 @@ const RecentHistoricalGraph = (props) => {
       }
 
       // 7.2. Append the circle marker at the end of this line chart to denote its liveness
-      const mostRecentData = sensorData.historical?.length > 0 ? sensorData.historical?.[0] : null;
+      const historicalData = sensorData.historical as unknown as HistoricalDataPoint[];
+      const mostRecentData = historicalData?.length > 0 ? historicalData[0] : null;
       if (
         mostRecentData &&
         mostRecentData.aqi &&
@@ -218,7 +244,7 @@ const RecentHistoricalGraph = (props) => {
         mostRecentData.aqi.val !== null &&
         mostRecentData.timestamp
       ) {
-        const markerWrapper = d3.select(layerLines.current)
+        const markerWrapper = d3.select(layerLines.current!)
           .append("g")
           .attr(
             "transform",
@@ -229,7 +255,7 @@ const RecentHistoricalGraph = (props) => {
             ")"
           )
           .attr("fill",
-            sensorData?.current?.aqi?.categoryIndex !== null ?
+            sensorData?.current?.aqi?.categoryIndex !== null && sensorData?.current?.aqi?.categoryIndex !== undefined ?
               theme.palette.text.aqi[sensorData.current.aqi.categoryIndex] :
               INACTIVE_SENSOR_COLORS.screen
           )
@@ -247,7 +273,7 @@ const RecentHistoricalGraph = (props) => {
           .attr("cx", 0)
           .attr("cy", 0)
           .attr("stroke", "#666")
-          .attr("class", sensorData.sensor?.sensor_status === SensorStatus.active && "pulse-dot")
+          .attr("class", sensorData.sensor?.sensor_status === SensorStatus.active ? "pulse-dot" : "")
           .attr("r", dotRadius);
 
         markerWrapper.append("text")
@@ -267,8 +293,8 @@ const RecentHistoricalGraph = (props) => {
           const overlapped = areDOMOverlapped(locationLabel_1.getBoundingClientRect(), locationLabel_2.getBoundingClientRect());
 
           if (overlapped !== 0) {
-            locationLabel_1.setAttribute("y", overlapped * dotRadius);
-            locationLabel_2.setAttribute("y", - overlapped * dotRadius);
+            locationLabel_1.setAttribute("y", String(overlapped * dotRadius));
+            locationLabel_2.setAttribute("y", String(- overlapped * dotRadius));
           }
         }
       }

@@ -14,8 +14,21 @@ import { getTranslation } from '../../Utils/UtilFunctions';
 import useSchoolMetadata from '../../hooks/useSchoolMetadata';
 import { usePreferences } from '../../ContextProviders/PreferenceContext';
 import { useDashboard } from '../../ContextProviders/DashboardContext';
+import type { paths, components } from '../../types/backend-api.types';
 
-const IconLoader = ({ iconString }) => {
+// OpenAPI type for stats endpoint response
+type GetStatsResponse =
+  paths["/stats"]["get"]["responses"][200]["content"]["application/json"];
+
+export type StatsResponse = components["schemas"]["StatsResponse"];
+
+type IconString = 'GroupsIcon' | 'FaceIcon' | 'SensorsIcon' | 'AssuredWorkloadIcon';
+
+interface IconLoaderProps {
+  iconString: IconString;
+}
+
+const IconLoader = ({ iconString }: IconLoaderProps): JSX.Element | null => {
   switch (iconString) {
     case 'GroupsIcon':
       return <GroupsIcon color="primary" fontSize='large' />;
@@ -30,9 +43,13 @@ const IconLoader = ({ iconString }) => {
   }
 }
 
-const ByTheNumber = (props) => {
-  const { iconString, value, text } = props;
+interface ByTheNumberProps {
+  iconString: IconString;
+  value: string | number | null;
+  text: string;
+}
 
+const ByTheNumber = ({ iconString, value, text }: ByTheNumberProps) => {
   return (
     <Stack direction="column" alignItems="center">
       <IconLoader iconString={iconString} />
@@ -57,14 +74,18 @@ const ByTheNumber = (props) => {
   );
 }
 
-const placeholderStats = {
-  "schools": null,
-  "sensorsCount": null,
-  "students": null,
-  "communityMembers": null
+const placeholderStats: StatsResponse = {
+  schools: "",
+  sensorsCount: "",
+  students: null,
+  communityMembers: null
 };
 
-const AtAGlance = ({ statsForIndividualSchool = false }) => {
+interface AtAGlanceProps {
+  statsForIndividualSchool?: boolean;
+}
+
+const AtAGlance = ({ statsForIndividualSchool = false }: AtAGlanceProps) => {
   const { language } = usePreferences();
   const { isServerDown } = useNetworkStatus();
   const { currentSchoolID } = useDashboard();
@@ -72,10 +93,10 @@ const AtAGlance = ({ statsForIndividualSchool = false }) => {
   const { data: schoolStats } = useSchoolMetadata();
 
   const globalStatsUrl = getApiUrl({ endpoint: "stats" });
-  const { data: globalStats } = useQuery({
+  const { data: globalStats } = useQuery<GetStatsResponse>({
     queryKey: [globalStatsUrl],
     queryFn: async () => {
-      return fetchDataFromURL({ url: globalStatsUrl });
+      return fetchDataFromURL({ url: globalStatsUrl }) as Promise<GetStatsResponse>;
     },
     enabled: statsForIndividualSchool === false ? !!currentSchoolID : true,
     staleTime: 1000 * 60 * 60 * 24,
@@ -101,15 +122,26 @@ const AtAGlance = ({ statsForIndividualSchool = false }) => {
       {
         Object.entries(stats || placeholderStats)
           .map(([key, value]) => {
-            const config = sectionData.atAGlance.content[key];
-            if (!config) return;
+            const config = sectionData.atAGlance.content[key as keyof typeof sectionData.atAGlance.content];
+            if (!config) return null;
+
+            // Only render if value is a valid stat type (string, number, or null)
+            const isValidStatValue =
+              typeof value === 'string' ||
+              typeof value === 'number' ||
+              value === null;
+
+            if (!isValidStatValue) return null;
+
+            // Type assertion after validation
+            const statValue = value as string | number | null;
 
             return (
               <Grid key={key} order={config.order} item sm={3} xs={6}>
                 <ByTheNumber
-                  iconString={config.icon}
-                  value={value}
-                  text={getTranslation(config.text || key, language)}
+                  iconString={config.icon as IconString}
+                  value={statValue}
+                  text={getTranslation(config.text || key, language) as string}
                 />
               </Grid>
             );
