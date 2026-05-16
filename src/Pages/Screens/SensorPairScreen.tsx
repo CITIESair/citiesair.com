@@ -12,7 +12,7 @@ import { AQI_Database } from '../../business-domain/air-quality/air-quality.data
 import CurrentAQIGrid from '../../Components/AirQuality/CurrentAQI/CurrentAQIGrid';
 import { CurrentAQIGridSize } from '../../Components/AirQuality/CurrentAQI/CurrentAQIGridSize';
 import { getApiUrl } from '../../API/APIUtils';
-import { fetchAndProcessCurrentSensorsData } from '../../API/ApiFetch';
+import { fetchDataFromURL } from '../../API/ApiFetch';
 import { CITIESair, CURRENT_DATA_EXPIRATION_TIME_MS, KAMPALA } from '../../Utils/GlobalVariables';
 import { INACTIVE_SENSOR_COLORS } from '../../Themes/CustomColors';
 import { getTranslation } from '../../Utils/UtilFunctions';
@@ -29,43 +29,21 @@ import { usePreferences } from '../../ContextProviders/PreferenceContext';
 import { useDashboard } from '../../ContextProviders/DashboardContext';
 import { useScreen } from '../../ContextProviders/ScreenContext';
 import type { paths, components } from '../../types/backend-api.types';
-import type { SensorStatusType } from '../../Components/AirQuality/SensorStatus';
 
-// OpenAPI type for screen endpoint response
+// OpenAPI types from backend - use directly without extension
 type GetScreenResponse =
   paths["/screen/{school}/{screen_name}"]["get"]["responses"][200]["content"]["application/json"];
 
-// Base OpenAPI types
-type ScreenResponseBase = components["schemas"]["ScreenResponse"];
-type ScreenResponseWithDataBase = components["schemas"]["ScreenResponseWithData"];
-type ScreenEmptyResponseBase = components["schemas"]["ScreenEmptyResponse"];
-type ScreenSensorInfoBase = components["schemas"]["ScreenSensorInfo"];
-
-// Extended types with frontend-added fields
-export interface ScreenSensorInfo extends ScreenSensorInfoBase {
-  lastSeenInMinutes?: number | null;
-  sensor_status?: SensorStatusType;
-  last_seen?: string;
-  coordinates?: { latitude: number; longitude: number; };
-  sorting_id?: number;
-}
-
-export interface ScreenResponseWithData extends Omit<ScreenResponseWithDataBase, 'sensor'> {
-  sensor: ScreenSensorInfo;
-}
-
-export interface ScreenEmptyResponse extends Omit<ScreenEmptyResponseBase, 'sensor'> {
-  sensor: ScreenSensorInfo;
-}
-
-export type ScreenResponse = ScreenEmptyResponse | ScreenResponseWithData;
+export type ScreenResponse = components["schemas"]["ScreenResponse"];
+export type ScreenResponseWithData = components["schemas"]["ScreenResponseWithData"];
+export type ScreenEmptyResponse = components["schemas"]["ScreenEmptyResponse"];
 
 interface SensorPairScreenProps {
   title?: string;
 }
 
 interface ScreenQueryData {
-  screenData: ScreenResponse[];
+  screenData: GetScreenResponse;
   screenType: number;
 }
 
@@ -94,7 +72,7 @@ const SensorPairScreen = ({ title }: SensorPairScreenProps) => {
   const { data } = useQuery<ScreenQueryData>({
     queryKey: [url],
     queryFn: async () => {
-      const screenData = await fetchAndProcessCurrentSensorsData({ url }) as unknown as ScreenResponse[];
+      const screenData = await fetchDataFromURL({ url }) as GetScreenResponse;
 
       // Determine the type of screen
       const hasOutdoor = screenData.some(({ sensor }) => sensor.location_type === "outdoors");

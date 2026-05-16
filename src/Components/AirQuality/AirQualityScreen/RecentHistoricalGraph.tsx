@@ -2,7 +2,6 @@ import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 import type { Line, ScaleTime, ScaleLinear, Selection } from 'd3';
 import { AQI_Database } from '../../../business-domain/air-quality/air-quality.database';
-import { SensorStatus } from '../SensorStatus';
 import { Box, useTheme } from '@mui/material';
 
 import { areDOMOverlapped, TypesOfScreen } from './ScreenUtils';
@@ -11,18 +10,13 @@ import { capitalizePhrase, getTranslation } from '../../../Utils/UtilFunctions';
 import { INACTIVE_SENSOR_COLORS } from '../../../Themes/CustomColors';
 import { usePreferences } from '../../../ContextProviders/PreferenceContext';
 import { DataTypeKeys } from '../../../business-domain/data-types/data-type.types';
-import type { ScreenResponse, ScreenResponseWithData } from '../../../Pages/Screens/SensorPairScreen';
 import type { components } from '../../../types/backend-api.types';
 
-const numberOfHoursForHistoricalData = 6;
+type ScreenResponse = components["schemas"]["ScreenResponse"];
+type ScreenResponseWithData = components["schemas"]["ScreenResponseWithData"];
+type ScreenHistoricalMeasurement = components["schemas"]["ScreenHistoricalMeasurement"];
 
-// Historical data point with parsed Date timestamp
-interface HistoricalDataPoint {
-  timestamp: Date;
-  aqi: components["schemas"]["OverallAQIResult"];
-  "pm2.5": number | null;
-  pm10_raw: number | null;
-}
+const numberOfHoursForHistoricalData = 6;
 
 interface RecentHistoricalGraphProps {
   typeOfScreen: number;
@@ -46,14 +40,17 @@ const RecentHistoricalGraph = ({ typeOfScreen, data }: RecentHistoricalGraphProp
   const dotRadius = 10;
   const margin = { top: 30, right: 80, bottom: 0, left: 70 };
 
-  // Set up D3's line generator
-  const lineGenerator: Line<HistoricalDataPoint> = d3
-    .line<HistoricalDataPoint>()
+  // Historical data with Date timestamp (instead of string)
+  type HistoricalWithDate = Omit<ScreenHistoricalMeasurement, 'timestamp'> & { timestamp: Date };
+
+  // Set up D3's line generator - using parsed data with Date timestamps
+  const lineGenerator: Line<HistoricalWithDate> = d3
+    .line<HistoricalWithDate>()
     .x(function (d) {
       return xAxis(d.timestamp);
     }) // set the x values for the line generator
     .y(function (d) {
-      return yAxis(d.aqi.val);
+      return yAxis(d.aqi?.val || 0);
     }) // set the y values for the line generator
     .curve(d3.curveCardinal.tension(0)); // apply smoothing to the line
 
@@ -90,11 +87,6 @@ const RecentHistoricalGraph = ({ typeOfScreen, data }: RecentHistoricalGraphProp
 
     data.forEach((sensorData) => {
       if (!hasData(sensorData)) return;
-
-      // Create the JS date object and calculate AQI from raw measurements
-      sensorData.historical?.forEach(function (d) {
-        (d as unknown as HistoricalDataPoint).timestamp = new Date(d.timestamp);
-      });
 
       // Calculate the maximum value AQI of this sensor
       if (sensorData.historical && Array.isArray(sensorData.historical)) {
@@ -218,10 +210,16 @@ const RecentHistoricalGraph = ({ typeOfScreen, data }: RecentHistoricalGraphProp
     data.forEach((sensorData, index) => {
       if (!hasData(sensorData)) return;
 
+      // Transform historical data to have Date timestamps for d3
+      const historicalWithDates: HistoricalWithDate[] = sensorData.historical?.map(d => ({
+        ...d,
+        timestamp: new Date(d.timestamp)
+      })) || [];
+
       // 7.1. Append the line chart for this location
       const path = d3.select(layerLines.current!)
         .append("path")
-        .datum(sensorData.historical as unknown as HistoricalDataPoint[] || [])
+        .datum(historicalWithDates)
         .attr("x", margin.left)
         .attr("class", "line")
         .attr("d", lineGenerator)
@@ -235,8 +233,7 @@ const RecentHistoricalGraph = ({ typeOfScreen, data }: RecentHistoricalGraphProp
       }
 
       // 7.2. Append the circle marker at the end of this line chart to denote its liveness
-      const historicalData = sensorData.historical as unknown as HistoricalDataPoint[];
-      const mostRecentData = historicalData?.length > 0 ? historicalData[0] : null;
+      const mostRecentData = historicalWithDates.length > 0 ? historicalWithDates[0] : null;
       if (
         mostRecentData &&
         mostRecentData.aqi &&
@@ -261,19 +258,19 @@ const RecentHistoricalGraph = ({ typeOfScreen, data }: RecentHistoricalGraphProp
           )
           ;
 
-        sensorData.sensor?.sensor_status === SensorStatus.active &&
-          markerWrapper.append("circle")
-            .attr("cx", 0)
-            .attr("cy", 0)
-            .attr("filter", "brightness(0.5)")
-            .attr("class", "pulse-ring")
-            .attr("r", 2.5 * dotRadius);
+        // Always show pulse animation for screen data (data presence indicates active sensor)
+        markerWrapper.append("circle")
+          .attr("cx", 0)
+          .attr("cy", 0)
+          .attr("filter", "brightness(0.5)")
+          .attr("class", "pulse-ring")
+          .attr("r", 2.5 * dotRadius);
 
         markerWrapper.append("circle")
           .attr("cx", 0)
           .attr("cy", 0)
           .attr("stroke", "#666")
-          .attr("class", sensorData.sensor?.sensor_status === SensorStatus.active ? "pulse-dot" : "")
+          .attr("class", "pulse-dot")
           .attr("r", dotRadius);
 
         markerWrapper.append("text")

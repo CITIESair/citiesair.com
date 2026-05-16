@@ -1,15 +1,16 @@
 import { List, ListItem, ListItemText, Typography } from "@mui/material";
 import { INACTIVE_SENSOR_COLORS } from "../../../Themes/CustomColors";
 import { AQI_Database } from "../../../business-domain/air-quality/air-quality.database";
-import { SensorStatus } from "../SensorStatus";
 import { TypesOfScreen } from "./ScreenUtils";
 import { getTranslation } from "../../../Utils/UtilFunctions";
 
 import sectionData from '../../../SectionData/sectionData';
-import parse from 'html-react-parser';
 import { usePreferences } from "../../../ContextProviders/PreferenceContext";
 import { DataTypeKeys } from "../../../business-domain/data-types/data-type.types";
-import type { ScreenResponse } from "../../../Pages/Screens/SensorPairScreen";
+import type { components } from "../../../types/backend-api.types";
+
+type ScreenResponse = components["schemas"]["ScreenResponse"];
+type ScreenResponseWithData = components["schemas"]["ScreenResponseWithData"];
 
 interface ComparisonProps {
     data: ScreenResponse[] | undefined;
@@ -19,17 +20,12 @@ const Comparison = ({ data }: ComparisonProps) => {
     const { language } = usePreferences();
 
     // Type guard to check if response has data
-    const hasData = (sensor: ScreenResponse): sensor is import("../../../Pages/Screens/SensorPairScreen").ScreenResponseWithData => {
+    const hasData = (sensor: ScreenResponse): sensor is ScreenResponseWithData => {
         return 'metadata' in sensor && 'current' in sensor && sensor.current.aqi !== null;
     };
 
-    // Only display air quality comparison if every sensor is currently active
-    if (
-        !Object.values(data ?? {}).length ||
-        !Object.values(data ?? {}).every(
-            (sensorData) => sensorData.sensor?.sensor_status === SensorStatus.active
-        )
-    ) return null;
+    // Only display air quality comparison if we have data
+    if (!Object.values(data ?? {}).length) return null;
 
     const outdoorsSensor = data?.find(d => hasData(d) && d.sensor?.location_type === "outdoors");
     if (!outdoorsSensor || !hasData(outdoorsSensor)) return null;
@@ -83,11 +79,11 @@ const ScreenHealthSuggestions = ({ typeOfScreen, data }: ScreenHealthSuggestions
     const { language } = usePreferences();
 
     // Type guard to check if response has data
-    const hasData = (sensor: ScreenResponse): sensor is import("../../../Pages/Screens/SensorPairScreen").ScreenResponseWithData => {
+    const hasData = (sensor: ScreenResponse): sensor is ScreenResponseWithData => {
         return 'metadata' in sensor && 'current' in sensor && sensor.current.aqi !== null;
     };
 
-    const getHealthSuggestion = (sensorData: ScreenResponse): string | null => {
+    const getHealthSuggestion = (sensorData: ScreenResponse): ReturnType<typeof getTranslation> => {
         if (!hasData(sensorData)) return null;
 
         if (sensorData.current?.aqi?.categoryIndex !== undefined && sensorData.current.aqi.categoryIndex !== null) {
@@ -100,19 +96,17 @@ const ScreenHealthSuggestions = ({ typeOfScreen, data }: ScreenHealthSuggestions
 
             switch (typeOfScreen) {
                 case TypesOfScreen.indoorsVsOutdoors:
-                    return typeof healthSuggestionText === 'string' ? healthSuggestionText : String(healthSuggestionText);
+                    return healthSuggestionText;
                 default:
                     const categoryText = getTranslation(category, language);
-                    const categoryStr = typeof categoryText === 'string' ? categoryText : String(categoryText);
-                    const healthStr = typeof healthSuggestionText === 'string' ? healthSuggestionText : String(healthSuggestionText);
-                    return `${categoryStr}: ${healthStr}`;
+                    return `${categoryText}: ${healthSuggestionText}`;
             }
         }
         return null;
     };
 
     // Collect unique suggestions + whether they are unhealthy
-    const suggestionsMap = new Map<string, boolean>();
+    const suggestionsMap = new Map<ReturnType<typeof getTranslation>, boolean>();
     Object.values(data ?? {}).forEach((sensorData) => {
         const suggestion = getHealthSuggestion(sensorData);
         if (!suggestion) return;
@@ -153,7 +147,7 @@ const ScreenHealthSuggestions = ({ typeOfScreen, data }: ScreenHealthSuggestions
                     key={idx}
                     className={isUnhealthy ? "flashingRed" : ""}
                 >
-                    <ListItemText primary={parse(text)} />
+                    <ListItemText primary={text} />
                 </ListItem>
             ))}
         </List>

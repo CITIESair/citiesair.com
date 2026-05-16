@@ -622,82 +622,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/screen/{school}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get screen data for the default school screen */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Screen data resolution. Hour uses the wider default lookback window. */
-                    aggregationType?: "minute" | "hour";
-                    /** @description Optional custom lookback window in hours. */
-                    hoursToShow?: number;
-                };
-                header?: never;
-                path: {
-                    /** @description School ID used to scope screen access and sensor lookup. */
-                    school: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Screen sensor data. */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ScreenResponse"][];
-                    };
-                };
-                /** @description Authentication failure. */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description The user does not have permission to view this school. */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Screen does not exist. */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-                /** @description Server error while fetching screen data. */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/screen/{school}/{screen_name}": {
         parameters: {
             query?: never;
@@ -891,13 +815,13 @@ export interface components {
         HeatIndexResult: {
             val: number;
             category: string | null;
-            categoryIndex: number;
+            categoryIndex: number | null;
         };
         OverallAQIResult: {
             val: number | null;
             categoryIndex: number | null;
             category: string | null;
-            majorPollutant: string;
+            majorPollutant: string | null;
         };
         SensorCoordinates: {
             latitude: number | null;

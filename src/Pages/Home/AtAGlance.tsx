@@ -15,14 +15,13 @@ import useSchoolMetadata from '../../hooks/useSchoolMetadata';
 import { usePreferences } from '../../ContextProviders/PreferenceContext';
 import { useDashboard } from '../../ContextProviders/DashboardContext';
 import type { paths, components } from '../../types/backend-api.types';
+import type { IconString, LocalizedText } from '../../types/SectionData';
 
 // OpenAPI type for stats endpoint response
 type GetStatsResponse =
   paths["/stats"]["get"]["responses"][200]["content"]["application/json"];
 
 export type StatsResponse = components["schemas"]["StatsResponse"];
-
-type IconString = 'GroupsIcon' | 'FaceIcon' | 'SensorsIcon' | 'AssuredWorkloadIcon';
 
 interface IconLoaderProps {
   iconString: IconString;
@@ -46,10 +45,11 @@ const IconLoader = ({ iconString }: IconLoaderProps): JSX.Element | null => {
 interface ByTheNumberProps {
   iconString: IconString;
   value: string | number | null;
-  text: string;
+  text: ReturnType<typeof getTranslation>;
 }
 
 const ByTheNumber = ({ iconString, value, text }: ByTheNumberProps) => {
+
   return (
     <Stack direction="column" alignItems="center">
       <IconLoader iconString={iconString} />
@@ -139,9 +139,9 @@ const AtAGlance = ({ statsForIndividualSchool = false }: AtAGlanceProps) => {
             return (
               <Grid key={key} order={config.order} item sm={3} xs={6}>
                 <ByTheNumber
-                  iconString={config.icon as IconString}
+                  iconString={config.icon}
                   value={statValue}
-                  text={getTranslation(config.text || key, language) as string}
+                  text={getTranslation(config.text || key, language)}
                 />
               </Grid>
             );
