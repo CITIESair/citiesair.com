@@ -6,7 +6,7 @@ import ExpandableSection from '../../Components/ExpandableSection';
 import sectionData from '../../SectionData/sectionData';
 import { replacePlainHTMLWithMuiComponents, capitalizePhrase } from '../../Utils/UtilFunctions';
 
-function About() {
+const About = () => {
   return (
     <>
       <UppercaseTitle text={capitalizePhrase(sectionData.about.id)} />

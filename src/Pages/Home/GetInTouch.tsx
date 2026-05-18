@@ -6,7 +6,7 @@ import UppercaseTitle from '../../Components/UppercaseTitle';
 import sectionData from '../../SectionData/sectionData';
 import { replacePlainHTMLWithMuiComponents, capitalizePhrase } from '../../Utils/UtilFunctions';
 
-function GetInTouch() {
+const GetInTouch = () => {
   return (
     <>
       <UppercaseTitle text={capitalizePhrase(sectionData.getInTouch.id)} />
