@@ -1,29 +1,28 @@
 import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
-import type { Line, ScaleTime, ScaleLinear, Selection } from 'd3';
+import type { Line, ScaleTime, ScaleLinear } from 'd3';
 import { AQI_Database } from '../../../business-domain/air-quality/air-quality.database';
 import { Box, useTheme } from '@mui/material';
 
 import { areDOMOverlapped, TypesOfScreen } from './ScreenUtils';
 
-import { capitalizePhrase, getTranslation } from '../../../Utils/UtilFunctions';
+import { capitalizePhrase, getTranslation, isValidArray } from '../../../Utils/UtilFunctions';
 import { INACTIVE_SENSOR_COLORS } from '../../../Themes/CustomColors';
 import { usePreferences } from '../../../ContextProviders/PreferenceContext';
 import { DataTypeKeys } from '../../../business-domain/data-types/data-type.types';
-import type { components } from '../../../types/backend-api.types';
+import { ScreenSensorData, ScreenSensorsData } from '../../../Pages/Screens/SensorPairScreen';
+import { SensorStatus } from '../SensorStatus';
 
-type ScreenResponse = components["schemas"]["ScreenResponse"];
-type ScreenResponseWithData = components["schemas"]["ScreenResponseWithData"];
-type ScreenHistoricalMeasurement = components["schemas"]["ScreenHistoricalMeasurement"];
+type ScreenHistoricalMeasurement = ScreenSensorData["historical"][number];
 
 const numberOfHoursForHistoricalData = 6;
 
 interface RecentHistoricalGraphProps {
-  typeOfScreen: number;
-  data: ScreenResponse[] | undefined;
+  typeOfScreen: TypesOfScreen;
+  data: ScreenSensorsData | undefined;
 }
 
-const RecentHistoricalGraph = ({ typeOfScreen, data }: RecentHistoricalGraphProps) => {
+const RecentHistoricalGraph = ({ typeOfScreen, data: sensorData }: RecentHistoricalGraphProps) => {
   const { language } = usePreferences();
   const theme = useTheme();
 
@@ -52,10 +51,10 @@ const RecentHistoricalGraph = ({ typeOfScreen, data }: RecentHistoricalGraphProp
     .y(function (d) {
       return yAxis(d.aqi?.val || 0);
     }) // set the y values for the line generator
-    .curve(d3.curveCardinal.tension(0)); // apply smoothing to the line
+    .curve(d3.curveMonotoneX); // apply smoothing to the line
 
   useEffect(() => {
-    if (!data) return;
+    if (!sensorData) return;
     if (!graphContainer.current) return;
     if (!layerBackground.current) return;
     if (!layerTexts.current) return;
@@ -63,11 +62,11 @@ const RecentHistoricalGraph = ({ typeOfScreen, data }: RecentHistoricalGraphProp
     if (!layerLines.current) return;
 
     // Type guard to check if sensor has data
-    const hasData = (sensor: ScreenResponse): sensor is ScreenResponseWithData => {
-      return 'metadata' in sensor && 'historical' in sensor && Array.isArray(sensor.historical);
+    const hasData = (sensorData: ScreenSensorData) => {
+      return isValidArray(sensorData.historical);
     };
 
-    const firstSensorWithData = data.find(hasData);
+    const firstSensorWithData = sensorData.find(hasData);
     const viewHours = firstSensorWithData?.metadata?.viewHours || numberOfHoursForHistoricalData;
     const xTickInterval = Math.floor(viewHours / 6);
 
@@ -85,7 +84,7 @@ const RecentHistoricalGraph = ({ typeOfScreen, data }: RecentHistoricalGraphProp
     d3.select(layerTexts.current)
       .attr("filter", "brightness(0.8) contrast(1.2) saturate(1.2)");
 
-    data.forEach((sensorData) => {
+    sensorData.forEach((sensorData) => {
       if (!hasData(sensorData)) return;
 
       // Calculate the maximum value AQI of this sensor
@@ -207,7 +206,7 @@ const RecentHistoricalGraph = ({ typeOfScreen, data }: RecentHistoricalGraphProp
       .attr('stroke-width', 2)
       .attr('opacity', 0.5);
 
-    data.forEach((sensorData, index) => {
+    sensorData.forEach((sensorData, index) => {
       if (!hasData(sensorData)) return;
 
       // Transform historical data to have Date timestamps for d3
@@ -226,7 +225,7 @@ const RecentHistoricalGraph = ({ typeOfScreen, data }: RecentHistoricalGraphProp
         .attr("fill", "transparent")
         .attr("stroke", "black")
         .attr("stroke-width", "5px");
-      if (typeOfScreen === TypesOfScreen.indoorsVsOutdoors) {
+      if (typeOfScreen === "indoorsVsOutdoors") {
         path.attr("opacity", sensorData.sensor?.location_type === "outdoors" ? 1 : 0.5);
       } else {
         path.attr("opacity", index % 2 === 0 ? 1 : 0.5);
@@ -258,19 +257,19 @@ const RecentHistoricalGraph = ({ typeOfScreen, data }: RecentHistoricalGraphProp
           )
           ;
 
-        // Always show pulse animation for screen data (data presence indicates active sensor)
-        markerWrapper.append("circle")
-          .attr("cx", 0)
-          .attr("cy", 0)
-          .attr("filter", "brightness(0.5)")
-          .attr("class", "pulse-ring")
-          .attr("r", 2.5 * dotRadius);
-
+        sensorData.sensor?.sensor_status === SensorStatus.active &&
+          markerWrapper.append("circle")
+            .attr("cx", 0)
+            .attr("cy", 0)
+            .attr("filter", "brightness(0.5)")
+            .attr("class", "pulse-ring")
+            .attr("r", 2.5 * dotRadius);
+    
         markerWrapper.append("circle")
           .attr("cx", 0)
           .attr("cy", 0)
           .attr("stroke", "#666")
-          .attr("class", "pulse-dot")
+          .attr("class", sensorData.sensor?.sensor_status === SensorStatus.active ? "pulse-dot" : "")
           .attr("r", dotRadius);
 
         markerWrapper.append("text")
@@ -297,7 +296,7 @@ const RecentHistoricalGraph = ({ typeOfScreen, data }: RecentHistoricalGraphProp
       }
     });
 
-  }, [data, language])
+  }, [sensorData, language])
 
   return (
     <Box

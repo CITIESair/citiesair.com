@@ -14,14 +14,6 @@ Contains `fetchDataFromURL` function that is widely used by many other component
 - `GET`: used most often, for fetching data from backend
 - `POST`, `EDIT`, `DELETE`: only really used to CRUD [alerts](../../API/src/Components/AirQuality/AirQualityAlerts) and [emails](../../API/src/Components/AirQuality/AirQualityAlerts/EmailsInput.jsx) for the alerts. `POST` is also used for `Login`
 
--  Also contains `fetchAndProcessCurrentSensorsData` which is a special case of `fetchDataFromURL`. It fetches the current sensors data for a given school and process the raw data provided by the backend to calculate extra information, such as:
-    - category
-    - color scheme
-    - last seen duration
-    - health suggestion
-  
-  It is re-used across different components in the application.
-
 ### [APIUtils.tsx](APIUtils.tsx)
 This file contains enumerations used in the previous two files and several other components in the application to avoid hardcoding variables.
 

@@ -22,11 +22,11 @@ import { DataTypeKeys } from '../../../business-domain/data-types/data-type.type
 import getAQIDivIcon from './AQIDivIcon';
 import { calculateAQIforSingleDataType } from '../../../business-domain/air-quality/air-quality.calculator';
 import { useNetworkStatus } from '../../../ContextProviders/NetworkStatusContext';
-import useSchoolMetadata from '../../../hooks/useSchoolMetadata';
 import { usePreferences } from '../../../ContextProviders/PreferenceContext';
 import { CurrentWeather } from '../CurrentAQI/CurrentMetero';
 import { CurrentAQIGridSize } from '../CurrentAQI/CurrentAQIGridSize';
-import type { CurrentSensorsData, ProcessedSensorDataWithStatus } from '../../../hooks/useCurrentSensorsData';
+
+import { CurrentSensorsData } from '../../../hooks/useCurrentSensorsData';
 
 const StyledLeafletPopup = styled(Popup)(({ theme }) => ({
     '& .leaflet-popup-tip-container': {
@@ -75,7 +75,7 @@ const AQImap = (props: AQImapProps) => {
     } = props;
 
     // Filter out invalid mapData entries
-    const sanitizedMapData = useMemo((): ProcessedSensorDataWithStatus[] => {
+    const sanitizedMapData = useMemo((): CurrentSensorsData => {
         if (!isValidArray(mapData)) return [];
 
         return mapData
@@ -162,7 +162,7 @@ const AQImap = (props: AQImapProps) => {
     interface MinimapControlProps {
         position?: PositionClassKey;
         zoom?: number;
-        mapData: ProcessedSensorDataWithStatus[];
+        mapData: CurrentSensorsData;
     }
 
     const MinimapControl = ({ position, zoom, mapData }: MinimapControlProps) => {

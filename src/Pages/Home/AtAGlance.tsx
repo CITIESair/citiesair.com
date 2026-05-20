@@ -15,7 +15,8 @@ import useSchoolMetadata from '../../hooks/useSchoolMetadata';
 import { usePreferences } from '../../ContextProviders/PreferenceContext';
 import { useDashboard } from '../../ContextProviders/DashboardContext';
 import type { paths, components } from '../../types/backend-api.types';
-import type { IconString, LocalizedText } from '../../types/SectionData';
+import type { IconString } from '../../types/SectionData';
+import { ReactNode } from 'react';
 
 // OpenAPI type for stats endpoint response
 type GetStatsResponse =
@@ -45,7 +46,7 @@ const IconLoader = ({ iconString }: IconLoaderProps): JSX.Element | null => {
 interface ByTheNumberProps {
   iconString: IconString;
   value: string | number | null;
-  text: ReturnType<typeof getTranslation>;
+  text: ReactNode | null;
 }
 
 const ByTheNumber = ({ iconString, value, text }: ByTheNumberProps) => {
@@ -67,7 +68,7 @@ const ByTheNumber = ({ iconString, value, text }: ByTheNumberProps) => {
         textTransform="uppercase"
       >
         <Box fontWeight="400">
-          {text}
+          {text ? text : <Skeleton sx={{ width: "2rem" }} />}
         </Box>
       </Typography>
     </Stack>

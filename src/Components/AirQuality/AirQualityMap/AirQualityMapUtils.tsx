@@ -3,9 +3,9 @@ import { useMap } from "react-leaflet";
 import { NYUAD } from "../../../Utils/GlobalVariables";
 import { isValidArray, roundNumberTo } from "../../../Utils/UtilFunctions";
 import ThemePreferences from "../../../Themes/ThemePreferences";
-import type { ProcessedSensorDataWithStatus } from "../../../hooks/useCurrentSensorsData";
 import type { components } from "../../../types/backend-api.types";
 import { MapOptions } from 'leaflet';
+import { CurrentSensorData } from "../../../hooks/useCurrentSensorsData";
 
 type SensorCoordinates = components["schemas"]["SensorCoordinates"];
 
@@ -197,7 +197,7 @@ const getAdaptivePaddingFactor = (range: number): number => {
 
 const emptyValue = "--";
 
-export const displayAqiValue = (location: ProcessedSensorDataWithStatus): string | number => {
+export const displayAqiValue = (location: CurrentSensorData): string | number => {
     if (
         !location.current ||
         location.current?.aqi == null ||
@@ -207,13 +207,13 @@ export const displayAqiValue = (location: ProcessedSensorDataWithStatus): string
     return location.current?.aqi.val;
 };
 
-export const displayAqiCategory = (location: ProcessedSensorDataWithStatus): string => {
+export const displayAqiCategory = (location: CurrentSensorData): string => {
     if (!location.current || !location.current?.aqi) return emptyValue;
 
     return location.current.aqi.category || emptyValue;
 }
 
-export const displayPM2_5 = (location: ProcessedSensorDataWithStatus): ReactNode => {
+export const displayPM2_5 = (location: CurrentSensorData): ReactNode => {
     if (!location.current || !location.current?.["pm2.5"]) return emptyValue;
 
     return (

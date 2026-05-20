@@ -3,7 +3,7 @@ import { CurrentAQIGridSize, CurrentAQIGridSizeType, ElementSizes } from "./Curr
 import { returnLocationName } from "./AQIGridUtils";
 import { SensorStatus } from "../SensorStatus";
 import { useNetworkStatus } from "../../../ContextProviders/NetworkStatusContext";
-import type { CurrentSensorsData } from "../../../hooks/useCurrentSensorsData";
+import { CurrentSensorsData } from "../../../hooks/useCurrentSensorsData";
 
 interface DisplayAQIParams {
     aqi: number | null | undefined;

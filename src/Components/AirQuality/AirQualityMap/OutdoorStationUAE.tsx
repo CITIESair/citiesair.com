@@ -3,8 +3,10 @@ import AQImap from "./AQImap"
 import { TileOptions } from './AirQualityMapUtils'
 
 import { useQuery } from '@tanstack/react-query';
-import { fetchAndProcessCurrentSensorsData } from '../../../API/ApiFetch';
+import { fetchDataFromURL } from '../../../API/ApiFetch';
 import { getApiUrl } from '../../../API/APIUtils';
+import { GetCurrentSchoolResponse } from "../../../hooks/useCurrentSensorsData";
+import { addSensorStatus } from "../../../shared/utils/addSensorStatus";
 
 interface OutdoorStationUAEProps {
     overridenThemePreference?: string;
@@ -16,7 +18,8 @@ const OutdoorStationUAE = ({ overridenThemePreference, fullSizeMap = false }: Ou
     const { data: publicMapData } = useQuery({
         queryKey: [url],
         queryFn: async () => {
-            return fetchAndProcessCurrentSensorsData({ url });
+            const data = await fetchDataFromURL({ url });
+            return addSensorStatus(data as GetCurrentSchoolResponse); // Temporary parse the API response as current
         },
         staleTime: CURRENT_DATA_EXPIRATION_TIME_MS,
         refetchInterval: CURRENT_DATA_EXPIRATION_TIME_MS,

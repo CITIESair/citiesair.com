@@ -28,23 +28,26 @@ import { AggregationType } from '../../shared/constants';
 import { usePreferences } from '../../ContextProviders/PreferenceContext';
 import { useDashboard } from '../../ContextProviders/DashboardContext';
 import { useScreen } from '../../ContextProviders/ScreenContext';
-import type { paths, components } from '../../types/backend-api.types';
+import type { paths } from '../../types/backend-api.types';
+import { addSensorStatus } from '../../shared/utils/addSensorStatus';
 
 // OpenAPI types from backend - use directly without extension
-type GetScreenResponse =
+export type GetScreenResponse =
   paths["/screen/{school}/{screen_name}"]["get"]["responses"][200]["content"]["application/json"];
 
-export type ScreenResponse = components["schemas"]["ScreenResponse"];
-export type ScreenResponseWithData = components["schemas"]["ScreenResponseWithData"];
-export type ScreenEmptyResponse = components["schemas"]["ScreenEmptyResponse"];
+// Augment with frontend calculated data
+export type ScreenSensorsData = ReturnType<
+    typeof addSensorStatus<GetScreenResponse[number]>
+>;
+export type ScreenSensorData = ScreenSensorsData[number];
+
+interface ScreenQueryData {
+  screenData: ScreenSensorsData;
+  screenType: TypesOfScreen;
+}
 
 interface SensorPairScreenProps {
   title?: string;
-}
-
-interface ScreenQueryData {
-  screenData: GetScreenResponse;
-  screenType: number;
 }
 
 const SensorPairScreen = ({ title }: SensorPairScreenProps) => {
@@ -72,18 +75,19 @@ const SensorPairScreen = ({ title }: SensorPairScreenProps) => {
   const { data } = useQuery<ScreenQueryData>({
     queryKey: [url],
     queryFn: async () => {
-      const screenData = await fetchDataFromURL({ url }) as GetScreenResponse;
-
+      const data = await fetchDataFromURL({ url }) as GetScreenResponse;
+      const screenData = addSensorStatus(data);
+      
       // Determine the type of screen
       const hasOutdoor = screenData.some(({ sensor }) => sensor.location_type === "outdoors");
       const hasIndoor = screenData.some(({ sensor }) => sensor.location_type.startsWith("indoors"));
-      const screenType = hasIndoor && hasOutdoor
-        ? TypesOfScreen.indoorsVsOutdoors
+      const screenType: TypesOfScreen = hasIndoor && hasOutdoor
+        ? "indoorsVsOutdoors"
         : hasIndoor
-          ? TypesOfScreen.bothIndoors
+          ? "bothIndoors"
           : hasOutdoor
-            ? TypesOfScreen.bothOutdoors
-            : TypesOfScreen.indoorsVsOutdoors;
+            ? "bothOutdoors"
+            : "uncategorized";
 
       return { screenData, screenType };
     },
@@ -95,7 +99,7 @@ const SensorPairScreen = ({ title }: SensorPairScreenProps) => {
   });
   const { screenData, screenType } = data || {
     screenData: undefined,
-    screenType: TypesOfScreen.indoorsVsOutdoors
+    screenType: "indoorsVsOutdoors"
   };
 
   // Update the page's title

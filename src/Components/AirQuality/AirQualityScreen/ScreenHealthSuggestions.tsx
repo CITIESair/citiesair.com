@@ -3,25 +3,22 @@ import { INACTIVE_SENSOR_COLORS } from "../../../Themes/CustomColors";
 import { AQI_Database } from "../../../business-domain/air-quality/air-quality.database";
 import { TypesOfScreen } from "./ScreenUtils";
 import { getTranslation } from "../../../Utils/UtilFunctions";
-
 import sectionData from '../../../SectionData/sectionData';
 import { usePreferences } from "../../../ContextProviders/PreferenceContext";
 import { DataTypeKeys } from "../../../business-domain/data-types/data-type.types";
-import type { components } from "../../../types/backend-api.types";
-
-type ScreenResponse = components["schemas"]["ScreenResponse"];
-type ScreenResponseWithData = components["schemas"]["ScreenResponseWithData"];
+import { ReactNode } from "react";
+import { ScreenSensorData, ScreenSensorsData } from "../../../Pages/Screens/SensorPairScreen";
 
 interface ComparisonProps {
-    data: ScreenResponse[] | undefined;
+    data: ScreenSensorsData | undefined;
 }
 
 const Comparison = ({ data }: ComparisonProps) => {
     const { language } = usePreferences();
 
     // Type guard to check if response has data
-    const hasData = (sensor: ScreenResponse): sensor is ScreenResponseWithData => {
-        return 'metadata' in sensor && 'current' in sensor && sensor.current.aqi !== null;
+    const hasData = (sensor: ScreenSensorData) => {
+        return sensor.current.aqi !== null;
     };
 
     // Only display air quality comparison if we have data
@@ -71,19 +68,19 @@ const Comparison = ({ data }: ComparisonProps) => {
 }
 
 interface ScreenHealthSuggestionsProps {
-    typeOfScreen: number;
-    data: ScreenResponse[] | undefined;
+    typeOfScreen: TypesOfScreen;
+    data: ScreenSensorsData | undefined;
 }
 
 const ScreenHealthSuggestions = ({ typeOfScreen, data }: ScreenHealthSuggestionsProps) => {
     const { language } = usePreferences();
 
     // Type guard to check if response has data
-    const hasData = (sensor: ScreenResponse): sensor is ScreenResponseWithData => {
-        return 'metadata' in sensor && 'current' in sensor && sensor.current.aqi !== null;
+    const hasData = (sensor: ScreenSensorData) => {
+        return sensor.current.aqi !== null;
     };
 
-    const getHealthSuggestion = (sensorData: ScreenResponse): ReturnType<typeof getTranslation> => {
+    const getHealthSuggestion = (sensorData: ScreenSensorData): ReactNode | null => {
         if (!hasData(sensorData)) return null;
 
         if (sensorData.current?.aqi?.categoryIndex !== undefined && sensorData.current.aqi.categoryIndex !== null) {
@@ -95,7 +92,7 @@ const ScreenHealthSuggestions = ({ typeOfScreen, data }: ScreenHealthSuggestions
             )
 
             switch (typeOfScreen) {
-                case TypesOfScreen.indoorsVsOutdoors:
+                case "indoorsVsOutdoors":
                     return healthSuggestionText;
                 default:
                     const categoryText = getTranslation(category, language);
@@ -106,13 +103,12 @@ const ScreenHealthSuggestions = ({ typeOfScreen, data }: ScreenHealthSuggestions
     };
 
     // Collect unique suggestions + whether they are unhealthy
-    const suggestionsMap = new Map<ReturnType<typeof getTranslation>, boolean>();
+    const suggestionsMap = new Map<ReactNode | null, boolean>();
     Object.values(data ?? {}).forEach((sensorData) => {
         const suggestion = getHealthSuggestion(sensorData);
         if (!suggestion) return;
 
-        const isUnhealthy = hasData(sensorData) &&
-            sensorData.current?.aqi?.val !== undefined &&
+        const isUnhealthy =  sensorData.current?.aqi?.val !== undefined &&
             sensorData.current.aqi.val >= AQI_Database[2][DataTypeKeys.aqi].low;
 
         // If suggestion already exists, keep it unhealthy if ANY sensor was unhealthy
@@ -138,7 +134,7 @@ const ScreenHealthSuggestions = ({ typeOfScreen, data }: ScreenHealthSuggestions
                 },
             }}
         >
-            {typeOfScreen === TypesOfScreen.indoorsVsOutdoors && (
+            {typeOfScreen === "indoorsVsOutdoors" && (
                 <Comparison data={data} />
             )}
 

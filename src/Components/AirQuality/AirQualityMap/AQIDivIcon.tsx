@@ -1,7 +1,7 @@
 import { displayAqiValue, LocationTitles, LocationTitleKey } from './AirQualityMapUtils';
 import L from 'leaflet';
 import { Theme } from '@mui/material';
-import type { ProcessedSensorDataWithStatus } from '../../../hooks/useCurrentSensorsData';
+import { CurrentSensorData } from '../../../hooks/useCurrentSensorsData';
 
 interface GetAQIDivIconParams {
     theme: Theme;
@@ -9,7 +9,7 @@ interface GetAQIDivIconParams {
     markerSizeInRem: number;
     markerColor: string;
     locationTitle?: LocationTitleKey;
-    location: ProcessedSensorDataWithStatus;
+    location: CurrentSensorData;
 }
 
 const getAQIDivIcon = ({

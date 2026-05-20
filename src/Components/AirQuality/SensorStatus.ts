@@ -53,7 +53,7 @@ const SensorStatusCriteria = (aggregationType: string = AggregationType.minute):
 };
 
 export const calculateSensorStatus = (
-  lastSeenInMinutes: number,
+  lastSeenInMinutes: number | null,
   aggregationType: string = AggregationType.minute
 ): SensorStatusType => {
   const match = SensorStatusCriteria(aggregationType).find(({ cutoffInMinutes: { low, high } }) =>

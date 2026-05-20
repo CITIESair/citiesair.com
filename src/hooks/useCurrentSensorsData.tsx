@@ -1,30 +1,23 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import { fetchAndProcessCurrentSensorsData } from '../API/ApiFetch';
+import { fetchDataFromURL } from '../API/ApiFetch';
 import { getApiUrl } from '../API/APIUtils';
 import { CURRENT_DATA_EXPIRATION_TIME_MS } from '../Utils/GlobalVariables';
 import useSchoolMetadata from './useSchoolMetadata';
 import { useDashboard } from '../ContextProviders/DashboardContext';
-import type { paths, components } from '../types/backend-api.types';
-import type { SensorStatusType } from '../Components/AirQuality/SensorStatus';
+import type { paths } from '../types/backend-api.types';
+import { addSensorStatus } from '../shared/utils/addSensorStatus';
+
+export const TEN_YEARS_IN_MINUTES = 10 * 365 * 24 * 60;
 
 // Import the API response type from paths (preserves semantic meaning)
-type GetCurrentSchoolResponse =
+export type GetCurrentSchoolResponse =
     paths["/current/{school}"]["get"]["responses"][200]["content"]["application/json"];
 
-// The backend returns ProcessedSensorData[], but the frontend processing adds additional fields
-type ProcessedSensorData = components["schemas"]["ProcessedSensorData"];
-
-// Extended type with frontend-added fields from fetchAndProcessCurrentSensorsData
-export type ProcessedSensorDataWithStatus = {
-    sensor: ProcessedSensorData["sensor"] & {
-        lastSeenInMinutes: number | null;
-        sensor_status: SensorStatusType;
-    };
-    current: ProcessedSensorData["current"];
-};
-
-// The hook returns an array of processed sensor data
-export type CurrentSensorsData = ProcessedSensorDataWithStatus[];
+// Augment with frontend calculated data
+export type CurrentSensorsData = ReturnType<
+    typeof addSensorStatus<GetCurrentSchoolResponse[number]>
+>;
+export type CurrentSensorData = CurrentSensorsData[number];
 
 interface UseCurrentSensorsDataParams {
     schoolID?: string | null;
@@ -46,7 +39,8 @@ const useCurrentSensorsData = ({
     return useQuery({
         queryKey: [url],
         queryFn: async () => {
-            return await fetchAndProcessCurrentSensorsData({ url });
+            const data = await fetchDataFromURL({ url }) as GetCurrentSchoolResponse;
+            return addSensorStatus(data);
         },
         enabled: enabled && !!currentSchoolID && isMetadataReady, // only run when ready
         staleTime: CURRENT_DATA_EXPIRATION_TIME_MS,

@@ -14,7 +14,7 @@ import { useNetworkStatus } from '../../../ContextProviders/NetworkStatusContext
 import AQIScale from './AQIScale';
 import { isValidArray } from '../../../Utils/UtilFunctions';
 import { usePreferences } from '../../../ContextProviders/PreferenceContext';
-import type { CurrentSensorsData, ProcessedSensorDataWithStatus } from '../../../hooks/useCurrentSensorsData';
+import type { CurrentSensorsData } from '../../../hooks/useCurrentSensorsData';
 
 const returnSpecialCenterCoordinatesForNYUAD = (isOnBannerPage: boolean): [number, number] | null => {
     return isOnBannerPage ? [24.523, 54.4343] : null;
@@ -45,8 +45,8 @@ interface CurrentAQIMapWithGridProps {
 }
 
 interface GroupedSensorData {
-    sensorsWithSortingId: ProcessedSensorDataWithStatus[][];
-    sensorsWithoutSortingId: ProcessedSensorDataWithStatus[];
+    sensorsWithSortingId: CurrentSensorsData[];
+    sensorsWithoutSortingId: CurrentSensorsData;
 }
 
 const CurrentAQIMapWithGrid = (props: CurrentAQIMapWithGridProps) => {
@@ -100,8 +100,8 @@ const CurrentAQIMapWithGrid = (props: CurrentAQIMapWithGridProps) => {
     const groupedSensorsBySortingId = useMemo((): GroupedSensorData => {
         if (!currentSensorsData) return { sensorsWithSortingId: [], sensorsWithoutSortingId: [] };
 
-        const sensorsWithSortingId: Record<number, ProcessedSensorDataWithStatus[]> = {};
-        const sensorsWithoutSortingId: ProcessedSensorDataWithStatus[] = [];
+        const sensorsWithSortingId: Record<number, CurrentSensorsData> = {};
+        const sensorsWithoutSortingId: CurrentSensorsData = [];
 
         currentSensorsData.forEach(item => {
             let rawId = item.sensor.sorting_id;

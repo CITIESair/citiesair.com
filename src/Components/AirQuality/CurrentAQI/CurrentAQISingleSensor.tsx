@@ -11,12 +11,11 @@ import LastUpdateAndSensorStatus from "./LastUpdateAndSensorStatus";
 import { DataTypeKeys } from "../../../business-domain/data-types/data-type.types";
 import useSchoolMetadata from '../../../hooks/useSchoolMetadata';
 import { usePreferences } from '../../../ContextProviders/PreferenceContext';
-import type { ProcessedSensorDataWithStatus } from '../../../hooks/useCurrentSensorsData';
+import type { CurrentSensorData } from '../../../hooks/useCurrentSensorsData';
 import { MUIGridSizes } from './CurrentAQIGrid';
 
 interface CurrentAQISingleSensorProps {
-    sensor: ProcessedSensorDataWithStatus["sensor"];
-    current: ProcessedSensorDataWithStatus["current"];
+    currentSensorData: CurrentSensorData;
     size: CurrentAQIGridSizeType;
     showLastUpdate?: boolean;
     showWeatherText?: boolean;
@@ -32,8 +31,10 @@ interface CurrentAQISingleSensorProps {
 
 const CurrentAQISingleSensor = (props: CurrentAQISingleSensorProps) => {
     const {
-        sensor, current, size, showLastUpdate, showWeatherText, gridSizes, isScreen, showAQI, useLocationShort, showRawMeasurements, showWeather, roundTemperature, showHeatIndex
+        currentSensorData, size, showLastUpdate, showWeatherText, gridSizes, isScreen, showAQI, useLocationShort, showRawMeasurements, showWeather, roundTemperature, showHeatIndex
     } = props;
+
+    const { current, sensor } = currentSensorData;
 
     const { data: schoolMetadata } = useSchoolMetadata();
 

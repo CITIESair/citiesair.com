@@ -834,8 +834,8 @@ export interface components {
             location_long: string;
             /** Format: date-time */
             last_seen: string | null;
-            coordinates: components["schemas"]["SensorCoordinates"];
-            sorting_id: number;
+            coordinates?: components["schemas"]["SensorCoordinates"];
+            sorting_id: number | null;
         };
         CurrentMeasurement: {
             /** Format: date-time */
@@ -903,45 +903,17 @@ export interface components {
             aggregationType: "minute" | "hour";
             viewHours: number;
         };
-        ScreenSensorInfo: {
-            sensor_id: number;
-            location_type: string;
-            location_short: string | null;
-            location_long: string | null;
-        };
-        ScreenCurrentMeasurement: {
-            /** Format: date-time */
-            timestamp: string;
-            temperature: number | null;
-            rel_humidity: number | null;
-            aqi: components["schemas"]["OverallAQIResult"] | null;
-            heat_index_C: components["schemas"]["HeatIndexResult"] | null;
-            "pm2.5": number | null;
-            pm10_raw: number | null;
-        };
         ScreenHistoricalMeasurement: {
             /** Format: date-time */
             timestamp: string;
-            aqi: components["schemas"]["OverallAQIResult"] | null;
-            "pm2.5": number | null;
-            pm10_raw: number | null;
+            aqi: components["schemas"]["OverallAQIResult"];
         };
-        ScreenEmptyCurrentMeasurement: {
-            /** Format: date-time */
-            timestamp?: string;
-        };
-        ScreenEmptyResponse: {
-            sensor: components["schemas"]["ScreenSensorInfo"];
-            current: components["schemas"]["ScreenEmptyCurrentMeasurement"];
-            historical: unknown[];
-        };
-        ScreenResponseWithData: {
+        ScreenResponse: {
             metadata: components["schemas"]["ScreenResponseMetadata"];
-            sensor: components["schemas"]["ScreenSensorInfo"];
-            current: components["schemas"]["ScreenCurrentMeasurement"];
+            sensor: components["schemas"]["SensorInfo"];
+            current: components["schemas"]["CurrentMeasurement"] | null;
             historical: components["schemas"]["ScreenHistoricalMeasurement"][];
         };
-        ScreenResponse: components["schemas"]["ScreenEmptyResponse"] | components["schemas"]["ScreenResponseWithData"];
         StatsResponse: {
             /** @description PostgreSQL COUNT result for distinct schools. */
             schools: string;

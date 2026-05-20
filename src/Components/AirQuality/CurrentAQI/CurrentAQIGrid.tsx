@@ -4,7 +4,7 @@ import { CurrentAQIGridSize, CurrentAQIGridSizeType, ElementSizes } from './Curr
 import CurrentAQISingleSensor from './CurrentAQISingleSensor';
 import { useNetworkStatus } from '../../../ContextProviders/NetworkStatusContext';
 import type { CurrentSensorsData } from '../../../hooks/useCurrentSensorsData';
-import type { ScreenResponse } from '../../../Pages/Screens/SensorPairScreen';
+import type { ScreenSensorsData } from '../../../Pages/Screens/SensorPairScreen';
 
 export interface MUIGridSizes {
   xs: number;
@@ -13,7 +13,7 @@ export interface MUIGridSizes {
 }
 
 interface CurrentAQIGridProps {
-  currentSensorsData?: CurrentSensorsData | ScreenResponse[];
+  currentSensorsData?: CurrentSensorsData | ScreenSensorsData;
   isScreen?: boolean;
   showWeather?: boolean;
   showWeatherText?: boolean;
@@ -88,11 +88,10 @@ const CurrentAQIGrid = (props: CurrentAQIGridProps) => {
       }}
     >
       {
-        currentSensorsData.map((sensorData, index) => (
+        currentSensorsData.map((currentSensorData, index) => (
           <CurrentAQISingleSensor
             key={index}
-            sensor={sensorData.sensor}
-            current={sensorData.current}
+            currentSensorData={currentSensorData}
             isScreen={isScreen}
             size={size}
             showLastUpdate={showLastUpdate}
