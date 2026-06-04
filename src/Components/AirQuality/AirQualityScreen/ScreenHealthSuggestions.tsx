@@ -18,7 +18,7 @@ const Comparison = ({ data }: ComparisonProps) => {
 
     // Type guard to check if response has data
     const hasData = (sensor: ScreenSensorData) => {
-        return sensor.current.aqi !== null;
+        return sensor.current?.aqi !== null;
     };
 
     // Only display air quality comparison if we have data
@@ -27,7 +27,7 @@ const Comparison = ({ data }: ComparisonProps) => {
     const outdoorsSensor = data?.find(d => hasData(d) && d.sensor?.location_type === "outdoors");
     if (!outdoorsSensor || !hasData(outdoorsSensor)) return null;
 
-    const outdoorsAQI = outdoorsSensor.current.aqi?.val;
+    const outdoorsAQI = outdoorsSensor.current?.aqi?.val;
     if (!outdoorsAQI) return null;
 
     // Don't display comparison if outdoor air is already good
@@ -36,7 +36,7 @@ const Comparison = ({ data }: ComparisonProps) => {
     const indoorsSensor = data?.find(d => hasData(d) && d.sensor?.location_type.startsWith("indoors"));
     if (!indoorsSensor || !hasData(indoorsSensor)) return null;
 
-    const indoorsAQI = indoorsSensor.current.aqi?.val;
+    const indoorsAQI = indoorsSensor.current?.aqi?.val;
     if (!indoorsAQI) return null;
 
     const ratio = outdoorsAQI / indoorsAQI;
@@ -77,7 +77,7 @@ const ScreenHealthSuggestions = ({ typeOfScreen, data }: ScreenHealthSuggestions
 
     // Type guard to check if response has data
     const hasData = (sensor: ScreenSensorData) => {
-        return sensor.current.aqi !== null;
+        return sensor.current?.aqi !== null;
     };
 
     const getHealthSuggestion = (sensorData: ScreenSensorData): ReactNode | null => {
@@ -108,7 +108,7 @@ const ScreenHealthSuggestions = ({ typeOfScreen, data }: ScreenHealthSuggestions
         const suggestion = getHealthSuggestion(sensorData);
         if (!suggestion) return;
 
-        const isUnhealthy =  sensorData.current?.aqi?.val !== undefined &&
+        const isUnhealthy = sensorData.current?.aqi?.val !== undefined &&
             sensorData.current.aqi.val >= AQI_Database[2][DataTypeKeys.aqi].low;
 
         // If suggestion already exists, keep it unhealthy if ANY sensor was unhealthy
