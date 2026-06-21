@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import './index.css';
@@ -14,7 +14,13 @@ import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persi
 import { NetworkStatusProvider } from './ContextProviders/NetworkStatusContext';
 
 const container = document.getElementById('root');
+
+if (!container) {
+  throw new Error('Root container #root not found');
+}
+
 const root = createRoot(container);
+
 const queryClient = new QueryClient();
 
 // Use localStorage as persistence
@@ -25,7 +31,11 @@ const localStoragePersister = createAsyncStoragePersister({
 // use frontend api caching for production
 const IS_PRODUCTION = import.meta.env.VITE_APP_ENV === 'production';
 
-const Providers = ({ children }) => (
+type ProvidersProps = {
+  children: ReactNode;
+};
+
+const Providers = ({ children }: ProvidersProps) => (
   <SnackbarProvider
     dense
     anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
@@ -40,7 +50,7 @@ const Providers = ({ children }) => (
         </MetadataProvider>
       </GoogleProvider>
     </NetworkStatusProvider>
-  </SnackbarProvider >
+  </SnackbarProvider>
 );
 
 root.render(
