@@ -30,12 +30,9 @@ import EmailVerificationDialog from "./EmailVerificationDialog";
 import GoogleOAuthButtonAndPopupHandler from "./OAuth/GoogleOAuthButtonAndPopupHandler";
 import UserTypeSelector from "./UserTypeSelector";
 import { LoginTypes, UserRoleKeyForLogin, type AuthSuccessMessage } from "./Utils";
-import type { paths } from "../../types/backend-api.types";
+import type { SignupResponse } from "../../types/api-contract.types";
 
 const MINIMUM_PASSWORD_LENGTH = 8;
-
-type SignupResponse =
-  paths["/signup"]["post"]["responses"][201]["content"]["application/json"];
 
 type PasswordLoginSuccessMessage = AuthSuccessMessage & {
   type: typeof LoginTypes.password;

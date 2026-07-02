@@ -4,9 +4,7 @@ import WaterDropIcon from '@mui/icons-material/WaterDrop';
 import { CurrentAQIGridSizeType, ElementSizes } from "./CurrentAQIGridSize";
 import { convertTemperature, TemperatureUnits } from "../../../business-domain/air-quality/temperature.utils";
 import { usePreferences } from "../../../ContextProviders/PreferenceContext";
-import type { components } from "../../../types/backend-api.types";
-
-type HeatIndexResult = components["schemas"]["HeatIndexResult"];
+import type { HeatIndexResult } from "../../../types/api-contract.types";
 
 interface TemperatureStringProps {
     temperature: number | null | undefined;

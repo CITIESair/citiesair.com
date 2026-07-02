@@ -14,15 +14,11 @@ import { getTranslation } from '../../Utils/UtilFunctions';
 import useSchoolMetadata from '../../hooks/useSchoolMetadata';
 import { usePreferences } from '../../ContextProviders/PreferenceContext';
 import { useDashboard } from '../../ContextProviders/DashboardContext';
-import type { paths, components } from '../../types/backend-api.types';
 import type { IconString } from '../../types/SectionData';
 import { ReactNode } from 'react';
+import type { StatsResponse } from '../../types/api-contract.types';
 
-// OpenAPI type for stats endpoint response
-type GetStatsResponse =
-  paths["/stats"]["get"]["responses"][200]["content"]["application/json"];
-
-export type StatsResponse = components["schemas"]["StatsResponse"];
+type GetStatsResponse = StatsResponse;
 
 interface IconLoaderProps {
   iconString: IconString;

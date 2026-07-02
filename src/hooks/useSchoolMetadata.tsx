@@ -2,10 +2,9 @@ import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { fetchDataFromURL } from '../API/ApiFetch';
 import { getApiUrl } from '../API/APIUtils';
 import { useDashboard } from '../ContextProviders/DashboardContext';
-import type { paths } from '../types/backend-api.types';
+import type { SchoolMetadataResponse } from '../types/api-contract.types';
 
-type GetSchoolMetadataResponse =
-    paths["/school_metadata/{school}"]["get"]["responses"][200]["content"]["application/json"];
+type GetSchoolMetadataResponse = SchoolMetadataResponse;
 
 interface UseSchoolMetadataParams {
     enabled?: boolean;

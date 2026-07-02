@@ -30,10 +30,7 @@ import { SnackbarMetadata } from "../../Utils/SnackbarMetadata";
 import GoogleOAuthButtonAndPopupHandler from "./OAuth/GoogleOAuthButtonAndPopupHandler";
 import UserTypeSelector from "./UserTypeSelector";
 import { LoginTypes, UserRoleKeyForLogin, type AuthSuccessMessage } from "./Utils";
-import type { paths } from "../../types/backend-api.types";
-
-type LoginResponse =
-  paths["/login"]["post"]["responses"][200]["content"]["application/json"];
+import type { LoginResponse } from "../../types/api-contract.types";
 
 type PasswordLoginSuccessMessage = AuthSuccessMessage & {
   type: typeof LoginTypes.password;

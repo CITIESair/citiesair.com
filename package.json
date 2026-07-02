@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@citiesair/shared": "git+ssh://git@github.com/CITIESair/citiesair-types-and-business-domain.git#2cdbf8f9b0c3355cdd79d46418ec99e169a858a3",
+    "@citiesair/shared": "github:CITIESair/citiesair-contracts-and-business-domain#v0.1.19",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@mui/icons-material": "^5.14.11",
@@ -30,7 +30,6 @@
     "lodash.isequal": "^4.5.0",
     "material-ui-popup-state": "^5.0.8",
     "notistack": "^3.0.1",
-    "openapi-typescript": "^7.13.0",
     "prop-types": "15.8.1",
     "react": "^18.3.1",
     "react-date-range": "^2.0.0-alpha.4",

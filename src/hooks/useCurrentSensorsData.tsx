@@ -4,14 +4,12 @@ import { getApiUrl } from '../API/APIUtils';
 import { CURRENT_DATA_EXPIRATION_TIME_MS } from '../Utils/GlobalVariables';
 import useSchoolMetadata from './useSchoolMetadata';
 import { useDashboard } from '../ContextProviders/DashboardContext';
-import type { paths } from '../types/backend-api.types';
 import { addSensorStatus } from '../shared/utils/addSensorStatus';
+import type { CurrentSensorsResponse } from '../types/api-contract.types';
 
 export const TEN_YEARS_IN_MINUTES = 10 * 365 * 24 * 60;
 
-// Import the API response type from paths (preserves semantic meaning)
-export type GetCurrentSchoolResponse =
-    paths["/current/{school}"]["get"]["responses"][200]["content"]["application/json"];
+export type GetCurrentSchoolResponse = CurrentSensorsResponse;
 
 // Augment with frontend calculated data
 export type CurrentSensorsData = ReturnType<

@@ -28,12 +28,10 @@ import { AggregationType } from '../../shared/constants';
 import { usePreferences } from '../../ContextProviders/PreferenceContext';
 import { useDashboard } from '../../ContextProviders/DashboardContext';
 import { useScreen } from '../../ContextProviders/ScreenContext';
-import type { paths } from '../../types/backend-api.types';
 import { addSensorStatus } from '../../shared/utils/addSensorStatus';
+import type { ScreenResponse } from '../../types/api-contract.types';
 
-// OpenAPI types from backend - use directly without extension
-export type GetScreenResponse =
-  paths["/screen/{school}/{screen_name}"]["get"]["responses"][200]["content"]["application/json"];
+export type GetScreenResponse = ScreenResponse;
 
 // Augment with frontend calculated data
 export type ScreenSensorsData = ReturnType<

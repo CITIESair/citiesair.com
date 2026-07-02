@@ -8,7 +8,6 @@ export interface AllowedSchool {
     sorting_id?: number | null;
 }
 
-// To be harmonized with backend's openapi doc?
 export interface UserData {
     authenticated: boolean;
     allowedSchools: AllowedSchool[];

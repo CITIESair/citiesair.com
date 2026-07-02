@@ -8,12 +8,9 @@ import { getApiUrl } from "../../API/APIUtils";
 import { usePreferences } from "../../ContextProviders/PreferenceContext";
 import { useUser } from "../../ContextProviders/UserContext";
 import { AppRoutes } from "../../Utils/AppRoutes";
-import type { paths } from "../../types/backend-api.types";
+import type { VerifyResponse } from "../../types/api-contract.types";
 
 type VerifyStatus = "success" | "error" | null;
-
-type VerifyResponse =
-  paths["/verify"]["post"]["responses"][200]["content"]["application/json"];
 
 export default function Verify() {
   const { setCurrentPage } = usePreferences();

@@ -1,11 +1,9 @@
-import type { components } from "../../../types/backend-api.types";
-
-type SensorInfo = components["schemas"]["SensorInfo"];
+import type { CurrentSensorInfo } from "../../../types/api-contract.types";
 
 interface ReturnLocationNameParams {
     useLocationShort: boolean;
-    location_short: SensorInfo["location_short"];
-    location_long: SensorInfo["location_long"];
+    location_short: CurrentSensorInfo["location_short"];
+    location_long: CurrentSensorInfo["location_long"];
 }
 
 export const returnLocationName = ({

@@ -12,10 +12,7 @@ import { useUser } from "../../ContextProviders/UserContext";
 import { defaultAuthenticationState } from "../../types/AuthenticationState";
 import { EMPTY_USER_DATA } from "../../types/UserData";
 import { SnackbarMetadata } from "../../Utils/SnackbarMetadata";
-import type { paths } from "../../types/backend-api.types";
-
-type LogoutResponse =
-  paths["/logout"]["get"]["responses"][200]["content"]["application/json"];
+import type { LogoutResponse } from "../../types/api-contract.types";
 
 export default function LogOut() {
   const { setUser, setAuthenticationState } = useUser();

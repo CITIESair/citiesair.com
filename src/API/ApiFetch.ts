@@ -1,5 +1,3 @@
-import { calculateSensorStatus } from "../Components/AirQuality/SensorStatus";
-
 // Types for fetchDataFromURL parameters
 type FileExtension = 'json' | 'csv';
 type RESTMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -20,28 +18,6 @@ interface FetchOptions {
   body?: string;
   headers: Record<string, string>;
   signal: AbortSignal;
-}
-
-// Import OpenAPI types for proper typing
-import type { components } from "../types/backend-api.types";
-import type { SensorStatusType } from "../Components/AirQuality/SensorStatus";
-
-// Backend returns this structure
-type ProcessedSensorData = components["schemas"]["ProcessedSensorData"];
-
-// After processing, we add these fields
-type ProcessedSensorDataWithStatus = {
-  sensor: ProcessedSensorData["sensor"] & {
-    lastSeenInMinutes: number | null;
-    sensor_status: SensorStatusType;
-  };
-  current: ProcessedSensorData["current"];
-};
-
-type SensorsDataResponse = ProcessedSensorDataWithStatus[];
-
-interface FetchAndProcessParams {
-  url: string;
 }
 
 export const fetchDataFromURL = async ({

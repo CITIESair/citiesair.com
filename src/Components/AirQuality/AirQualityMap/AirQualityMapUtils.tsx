@@ -3,11 +3,9 @@ import { useMap } from "react-leaflet";
 import { NYUAD } from "../../../Utils/GlobalVariables";
 import { isValidArray, roundNumberTo } from "../../../Utils/UtilFunctions";
 import ThemePreferences from "../../../Themes/ThemePreferences";
-import type { components } from "../../../types/backend-api.types";
+import type { SensorCoordinates } from "../../../types/api-contract.types";
 import { MapOptions } from 'leaflet';
 import { CurrentSensorData } from "../../../hooks/useCurrentSensorsData";
-
-type SensorCoordinates = components["schemas"]["SensorCoordinates"];
 
 export const POSITION_CLASSES = {
     bottomleft: 'leaflet-bottom leaflet-left',

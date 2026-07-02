@@ -6,10 +6,7 @@ import { fetchDataFromURL } from "../../../API/ApiFetch";
 import { getApiUrl } from "../../../API/APIUtils";
 import type { UserData } from "../../../types/UserData";
 import { LoginTypes, type AuthSuccessMessage, type AuthFailureMessage } from "../Utils";
-import type { paths } from "../../../types/backend-api.types";
-
-type GoogleCallbackResponse =
-    paths["/google/callback"]["post"]["responses"][200]["content"]["application/json"];
+import type { GoogleCallbackResponse } from "../../../types/api-contract.types";
 
 type GoogleOAuthCallbackSuccessMessage = AuthSuccessMessage & {
     type: typeof LoginTypes.google;

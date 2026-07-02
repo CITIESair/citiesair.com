@@ -6,7 +6,6 @@ import { getApiUrl } from '../API/APIUtils';
 
 type Status = 'success' | 'error' | null;
 
-// Type for the unsubscribe response (not in OpenAPI spec yet)
 interface UnsubscribeResponse {
     is_enabled: boolean;
     message?: string;

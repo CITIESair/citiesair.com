@@ -53,9 +53,9 @@ The full list of API endpoints is documented in [API Documentation]()
 
 ## Shared API Contracts
 
-The frontend can import shared ts-rest contracts from `@citiesair/shared/contracts`. This repo currently includes only a sanity integration; no React components have been migrated to contract-driven API calls yet.
+The frontend imports shared ts-rest contracts from `@citiesair/shared/contracts`. Frontend API response types are inferred from those contracts, keeping shared contracts as the source of truth instead of generated type files.
 
-Backend endpoints currently covered by shared contracts are `GET /current/:school`, `GET /current/:school/:location_short`, `GET /school_metadata/:school`, and `GET /screen/:school/:screen_name`.
+Migrated frontend response types currently cover current sensor data, school metadata, screen data, public stats, auth responses, and dataset downloads.
 
 CITIESair frontend is hosted on GitHub Pages. [Section 2.4](#24-deployment-process) explains how the deployment process works.
 
