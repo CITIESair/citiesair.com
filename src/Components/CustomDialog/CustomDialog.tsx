@@ -117,7 +117,6 @@ const CustomDialog = (props: CustomDialogProps) => {
               <Chip
                 label={currentSchoolID ? `School: ${currentSchoolID.toUpperCase()}` : "No School"}
                 size="small"
-                {...{ display: "block" } as any}
                 sx={{ mb: 1 }}
               />
               <br />

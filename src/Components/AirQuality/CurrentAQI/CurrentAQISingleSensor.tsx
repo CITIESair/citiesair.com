@@ -1,0 +1,156 @@
+import { useTheme } from '@mui/material';
+import { AQI_Database } from "../../../business-domain/air-quality/air-quality.database";
+import { getTranslation } from "../../../Utils/UtilFunctions";
+import { Box, Grid, Stack, Typography } from "@mui/material";
+import { SensorStatus } from "../SensorStatus";
+import { INACTIVE_SENSOR_COLORS } from "../../../Themes/CustomColors";
+import { returnLocationName } from "./AQIGridUtils";
+import { CurrentAQIGridSizeType, ElementSizes } from "./CurrentAQIGridSize";
+import { CurrentHeatIndex, CurrentWeather } from "./CurrentMetero";
+import LastUpdateAndSensorStatus from "./LastUpdateAndSensorStatus";
+import { DataTypeKeys } from "../../../business-domain/data-types/data-type.types";
+import useSchoolMetadata from '../../../hooks/useSchoolMetadata';
+import { usePreferences } from '../../../ContextProviders/PreferenceContext';
+import type { CurrentSensorData } from '../../../hooks/useCurrentSensorsData';
+import { MUIGridSizes } from './CurrentAQIGrid';
+
+interface CurrentAQISingleSensorProps {
+    currentSensorData: CurrentSensorData;
+    size: CurrentAQIGridSizeType;
+    showLastUpdate?: boolean;
+    showWeatherText?: boolean;
+    gridSizes: MUIGridSizes;
+    isScreen?: boolean;
+    showAQI?: boolean;
+    useLocationShort?: boolean;
+    showRawMeasurements?: boolean;
+    showWeather?: boolean;
+    roundTemperature?: boolean;
+    showHeatIndex?: boolean;
+}
+
+const CurrentAQISingleSensor = (props: CurrentAQISingleSensorProps) => {
+    const {
+        currentSensorData, size, showLastUpdate, showWeatherText, gridSizes, isScreen, showAQI, useLocationShort, showRawMeasurements, showWeather, roundTemperature, showHeatIndex
+    } = props;
+
+    const { current, sensor } = currentSensorData;
+
+    const { data: schoolMetadata } = useSchoolMetadata();
+
+    const theme = useTheme();
+    const { language } = usePreferences();
+
+    const categoryObject = AQI_Database[current?.aqi?.categoryIndex ?? 0];
+    const categoryText = categoryObject ? getTranslation(AQI_Database[current?.aqi?.categoryIndex ?? 0]?.category, language) : null;
+
+    return (
+        <Grid
+            item
+            {...gridSizes}
+        >
+            {
+                showAQI ? (
+                    <Box>
+                        <Box sx={{
+                            '& .MuiTypography-root': {
+                                color: (current?.aqi?.categoryIndex !== null && sensor?.sensor_status === SensorStatus.active) ?
+                                    theme.palette.text.aqi[current?.aqi?.categoryIndex]
+                                    : (isScreen ? INACTIVE_SENSOR_COLORS.screen : theme.palette.text.aqi[SensorStatus.offline])
+                            }
+                        }}>
+                            <Typography variant={ElementSizes[size].locationAndCategory} fontWeight="500" className='condensedFont' textTransform="capitalize">
+                                {returnLocationName({
+                                    useLocationShort,
+                                    location_short: sensor.location_short,
+                                    location_long: sensor.location_long
+                                })}
+                            </Typography>
+                            <Typography variant={ElementSizes[size].aqi} fontWeight="500" lineHeight={ElementSizes[size].aqiLineHeight}>
+                                {current?.aqi?.val !== null && current?.aqi?.val !== undefined ? current.aqi.val : '--'}
+                            </Typography>
+                            <Typography
+                                variant={ElementSizes[size].locationAndCategory}
+                                fontWeight="500"
+                                className='condensedFont'
+                                style={{
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden'
+                                }}
+                            >
+                                {categoryText || "--"}
+                            </Typography>
+                        </Box>
+
+                        {showRawMeasurements ?
+                            <Typography
+                                variant={ElementSizes[size].rawValues}
+                                display="block"
+                                fontWeight="500"
+                                className='condensedFont'
+                                color={isScreen ? INACTIVE_SENSOR_COLORS.screen : 'text.secondary'}
+                            >
+                                {`PM2.5: ${current?.["pm2.5"] || "--"} μg/m3`}
+                            </Typography> : null
+                        }
+                    </Box>
+                ) : null
+            }
+            <Stack
+                sx={{
+                    '& *': {
+                        color:
+                            isScreen ? (
+                                sensor?.sensor_status === SensorStatus.active ?
+                                    '#c8dcff' : INACTIVE_SENSOR_COLORS.screen
+                            )
+                                : 'text.secondary'
+                    }, mt: ElementSizes[size].meteroDataMarginTop
+                }}
+                className='condensedFont'
+                position="relative"
+            >
+                {
+                    schoolMetadata?.sensors.find(
+                        (s) => String(s.sensor_id) === String(sensor.sensor_id)
+                    )?.allowedDataTypes?.includes(DataTypeKeys.temperature_C) && <>
+                        {
+                            showWeather && (
+                                <CurrentWeather
+                                    size={size}
+                                    temperature={current?.temperature}
+                                    rel_humidity={current?.rel_humidity}
+                                    showWeatherText={showWeatherText}
+                                    roundTemperature={roundTemperature}
+                                />
+                            )
+                        }
+                        {
+                            showHeatIndex && (
+                                <CurrentHeatIndex
+                                    locationType={sensor.location_type}
+                                    size={size}
+                                    heatIndex={current?.heat_index_C}
+                                />)
+                        }
+                    </>
+                }
+
+                {/* If the sensor is offline then show last update and status message regardless of given preference  */}
+                {
+                    (showLastUpdate || (!showLastUpdate && sensor.sensor_status !== SensorStatus.active)) && (
+                        <LastUpdateAndSensorStatus
+                            sensor_status={sensor.sensor_status}
+                            lastSeenInMinutes={sensor.lastSeenInMinutes}
+                            size={size}
+                        />
+                    )
+                }
+            </Stack>
+        </Grid>
+    )
+}
+
+export default CurrentAQISingleSensor;

@@ -5,7 +5,7 @@ import PeopleIcon from '@mui/icons-material/People';
 export interface AllowedSchool {
     school_id: string;
     name: string;
-    sorting_id: number | null;
+    sorting_id?: number | null;
 }
 
 // To be harmonized with backend's openapi doc?

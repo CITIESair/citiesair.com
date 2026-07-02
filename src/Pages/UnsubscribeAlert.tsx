@@ -6,6 +6,12 @@ import { getApiUrl } from '../API/APIUtils';
 
 type Status = 'success' | 'error' | null;
 
+// Type for the unsubscribe response (not in OpenAPI spec yet)
+interface UnsubscribeResponse {
+    is_enabled: boolean;
+    message?: string;
+}
+
 const UnsubscribeAlert: React.FC = () => {
     const navigate = useNavigate();
 
@@ -23,9 +29,9 @@ const UnsubscribeAlert: React.FC = () => {
                     url: getApiUrl({ endpoint: "unsubscribe_alert" }),
                     RESTmethod: "POST",
                     body: { token },
-                });
+                }) as UnsubscribeResponse;
 
-                if ((data as any).is_enabled === false) {
+                if (data.is_enabled === false) {
                     setMessage("You have successfully unsubscribed from this alert.");
                     setStatus("success");
                 } else {

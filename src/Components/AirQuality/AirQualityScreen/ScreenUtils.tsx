@@ -1,8 +1,8 @@
-export const TypesOfScreen = {
-  bothIndoors: 1,
-  bothOutdoors: 2,
-  indoorsVsOutdoors: 3
-} as const;
+export type TypesOfScreen =
+  | "bothIndoors"
+  | "bothOutdoors"
+  | "indoorsVsOutdoors"
+  | "uncategorized";
 
 export const removeLastDirectoryFromURL = (url: string): string => {
   const urlComponents = url.split('/');

@@ -2,6 +2,7 @@ import { Link, List, ListItem, ListItemText, Table, TableBody, TableCell, TableH
 import { domToReact, DOMNode, Element } from 'html-react-parser';
 import { Fragment, ReactNode } from 'react';
 import type { LocalizedText } from '../types/SectionData';
+import parse from "html-react-parser";
 
 export const roundNumberTo = (value: number, decimals: number = 6): number =>
   Number(value.toFixed(decimals));
@@ -145,7 +146,6 @@ export const replacePlainHTMLWithMuiComponents = (node: DOMNode): JSX.Element | 
   }
 };
 
-
 export const validateEmail = (email: string): RegExpMatchArray | null => {
   return String(email)
     .toLowerCase()
@@ -164,23 +164,31 @@ export const getTranslation = (
   const template =
     typeof field === "string" ? field : field[lang] || field.en;
 
-  // If no placeholders, just return string
+  const parseHTML = (value: string): ReactNode => {
+    return parse(value, {
+      replace: replacePlainHTMLWithMuiComponents,
+    });
+  };
+
   if (!template.includes("{{")) {
-    return template;
+    return parseHTML(template);
   }
 
-  // Otherwise, split and replace placeholders
   const parts = template.split(/(\{\{.*?\}\})/g);
 
   return parts.map((part, i) => {
     const match = part.match(/\{\{(.*?)\}\}/);
+
     if (match) {
       const key = match[1].trim();
+
       if (replacements[key] !== undefined) {
         return <Fragment key={i}>{replacements[key]}</Fragment>;
       }
-      return ""; // fallback: drop unknown placeholder
+
+      return null;
     }
-    return part; // plain text
+
+    return <Fragment key={i}>{parseHTML(part)}</Fragment>;
   });
 };

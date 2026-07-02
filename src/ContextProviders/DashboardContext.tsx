@@ -22,7 +22,6 @@ interface DashboardContextType {
   currentSchoolID: string | undefined;
   setCurrentSchoolID: (schoolID: string | undefined) => void;
   allChartsConfigs: Record<number, ChartConfig>;
-  setIndividualChartConfig: (chartID: number, chartConfig: ChartConfig) => void;
   updateIndividualChartConfigQueryParams: (chartID: number, newQueryParams: Record<string, any>) => void;
   allChartsData: Record<number, ChartData>;
   setIndividualChartData: (chartID: number, chartData: ChartData) => void;
@@ -33,6 +32,12 @@ interface DashboardContextType {
 interface DashboardProviderProps {
   children: ReactNode;
 }
+
+const getInitialChartsConfigs = (): Record<number, ChartConfig> =>
+  ChartAPIEndpointsOrder.reduce((acc, endpoint, index) => {
+    acc[index] = { endpoint, queryParams: {} };
+    return acc;
+  }, {} as Record<number, ChartConfig>);
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
 
@@ -48,23 +53,11 @@ export function DashboardProvider({ children }: DashboardProviderProps) {
 
   const [currentSchoolID, setCurrentSchoolID] = useState<string | undefined>();
 
-  const [allChartsConfigs, setAllChartsConfigs] = useState<Record<number, ChartConfig>>(() =>
-    ChartAPIEndpointsOrder.reduce((acc, endpoint, index) => {
-      acc[index] = { endpoint, queryParams: {} };
-      return acc;
-    }, {} as Record<number, ChartConfig>)
-  );
+  const [allChartsConfigs, setAllChartsConfigs] = useState<Record<number, ChartConfig>>(getInitialChartsConfigs);
   const [allChartsData, setAllChartsData] = useState<Record<number, ChartData>>({});
   const [loadMoreCharts, setLoadMoreCharts] = useState<boolean>(false);
 
   /** --- SETTERS --- **/
-  const setIndividualChartConfig = (chartID: number, chartConfig: ChartConfig) => {
-    setAllChartsConfigs(prevData => ({
-      ...prevData,
-      [chartID]: chartConfig
-    }));
-  };
-
   const updateIndividualChartConfigQueryParams = (chartID: number, newQueryParams: Record<string, any>) => {
     setAllChartsConfigs(prev => ({
       ...prev,
@@ -87,7 +80,7 @@ export function DashboardProvider({ children }: DashboardProviderProps) {
 
   const providerValue = useMemo<DashboardContextType>(() => ({
     currentSchoolID, setCurrentSchoolID,
-    allChartsConfigs, setIndividualChartConfig, updateIndividualChartConfigQueryParams,
+    allChartsConfigs, updateIndividualChartConfigQueryParams,
     allChartsData, setIndividualChartData,
     loadMoreCharts, setLoadMoreCharts
   }), [currentSchoolID, allChartsConfigs, allChartsData, loadMoreCharts]);
@@ -167,6 +160,13 @@ export function DashboardProvider({ children }: DashboardProviderProps) {
       }
     }
   }, [user, authenticationState, school_id_param, isDashboardPage, locationPath, navigate]);
+
+
+  // Reset states on school changes
+  useEffect(() => {
+    setAllChartsConfigs(getInitialChartsConfigs());
+    setAllChartsData({});
+  }, [currentSchoolID]);
 
   return (
     <DashboardContext.Provider value={providerValue}>

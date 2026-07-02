@@ -30,8 +30,12 @@ import EmailVerificationDialog from "./EmailVerificationDialog";
 import GoogleOAuthButtonAndPopupHandler from "./OAuth/GoogleOAuthButtonAndPopupHandler";
 import UserTypeSelector from "./UserTypeSelector";
 import { LoginTypes, UserRoleKeyForLogin, type AuthSuccessMessage } from "./Utils";
+import type { paths } from "../../types/backend-api.types";
 
 const MINIMUM_PASSWORD_LENGTH = 8;
+
+type SignupResponse =
+  paths["/signup"]["post"]["responses"][201]["content"]["application/json"];
 
 type PasswordLoginSuccessMessage = AuthSuccessMessage & {
   type: typeof LoginTypes.password;
@@ -100,7 +104,19 @@ export default function SignUp() {
         password,
       },
     })
-      .then((userData: UserData) => {
+      .then((response: SignupResponse) => {
+
+        // Convert backend response to UserData format
+        const userData: UserData = {
+          authenticated: true,
+          allowedSchools: response.allowedSchools,
+          username: response.username,
+          email: response.email,
+          is_verified: response.is_verified,
+          user_role: response.user_role,
+          recently_registered: response.recently_registered,
+          message: response.message,
+        };
 
         if (isPopupItself) {
           const message: PasswordLoginSuccessMessage = {

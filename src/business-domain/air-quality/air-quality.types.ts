@@ -5,6 +5,7 @@
 // - Light/Dark theme colors
 // ============================================================
 
+import { LocalizedText } from "../../types/SectionData";
 import type { DataTypeKey } from "../data-types/data-type.types";
 import type { TemperatureUnit } from "./temperature.utils";
 
@@ -20,24 +21,16 @@ export interface Threshold {
 }
 
 /**
- * Multi-language text support (English and Luganda).
- */
-export interface MultiLanguageText {
-  en: string;
-  lg: string;
-}
-
-/**
  * Context-specific health suggestions for an air quality category.
  * Each key represents a location context (outdoors, generic indoors, etc.).
  * Frontend supports multi-language for outdoors suggestions.
  */
 export interface HealthSuggestions {
-  outdoors: MultiLanguageText | string;
-  indoors_generic: MultiLanguageText | string;
-  indoors_dining_hall: MultiLanguageText | string;
-  indoors_gym: MultiLanguageText | string;
-  indoors_vulnerable: MultiLanguageText | string;
+  outdoors: LocalizedText | string;
+  indoors_generic: LocalizedText | string;
+  indoors_dining_hall: LocalizedText | string;
+  indoors_gym: LocalizedText | string;
+  indoors_vulnerable: LocalizedText | string;
 }
 
 /**
@@ -57,7 +50,7 @@ export interface ThemeColor {
  */
 interface CategoryEntry {
   id: number;
-  category: MultiLanguageText | string;
+  category: LocalizedText | string;
   color: ThemeColor;
   description: string;
   healthSuggestions: HealthSuggestions;
@@ -80,7 +73,7 @@ export interface CategoryResult {
   /** Index into the category database (0 = best, ascending = worse). Null when no data. */
   categoryIndex: number | null;
   /** Human-readable category name (can be multi-language object or string). */
-  category: MultiLanguageText | string | null;
+  category: LocalizedText | string | null;
 }
 
 /**

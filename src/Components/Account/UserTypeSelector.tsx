@@ -16,21 +16,26 @@ type UserTypeSelectorProps = {
     route?: string;
 };
 
+type AuthRouteKey = 'login' | 'signup';
+
 const UserTypeSelector = ({ indicatedUserRole = 'school', setIndicatedUserRole, route = AppRoutes.login }: UserTypeSelectorProps) => {
     const theme = useTheme();
+
+
+    const isAuthRouteKey = (route: string): route is AuthRouteKey => {
+        return route === AppRoutes.login.slice(1) || route === AppRoutes.signUp.slice(1);
+    };
 
     const getLabelContent = (): string => {
         const cleanedRoute = route.startsWith("/") ? route.slice(1) : route;
 
-        // Only show content for login and signup routes
-        const validRoutes = [AppRoutes.login.slice(1), AppRoutes.signUp.slice(1)] as const;
-        if (!validRoutes.includes(cleanedRoute as any)) return "";
+        if (!isAuthRouteKey(cleanedRoute)) {
+            return "";
+        }
 
-        // Type-safe access to AuthSection content
-        const section = sectionData[cleanedRoute as 'login' | 'signup'] as AuthSection;
+        const section = sectionData[cleanedRoute] as AuthSection;
         const content = section.content;
 
-        // Dynamically return content for the current user role (scales with new roles)
         return content[indicatedUserRole as keyof typeof content] ?? "";
     };
 

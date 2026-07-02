@@ -116,10 +116,12 @@ export interface Promo {
 // At-A-Glance statistics
 // ---------------------------------------------------------------------------
 
+export type IconString = 'GroupsIcon' | 'FaceIcon' | 'SensorsIcon' | 'AssuredWorkloadIcon';
+
 export interface AtAGlanceItem {
   order: number;
   text: LocalizedText;
-  icon: string;
+  icon: IconString;
 }
 
 export interface AtAGlanceSection extends Section {

@@ -17,7 +17,7 @@ const useLoginHandler = (openLoginPopup) => {
                 return false;
             } else {
                 // Return false if the user hasn't been verified
-                if (user?.is_verified === false) {
+                if (user.is_verified === false) {
                     enqueueSnackbar(`Please verify your account first`, SnackbarMetadata.error);
                     return false;
                 }
