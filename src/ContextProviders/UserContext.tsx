@@ -5,6 +5,7 @@ import { SnackbarMetadata } from '../Utils/SnackbarMetadata';
 import { EMPTY_USER_DATA, UserData } from '../types/UserData';
 import { useSnackbar } from 'notistack';
 import { AuthenticationState, defaultAuthenticationState, failedAuthenticationState } from '../types/AuthenticationState';
+import type { MeResponse } from '../types/api-contract.types';
 
 type UserContextValue = {
   authenticationState: AuthenticationState;
@@ -25,12 +26,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     const url = getApiUrl({ endpoint: 'me' });
     fetchDataFromURL({ url })
-      .then((data: UserData) => {
+      .then((data) => {
+        const userData: UserData = { ...EMPTY_USER_DATA, ...(data as MeResponse) };
         setAuthenticationState({
           checkedAuthentication: true,
-          authenticated: !!data.authenticated,
+          authenticated: !!userData.authenticated,
         });
-        setUser(data);
+        setUser(userData);
       })
       .catch((error: any) => {
         setAuthenticationState(failedAuthenticationState);

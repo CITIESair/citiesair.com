@@ -6,6 +6,7 @@ import type {
   schoolMetadataContract,
   screenContract,
   statsContract,
+  userContract,
 } from '@citiesair/shared/contracts';
 
 export type CurrentSensorsResponse = ClientInferResponseBody<
@@ -56,6 +57,11 @@ export type VerifyResponse = ClientInferResponseBody<
 
 export type GoogleCallbackResponse = ClientInferResponseBody<
   typeof authContract.googleCallback,
+  200
+>;
+
+export type MeResponse = ClientInferResponseBody<
+  typeof userContract.getMe,
   200
 >;
 
