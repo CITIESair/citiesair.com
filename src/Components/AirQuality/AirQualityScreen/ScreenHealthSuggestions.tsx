@@ -96,7 +96,11 @@ const ScreenHealthSuggestions = ({ typeOfScreen, data }: ScreenHealthSuggestions
                     return healthSuggestionText;
                 default:
                     const categoryText = getTranslation(category, language);
-                    return `${categoryText}: ${healthSuggestionText}`;
+                    return (
+                        <>
+                            {categoryText}: {healthSuggestionText}
+                        </>
+                    );
             }
         }
         return null;

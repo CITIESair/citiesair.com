@@ -7,7 +7,7 @@ const LoadMoreButton = () => {
 
     if (loadMoreCharts === false) {
         return (
-            <Stack sx={{ mt: 6, mx: 'auto', maxWidth: 'sm' }}>
+            <Stack sx={{ mt: 6, mx: { xs: 2, sm: "auto" }, maxWidth: 'sm' }}>
                 <Button
                     variant="contained"
                     onClick={() => {

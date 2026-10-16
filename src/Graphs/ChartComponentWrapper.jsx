@@ -394,18 +394,21 @@ function ChartComponentWrapper({ chartID }) {
 
   return (
     <Box position="relative">
-      <Typography display="inline" variant="h6" color="text.primary">
-        {chartID + 1}. {chartData.title}
-        &nbsp;
-      </Typography>
+      <Box sx={{ px: { xs: 2, sm: 0 } }}>
+        <Typography display="inline" variant="h6" color="text.primary">
+          {chartID + 1}. {chartData.title}
+          &nbsp;
+        </Typography>
 
-      <Box display="inline">
-        <DataTypeDropDownMenu
-          selectedDataType={selectedDataType}
-          dataTypes={allowedDataTypes}
-          chartID={chartID}
-        />
+        <Box display="inline">
+          <DataTypeDropDownMenu
+            selectedDataType={selectedDataType}
+            dataTypes={allowedDataTypes}
+            chartID={chartID}
+          />
+        </Box>
       </Box>
+
 
       <ChartStyleWrapper height="100%" sx={{
         filter: isFetching ? 'blur(1px)' : 'none',
