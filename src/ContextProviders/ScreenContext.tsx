@@ -53,82 +53,83 @@ interface ScreenProviderProps {
 
 export function ScreenProvider({ children }: ScreenProviderProps) {
     const [isLayoutReversed, setIsLayoutReversed] = useState<boolean | undefined>(undefined);
-    const [shouldDisplayScreen, setShouldDisplayScreen] = useState<boolean>(isWithinDisplayHours());
+    const [shouldDisplayScreen, setShouldDisplayScreen] = useState(() => isWithinDisplayHours());
 
     const navigate = useNavigate();
     const { data: schoolMetadata } = useSchoolMetadata();
     const { setLanguage } = usePreferences();
 
+    // 1. Should Display Screen
     useEffect(() => {
-        const intervals: ReturnType<typeof setInterval>[] = [];
+        const tick = () => setShouldDisplayScreen(isWithinDisplayHours());
+        tick();                              // immediate correction after mount
+        const id = setInterval(tick, 30 * 1000);
+        return () => clearInterval(id);
+    }, []);
 
-        // --- Should Display Screen (to save energy) ---
-        const displayInterval = setInterval(() => {
-            setShouldDisplayScreen(isWithinDisplayHours());
-        }, 60 * 1000);
-        intervals.push(displayInterval);
+    // 2. Screen Burn-in Prevention
+    useEffect(() => {
+        const update = () => setIsLayoutReversed(returnIsLayoutReversed());
+        update();
+        const id = setInterval(update, 24 * 60 * 60 * 1000);
+        return () => clearInterval(id);
+    }, []);
 
-        // --- Language Rotation ---
-        if (schoolMetadata && isValidArray(schoolMetadata.languages)) {
-            const langs = schoolMetadata.languages;
-            if (langs.length > 1) {
-                const updateLanguage = () => {
-                    const minute = new Date().getMinutes();
-                    setLanguage(langs[minute % langs.length]);
-                };
+    // 3. Language Rotation
+    useEffect(() => {
+        if (!schoolMetadata || !isValidArray(schoolMetadata.languages)) return;
 
-                updateLanguage(); // initial
-                const langInterval = setInterval(updateLanguage, 60 * 1000);
-                intervals.push(langInterval);
-            }
-        }
+        const langs = schoolMetadata.languages;
+        if (langs.length <= 1) return;
 
-        // --- Screen Burn-in Prevention Layout Flip ---
-        const updateLayout = () => setIsLayoutReversed(returnIsLayoutReversed());
-        updateLayout(); // initial
-        const layoutInterval = setInterval(updateLayout, 24 * 60 * 60 * 1000);
-        intervals.push(layoutInterval);
+        const updateLanguage = () => {
+            const minute = new Date().getMinutes();
+            setLanguage(langs[minute % langs.length]);
+        };
 
-        // --- Carousel Rotation Logic ---
+        updateLanguage(); // initial
+        const langInterval = setInterval(updateLanguage, 60 * 1000);
+        return () => clearInterval(langInterval);
+    }, [schoolMetadata, setLanguage]);
+
+    // 4. Carousel Rotation
+    useEffect(() => {
+        if (!shouldDisplayScreen) return;
+
         const params = new URLSearchParams(window.location.search);
         const routes = params.get("carousel")?.split(",") ?? [];
         const intervalSec = Number(params.get("intervalSeconds")) || 30;
 
-        if (routes.length > 0) {
-            const rotateCarousel = () => {
-                const index = getCarouselIndex(routes, intervalSec);
-                const nextRoute = routes[index];
+        if (routes.length === 0) return;
 
-                const isExternal =
-                    /^(https?:\/\/|[\w-]+(\.[\w-]+)+)/i.test(nextRoute);
+        const rotateCarousel = () => {
+            const index = getCarouselIndex(routes, intervalSec);
+            const nextRoute = routes[index];
+            const isExternal = /^(https?:\/\/|[\w-]+(\.[\w-]+)+)/i.test(nextRoute);
 
-                if (isExternal) {
-                    // Auto-prepend https:// for domain-only routes
-                    const url = nextRoute.startsWith("http")
-                        ? `${nextRoute}?${params.toString()}`
-                        : `https://${nextRoute}?${params.toString()}`;
+            if (isExternal) {
+                const url = nextRoute.startsWith("http")
+                    ? `${nextRoute}?${params.toString()}`
+                    : `https://${nextRoute}?${params.toString()}`;
+                window.location.replace(url);
+            } else {
+                navigate({
+                    pathname: nextRoute,
+                    search: `?${params.toString()}`,
+                }, { replace: true });
+            }
+        };
 
-                    window.location.replace(url);
-                } else {
-                    navigate({
-                        pathname: nextRoute,
-                        search: `?${params.toString()}`,
-                    }, { replace: true });
-                }
-            };
+        const carouselInterval = setInterval(rotateCarousel, intervalSec * 1000);
+        return () => clearInterval(carouselInterval);
+    }, [navigate, shouldDisplayScreen]);
 
-            const carouselInterval = setInterval(rotateCarousel, intervalSec * 1000);
-            intervals.push(carouselInterval);
-        }
-
+    // 5. Cleanup language on unmount
+    useEffect(() => {
         return () => {
-            intervals.forEach(clearInterval);
-
-            // Set language to English for the rest of the website on component unmounts
-            // (only components under <ScreenComponen> can rotate languages for now)
             setLanguage("en");
-        }
-    }, [navigate, schoolMetadata, setLanguage]);
+        };
+    }, [setLanguage]);
 
     const providerValue = useMemo(() => ({
         isLayoutReversed, shouldDisplayScreen
